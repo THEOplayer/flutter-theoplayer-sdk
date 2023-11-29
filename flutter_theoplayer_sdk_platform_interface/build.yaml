@@ -1,0 +1,17 @@
+# Read about `build.yaml` at https://pub.dev/packages/build_config
+targets:
+  $default:
+    sources:
+      - lib/**
+      - pigeons/**
+      - pubspec.*
+      - $lib$
+      - $package$
+
+builders:
+  pigeon_merger:
+    import: 'builder.dart'
+    builder_factories: ['mergerBuilder']
+    build_extensions: { '$package$': ['pigeons/pigeons_merged.dart'] }
+    auto_apply: root_package
+    build_to: source

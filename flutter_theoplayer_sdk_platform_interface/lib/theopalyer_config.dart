@@ -1,0 +1,37 @@
+class THEOplayerConfig {
+  String? _license;
+  String? _licenseUrl;
+  AndroidConfig androidConfig = AndroidConfig();
+
+  THEOplayerConfig({String? license, String? licenseUrl, AndroidConfig? androidConfiguration}) {
+    _license = license;
+    _licenseUrl = licenseUrl;
+    if (androidConfiguration != null) {
+      androidConfig = androidConfiguration;
+    }
+  } 
+  String? getLicense() {
+    return _license;
+  }
+
+  String? getLicenseUrl() {
+    return _licenseUrl;
+  }
+
+  //TODO: fix this, don't generate JSON manually.
+  Map<String, dynamic> toJson() => {
+    'license': _license,
+    'licenseUrl': _licenseUrl,
+    'androidConfig': androidConfig.toJson(),
+  };
+
+}
+
+class AndroidConfig {
+  final bool useHybridComposition;
+  AndroidConfig({this.useHybridComposition = false});
+
+  Map<String, dynamic> toJson() => {
+    'useHybridComposition': useHybridComposition,
+  };
+}

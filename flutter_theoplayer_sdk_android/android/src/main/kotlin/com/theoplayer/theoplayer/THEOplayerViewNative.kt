@@ -1,0 +1,242 @@
+package com.theoplayer.theoplayer
+
+import android.content.Context
+import android.view.View
+import android.view.ViewGroup
+import android.widget.LinearLayout
+import com.theoplayer.android.api.THEOplayerConfig
+import com.theoplayer.android.api.THEOplayerView
+import com.theoplayer.android.api.event.EventListener
+import com.theoplayer.android.api.event.player.PlayerEventTypes
+import com.theoplayer.android.api.event.player.PlayingEvent
+import com.theoplayer.theoplayer.pigeon.THEOplayerFlutterAPI
+import com.theoplayer.theoplayer.pigeon.THEOplayerNativeAPI
+import com.theoplayer.theoplayer.pigeon.THEOplayerNativeAPI.Companion.setUp
+import com.theoplayer.theoplayer.transformers.PlayerEnumTransformer
+import com.theoplayer.theoplayer.transformers.SourceTransformer
+import com.theoplayer.theoplayer.transformers.TimeRangeTransformer
+import io.flutter.plugin.common.BinaryMessenger
+import io.flutter.plugin.platform.PlatformView
+import java.util.Date
+
+typealias FlutterSourceDescription = com.theoplayer.theoplayer.pigeon.SourceDescription
+typealias FlutterReadyState = com.theoplayer.theoplayer.pigeon.ReadyState
+typealias FlutterPreloadType = com.theoplayer.theoplayer.pigeon.PreloadType
+typealias FlutterTimeRange = com.theoplayer.theoplayer.pigeon.TimeRange
+
+internal class THEOplayerViewNative(
+    context: Context,
+    id: Int,
+    creationParams: Map<String, Any>?,
+    messenger: BinaryMessenger
+) : PlatformView, THEOplayerNativeAPI {
+
+    private val theoplayerWrapper: LinearLayout
+    private val tpv: THEOplayerView
+    private val pigeonMessenger: PigeonBinaryMessengerWrapper
+    private val flutterAPI: THEOplayerFlutterAPI
+    private val playerEventForwarder: PlayerEventForwarder
+    private val textTrackBridge: TextTrackBridge
+    private val audioTrackBridge: AudioTrackBridge
+    private val videoTrackBridge: VideoTrackBridge
+
+    // Workaround to eliminate the initial transparent layout with initExpensiveAndroidView
+    // TODO: remove it once initExpensiveAndroidView is not used.
+    private var useHybridComposition: Boolean = false
+    private var isFirstPlaying: Boolean = false
+        set(value) {
+            if (!useHybridComposition) {
+                return
+            }
+
+            if (value) {
+                tpv.visibility = View.VISIBLE
+            } else {
+                tpv.visibility = View.INVISIBLE
+            }
+            field = value
+        }
+
+    private val playingEventListener = EventListener<PlayingEvent> {
+        if (!isFirstPlaying) {
+            isFirstPlaying = true
+        }
+    }
+
+    init {
+        val flutterPlayerConfig = creationParams?.get("playerConfig") as? Map<*, *>
+        val license = flutterPlayerConfig?.get("license") as? String
+        val licenseUrl = flutterPlayerConfig?.get("licenseUrl") as? String
+        useHybridComposition =
+            (flutterPlayerConfig?.get("androidConfig") as? Map<*, *>)?.get("useHybridComposition") as? Boolean == true
+
+        val playerConfigBuilder = THEOplayerConfig.Builder()
+        license?.let { playerConfigBuilder.license(it) }
+        licenseUrl?.let { playerConfigBuilder.licenseUrl(it) }
+
+        theoplayerWrapper = LinearLayout(context)
+        theoplayerWrapper.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+        if (BuildConfig.DEBUG) {
+            theoplayerWrapper.setBackgroundColor(android.graphics.Color.BLUE)
+        } else {
+            theoplayerWrapper.setBackgroundColor(android.graphics.Color.BLACK)
+        }
+
+        tpv = THEOplayerView(context, playerConfigBuilder.build())
+        isFirstPlaying = false
+        tpv.player.addEventListener(PlayerEventTypes.PLAYING, playingEventListener)
+        theoplayerWrapper.addView(tpv)
+
+        pigeonMessenger = PigeonBinaryMessengerWrapper(messenger, "id_$id")
+        setUp(pigeonMessenger, this)
+
+        flutterAPI = THEOplayerFlutterAPI(pigeonMessenger)
+        playerEventForwarder = PlayerEventForwarder(tpv.player, flutterAPI)
+        playerEventForwarder.attachListeners()
+
+        textTrackBridge = TextTrackBridge(tpv.player, pigeonMessenger)
+        textTrackBridge.attachListeners()
+
+        audioTrackBridge = AudioTrackBridge(tpv.player, pigeonMessenger)
+        audioTrackBridge.attachListeners()
+
+        videoTrackBridge = VideoTrackBridge(tpv.player, pigeonMessenger)
+        videoTrackBridge.attachListeners()
+    }
+
+    override fun getView(): View {
+        return theoplayerWrapper
+    }
+
+    override fun dispose() {
+        tpv.player.removeEventListener(PlayerEventTypes.PLAYING, playingEventListener)
+        playerEventForwarder.removeListeners()
+        textTrackBridge.removeListeners()
+        audioTrackBridge.removeListeners()
+        videoTrackBridge.removeListeners()
+        tpv.onDestroy()
+    }
+
+    override fun setSource(source: FlutterSourceDescription?) {
+        isFirstPlaying = false
+        tpv.player.source = SourceTransformer.toSourceDescription(source)
+    }
+
+    override fun getSource(): FlutterSourceDescription? {
+        return SourceTransformer.toFlutterSourceDescription(tpv.player.source)
+    }
+
+    override fun setAutoplay(autoplay: Boolean) {
+        tpv.player.isAutoplay = true
+    }
+
+    override fun isAutoplay(): Boolean {
+        return tpv.player.isAutoplay
+    }
+
+    override fun play() {
+        tpv.player.play()
+    }
+
+    override fun pause() {
+        tpv.player.pause()
+    }
+
+    override fun isPaused(): Boolean {
+        return tpv.player.isPaused
+    }
+
+    override fun setCurrentTime(currentTime: Double) {
+        tpv.player.currentTime = currentTime
+    }
+
+    override fun getCurrentTime(): Double {
+        return tpv.player.currentTime
+    }
+
+    override fun setCurrentProgramDateTime(currentProgramDateTime: Long) {
+        tpv.player.currentProgramDateTime = Date(currentProgramDateTime)
+    }
+
+    override fun getCurrentProgramDateTime(): Long? {
+        return tpv.player.currentProgramDateTime?.time
+    }
+
+    override fun getDuration(): Double {
+        return tpv.player.duration
+    }
+
+    override fun setPlaybackRate(playbackRate: Double) {
+        tpv.player.playbackRate = playbackRate
+    }
+
+    override fun getPlaybackRate(): Double {
+        return tpv.player.playbackRate
+    }
+
+    override fun setVolume(volume: Double) {
+        tpv.player.volume = volume
+    }
+
+    override fun getVolume(): Double {
+        return tpv.player.volume
+    }
+
+    override fun setMuted(muted: Boolean) {
+        tpv.player.isMuted = muted
+    }
+
+    override fun isMuted(): Boolean {
+        return tpv.player.isMuted
+    }
+
+    override fun setPreload(preload: FlutterPreloadType) {
+        tpv.player.preload = PlayerEnumTransformer.toPreloadType(preload)
+    }
+
+    override fun getPreload(): FlutterPreloadType {
+        return PlayerEnumTransformer.toFlutterPreloadType(tpv.player.preload)
+    }
+
+    override fun getReadyState(): FlutterReadyState {
+        return PlayerEnumTransformer.toFlutterReadyState(tpv.player.readyState)
+    }
+
+    override fun isSeeking(): Boolean {
+        return tpv.player.isSeeking
+    }
+
+    override fun isEnded(): Boolean {
+        return tpv.player.isEnded
+    }
+
+    override fun getVideoWidth(): Long {
+        return tpv.player.videoWidth.toLong()
+    }
+
+    override fun getVideoHeight(): Long {
+        return tpv.player.videoHeight.toLong()
+    }
+
+    override fun getBuffered(): List<FlutterTimeRange> {
+        return TimeRangeTransformer.toFlutterTimeRanges(tpv.player.buffered)
+    }
+
+    override fun getSeekable(): List<FlutterTimeRange> {
+        return TimeRangeTransformer.toFlutterTimeRanges(tpv.player.seekable)
+    }
+
+    override fun getPlayed(): List<FlutterTimeRange> {
+        return TimeRangeTransformer.toFlutterTimeRanges(tpv.player.played)
+    }
+
+    override fun getError(): String? {
+        return tpv.player.error
+    }
+
+    override fun stop() {
+        isFirstPlaying = false
+        tpv.player.stop()
+    }
+
+}
