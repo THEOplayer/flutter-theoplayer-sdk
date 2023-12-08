@@ -54,7 +54,7 @@ To use the SDK, you need to initialize `git` in your project and **add the SDK a
 
 ```bash
 $ git init
-$ git submodule add https://GITHUB_USERNAME:GITHUB_PASSWORD@github.com/THEOplayer/flutter-theoplayer-sdk
+$ git submodule add https://GITHUB_USERNAME:GITHUB_PASSWORD@github.com/THEOplayer/flutter-theoplayer-sdk-eap flutter-theoplayer-sdk
 ```
 
 Your project structure will look like this:
