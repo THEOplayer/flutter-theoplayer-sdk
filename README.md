@@ -68,7 +68,7 @@ please reach out to us for support.
 This section starts with creating a minimal demo app that integrates the `flutter_theoplayer_sdk` package,
 followed by an overview of the available properties and functionality of the THEOplayer component.
 An minimal example application including a basic user interface and demo sources is included in the
-[git repository](https://github.com/THEOplayer/flutter-theoplayer-sdk/tree/main/flutter_theoplayer_sdk/example),
+[git repository](https://github.com/THEOplayer/flutter-theoplayer-sdk-eap/tree/main/flutter_theoplayer_sdk/example),
 and discussed in the next section. Finally, an overview of features, limitations and known issues is listed.
 
 - [Creating a minimal demo app](./doc/creating-minimal-app.md)
