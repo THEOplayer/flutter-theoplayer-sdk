@@ -65,5 +65,5 @@ flutter {
 }
 
 dependencies {
-    api 'com.theoplayer.theoplayer-sdk-android:core:6.5.0'
+    api 'com.theoplayer.theoplayer-sdk-android:core:6.9.0'
 }
