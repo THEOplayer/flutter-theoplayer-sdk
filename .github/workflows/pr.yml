@@ -65,9 +65,19 @@ jobs:
       run: flutter pub get
       working-directory: flutter_theoplayer_sdk
     
-    - name: Run test
+    - name: Run unit tests
       run: flutter test
       working-directory: flutter_theoplayer_sdk
+      
+    - name: Start iOS simulator
+      uses: futureware-tech/simulator-action@v3
+      with:
+        model: 'iPhone 14'
+        os_version: '>=16.0'
+
+    - name: Run integration tests
+      run: flutter test integration_test
+      working-directory: flutter_theoplayer_sdk/example
       
     - name: Build iOS
       run: flutter build ios --release --no-codesign
