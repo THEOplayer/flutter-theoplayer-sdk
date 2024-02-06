@@ -28,12 +28,15 @@ class PlayerState {
   List<TimeRange?> played = [];
   String? error;
 
+  bool isInitialized = false;
+
   PlayerState() {
     resetState();
   }
 
   void setViewController(THEOplayerViewController theoPlayerViewController) {
     _theoPlayerViewController = theoPlayerViewController;
+    isInitialized = true;
     _attachEventListeners();
   }
 
@@ -194,6 +197,7 @@ class PlayerState {
 
   void resetState() {
     source = null;
+    isInitialized = false; //TODO check when this gets called
     isPaused = true;
     currentTime = 0.0;
     currentProgramDateTime = null;
