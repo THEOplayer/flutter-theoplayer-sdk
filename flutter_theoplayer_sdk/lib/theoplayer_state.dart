@@ -10,7 +10,7 @@ class PlayerState {
 
   SourceDescription? source;
   bool isAutoplay = false;
-  bool isPaused = false;
+  bool isPaused = true;
   double currentTime = 0.0;
   DateTime? currentProgramDateTime;
   double duration = 0.0;
@@ -194,7 +194,7 @@ class PlayerState {
 
   void resetState() {
     source = null;
-    isPaused = false;
+    isPaused = true;
     currentTime = 0.0;
     currentProgramDateTime = null;
     duration = 0.0;
