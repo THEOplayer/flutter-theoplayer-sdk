@@ -232,6 +232,10 @@ class THEOplayer implements EventDispatcher {
     return _playerState.isSeeking;
   }
 
+  bool isInitialized() {
+    return _playerState.isInitialized;
+  }
+
   /// Whether playback of the media is ended.
   bool isEnded() {
     return _playerState.isEnded;
