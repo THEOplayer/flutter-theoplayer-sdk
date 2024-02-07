@@ -64,15 +64,14 @@ class VideoTrackImplWeb extends VideoTrackImpl {
       var flutterUidMap = targetQualities.map((element) => element.uid);
 
       for (var i = 0; i < _nativeVideoTrack.qualities.length; i++) {
-        THEOplayerVideoQuality q = _nativeVideoTrack.qualities.item(i);
+        THEOplayerVideoQuality q = _nativeVideoTrack.qualities[i];
         if (flutterUidMap.contains(q.uid)) {
           theoplayerQualities.add(q);
         }
       }
     }
 
-
-    _nativeVideoTrack.targetQuality = theoplayerQualities; //THEOplayerArrayList<THEOplayerVideoQuality>(values: theoplayerQualities); 
+    _nativeVideoTrack.targetQuality = theoplayerQualities;
   }
 
   @override
@@ -85,7 +84,7 @@ class VideoTrackImplWeb extends VideoTrackImpl {
       theoplayerQualities = [];
 
       for (var i = 0; i < _nativeVideoTrack.qualities.length; i++) {
-        THEOplayerVideoQuality q = _nativeVideoTrack.qualities.item(i);
+        THEOplayerVideoQuality q = _nativeVideoTrack.qualities[i];
         if (targetQuality.uid == q.uid) {
           theoplayerQualities.add(q);
           break;
@@ -93,7 +92,7 @@ class VideoTrackImplWeb extends VideoTrackImpl {
       }
     }
     
-    _nativeVideoTrack.targetQuality = theoplayerQualities; //THEOplayerArrayList<THEOplayerVideoQuality>(values: theoplayerQualities); 
+    _nativeVideoTrack.targetQuality = theoplayerQualities;
   }
 
   @override

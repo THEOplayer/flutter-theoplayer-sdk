@@ -141,10 +141,10 @@ String toTextTrackMode(PlatformInterface.TextTrackMode flutterTextTrackmode) {
 
 AudioQuality toFlutterAudioQuality(THEOplayerAudioQuality q) => AudioQualityImpl(q.id, q.uid, q.name, q.bandwidth, q.codecs, q.audioSamplingRate);
 
-AudioQualities toFlutterAudioQualities(THEOplayerArrayList<THEOplayerAudioQuality> qualities) {
+AudioQualities toFlutterAudioQualities(List<THEOplayerAudioQuality> qualities) {
   AudioQualities flutterQualities  = AudioQualitiesImpl();
   for (var i = 0; i < qualities.length; i++) {
-    THEOplayerAudioQuality q = qualities.item(i);
+    THEOplayerAudioQuality q = qualities[i];
     flutterQualities.add(toFlutterAudioQuality(q));
   }
   return flutterQualities;
@@ -152,10 +152,10 @@ AudioQualities toFlutterAudioQualities(THEOplayerArrayList<THEOplayerAudioQualit
 
 VideoQuality toFlutterVideoQuality(THEOplayerVideoQuality q) => VideoQualityImpl(q.id, q.uid, q.name, q.bandwidth, q.codecs, q.width, q.height, q.frameRate, q.firstFrame);
 
-VideoQualities toFlutterVideoQualities(THEOplayerArrayList<THEOplayerVideoQuality> qualities) {
+VideoQualities toFlutterVideoQualities(List<THEOplayerVideoQuality> qualities) {
   VideoQualities flutterQualities  = VideoQualitiesImpl();
   for (var i = 0; i < qualities.length; i++) {
-    THEOplayerVideoQuality q = qualities.item(i);
+    THEOplayerVideoQuality q = qualities[i];
     flutterQualities.add(toFlutterVideoQuality(q));
   }
   return flutterQualities;

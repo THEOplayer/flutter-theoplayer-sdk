@@ -66,7 +66,7 @@ class AudioTrackImplWeb extends AudioTrackImpl {
       var flutterUidMap = targetQualities.map((element) => element.uid);
 
       for (var i = 0; i < _nativeAudioTrack.qualities.length; i++) {
-        THEOplayerAudioQuality q = _nativeAudioTrack.qualities.item(i);
+        THEOplayerAudioQuality q = _nativeAudioTrack.qualities[i];
         if (flutterUidMap.contains(q.uid)) {
           theoplayerQualities.add(q);
         }
@@ -74,7 +74,7 @@ class AudioTrackImplWeb extends AudioTrackImpl {
     }
 
 
-    _nativeAudioTrack.targetQuality = theoplayerQualities; //THEOplayerArrayList<THEOplayerAudioQuality>(values: theoplayerQualities); 
+    _nativeAudioTrack.targetQuality = theoplayerQualities;
   }
 
   @override
@@ -87,7 +87,7 @@ class AudioTrackImplWeb extends AudioTrackImpl {
       theoplayerQualities = [];
 
       for (var i = 0; i < _nativeAudioTrack.qualities.length; i++) {
-        THEOplayerAudioQuality q = _nativeAudioTrack.qualities.item(i);
+        THEOplayerAudioQuality q = _nativeAudioTrack.qualities[i];
         if (targetQuality.uid == q.uid) {
           theoplayerQualities.add(q);
           break;
@@ -95,7 +95,7 @@ class AudioTrackImplWeb extends AudioTrackImpl {
       }
     }
     
-    _nativeAudioTrack.targetQuality = theoplayerQualities; //THEOplayerArrayList<THEOplayerAudioQuality>(values: theoplayerQualities); 
+    _nativeAudioTrack.targetQuality = theoplayerQualities;
   }
 
   @override

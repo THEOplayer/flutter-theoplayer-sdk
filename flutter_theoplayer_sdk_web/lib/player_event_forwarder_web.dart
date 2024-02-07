@@ -92,7 +92,7 @@ class PlayerEventForwarderWeb {
     });
 
     errorEventListener  = allowInterop((event){
-      _eventManager.dispatchEvent(ErrorEvent(error: event.error.message));
+      _eventManager.dispatchEvent(ErrorEvent(error: event.error));
     });
 
     destroyEventListener  = allowInterop((event){
@@ -149,7 +149,6 @@ class PlayerEventForwarderWeb {
     _theoplayerJS.addEventListener(PlayerEventTypes.CANPLAY.toLowerCase(), canPlayEventListener);
     _theoplayerJS.addEventListener(PlayerEventTypes.CANPLAYTHROUGH.toLowerCase(), canPlayThroughEventListener);
     _theoplayerJS.addEventListener(PlayerEventTypes.SOURCECHANGE.toLowerCase(), sourceChangeEventListener);
-
   }
 
   void detachEventListeners() {
@@ -175,7 +174,6 @@ class PlayerEventForwarderWeb {
     _theoplayerJS.removeEventListener(PlayerEventTypes.CANPLAY.toLowerCase(), canPlayEventListener);
     _theoplayerJS.removeEventListener(PlayerEventTypes.CANPLAYTHROUGH.toLowerCase(), canPlayThroughEventListener);
     _theoplayerJS.removeEventListener(PlayerEventTypes.SOURCECHANGE.toLowerCase(), sourceChangeEventListener);
-
   }
 
   void removeEventListener(String eventType, EventListener<Event> listener) {
