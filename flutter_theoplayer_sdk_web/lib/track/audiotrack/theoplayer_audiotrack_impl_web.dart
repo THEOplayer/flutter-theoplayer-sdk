@@ -4,6 +4,7 @@ import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theop
 import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_audiotrack_events.dart';
 import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_audiotrack_impl.dart';
 import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_mediatrack.dart';
+import 'package:flutter_theoplayer_sdk_web/theoplayer_api_event_web.dart';
 import 'package:flutter_theoplayer_sdk_web/theoplayer_api_web.dart';
 import 'package:flutter_theoplayer_sdk_web/transformers_web.dart';
 
@@ -16,9 +17,9 @@ class AudioTrackImplWeb extends AudioTrackImpl {
 
   AudioTrackImplWeb(super.id, super.uid, super.label, super.language, super.kind, super.qualities, super.isEnabled, this._nativeAudioTrack) {
 
-    targetQualityChangedListener = allowInterop((event){
+    targetQualityChangedListener = allowInterop((AudioTargetQualityChangedEventJS event){
       var eventTargetQualities = event.qualities;
-      var eventTargetQuality = event.quality as THEOplayerAudioQuality?;
+      var eventTargetQuality = event.quality;
 
       var targetQualitiesUid = [];
       for (var i = 0; i < eventTargetQualities.length; i++) {
@@ -38,8 +39,8 @@ class AudioTrackImplWeb extends AudioTrackImpl {
       dispatchEvent(AudioTargetQualityChangedEvent(qualities: flutterTargetQualities, quality: flutterTargetQuality));
     });
 
-    aciveQualityChangedEventListener = allowInterop((event){
-      var eventTargetQuality = event.quality as THEOplayerAudioQuality;
+    aciveQualityChangedEventListener = allowInterop((AudioActiveQualityChangedEventJS event){
+      var eventTargetQuality = event.quality;
       AudioQuality? flutterActiveQuality = this.qualities.firstWhereOrNull((element) => element.uid == eventTargetQuality.uid);
       if (flutterActiveQuality == null) {
         //TODO: debug log, quality is lost or don't allow null.

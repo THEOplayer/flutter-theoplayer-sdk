@@ -1,8 +1,9 @@
 import 'dart:js_util';
 
 import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_event_dispatcher_interface.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_events.dart';
 import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_event_manager.dart';
+import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_events.dart';
+import 'package:flutter_theoplayer_sdk_web/theoplayer_api_event_web.dart';
 import 'package:flutter_theoplayer_sdk_web/theoplayer_api_web.dart';
 import 'package:flutter_theoplayer_sdk_web/transformers_web.dart';
 
@@ -35,91 +36,91 @@ class PlayerEventForwarderWeb {
 
   PlayerEventForwarderWeb(this._theoplayerJS) {
 
-    canPlayEventListener = allowInterop((event){
+    canPlayEventListener = allowInterop((CanPlayEventJS event) {
       _eventManager.dispatchEvent(CanPlayEvent(currentTime: event.currentTime));
     });
 
-    timeUpdateEventListener = allowInterop((event){
+    timeUpdateEventListener = allowInterop((TimeUpdateEventJS event) {
       _eventManager.dispatchEvent(TimeUpdateEvent(currentTime: event.currentTime, currentProgramDateTime: event.currentProgramDateTime?.getTime()));
     });
 
-    playEventListener = allowInterop((event){
+    playEventListener = allowInterop((PlayEventJS event) {
       _eventManager.dispatchEvent(PlayEvent(currentTime: event.currentTime));
     });
 
-    playingEventListener = allowInterop((event){
+    playingEventListener = allowInterop((PlayingEventJS event) {
       _eventManager.dispatchEvent(PlayingEvent(currentTime: event.currentTime));
     });
 
-    pauseEventListener = allowInterop((event){
+    pauseEventListener = allowInterop((PauseEventJS event) {
       _eventManager.dispatchEvent(PauseEvent(currentTime: event.currentTime));
     });
 
-    waitingEventListener = allowInterop((event){
+    waitingEventListener = allowInterop((WaitingEventJS event) {
       _eventManager.dispatchEvent(WaitingEvent(currentTime: event.currentTime));
     });
 
-    durationChangeEventListener = allowInterop((event){
+    durationChangeEventListener = allowInterop((DurationChangeEventJS event) {
       _eventManager.dispatchEvent(DurationChangeEvent(duration: event.duration));
     });
 
-    progressEventListener = allowInterop((event){
+    progressEventListener = allowInterop((ProgressEventJS event) {
       _eventManager.dispatchEvent(ProgressEvent(currentTime: event.currentTime));
     });
 
-    rateChangeEventListener = allowInterop((event){
+    rateChangeEventListener = allowInterop((RateChangeEventJS event) {
       _eventManager.dispatchEvent(RateChangeEvent(currentTime: event.currentTime, playbackRate: event.playbackRate));
     });
 
-    seekingEventListener = allowInterop((event){
+    seekingEventListener = allowInterop((SeekingEventJS event) {
       _eventManager.dispatchEvent(SeekingEvent(currentTime: event.currentTime));
     });
 
-    seekedEventListener = allowInterop((event){
+    seekedEventListener = allowInterop((SeekedEventJS event) {
       _eventManager.dispatchEvent(SeekedEvent(currentTime: event.currentTime));
     });
 
-    volumeChangeEventListener = allowInterop((event){
+    volumeChangeEventListener = allowInterop((VolumeChangeEventJS event) {
       _eventManager.dispatchEvent(VolumeChangeEvent(currentTime: event.currentTime, volume: event.volume));
     });
 
-    resizeEventListener  = allowInterop((event){
+    resizeEventListener = allowInterop((ResizeEventJS event) {
       _eventManager.dispatchEvent(ResizeEvent(currentTime: _theoplayerJS.currentTime, width: _theoplayerJS.videoWidth, height: _theoplayerJS.videoHeight));
     });
 
-    endedEventListener  = allowInterop((event){
+    endedEventListener = allowInterop((EndedEventJS event) {
       _eventManager.dispatchEvent(EndedEvent(currentTime: event.currentTime));
     });
 
-    errorEventListener  = allowInterop((event){
+    errorEventListener  = allowInterop((ErrorEventJS event){
       _eventManager.dispatchEvent(ErrorEvent(error: event.error));
     });
 
-    destroyEventListener  = allowInterop((event){
+    destroyEventListener = allowInterop((DestroyEventJS event) {
       _eventManager.dispatchEvent(DestroyEvent());
     });
 
-    readyStateChangeEventListener  = allowInterop((event){
+    readyStateChangeEventListener = allowInterop((ReadyStateChangeEventJS event) {
       _eventManager.dispatchEvent(ReadyStateChangeEvent(currentTime: event.currentTime, readyState: toFlutterReadyState(event.readyState)));
     });
 
-    loadStartEventListener  = allowInterop((event){
+    loadStartEventListener = allowInterop((LoadedDataEventJS event) {
       _eventManager.dispatchEvent(LoadStartEvent());
     });
 
-    loadedMetadataEventListener  = allowInterop((event){
+    loadedMetadataEventListener = allowInterop((LoadedMetadataEventJS event) {
       _eventManager.dispatchEvent(LoadedMetadataEvent(currentTime: event.currentTime));
     });
 
-    loadedDataEventListener = allowInterop((event){
+    loadedDataEventListener = allowInterop((LoadedDataEventJS event) {
       _eventManager.dispatchEvent(LoadedDataEvent(currentTime: event.currentTime));
     });
 
-    canPlayThroughEventListener = allowInterop((event){
+    canPlayThroughEventListener = allowInterop((CanPlayThroughEventJS event) {
       _eventManager.dispatchEvent(CanPlayThroughEvent(currentTime: event.currentTime));
     });
 
-    sourceChangeEventListener = allowInterop((event){
+    sourceChangeEventListener = allowInterop((SourceChangeEventJS event) {
       _eventManager.dispatchEvent(SourceChangeEvent(source: toFlutterSourceDescription(event.source)));
     });
 
