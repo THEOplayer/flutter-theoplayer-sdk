@@ -34,7 +34,7 @@
  THEOplayer is based on patented technology developed by
  THEO Technologies (https://www.theoplayer.com).
 
- Version: 6.5.0
- Created: 2023-11-27T14:25:04.499Z
+ Version: 6.9.0
+ Created: 2024-01-30T10:59:47.754Z
  */
-var a="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:void 0!==s?s:"undefined"!=typeof global?global:this,s=a.window;a.document,a.location,a.navigator,a.setTimeout,a.clearTimeout,a.setInterval,a.clearInterval,a.Error,a.TypeError,a.SyntaxError,a.Object,a.Math,a.parseInt,a.parseFloat,a.isNaN,a.Uint8Array,a.Worker,a.WorkerGlobalScope,a.XMLHttpRequest;import{F as e,G as o,Ga as r,Ha as t,Ia as l,Ja as i,Ka as n,La as f,Ma as y,Pa as d,Ta as p,a as g}from"./THEOplayer.common.esm.js";g(),g();export{r as ChromelessPlayer,o as ErrorCategory,e as ErrorCode,r as Player,p as cache,d as cast,l as features,n as playerSuiteVersion,f as players,y as registerContentProtectionIntegration,t as utils,i as version};
+var a="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:void 0!==s?s:"undefined"!=typeof global?global:this,s=a.window;a.document,a.location,a.navigator,a.setTimeout,a.clearTimeout,a.setInterval,a.clearInterval,a.Error,a.TypeError,a.SyntaxError,a.Object,a.Math,a.parseInt,a.parseFloat,a.isNaN,a.Uint8Array,a.Worker,a.WorkerGlobalScope,a.XMLHttpRequest;import{F as e,G as o,Ia as r,Ja as t,Ka as l,La as i,Ma as n,Na as f,Oa as y,Ua as d,Wa as p,a as g}from"./THEOplayer.common.esm.js";g(),g();export{r as ChromelessPlayer,o as ErrorCategory,e as ErrorCode,r as Player,p as cache,d as cast,l as features,n as playerSuiteVersion,f as players,y as registerContentProtectionIntegration,t as utils,i as version};
