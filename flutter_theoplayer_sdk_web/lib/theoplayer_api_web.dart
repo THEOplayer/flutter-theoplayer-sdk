@@ -18,8 +18,8 @@ class THEOplayer {
 @JS()
 @anonymous
 class THEOplayerEventListener {
-  external void addEventListener(String event, fn(event), [dynamic id = ""]);
-  external void removeEventListener(String event, fn(event), [dynamic id = ""]);
+  external void addEventListener(String eventType, fn(event), [dynamic id = ""]);
+  external void removeEventListener(String eventType, fn(event), [dynamic id = ""]);
 }
 
 @JS("THEOplayer.ChromelessPlayer")
@@ -227,8 +227,7 @@ abstract class THEOplayerMediaTrack<T> extends THEOplayerEventListener {
   external String language;
 
   external T? activeQuality;
-  external THEOplayerArrayList<T> qualities;
-  //TODO: check if we can change every THEOplayerArrayList to List!
+  external List<T> qualities;
   external List<T>? targetQuality;
 
 }

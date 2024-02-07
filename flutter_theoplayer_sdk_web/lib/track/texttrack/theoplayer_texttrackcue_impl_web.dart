@@ -2,6 +2,7 @@ import 'dart:js';
 
 import 'package:flutter_theoplayer_sdk_platform_interface/track/texttrack/theoplayer_texttrack_events.dart';
 import 'package:flutter_theoplayer_sdk_platform_interface/track/texttrack/theoplayer_texttrack_impl.dart';
+import 'package:flutter_theoplayer_sdk_web/theoplayer_api_event_web.dart';
 import 'package:flutter_theoplayer_sdk_web/theoplayer_api_web.dart';
 import 'package:flutter_theoplayer_sdk_web/utils/js_utils.dart';
 
@@ -13,16 +14,16 @@ class CueImplWeb extends CueImpl {
   late final updateEventlistener;
 
   CueImplWeb(super.id, super.uid, super.startTime, super.endTime, super.content, this._nativeTextTrackCue) {
-    enterEventListener = allowInterop((event) {
+    enterEventListener = allowInterop((CueEnterEventJS event) {
       dispatchEvent(CueEnterEvent(cue: this));
     });
 
-    exitEventListener = allowInterop((event) {
+    exitEventListener = allowInterop((CueExitEventJS event) {
       dispatchEvent(CueExitEvent(cue: this));
     });
 
-    updateEventlistener = allowInterop((event) {
-      var cue = event.cue as THEOplayerTextTrackCue;
+    updateEventlistener = allowInterop((CueUpdateEventJS event) {
+      var cue = event.cue;
       update(cue.endTime, jsObjectToJsonString(cue.content) ?? "");
       dispatchEvent(CueUpdateEvent(cue: this));
     });
