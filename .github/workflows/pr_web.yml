@@ -37,6 +37,8 @@ jobs:
       run: |
         echo Installed chromium version: ${{ steps.setup-chrome.outputs.chrome-version }}
         ${{ steps.setup-chrome.outputs.chrome-path }} --version
+        export CHROME_EXECUTABLE=${{ steps.setup-chrome.outputs.chrome-path }}
+        echo CHROME_EXECUTABLE = $CHROME_EXECUTABLE
 
     - name: Checkout webdriver repo (alternarive way)
       uses: actions/checkout@v2
