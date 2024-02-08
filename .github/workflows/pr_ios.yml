@@ -1,0 +1,43 @@
+name: Build iOS on PRs
+on:
+  workflow_dispatch:
+  pull_request:
+    types: [opened, reopened]
+
+jobs:
+  build_ios:
+    runs-on: macos-latest
+    steps:
+    - uses: actions/checkout@v3
+    - uses: subosito/flutter-action@v2
+      with:
+        channel: 'stable'
+        architecture: x64
+        cache: true
+        cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:' # optional, change this to force refresh cache
+        cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:' # optional, change this to specify the cache path
+
+    - name: Print flutter version
+      run: flutter --version
+      
+    - name: Pub get
+      run: flutter pub get
+      working-directory: flutter_theoplayer_sdk
+    
+    - name: Run unit tests
+      run: flutter test
+      working-directory: flutter_theoplayer_sdk
+      
+    - name: Start iOS simulator
+      uses: futureware-tech/simulator-action@v3
+      with:
+        model: 'iPhone 14'
+        os_version: '>=16.0'
+
+    - name: Run integration tests
+      run: flutter test integration_test
+      working-directory: flutter_theoplayer_sdk/example
+      
+    - name: Build iOS
+      run: flutter build ios --release --no-codesign
+      working-directory: flutter_theoplayer_sdk/example
