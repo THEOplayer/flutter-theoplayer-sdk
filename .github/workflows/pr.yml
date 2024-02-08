@@ -145,13 +145,59 @@ jobs:
       run: flutter test
       working-directory: flutter_theoplayer_sdk
       
+    - name: Install Chrome Browser
+      uses: browser-actions/setup-chrome@v1
+      with:
+        chrome-version: stable
+      id: setup-chrome
+      
+    - name: Check Browser version
+      run: |
+        echo Installed chromium version: ${{ steps.setup-chrome.outputs.chrome-version }}
+        ${{ steps.setup-chrome.outputs.chrome-path }} --version
+
+    - name: Install Chromedriver
+      uses: nanasess/setup-chromedriver@v2
+      with:
+        chromedriver-version: '114.0.5735.90'
+
+    - name: ⏳ Delay
+      run: |
+        echo "Waiting for Chromedriver to start..."
+        sleep 20
+
+    - name: Start Chromedriver
+      run: |
+        export DISPLAY=:99
+        chromedriver --url-base=/wd/hub --port=4444 --verbose &
+        sudo Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
+
+    - name: Check Chromedriver Version
+      run: chromedriver -v
+    
+    - name: ⏳ Delay
+      run: |
+        echo "Waiting for Chromedriver to start..."
+        sleep 15
+    
+    - name: Check Chromedriver Port
+      run: |
+        lsof -i :4444
+        
+    - name: Run integration tests
+      run: |
+        flutter config --enable-web
+        flutter drive --driver=webdriver_integration_test/webdriver.dart --target=integration_test/plugin_integration_test.dart -d web-server --release --browser-name=chrome --driver-port=4444
+      working-directory: flutter_theoplayer_sdk/example
+    
     - name: Build Web
       run: flutter build web
       working-directory: flutter_theoplayer_sdk/example
-      
+        
     - name: Save WEB to artifacts
       uses: actions/upload-artifact@v4
       with:
         name: web
         path: flutter_theoplayer_sdk/example/build/web/
         retention-days: 5
+    
