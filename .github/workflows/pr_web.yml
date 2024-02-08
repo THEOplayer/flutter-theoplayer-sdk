@@ -2,7 +2,7 @@ name: Build Web on PRs
 on:
   workflow_dispatch:
   pull_request:
-    types: [opened, reopened, edited]
+    types: [opened, reopened, synchronize]
 
 jobs:
   build_web:
@@ -42,13 +42,14 @@ jobs:
       uses: actions/checkout@v2
       with:
         repository: flutter/web_installers
+        path: webdrivers
 
     - name: Install and Start Chromedriver
       run: |
         flutter pub get
         dart lib/web_driver_installer.dart chromedriver --driver-version="114.0.5735.90" &
       # the command above will autostart the driver too, so we don't need 'chromedriver/chromedriver --port=4444 &'
-      working-directory: web_installers/packages/web_drivers/
+      working-directory: webdrivers/packages/web_drivers/
 
     - name: ⏳ Delay
       run: |
