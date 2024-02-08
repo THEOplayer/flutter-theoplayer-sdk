@@ -39,6 +39,8 @@ jobs:
         ${{ steps.setup-chrome.outputs.chrome-path }} --version
         export CHROME_EXECUTABLE=${{ steps.setup-chrome.outputs.chrome-path }}
         echo CHROME_EXECUTABLE = $CHROME_EXECUTABLE
+        echo Relinking Chrome
+        sudo ln -sf $CHROME_EXECUTABLE /usr/bin/google-chrome
 
     - name: Checkout webdriver repo (alternarive way)
       uses: actions/checkout@v2
