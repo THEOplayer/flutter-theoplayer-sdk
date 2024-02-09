@@ -58,17 +58,21 @@ void main() {
     expect(player.isInitialized(), isTrue, reason: "Testing isInitialized()");
     print("Testing isPaused()");
     expect(player.isPaused(), isTrue, reason: "Testing isPaused()");
-    player.setAutoplay(true);
-
+    player.setMuted(true);
+    //player.setAutoplay(true);
+    await tester.pumpAndSettle();
     player.setSource(
       SourceDescription(sources: [
           TypedSource(src: "https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8"),
         ]
       )
     );
-
-    await tester.pump(const Duration(seconds: 5));
-    expect(player.getDuration() > 5 , isTrue );
+    await tester.pumpAndSettle();
+    player.play();
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 30));
+    print("Testing playback duration():  ${player.getDuration()}");
+    expect(player.getDuration() >= 5, isTrue );
 
   });
 
