@@ -44,8 +44,8 @@ void main() {
     final chromlessPlayerView = find.byKey(const Key('testChromelessPlayer'));
     final player = (tester.firstElement(chromlessPlayerView).widget as ChromelessPlayer).player;
     await tester.pumpAndSettle();
-    expect(player.isInitialized(), isTrue);
-    expect(player.isPaused(), isTrue);
+    expect(player.isInitialized(), isTrue, reason: "Testing isInitialized()");
+    expect(player.isPaused(), isTrue, reason: "Testing isPaused()");
   });
 
   testWidgets('Test basic playback', (WidgetTester tester) async {
@@ -54,8 +54,8 @@ void main() {
     final chromlessPlayerView = find.byKey(const Key('testChromelessPlayer'));
     final player = (tester.firstElement(chromlessPlayerView).widget as ChromelessPlayer).player;
     await tester.pumpAndSettle();
-    expect(player.isInitialized(), isTrue);
-    expect(player.isPaused(), isTrue);
+    expect(player.isInitialized(), isTrue, reason: "Testing isInitialized()");
+    expect(player.isPaused(), isTrue, reason: "Testing isPaused()");
     player.setAutoplay(true);
 
     player.setSource(
