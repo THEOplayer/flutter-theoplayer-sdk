@@ -3,6 +3,7 @@ import 'dart:js';
 import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
 import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_videotrack_events.dart';
 import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_videotrack_impl.dart';
+import 'package:flutter_theoplayer_sdk_web/theoplayer_api_event_web.dart';
 import 'package:flutter_theoplayer_sdk_web/theoplayer_api_web.dart';
 
 class VideoTrackImplWeb extends VideoTrackImpl {
@@ -14,9 +15,9 @@ class VideoTrackImplWeb extends VideoTrackImpl {
 
   VideoTrackImplWeb(super.id, super.uid, super.label, super.language, super.kind, super.qualities, super.isEnabled, this._nativeVideoTrack) {
 
-    targetQualityChangedListener = allowInterop((event){
+    targetQualityChangedListener = allowInterop((VideoTargetQualityChangedEventJS event){
       var eventTargetQualities = event.qualities;
-      var eventTargetQuality = event.quality as THEOplayerVideoQuality?;
+      var eventTargetQuality = event.quality;
 
       var targetQualitiesUid = [];
       for (var i = 0; i < eventTargetQualities.length; i++) {
@@ -36,8 +37,8 @@ class VideoTrackImplWeb extends VideoTrackImpl {
       dispatchEvent(VideoTargetQualityChangedEvent(qualities: flutterTargetQualities, quality: flutterTargetQuality));
     });
 
-    aciveQualityChangedEventListener = allowInterop((event){
-      var eventTargetQuality = event.quality as THEOplayerVideoQuality;
+    aciveQualityChangedEventListener = allowInterop((VideoActiveQualityChangedEventJS event){
+      var eventTargetQuality = event.quality;
       VideoQuality? flutterActiveQuality = this.qualities.firstWhereOrNull((element) => element.uid == eventTargetQuality.uid);
       if (flutterActiveQuality == null) {
         //TODO: debug log, quality is lost or don't allow null.
@@ -64,15 +65,14 @@ class VideoTrackImplWeb extends VideoTrackImpl {
       var flutterUidMap = targetQualities.map((element) => element.uid);
 
       for (var i = 0; i < _nativeVideoTrack.qualities.length; i++) {
-        THEOplayerVideoQuality q = _nativeVideoTrack.qualities.item(i);
+        THEOplayerVideoQuality q = _nativeVideoTrack.qualities[i];
         if (flutterUidMap.contains(q.uid)) {
           theoplayerQualities.add(q);
         }
       }
     }
 
-
-    _nativeVideoTrack.targetQuality = theoplayerQualities; //THEOplayerArrayList<THEOplayerVideoQuality>(values: theoplayerQualities); 
+    _nativeVideoTrack.targetQuality = theoplayerQualities;
   }
 
   @override
@@ -85,7 +85,7 @@ class VideoTrackImplWeb extends VideoTrackImpl {
       theoplayerQualities = [];
 
       for (var i = 0; i < _nativeVideoTrack.qualities.length; i++) {
-        THEOplayerVideoQuality q = _nativeVideoTrack.qualities.item(i);
+        THEOplayerVideoQuality q = _nativeVideoTrack.qualities[i];
         if (targetQuality.uid == q.uid) {
           theoplayerQualities.add(q);
           break;
@@ -93,7 +93,7 @@ class VideoTrackImplWeb extends VideoTrackImpl {
       }
     }
     
-    _nativeVideoTrack.targetQuality = theoplayerQualities; //THEOplayerArrayList<THEOplayerVideoQuality>(values: theoplayerQualities); 
+    _nativeVideoTrack.targetQuality = theoplayerQualities;
   }
 
   @override

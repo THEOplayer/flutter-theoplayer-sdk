@@ -1,6 +1,7 @@
 import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
 import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_videotrack_events.dart';
 import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_videotrack_impl.dart';
+import 'package:flutter_theoplayer_sdk_web/theoplayer_api_event_web.dart';
 import 'package:flutter_theoplayer_sdk_web/theoplayer_api_web.dart';
 import 'package:flutter_theoplayer_sdk_web/track/texttrack/theoplayer_texttrack_impl_web.dart';
 import 'package:flutter_theoplayer_sdk_web/track/videotrack/theoplayer_videotrack_impl_web.dart';
@@ -18,8 +19,8 @@ class VideoTrackListImplWeb extends VideoTracksImpl {
 
   VideoTrackListImplWeb(this._theoPlayerVideoTracks) {
 
-    addTrackEventListener = allowInterop((event){
-      var track = event.track as THEOplayerVideoTrack;
+    addTrackEventListener = allowInterop((AddVideoTrackEventJS event){
+      var track = event.track;
 
       VideoQualities qualities = toFlutterVideoQualities(track.qualities);
 
@@ -37,8 +38,8 @@ class VideoTrackListImplWeb extends VideoTracksImpl {
       dispatchEvent(AddVideoTrackEvent(track: flutterTrack));
     });
 
-    removeTrackEventListener = allowInterop((event){
-      var track = event.track as THEOplayerVideoTrack;
+    removeTrackEventListener = allowInterop((RemoveVideoTrackEventJS event){
+      var track = event.track;
       
       var flutterTrack = firstWhereOrNull((item) => item.uid == track.uid);
       if (flutterTrack == null) {
@@ -50,8 +51,8 @@ class VideoTrackListImplWeb extends VideoTracksImpl {
     });
 
     //only triggered for enable/disable
-    changeTrackEventListener = allowInterop((event){
-      var track = event.track as THEOplayerVideoTrack;
+    changeTrackEventListener = allowInterop((VideoTrackListChangeEventJS event){
+      var track = event.track;
 
       var flutterTrack = firstWhereOrNull((item) => item.uid == track.uid);
       if (flutterTrack == null) {

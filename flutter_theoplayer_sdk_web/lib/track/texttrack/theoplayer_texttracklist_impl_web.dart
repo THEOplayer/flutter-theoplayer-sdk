@@ -1,6 +1,7 @@
 import 'package:flutter_theoplayer_sdk_platform_interface/track/texttrack/theoplayer_texttrack.dart';
 import 'package:flutter_theoplayer_sdk_platform_interface/track/texttrack/theoplayer_texttrack_impl.dart';
 import 'package:flutter_theoplayer_sdk_platform_interface/track/texttrack/theoplayer_texttrack_events.dart';
+import 'package:flutter_theoplayer_sdk_web/theoplayer_api_event_web.dart';
 import 'package:flutter_theoplayer_sdk_web/theoplayer_api_web.dart';
 import 'package:flutter_theoplayer_sdk_web/track/texttrack/theoplayer_texttrack_impl_web.dart';
 import 'package:flutter_theoplayer_sdk_web/transformers_web.dart';
@@ -17,8 +18,8 @@ class TextTrackListImplWeb extends TextTracksImpl {
 
   TextTrackListImplWeb(this._theoPlayerTextTracks) {
 
-    addTrackEventListener = allowInterop((event){
-      var track = event.track as THEOplayerTextTrack;
+    addTrackEventListener = allowInterop((AddTextTrackEventJS event){
+      var track = event.track;
       var flutterTrack = TextTrackImplWeb(
         track.id, 
         track.uid, 
@@ -39,8 +40,8 @@ class TextTrackListImplWeb extends TextTracksImpl {
       dispatchEvent(AddTextTrackEvent(track: flutterTrack));
     });
 
-    removeTrackEventListener = allowInterop((event){
-      var track = event.track as THEOplayerTextTrack;
+    removeTrackEventListener = allowInterop((RemoveTextTrackEventJS event){
+      var track = event.track;
       
       var flutterTrack = firstWhereOrNull((item) => item.uid == track.uid);
       if (flutterTrack == null) {
@@ -52,8 +53,8 @@ class TextTrackListImplWeb extends TextTracksImpl {
     });
 
     //only triggered for enable/disable
-    changeTrackEventListener = allowInterop((event){
-      var track = event.track as THEOplayerTextTrack;
+    changeTrackEventListener = allowInterop((TextTrackListChangeEventJS event){
+      var track = event.track;
 
       var flutterTrack = firstWhereOrNull((item) => item.uid == track.uid);
       if (flutterTrack == null) {

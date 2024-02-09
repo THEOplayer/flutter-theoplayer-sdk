@@ -25,7 +25,7 @@ class TheoplayerWeb extends TheoplayerPlatform {
     ui.platformViewRegistry.registerViewFactory(viewType, (int viewId, {Object? params}) {
 
       final div = DivElement();
-      div.id = (params as HashMap)["theoViewID"];
+      div.id = (params as dynamic)["theoViewID"];
       div.className = 'theoplayer_wrapper';
 
       return div;

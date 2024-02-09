@@ -144,6 +144,7 @@ interface Ad {
      * <br/> - `'google-dai'`
      * <br/> - `'freewheel'`
      * <br/> - `'mediatailor'`
+     * <br/> - `'chromecast'`
      *
      * @defaultValue `'theo'`
      */
@@ -794,11 +795,6 @@ interface Ads extends EventDispatcher<AdsEventMap> {
     readonly scheduledAdBreaks: AdBreak[];
     /**
      * List of ads which still need to be played.
-     *
-     * @remarks
-     * <br/> - Only available in the `'theo'` ad integration.
-     *
-     * @deprecated Superseded by {@link Ads.scheduledAdBreaks}.
      */
     readonly scheduledAds: Ad[];
     /**
@@ -948,6 +944,10 @@ interface AdDescription {
  */
 interface SpotXAdDescription extends AdDescription {
     /**
+     * The integration of the ad break.
+     */
+    integration: 'spotx';
+    /**
      * The identifier of the ad break requested from SpotX.
      */
     id: number | string;
@@ -1019,7 +1019,7 @@ interface SpotXAdDescription extends AdDescription {
  */
 interface IMAAdDescription extends AdDescription {
     /**
-     * The integration of this ad break.
+     * The integration of the ad break.
      */
     integration: 'google-ima';
     /**
@@ -1069,7 +1069,7 @@ interface FreeWheelCue {
  */
 interface FreeWheelAdDescription extends AdDescription {
     /**
-     * The integration of this ad break.
+     * The integration of the ad break.
      */
     integration: 'freewheel';
     /**
@@ -1179,6 +1179,12 @@ type VPAIDMode = 'enabled' | 'insecure' | 'disabled';
  * @public
  */
 interface THEOplayerAdDescription extends AdDescription {
+    /**
+     * The integration of the ad break.
+     *
+     * @defaultValue `'theo'`
+     */
+    integration?: 'theo';
     /**
      * The source of the ad
      *
@@ -2135,7 +2141,7 @@ interface MetadataDescription {
  */
 interface ChromecastMetadataDescription extends MetadataDescription {
     /**
-     * List of content images for the current source.
+     * List of content images, e.g. a thumbnail for a video, a poster for movie or the cover art for a music album.
      *
      * @remarks
      * <br/> - The string must be a valid URL.
@@ -2144,25 +2150,146 @@ interface ChromecastMetadataDescription extends MetadataDescription {
      */
     readonly images?: string[] | ChromecastMetadataImage[];
     /**
-     * The release date of the current source.
+     * The release date of the content.
      *
      * @remarks
      * <br/> - The format is "YYYY-MM-DD".
      */
     readonly releaseDate?: string;
     /**
-     * The release year of the current source.
+     * The release year of the content.
      *
      * @deprecated Superseded by {@link ChromecastMetadataDescription.releaseDate}.
      */
     readonly releaseYear?: number;
     /**
-     * The subtitle of the current source.
+     * The subtitle of the content.
      *
      * @remarks
      * <br/> - This should be a short explanation about the content.
      */
     readonly subtitle?: string;
+    /**
+     * The studio that produced the movie.
+     *
+     * @remarks
+     * <br/> - Only valid when {@link ChromecastMetadataDescription."type"} is `'movie'`.
+     */
+    readonly studio?: string;
+    /**
+     * The series title of the TV show.
+     *
+     * @remarks
+     * <br/> - Only valid when {@link ChromecastMetadataDescription."type"} is `'tv-show'`.
+     */
+    readonly seriesTitle?: string;
+    /**
+     * The season number of the TV show.
+     *
+     * @remarks
+     * <br/> - Only valid when {@link ChromecastMetadataDescription."type"} is `'tv-show'`.
+     */
+    readonly season?: number;
+    /**
+     * The episode number of the TV show.
+     *
+     * @remarks
+     * <br/> - Only valid when {@link ChromecastMetadataDescription."type"} is `'tv-show'`.
+     */
+    readonly episode?: number;
+    /**
+     * The original air date of the TV show.
+     *
+     * @remarks
+     * <br/> - Only valid when {@link ChromecastMetadataDescription."type"} is `'tv-show'`.
+     * <br/> - The format is "YYYY-MM-DD".
+     */
+    readonly originalAirdate?: string;
+    /**
+     * The episode title of the TV show.
+     *
+     * @remarks
+     * <br/> - Only valid when {@link ChromecastMetadataDescription."type"} is `'tv-show'`.
+     *
+     * @deprecated Superseded by {@link MetadataDescription.title}.
+     */
+    readonly episodeTitle?: string;
+    /**
+     * The season number of the TV show.
+     *
+     * @remarks
+     * <br/> - Only valid when {@link ChromecastMetadataDescription."type"} is `'tv-show'`.
+     *
+     * @deprecated Superseded by {@link ChromecastMetadataDescription.season}.
+     */
+    readonly seasonNumber?: number;
+    /**
+     * The episode number of the TV show.
+     *
+     * @remarks
+     * <br/> - Only valid when {@link ChromecastMetadataDescription."type"} is `'tv-show'`.
+     *
+     * @deprecated Superseded by {@link ChromecastMetadataDescription.episode}.
+     */
+    readonly episodeNumber?: number;
+    /**
+     * The album name of the music track.
+     *
+     * @remarks
+     * <br/> - Only valid when {@link ChromecastMetadataDescription."type"} is `'audio'`.
+     */
+    readonly albumName?: string;
+    /**
+     * The album artist of the music track.
+     *
+     * @remarks
+     * <br/> - Only valid when {@link ChromecastMetadataDescription."type"} is `'audio'`.
+     */
+    readonly albumArtist?: string;
+    /**
+     * The artist of the music track.
+     *
+     * @remarks
+     * <br/> - Only valid when {@link ChromecastMetadataDescription."type"} is `'audio'`.
+     */
+    readonly artist?: string;
+    /**
+     * The composer of the music track.
+     *
+     * @remarks
+     * <br/> - Only valid when {@link ChromecastMetadataDescription."type"} is `'audio'`.
+     */
+    readonly composer?: string;
+    /**
+     * The song name of the music track.
+     *
+     * @remarks
+     * <br/> - Only valid when {@link ChromecastMetadataDescription."type"} is `'audio'`.
+     */
+    readonly songName?: string;
+    /**
+     * The track number of the music track.
+     *
+     * @remarks
+     * <br/> - Only valid when {@link ChromecastMetadataDescription."type"} is `'audio'`.
+     */
+    readonly trackNumber?: number;
+    /**
+     * The disc number of the music track.
+     *
+     * @remarks
+     * <br/> - Only valid when {@link ChromecastMetadataDescription."type"} is `'audio'`.
+     */
+    readonly discNumber?: number;
+    /**
+     * The artist name of the music track.
+     *
+     * @remarks
+     * <br/> - Only valid when {@link ChromecastMetadataDescription."type"} is `'audio'`.
+     *
+     * @deprecated Superseded by {@link ChromecastMetadataDescription.artist}.
+     */
+    readonly artistName?: string;
     /**
      * The metadata type of the current source.
      *
@@ -3378,6 +3505,17 @@ interface SourceConfiguration {
      */
     poster?: string;
     /**
+     * The stream type.
+     *
+     * @remarks
+     * <br/> - Available since 6.9.0.
+     * <br/> - This is used as a hint for the player to show the correct UI while loading the stream,
+     *         for example to avoid showing a seek bar when the stream is known in advance to be live.
+     * <br/> - This is **required** for live and DVR streams when casting to Chromecast,
+     *         in order for the Chromecast receiver to show the correct UI.
+     */
+    streamType?: StreamType;
+    /**
      * List of text tracks to be side-loaded with the media source.
      *
      * @remarks
@@ -3752,6 +3890,15 @@ interface TypedSource extends BaseSource {
     isAdvertisement?: boolean;
 }
 /**
+ * The stream type, represented by a value from the following list:
+ * <br/> - `'live'`: Live content.
+ * <br/> - `'dvr'`: Live content with DVR.
+ * <br/> - `'vod'`: On demand content.
+ *
+ * @public
+ */
+type StreamType = 'live' | 'dvr' | 'vod';
+/**
  * The integration identifier of a source specific to a pre-integration, represented by a value from the following list:
  * <br/> - `'verizon-media'`: The source is a {@link VerizonMediaSource}
  * <br/> - `'mediatailor'`: The source contains the MediaTailor initialization url
@@ -4055,6 +4202,14 @@ interface Quality extends EventDispatcher<QualityEventMap> {
      * <br/> - A quality can be unavailable due to a DRM restriction (e.g. HDCP).
      */
     readonly available: boolean;
+    /**
+     * The HLS SCORE attribute.
+     *
+     * @remarks
+     * <br/> - Available since v6.8.0.
+     * <br/> - Only for HLS streams.
+     */
+    readonly score: number | undefined;
 }
 /**
  * Represents a quality of a video track.
@@ -5790,6 +5945,15 @@ interface ABRConfiguration {
      * this maximum.
      */
     readonly maxBufferLength: number;
+    /**
+     * Clears the buffer when setting a single target quality on a MediaTrack.
+     *
+     * @remarks
+     * <br/> - Available since v6.8.0 for HLS streams only.
+     *
+     * @defaultValue `false`
+     */
+    clearBufferWhenSettingTargetQuality: boolean;
 }
 
 /**
@@ -7792,17 +7956,13 @@ interface Latencies {
      */
     readonly theolive: number;
     /**
-     * The latency a frame spends in the transcoding step.
+     * The latency a frame spends in the transcoding and packaging step.
      */
-    readonly transcoder: number;
-    /**
-     * The latency a frame spends in the packaging step.
-     */
-    readonly packager: number;
+    readonly engine: number;
     /**
      * The latency between a frame exiting the packager and being received by the player.
      */
-    readonly delivery: number;
+    readonly distribution: number;
     /**
      * The latency added by the player in the form of buffer.
      */
@@ -8433,6 +8593,26 @@ interface PlayerEventMap {
      * <br/> - Available since v2.33.3.
      */
     destroy: Event<'destroy'>;
+    /** @internal */
+    airplaychanged_: Event<'airplaychanged_'>;
+    /** @internal */
+    fullscreenVideoElementChange_: Event<'fullscreenVideoElementChange_'>;
+    /** @internal */
+    imagesourcechange_: Event<'imagesourcechange_'>;
+    /** @internal */
+    nosupportedrepresentationfound: Event<'nosupportedrepresentationfound'>;
+    /** @internal */
+    metricschange: Event<'metricschange'>;
+    /** @internal */
+    offline: Event<'offline'>;
+    /** @internal */
+    online: Event<'online'>;
+    /** @internal */
+    presentationmodechange: Event<'presentationmodechange'>;
+    /** @internal */
+    segmentrequest_: Event<'segmentrequest_'>;
+    /** @internal */
+    segmentresponse_: Event<'segmentresponse_'>;
 }
 /**
  * The player API.
@@ -8452,7 +8632,7 @@ declare class ChromelessPlayer implements EventDispatcher<PlayerEventMap> {
     /**
      * The analytics API.
      */
-    readonly analytics?: Analytics;
+    readonly analytics: Analytics;
     /**
      * Whether the player should immediately start playback after source change.
      *
@@ -8747,11 +8927,8 @@ declare class ChromelessPlayer implements EventDispatcher<PlayerEventMap> {
     readonly vr?: VR;
     /**
      * The visibility API.
-     *
-     * @remarks
-     * <br/> - Only available with the feature `'visibility'`.
      */
-    readonly visibility?: Visibility;
+    readonly visibility: Visibility;
     /**
      * The Verizon Media API.
      *
@@ -11855,4 +12032,4 @@ declare function registerContentProtectionIntegration(integrationId: string, key
  */
 declare const utils: CommonUtils;
 
-export { ABRConfiguration, ABRMetadata, ABRStrategy, ABRStrategyConfiguration, ABRStrategyType, AES128KeySystemConfiguration, AccessibilityRole, Ad, AdBreak, AdBreakEvent, AdBufferingEvent, AdDescription, AdEvent, AdIntegrationKind, AdMetadataEvent, AdPreloadType, AdReadyState, AdSkipEvent, AdSource, AdSourceType, AddCachingTaskEvent, AddTrackEvent, AddViewEvent, Ads, AdsConfiguration, AdsEventMap, AgamaAnalyticsIntegrationID, AgamaConfiguration, AgamaLogLevelType, AgamaPlayerConfiguration, AgamaServiceName, AgamaSourceConfiguration, AgamaStreamType, AirPlay, Analytics, AnalyticsDescription, AnalyticsIntegrationID, AudioQuality, AxinomDRMConfiguration, AxinomIntegrationID, AzureDRMConfiguration, AzureIntegrationID, Base64Util, BaseSource, Boundary, BoundaryC3, BoundaryC7, BoundaryHalftime, BoundaryInfo, BufferSource, BufferedSegments, Cache, CacheEventMap, CacheStatus, CacheTaskStatus, CachingTask, CachingTaskEventMap, CachingTaskLicense, CachingTaskList, CachingTaskListEventMap, CachingTaskParameters, CanPlayEvent, CanPlayThroughEvent, Canvas, Cast, CastConfiguration, CastEventMap, CastState, CastStateChangeEvent, CertificateRequest, CertificateResponse, Chromecast, ChromecastConfiguration, ChromecastConnectionCallback, ChromecastError, ChromecastErrorCode, ChromecastErrorEvent, ChromecastEventMap, ChromecastMetadataDescription, ChromecastMetadataImage, ChromecastMetadataType, ChromelessPlayer, ClearkeyDecryptionKey, ClearkeyKeySystemConfiguration, Clip, ClipEventMap, ComcastDRMConfiguration, ComcastIntegrationID, CommonUtils, CompanionAd, ConaxDRMConfiguration, ConaxIntegrationID, ContentProtectionError, ContentProtectionErrorCode, ContentProtectionErrorEvent, ContentProtectionIntegration, ContentProtectionIntegrationFactory, ContentProtectionRequest, ContentProtectionRequestSubType, ContentProtectionResponse, Conviva, ConvivaAnalyticsIntegrationID, ConvivaConfiguration, ConvivaContentMetadata, CrossOriginSetting, CurrentSourceChangeEvent, DAIAvailabilityType, DRMConfiguration, DRMTodayDRMConfiguration, DRMTodayIntegrationID, DashPlaybackConfiguration, DateRangeCue, DeliveryType, DeviceBasedTitaniumDRMConfiguration, DimensionChangeEvent, DirectionChangeEvent, DurationChangeEvent, EdgeStyle, EmptiedEvent, EmsgCue, EncryptedEvent, EndedEvent, ErrorCategory, ErrorCode, ErrorEvent, Event, EventDispatcher, EventListener, EventMap, EventStreamCue, EventedList, ExpressPlayDRMConfiguration, ExpressPlayIntegrationID, EzdrmDRMConfiguration, EzdrmIntegrationID, FairPlayKeySystemConfiguration, FreeWheelAdDescription, FreeWheelAdUnitType, FreeWheelCue, FullscreenOptions$1 as FullscreenOptions, Geo, GlobalCast, GlobalChromecast, GoogleDAI, GoogleDAIConfiguration, GoogleDAILiveConfiguration, GoogleDAISSAIIntegrationID, GoogleDAITypedSource, GoogleDAIVodConfiguration, GoogleImaAd, GoogleImaConfiguration, HTTPHeaders, HespApi, HespApiEventMap, HespLatencyConfiguration, HespMediaType, HespSourceConfiguration, HespTypedSource, HlsDiscontinuityAlignment, HlsPlaybackConfiguration, ID3AttachedPicture, ID3BaseFrame, ID3Comments, ID3CommercialFrame, ID3Cue, ID3Frame, ID3GenericEncapsulatedObject, ID3InvolvedPeopleList, ID3PositionSynchronisationFrame, ID3PrivateFrame, ID3SynchronizedLyricsText, ID3TermsOfUse, ID3Text, ID3UniqueFileIdentifier, ID3Unknown, ID3UnsynchronisedLyricsTextTranscription, ID3UrlLink, ID3UserDefinedText, ID3UserDefinedUrlLink, ID3Yospace, IMAAdDescription, Imagine, ImagineEventMap, ImagineSSAIIntegrationID, ImagineServerSideAdInsertionConfiguration, ImagineTrackingEvent, ImagineTypedSource, InterceptableRequest, InterceptableResponse, IrdetoDRMConfiguration, IrdetoIntegrationID, JoinStrategy, KeyOSDRMConfiguration, KeyOSFairplayKeySystemConfiguration, KeyOSIntegrationID, KeyOSKeySystemConfiguration, KeySystemConfiguration, KeySystemId, Latencies, LatencyConfiguration, LatencyManager, LayoutChangeEvent, LicenseRequest, LicenseResponse, LicenseType, LinearAd, List, LoadedDataEvent, LoadedMetadataEvent, MaybeAsync, MeasurableNetworkEstimator, MediaError, MediaErrorCode, MediaFile, MediaMelonConfiguration, MediaTailorSource, MediaTrack, MediaTrackEventMap, MediaTrackList, MediaType, MetadataDescription, Metrics, MoatAnalyticsIntegrationID, MoatConfiguration, MultiViewPlayer, MultiViewPlayerEventMap, MultiViewPlayerLayout, MutedAutoplayConfiguration, Network, NetworkEstimator, NetworkEstimatorController, NetworkEventMap, NetworkInterceptorController, NodeStyleVoidCallback, NonLinearAd, PauseEvent, PiPConfiguration, PiPPosition, PlayEvent, PlayReadyKeySystemConfiguration, PlayerConfiguration, PlayerEventMap, PlayerList, PlayingEvent, PreloadType, Presentation, PresentationEventMap, PresentationMode, PresentationModeChangeEvent, ProgressEvent, Quality, QualityEvent, QualityEventMap, QualityList, RateChangeEvent, ReadyStateChangeEvent, RelatedChangeEvent, RelatedContent, RelatedContentEventMap, RelatedContentSource, RelatedHideEvent, RelatedShowEvent, RemoveCachingTaskEvent, RemoveTrackEvent, RemoveViewEvent, Representation, RepresentationChangeEvent, Request, RequestBody, RequestInit, RequestInterceptor, RequestLike, RequestMeasurer, RequestMethod, RequestSubType, RequestType, ResponseBody, ResponseInit, ResponseInterceptor, ResponseLike, ResponseType, RetryConfiguration, SSAIIntegrationId, SeamlessPeriodSwitchStrategy, SeekedEvent, SeekingEvent, ServerSideAdInsertionConfiguration, SkippedAdStrategy, SmartSightConfiguration, SmartSightIntegrationID, Source, SourceAbrConfiguration, SourceChangeEvent, SourceConfiguration, SourceDescription, SourceIntegrationId, Sources, SpotXAdDescription, SpotxData, SpotxQueryParameter, StateChangeEvent, StereoChangeEvent, StreamOneAnalyticsIntegrationID, StreamOneConfiguration, StringKeyOf, StylePropertyRecord, THEOplayerAdDescription, THEOplayerError, TTMLCue, TargetQualityChangedEvent, TextTrack, TextTrackAddCueEvent, TextTrackCue, TextTrackCueChangeEvent, TextTrackCueEnterEvent, TextTrackCueEventMap, TextTrackCueExitEvent, TextTrackCueList, TextTrackCueUpdateEvent, TextTrackDescription, TextTrackEnterCueEvent, TextTrackError, TextTrackErrorCode, TextTrackErrorEvent, TextTrackEventMap, TextTrackExitCueEvent, TextTrackReadyState, TextTrackReadyStateChangeEvent, TextTrackRemoveCueEvent, TextTrackStyle, TextTrackStyleEventMap, TextTrackType, TextTrackTypeChangeEvent, TextTrackUpdateCueEvent, TextTracksList, ThumbnailResolution, TimeRanges, TimeUpdateEvent, TitaniumDRMConfiguration, TitaniumIntegrationID, TokenBasedTitaniumDRMConfiguration, Track, TrackChangeEvent, TrackEventMap, TrackList, TrackListEventMap, TrackUpdateEvent, TypedSource, UIConfiguration, UILanguage, UIPlayerConfiguration, UIRelatedContent, UIRelatedContentEventMap, UniversalAdId, UpdateQualityEvent, UplynkDRMConfiguration, UplynkIntegrationID, UserActions, VPAIDMode, VR, VRConfiguration, VRDirection, VREventMap, VRPanoramaMode, VRPlayerConfiguration, VRState, VRStereoMode, VTTAlignSetting, VTTDirectionSetting, VTTLine, VTTLineAlignSetting, VTTPosition, VTTPositionAlignSetting, VTTScrollSetting, VendorCast, VendorCastEventMap, VerimatrixDRMConfiguration, VerimatrixIntegrationID, VerizonMedia, VerizonMediaAd, VerizonMediaAdBeginEvent, VerizonMediaAdBreak, VerizonMediaAdBreakBeginEvent, VerizonMediaAdBreakEndEvent, VerizonMediaAdBreakEventMap, VerizonMediaAdBreakList, VerizonMediaAdBreakListEventMap, VerizonMediaAdBreakSkipEvent, VerizonMediaAdCompleteEvent, VerizonMediaAdEndEvent, VerizonMediaAdEventMap, VerizonMediaAdFirstQuartileEvent, VerizonMediaAdList, VerizonMediaAdListEventMap, VerizonMediaAdMidpointEvent, VerizonMediaAdThirdQuartileEvent, VerizonMediaAddAdBreakEvent, VerizonMediaAddAssetEvent, VerizonMediaAds, VerizonMediaAsset, VerizonMediaAssetEventMap, VerizonMediaAssetId, VerizonMediaAssetInfoResponse, VerizonMediaAssetInfoResponseEvent, VerizonMediaAssetList, VerizonMediaAssetMovieRating, VerizonMediaAssetTvRating, VerizonMediaAssetType, VerizonMediaConfiguration, VerizonMediaEventMap, VerizonMediaExternalId, VerizonMediaPingConfiguration, VerizonMediaPingErrorEvent, VerizonMediaPingResponse, VerizonMediaPingResponseEvent, VerizonMediaPreplayBaseResponse, VerizonMediaPreplayLiveResponse, VerizonMediaPreplayResponse, VerizonMediaPreplayResponseEvent, VerizonMediaPreplayResponseType, VerizonMediaPreplayVodResponse, VerizonMediaRemoveAdBreakEvent, VerizonMediaRemoveAdEvent, VerizonMediaRemoveAssetEvent, VerizonMediaResponseDrm, VerizonMediaResponseLiveAd, VerizonMediaResponseLiveAdBreak, VerizonMediaResponseLiveAds, VerizonMediaResponseVodAd, VerizonMediaResponseVodAdBreak, VerizonMediaResponseVodAdBreakOffset, VerizonMediaResponseVodAdPlaceholder, VerizonMediaResponseVodAds, VerizonMediaSource, VerizonMediaUiConfiguration, VerizonMediaUpdateAdBreakEvent, VideoFrameRequestCallback, VideoQuality, View, ViewChangeEvent, ViewPositionChangeEvent, VimondDRMConfiguration, VimondIntegrationID, Visibility, VisibilityObserver, VisibilityObserverCallback, VoidPromiseCallback, VolumeChangeEvent, VudrmDRMConfiguration, VudrmIntegrationID, WaitUntilCallback, WaitingEvent, WebAudio, WebVTTCue, WebVTTRegion, WidevineKeySystemConfiguration, XstreamDRMConfiguration, XstreamIntegrationID, Yospace, YospaceCallbackObject, YospaceEventMap, YospaceId, YospaceSSAIIntegrationID, YospaceServerSideAdInsertionConfiguration, YospaceStreamType, YospaceTypedSource, YouboraAnalyticsIntegrationID, YouboraOptions, cache, cast, features, playerSuiteVersion, players, registerContentProtectionIntegration, utils, version };
+export { ABRConfiguration, ABRMetadata, ABRStrategy, ABRStrategyConfiguration, ABRStrategyType, AES128KeySystemConfiguration, AccessibilityRole, Ad, AdBreak, AdBreakEvent, AdBufferingEvent, AdDescription, AdEvent, AdIntegrationKind, AdMetadataEvent, AdPreloadType, AdReadyState, AdSkipEvent, AdSource, AdSourceType, AddCachingTaskEvent, AddTrackEvent, AddViewEvent, Ads, AdsConfiguration, AdsEventMap, AgamaAnalyticsIntegrationID, AgamaConfiguration, AgamaLogLevelType, AgamaPlayerConfiguration, AgamaServiceName, AgamaSourceConfiguration, AgamaStreamType, AirPlay, Analytics, AnalyticsDescription, AnalyticsIntegrationID, AudioQuality, AxinomDRMConfiguration, AxinomIntegrationID, AzureDRMConfiguration, AzureIntegrationID, Base64Util, BaseSource, Boundary, BoundaryC3, BoundaryC7, BoundaryHalftime, BoundaryInfo, BufferSource, BufferedSegments, Cache, CacheEventMap, CacheStatus, CacheTaskStatus, CachingTask, CachingTaskEventMap, CachingTaskLicense, CachingTaskList, CachingTaskListEventMap, CachingTaskParameters, CanPlayEvent, CanPlayThroughEvent, Canvas, Cast, CastConfiguration, CastEventMap, CastState, CastStateChangeEvent, CertificateRequest, CertificateResponse, Chromecast, ChromecastConfiguration, ChromecastConnectionCallback, ChromecastError, ChromecastErrorCode, ChromecastErrorEvent, ChromecastEventMap, ChromecastMetadataDescription, ChromecastMetadataImage, ChromecastMetadataType, ChromelessPlayer, ClearkeyDecryptionKey, ClearkeyKeySystemConfiguration, Clip, ClipEventMap, ComcastDRMConfiguration, ComcastIntegrationID, CommonUtils, CompanionAd, ConaxDRMConfiguration, ConaxIntegrationID, ContentProtectionError, ContentProtectionErrorCode, ContentProtectionErrorEvent, ContentProtectionIntegration, ContentProtectionIntegrationFactory, ContentProtectionRequest, ContentProtectionRequestSubType, ContentProtectionResponse, Conviva, ConvivaAnalyticsIntegrationID, ConvivaConfiguration, ConvivaContentMetadata, CrossOriginSetting, CurrentSourceChangeEvent, DAIAvailabilityType, DRMConfiguration, DRMTodayDRMConfiguration, DRMTodayIntegrationID, DashPlaybackConfiguration, DateRangeCue, DeliveryType, DeviceBasedTitaniumDRMConfiguration, DimensionChangeEvent, DirectionChangeEvent, DurationChangeEvent, EdgeStyle, EmptiedEvent, EmsgCue, EncryptedEvent, EndedEvent, ErrorCategory, ErrorCode, ErrorEvent, Event, EventDispatcher, EventListener, EventMap, EventStreamCue, EventedList, ExpressPlayDRMConfiguration, ExpressPlayIntegrationID, EzdrmDRMConfiguration, EzdrmIntegrationID, FairPlayKeySystemConfiguration, FreeWheelAdDescription, FreeWheelAdUnitType, FreeWheelCue, FullscreenOptions$1 as FullscreenOptions, Geo, GlobalCast, GlobalChromecast, GoogleDAI, GoogleDAIConfiguration, GoogleDAILiveConfiguration, GoogleDAISSAIIntegrationID, GoogleDAITypedSource, GoogleDAIVodConfiguration, GoogleImaAd, GoogleImaConfiguration, HTTPHeaders, HespApi, HespApiEventMap, HespLatencyConfiguration, HespMediaType, HespSourceConfiguration, HespTypedSource, HlsDiscontinuityAlignment, HlsPlaybackConfiguration, ID3AttachedPicture, ID3BaseFrame, ID3Comments, ID3CommercialFrame, ID3Cue, ID3Frame, ID3GenericEncapsulatedObject, ID3InvolvedPeopleList, ID3PositionSynchronisationFrame, ID3PrivateFrame, ID3SynchronizedLyricsText, ID3TermsOfUse, ID3Text, ID3UniqueFileIdentifier, ID3Unknown, ID3UnsynchronisedLyricsTextTranscription, ID3UrlLink, ID3UserDefinedText, ID3UserDefinedUrlLink, ID3Yospace, IMAAdDescription, Imagine, ImagineEventMap, ImagineSSAIIntegrationID, ImagineServerSideAdInsertionConfiguration, ImagineTrackingEvent, ImagineTypedSource, InterceptableRequest, InterceptableResponse, IrdetoDRMConfiguration, IrdetoIntegrationID, JoinStrategy, KeyOSDRMConfiguration, KeyOSFairplayKeySystemConfiguration, KeyOSIntegrationID, KeyOSKeySystemConfiguration, KeySystemConfiguration, KeySystemId, Latencies, LatencyConfiguration, LatencyManager, LayoutChangeEvent, LicenseRequest, LicenseResponse, LicenseType, LinearAd, List, LoadedDataEvent, LoadedMetadataEvent, MaybeAsync, MeasurableNetworkEstimator, MediaError, MediaErrorCode, MediaFile, MediaMelonConfiguration, MediaTailorSource, MediaTrack, MediaTrackEventMap, MediaTrackList, MediaType, MetadataDescription, Metrics, MoatAnalyticsIntegrationID, MoatConfiguration, MultiViewPlayer, MultiViewPlayerEventMap, MultiViewPlayerLayout, MutedAutoplayConfiguration, Network, NetworkEstimator, NetworkEstimatorController, NetworkEventMap, NetworkInterceptorController, NodeStyleVoidCallback, NonLinearAd, PauseEvent, PiPConfiguration, PiPPosition, PlayEvent, PlayReadyKeySystemConfiguration, PlayerConfiguration, PlayerEventMap, PlayerList, PlayingEvent, PreloadType, Presentation, PresentationEventMap, PresentationMode, PresentationModeChangeEvent, ProgressEvent, Quality, QualityEvent, QualityEventMap, QualityList, RateChangeEvent, ReadyStateChangeEvent, RelatedChangeEvent, RelatedContent, RelatedContentEventMap, RelatedContentSource, RelatedHideEvent, RelatedShowEvent, RemoveCachingTaskEvent, RemoveTrackEvent, RemoveViewEvent, Representation, RepresentationChangeEvent, Request, RequestBody, RequestInit, RequestInterceptor, RequestLike, RequestMeasurer, RequestMethod, RequestSubType, RequestType, ResponseBody, ResponseInit, ResponseInterceptor, ResponseLike, ResponseType, RetryConfiguration, SSAIIntegrationId, SeamlessPeriodSwitchStrategy, SeekedEvent, SeekingEvent, ServerSideAdInsertionConfiguration, SkippedAdStrategy, SmartSightConfiguration, SmartSightIntegrationID, Source, SourceAbrConfiguration, SourceChangeEvent, SourceConfiguration, SourceDescription, SourceIntegrationId, Sources, SpotXAdDescription, SpotxData, SpotxQueryParameter, StateChangeEvent, StereoChangeEvent, StreamOneAnalyticsIntegrationID, StreamOneConfiguration, StreamType, StringKeyOf, StylePropertyRecord, THEOplayerAdDescription, THEOplayerError, TTMLCue, TargetQualityChangedEvent, TextTrack, TextTrackAddCueEvent, TextTrackCue, TextTrackCueChangeEvent, TextTrackCueEnterEvent, TextTrackCueEventMap, TextTrackCueExitEvent, TextTrackCueList, TextTrackCueUpdateEvent, TextTrackDescription, TextTrackEnterCueEvent, TextTrackError, TextTrackErrorCode, TextTrackErrorEvent, TextTrackEventMap, TextTrackExitCueEvent, TextTrackReadyState, TextTrackReadyStateChangeEvent, TextTrackRemoveCueEvent, TextTrackStyle, TextTrackStyleEventMap, TextTrackType, TextTrackTypeChangeEvent, TextTrackUpdateCueEvent, TextTracksList, ThumbnailResolution, TimeRanges, TimeUpdateEvent, TitaniumDRMConfiguration, TitaniumIntegrationID, TokenBasedTitaniumDRMConfiguration, Track, TrackChangeEvent, TrackEventMap, TrackList, TrackListEventMap, TrackUpdateEvent, TypedSource, UIConfiguration, UILanguage, UIPlayerConfiguration, UIRelatedContent, UIRelatedContentEventMap, UniversalAdId, UpdateQualityEvent, UplynkDRMConfiguration, UplynkIntegrationID, UserActions, VPAIDMode, VR, VRConfiguration, VRDirection, VREventMap, VRPanoramaMode, VRPlayerConfiguration, VRState, VRStereoMode, VTTAlignSetting, VTTDirectionSetting, VTTLine, VTTLineAlignSetting, VTTPosition, VTTPositionAlignSetting, VTTScrollSetting, VendorCast, VendorCastEventMap, VerimatrixDRMConfiguration, VerimatrixIntegrationID, VerizonMedia, VerizonMediaAd, VerizonMediaAdBeginEvent, VerizonMediaAdBreak, VerizonMediaAdBreakBeginEvent, VerizonMediaAdBreakEndEvent, VerizonMediaAdBreakEventMap, VerizonMediaAdBreakList, VerizonMediaAdBreakListEventMap, VerizonMediaAdBreakSkipEvent, VerizonMediaAdCompleteEvent, VerizonMediaAdEndEvent, VerizonMediaAdEventMap, VerizonMediaAdFirstQuartileEvent, VerizonMediaAdList, VerizonMediaAdListEventMap, VerizonMediaAdMidpointEvent, VerizonMediaAdThirdQuartileEvent, VerizonMediaAddAdBreakEvent, VerizonMediaAddAssetEvent, VerizonMediaAds, VerizonMediaAsset, VerizonMediaAssetEventMap, VerizonMediaAssetId, VerizonMediaAssetInfoResponse, VerizonMediaAssetInfoResponseEvent, VerizonMediaAssetList, VerizonMediaAssetMovieRating, VerizonMediaAssetTvRating, VerizonMediaAssetType, VerizonMediaConfiguration, VerizonMediaEventMap, VerizonMediaExternalId, VerizonMediaPingConfiguration, VerizonMediaPingErrorEvent, VerizonMediaPingResponse, VerizonMediaPingResponseEvent, VerizonMediaPreplayBaseResponse, VerizonMediaPreplayLiveResponse, VerizonMediaPreplayResponse, VerizonMediaPreplayResponseEvent, VerizonMediaPreplayResponseType, VerizonMediaPreplayVodResponse, VerizonMediaRemoveAdBreakEvent, VerizonMediaRemoveAdEvent, VerizonMediaRemoveAssetEvent, VerizonMediaResponseDrm, VerizonMediaResponseLiveAd, VerizonMediaResponseLiveAdBreak, VerizonMediaResponseLiveAds, VerizonMediaResponseVodAd, VerizonMediaResponseVodAdBreak, VerizonMediaResponseVodAdBreakOffset, VerizonMediaResponseVodAdPlaceholder, VerizonMediaResponseVodAds, VerizonMediaSource, VerizonMediaUiConfiguration, VerizonMediaUpdateAdBreakEvent, VideoFrameRequestCallback, VideoQuality, View, ViewChangeEvent, ViewPositionChangeEvent, VimondDRMConfiguration, VimondIntegrationID, Visibility, VisibilityObserver, VisibilityObserverCallback, VoidPromiseCallback, VolumeChangeEvent, VudrmDRMConfiguration, VudrmIntegrationID, WaitUntilCallback, WaitingEvent, WebAudio, WebVTTCue, WebVTTRegion, WidevineKeySystemConfiguration, XstreamDRMConfiguration, XstreamIntegrationID, Yospace, YospaceCallbackObject, YospaceEventMap, YospaceId, YospaceSSAIIntegrationID, YospaceServerSideAdInsertionConfiguration, YospaceStreamType, YospaceTypedSource, YouboraAnalyticsIntegrationID, YouboraOptions, cache, cast, features, playerSuiteVersion, players, registerContentProtectionIntegration, utils, version };
