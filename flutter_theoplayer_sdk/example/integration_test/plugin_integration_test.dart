@@ -63,7 +63,7 @@ void main() {
     await tester.pumpAndSettle();
     player.setSource(
       SourceDescription(sources: [
-          TypedSource(src: "https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8"),
+          TypedSource(src: "https://cdn.theoplayer.com/video/dash/big_buck_bunny/BigBuckBunny_10s_simple_2014_05_09.mpd"),
         ]
       )
     );
