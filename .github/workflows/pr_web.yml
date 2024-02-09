@@ -77,7 +77,7 @@ jobs:
     - name: Run integration tests
       run: |
         flutter config --enable-web
-        flutter drive --driver=webdriver_integration_test/webdriver.dart --target=integration_test/plugin_integration_test.dart -d chrome --release --browser-name=chrome --driver-port=4444 -v
+        flutter drive --driver=webdriver_integration_test/webdriver.dart --target=integration_test/plugin_integration_test.dart -d web-server --release --browser-name=chrome --driver-port=4444 -v
       working-directory: flutter_theoplayer_sdk/example
       
     - name: Print chromedriver logs
