@@ -54,7 +54,9 @@ void main() {
     final chromlessPlayerView = find.byKey(const Key('testChromelessPlayer'));
     final player = (tester.firstElement(chromlessPlayerView).widget as ChromelessPlayer).player;
     await tester.pumpAndSettle();
+    print("Testing isInitialized()");
     expect(player.isInitialized(), isTrue, reason: "Testing isInitialized()");
+    print("Testing isPaused()");
     expect(player.isPaused(), isTrue, reason: "Testing isPaused()");
     player.setAutoplay(true);
 
