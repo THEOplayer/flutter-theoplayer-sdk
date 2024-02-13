@@ -242,35 +242,35 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.0.1"
+    version: "1.0.0"
   theoplayer_android:
     dependency: transitive
     description:
       path: "../../flutter_theoplayer_sdk_android"
       relative: true
     source: path
-    version: "0.0.1"
+    version: "1.0.0"
   theoplayer_ios:
     dependency: transitive
     description:
       path: "../../flutter_theoplayer_sdk_ios"
       relative: true
     source: path
-    version: "0.0.1"
+    version: "1.0.0"
   theoplayer_platform_interface:
     dependency: transitive
     description:
       path: "../../flutter_theoplayer_sdk_platform_interface"
       relative: true
     source: path
-    version: "0.0.1"
+    version: "1.0.0"
   theoplayer_web:
     dependency: transitive
     description:
       path: "../../flutter_theoplayer_sdk_web"
       relative: true
     source: path
-    version: "0.0.1"
+    version: "1.0.0"
   vector_math:
     dependency: transitive
     description:
