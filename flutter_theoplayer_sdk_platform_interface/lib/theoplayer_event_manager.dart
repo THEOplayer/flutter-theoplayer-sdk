@@ -1,7 +1,7 @@
 import 'dart:collection';
 
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_event_dispatcher_interface.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_events.dart';
+import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
+import 'package:theoplayer_platform_interface/theoplayer_events.dart';
 
 class EventManager implements EventDispatcher {
   final Map<String, List<EventListener<Event>>> _eventListenerMap = HashMap();

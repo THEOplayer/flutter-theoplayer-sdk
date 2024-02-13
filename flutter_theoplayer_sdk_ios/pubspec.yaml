@@ -1,4 +1,4 @@
-name: flutter_theoplayer_sdk_ios
+name: theoplayer_ios
 description: THEOplayer Flutter SDK iOS
 version: 0.0.1
 homepage: https://theoplayer.com
@@ -11,7 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_theoplayer_sdk_platform_interface:
+  theoplayer_platform_interface:
     path: ../flutter_theoplayer_sdk_platform_interface
 
 dev_dependencies:

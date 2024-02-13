@@ -67,13 +67,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_theoplayer_sdk_platform_interface:
-    dependency: "direct main"
-    description:
-      path: "../flutter_theoplayer_sdk_platform_interface"
-      relative: true
-    source: path
-    version: "0.0.1"
   flutter_web_plugins:
     dependency: "direct main"
     description: flutter
@@ -188,6 +181,13 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.6.1"
+  theoplayer_platform_interface:
+    dependency: "direct main"
+    description:
+      path: "../flutter_theoplayer_sdk_platform_interface"
+      relative: true
+    source: path
+    version: "0.0.1"
   vector_math:
     dependency: transitive
     description:

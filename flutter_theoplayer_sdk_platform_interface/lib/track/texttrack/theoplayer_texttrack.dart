@@ -1,9 +1,9 @@
 import 'dart:collection';
 
-import 'package:flutter_theoplayer_sdk_platform_interface/pigeon/apis.g.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_event_dispatcher_interface.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_events.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/theoplayer_track.dart';
+import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
+import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
+import 'package:theoplayer_platform_interface/theoplayer_events.dart';
+import 'package:theoplayer_platform_interface/track/theoplayer_track.dart';
 
 abstract class TextTracks extends Tracks<TextTrack> {
   /// Add the given listener for the given [TextTracksEventTypes] type(s).

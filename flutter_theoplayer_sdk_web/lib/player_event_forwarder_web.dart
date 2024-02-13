@@ -1,11 +1,11 @@
 import 'dart:js_util';
 
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_event_dispatcher_interface.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_event_manager.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_events.dart';
-import 'package:flutter_theoplayer_sdk_web/theoplayer_api_event_web.dart';
-import 'package:flutter_theoplayer_sdk_web/theoplayer_api_web.dart';
-import 'package:flutter_theoplayer_sdk_web/transformers_web.dart';
+import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
+import 'package:theoplayer_platform_interface/theoplayer_event_manager.dart';
+import 'package:theoplayer_platform_interface/theoplayer_events.dart';
+import 'package:theoplayer_web/theoplayer_api_event_web.dart';
+import 'package:theoplayer_web/theoplayer_api_web.dart';
+import 'package:theoplayer_web/transformers_web.dart';
 
 class PlayerEventForwarderWeb {
   final THEOplayerJS _theoplayerJS;

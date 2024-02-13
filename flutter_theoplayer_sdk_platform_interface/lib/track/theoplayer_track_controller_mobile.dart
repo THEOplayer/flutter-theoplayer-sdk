@@ -1,11 +1,11 @@
-import 'package:flutter_theoplayer_sdk_platform_interface/pigeon_binary_messenger_wrapper.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_flutter_audiotracks_api.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_flutter_videotracks_api.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/texttrack/theoplayer_flutter_texttracks_api.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/texttrack/theoplayer_texttrack.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/theoplayer_track_controller_interface.dart';
+import 'package:theoplayer_platform_interface/pigeon_binary_messenger_wrapper.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_flutter_audiotracks_api.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_flutter_videotracks_api.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
+import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_flutter_texttracks_api.dart';
+import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack.dart';
+import 'package:theoplayer_platform_interface/track/theoplayer_track_controller_interface.dart';
 
 class THEOplayerTrackControllerMobile extends THEOplayerTrackControllerInterface {
   static const String TAG = "THEOplayerTextTrackControllerMobile";

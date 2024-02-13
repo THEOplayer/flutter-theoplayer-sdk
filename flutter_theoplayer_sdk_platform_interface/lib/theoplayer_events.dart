@@ -1,4 +1,4 @@
-import 'package:flutter_theoplayer_sdk_platform_interface/pigeon/apis.g.dart';
+import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
 
 class Event {
   final String type;

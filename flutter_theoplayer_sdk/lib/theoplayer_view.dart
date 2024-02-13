@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_platform_interface.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/theopalyer_config.dart';
+import 'package:theoplayer_platform_interface/theoplayer_platform_interface.dart';
+import 'package:theoplayer_platform_interface/theopalyer_config.dart';
 
 class THEOplayerView extends StatefulWidget {
   final THEOplayerConfig theoPlayerConfig;

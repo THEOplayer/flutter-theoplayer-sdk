@@ -3,9 +3,9 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_theoplayer_sdk_android/theoplayer_view_controller_android.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/theopalyer_config.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_platform_interface.dart';
+import 'package:theoplayer_android/theoplayer_view_controller_android.dart';
+import 'package:theoplayer_platform_interface/theopalyer_config.dart';
+import 'package:theoplayer_platform_interface/theoplayer_platform_interface.dart';
 
 /// An implementation of [TheoplayerPlatform] that uses method channels.
 class THEOplayerAndroid extends TheoplayerPlatform {

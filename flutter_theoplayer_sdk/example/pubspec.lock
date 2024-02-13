@@ -88,34 +88,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_theoplayer_sdk_android:
-    dependency: transitive
-    description:
-      path: "../../flutter_theoplayer_sdk_android"
-      relative: true
-    source: path
-    version: "0.0.1"
-  flutter_theoplayer_sdk_ios:
-    dependency: transitive
-    description:
-      path: "../../flutter_theoplayer_sdk_ios"
-      relative: true
-    source: path
-    version: "0.0.1"
-  flutter_theoplayer_sdk_platform_interface:
-    dependency: transitive
-    description:
-      path: "../../flutter_theoplayer_sdk_platform_interface"
-      relative: true
-    source: path
-    version: "0.0.1"
-  flutter_theoplayer_sdk_web:
-    dependency: transitive
-    description:
-      path: "../../flutter_theoplayer_sdk_web"
-      relative: true
-    source: path
-    version: "0.0.1"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -268,6 +240,34 @@ packages:
     dependency: "direct main"
     description:
       path: ".."
+      relative: true
+    source: path
+    version: "0.0.1"
+  theoplayer_android:
+    dependency: transitive
+    description:
+      path: "../../flutter_theoplayer_sdk_android"
+      relative: true
+    source: path
+    version: "0.0.1"
+  theoplayer_ios:
+    dependency: transitive
+    description:
+      path: "../../flutter_theoplayer_sdk_ios"
+      relative: true
+    source: path
+    version: "0.0.1"
+  theoplayer_platform_interface:
+    dependency: transitive
+    description:
+      path: "../../flutter_theoplayer_sdk_platform_interface"
+      relative: true
+    source: path
+    version: "0.0.1"
+  theoplayer_web:
+    dependency: transitive
+    description:
+      path: "../../flutter_theoplayer_sdk_web"
       relative: true
     source: path
     version: "0.0.1"

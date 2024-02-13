@@ -7,9 +7,9 @@ import 'dart:html';
 import 'dart:ui_web' as ui;
 
 import 'package:flutter/widgets.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/theopalyer_config.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_platform_interface.dart';
-import 'package:flutter_theoplayer_sdk_web/theoplayer_view_controller_web.dart';
+import 'package:theoplayer_platform_interface/theopalyer_config.dart';
+import 'package:theoplayer_platform_interface/theoplayer_platform_interface.dart';
+import 'package:theoplayer_web/theoplayer_view_controller_web.dart';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 /// A web implementation of the TheoplayerPlatform of the Theoplayer plugin.

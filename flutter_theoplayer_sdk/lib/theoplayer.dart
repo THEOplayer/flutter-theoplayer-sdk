@@ -1,27 +1,27 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/pigeon/apis.g.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/theopalyer_config.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_event_dispatcher_interface.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_events.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_view_controller_interface.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/texttrack/theoplayer_texttrack.dart';
+import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
+import 'package:theoplayer_platform_interface/theopalyer_config.dart';
+import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
+import 'package:theoplayer_platform_interface/theoplayer_events.dart';
+import 'package:theoplayer_platform_interface/theoplayer_view_controller_interface.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
+import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack.dart';
 import 'package:theoplayer/theoplayer_state.dart';
 import 'package:theoplayer/theoplayer_tracklist_wrapper.dart';
 import 'package:theoplayer/theoplayer_view.dart';
 
 // TODO: check this, quick fix for the main.dart
-export 'package:flutter_theoplayer_sdk_platform_interface/pigeon/apis.g.dart';
-export 'package:flutter_theoplayer_sdk_platform_interface/theopalyer_config.dart';
-export 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_events.dart';
-export 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_view_controller_interface.dart';
-export 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
-export 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_audiotrack_events.dart';
-export 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
-export 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_videotrack_events.dart';
-export 'package:flutter_theoplayer_sdk_platform_interface/track/texttrack/theoplayer_texttrack_events.dart';
-export 'package:flutter_theoplayer_sdk_platform_interface/track/texttrack/theoplayer_texttrack.dart';
+export 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
+export 'package:theoplayer_platform_interface/theopalyer_config.dart';
+export 'package:theoplayer_platform_interface/theoplayer_events.dart';
+export 'package:theoplayer_platform_interface/theoplayer_view_controller_interface.dart';
+export 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
+export 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack_events.dart';
+export 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
+export 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack_events.dart';
+export 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack_events.dart';
+export 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack.dart';
 
 typedef PlayerCreatedCallback = void Function();
 typedef StateChangeListener = void Function();

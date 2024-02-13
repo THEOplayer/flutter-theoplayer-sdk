@@ -12,5 +12,5 @@ import 'package:pigeon/pigeon.dart';
   ),
   swiftOut: '../flutter_theoplayer_sdk_ios/ios/Classes/pigeon/APIs.g.swift',
   swiftOptions: SwiftOptions(),
-  dartPackageName: 'flutter_theoplayer_sdk_platform_interface',
+  dartPackageName: 'theoplayer_platform_interface',
 ))

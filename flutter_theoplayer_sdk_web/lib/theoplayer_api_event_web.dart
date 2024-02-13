@@ -1,7 +1,7 @@
 @JS()
 library THEOplayer.js;
 
-import 'package:flutter_theoplayer_sdk_web/theoplayer_api_web.dart';
+import 'package:theoplayer_web/theoplayer_api_web.dart';
 import 'package:js/js.dart';
 
 @JS()

@@ -1,8 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_theoplayer_sdk_ios/theoplayer_view_controller_ios.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/theopalyer_config.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_platform_interface.dart';
+import 'package:theoplayer_ios/theoplayer_view_controller_ios.dart';
+import 'package:theoplayer_platform_interface/theopalyer_config.dart';
+import 'package:theoplayer_platform_interface/theoplayer_platform_interface.dart';
 
 /// An implementation of [TheoplayerPlatform] that uses method channels.
 class THEOplayerIOS extends TheoplayerPlatform {

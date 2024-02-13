@@ -1,10 +1,10 @@
 import 'dart:js';
 
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_videotrack_events.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_videotrack_impl.dart';
-import 'package:flutter_theoplayer_sdk_web/theoplayer_api_event_web.dart';
-import 'package:flutter_theoplayer_sdk_web/theoplayer_api_web.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack_events.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack_impl.dart';
+import 'package:theoplayer_web/theoplayer_api_event_web.dart';
+import 'package:theoplayer_web/theoplayer_api_web.dart';
 
 class VideoTrackImplWeb extends VideoTrackImpl {
   final THEOplayerVideoTrack _nativeVideoTrack;
