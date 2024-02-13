@@ -12,7 +12,7 @@ This projects falls under the license as defined in https://github.com/THEOplaye
 2. [Prerequisites](#prerequisites)
 3. [How to use these guides](#how-to-use-these-guides)
 4. [Features](#features)
-6. [Getting Started](#getting-started)
+5. [Getting Started](#getting-started)
 
 ## Overview
 
@@ -37,7 +37,7 @@ For each platform, a dependency to the corresponding THEOplayer SDK is included 
 - Cocoapods for iOS
 - npm for Web *
 
-*_the initial version of the SDK relying on a local copy of `THEOplayer.chromeless.js` (and additional modules), so adding it manually is required!_
+*_the initial version of the SDK relies on a local copy of `THEOplayer.chromeless.js` (and additional modules), so adding it manually is required!_
 
 In order to use one of these THEOplayer SDKs, it is necessary to obtain a valid THEOplayer license for that specific platform,
 i.e. HTML5, Android, and/or iOS. You can use your existing THEOplayer SDK license or request a
@@ -57,7 +57,7 @@ Flutter works to speed up the way of working with THEOplayer Flutter SDK.
 
 Depending on the platform on which the application is deployed, a different set of features can be available.
 
-If a feature missing, additional help is needed, or you need to extend the package,
+If a feature is missing, additional help is needed, or you need to extend the package,
 please reach out to us for support.
 
 <img src="./doc/features.svg">
@@ -67,13 +67,12 @@ please reach out to us for support.
 
 This section starts with creating a minimal demo app that integrates the `flutter_theoplayer_sdk` package,
 followed by an overview of the available properties and functionality of the THEOplayer component.
-An minimal example application including a basic user interface and demo sources is included in the
-[git repository](https://github.com/THEOplayer/flutter-theoplayer-sdk-eap/tree/main/flutter_theoplayer_sdk/example),
+A minimal example application including a basic user interface and demo sources is included in [this repository](./flutter_theoplayer_sdk/example),
 and discussed in the next section. Finally, an overview of features, limitations and known issues is listed.
 
 - [Creating a minimal demo app](./doc/creating-minimal-app.md)
     - [Getting started on Android](./doc/creating-minimal-app.md#getting-started-on-android)
-    - [Getting started on iOS](./doc/creating-minimal-app.md#getting-started-on-ios-and-tvos)
+    - [Getting started on iOS](./doc/creating-minimal-app.md#getting-started-on-ios)
     - [Getting started on Web](./doc/creating-minimal-app.md#getting-started-on-web)
 - [The THEOplayer component](./doc/theoplayer-component.md)
 - Knowledge Base

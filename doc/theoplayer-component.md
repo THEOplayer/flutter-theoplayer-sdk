@@ -4,7 +4,8 @@
 
 <img src="theoplayer_flutter_sdk_arch.png">
 
-THEOplayer Flutter SDK utilizes the well-known THEOplayer native SDKs under the hood and exposes the APIs on a single API layer in Flutter to speed up prototyping and development.
+THEOplayer Flutter SDK utilizes the well-known THEOplayer native SDKs under the hood 
+and exposes the APIs on a single API layer in Flutter to speed up prototyping and development.
 
 ### Available APIs
 - Basic player APIs (play, pause, seek, etc...) on the `THEOplayer` instance
