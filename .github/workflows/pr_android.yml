@@ -66,10 +66,16 @@ jobs:
         disable-animations: true
         script: flutter test integration_test
         working-directory: flutter_theoplayer_sdk/example
+      env:
+        TEST_LICENSE: ${{ secrets.TEST_LICENSE }}
+
+    
 
     #- name: Run integration tests
     #  run: flutter test integration_test
     #  working-directory: flutter_theoplayer_sdk/example
+    #  env: # Or as an environment variable
+    #    TEST_LICENSE: ${{ secrets.TEST_LICENSE }}
         
     - name: Build APK
       run: flutter build apk
