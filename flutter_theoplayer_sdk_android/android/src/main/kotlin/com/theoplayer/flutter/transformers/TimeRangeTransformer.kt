@@ -1,8 +1,8 @@
-package com.theoplayer.theoplayer.transformers
+package com.theoplayer.flutter.transformers
 
 import com.theoplayer.android.api.timerange.TimeRanges
 
-typealias FlutterTimeRange = com.theoplayer.theoplayer.pigeon.TimeRange
+typealias FlutterTimeRange = com.theoplayer.flutter.pigeon.TimeRange
 
 object TimeRangeTransformer {
 

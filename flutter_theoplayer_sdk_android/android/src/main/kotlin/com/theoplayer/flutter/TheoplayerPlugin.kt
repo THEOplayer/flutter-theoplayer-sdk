@@ -1,4 +1,4 @@
-package com.theoplayer.theoplayer
+package com.theoplayer.flutter
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 

@@ -1,12 +1,12 @@
-package com.theoplayer.theoplayer.transformers
+package com.theoplayer.flutter.transformers
 
 import com.theoplayer.android.api.player.track.texttrack.TextTrackMode
 import com.theoplayer.android.api.player.track.texttrack.TextTrackReadyState
 import com.theoplayer.android.api.player.track.texttrack.TextTrackType
 
-typealias FlutterTextTrackMode = com.theoplayer.theoplayer.pigeon.TextTrackMode
-typealias FlutterTextTrackType = com.theoplayer.theoplayer.pigeon.TextTrackType
-typealias FlutterTextTrackReadyState = com.theoplayer.theoplayer.pigeon.TextTrackReadyState
+typealias FlutterTextTrackMode = com.theoplayer.flutter.pigeon.TextTrackMode
+typealias FlutterTextTrackType = com.theoplayer.flutter.pigeon.TextTrackType
+typealias FlutterTextTrackReadyState = com.theoplayer.flutter.pigeon.TextTrackReadyState
 
 object TrackTransformer {
 

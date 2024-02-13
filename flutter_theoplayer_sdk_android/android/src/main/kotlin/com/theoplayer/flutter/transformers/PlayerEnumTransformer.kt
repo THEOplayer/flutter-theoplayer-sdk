@@ -1,10 +1,10 @@
-package com.theoplayer.theoplayer.transformers
+package com.theoplayer.flutter.transformers
 
 import com.theoplayer.android.api.player.PreloadType
 import com.theoplayer.android.api.player.ReadyState
 
-typealias FlutterReadyState = com.theoplayer.theoplayer.pigeon.ReadyState
-typealias FlutterPreloadType = com.theoplayer.theoplayer.pigeon.PreloadType
+typealias FlutterReadyState = com.theoplayer.flutter.pigeon.ReadyState
+typealias FlutterPreloadType = com.theoplayer.flutter.pigeon.PreloadType
 
 object PlayerEnumTransformer {
 

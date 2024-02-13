@@ -1,4 +1,4 @@
-package com.theoplayer.theoplayer
+package com.theoplayer.flutter
 
 import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.track.texttrack.AddCueEvent
@@ -19,11 +19,11 @@ import com.theoplayer.android.api.event.track.texttrack.texttrackcue.UpdateEvent
 import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.api.player.track.texttrack.TextTrack
 import com.theoplayer.android.api.player.track.texttrack.cue.TextTrackCue
-import com.theoplayer.theoplayer.pigeon.THEOplayerFlutterTextTracksAPI
-import com.theoplayer.theoplayer.pigeon.THEOplayerNativeTextTracksAPI
-import com.theoplayer.theoplayer.pigeon.THEOplayerNativeTextTracksAPI.Companion.setUp
-import com.theoplayer.theoplayer.transformers.FlutterTextTrackMode
-import com.theoplayer.theoplayer.transformers.TrackTransformer
+import com.theoplayer.flutter.pigeon.THEOplayerFlutterTextTracksAPI
+import com.theoplayer.flutter.pigeon.THEOplayerNativeTextTracksAPI
+import com.theoplayer.flutter.pigeon.THEOplayerNativeTextTracksAPI.Companion.setUp
+import com.theoplayer.flutter.transformers.FlutterTextTrackMode
+import com.theoplayer.flutter.transformers.TrackTransformer
 
 class TextTrackBridge(
     private val player: Player,
