@@ -2,7 +2,6 @@
 // of your plugin as a separate package, instead of inlining it in the same
 // package as the core of your plugin.
 // ignore: avoid_web_libraries_in_flutter
-import 'dart:collection';
 import 'dart:html';
 import 'dart:ui_web' as ui;
 

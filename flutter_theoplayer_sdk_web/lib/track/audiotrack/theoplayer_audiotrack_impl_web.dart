@@ -3,10 +3,8 @@ import 'dart:js';
 import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
 import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack_events.dart';
 import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack_impl.dart';
-import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_mediatrack.dart';
 import 'package:theoplayer_web/theoplayer_api_event_web.dart';
 import 'package:theoplayer_web/theoplayer_api_web.dart';
-import 'package:theoplayer_web/transformers_web.dart';
 
 class AudioTrackImplWeb extends AudioTrackImpl {
   final THEOplayerAudioTrack _nativeAudioTrack;
