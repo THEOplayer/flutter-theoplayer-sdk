@@ -46,7 +46,7 @@ void main() {
     //player.setAutoplay(true);
 
     print("Setting source");
-    String sourceUrl = "https://cdn.theoplayer.com/video/dash/big_buck_bunny/BigBuckBunny_10s_simple_2014_05_09.mpd";
+    String sourceUrl = "https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8";
     if (!kIsWeb && Platform.isIOS) {
       print("Setting iOS source");
       sourceUrl = "https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8";
@@ -58,6 +58,7 @@ void main() {
       )
     );
     await tester.pumpAndSettle();
+    print("Pressing play()");
     player.play();
     await tester.pumpAndSettle();
 
