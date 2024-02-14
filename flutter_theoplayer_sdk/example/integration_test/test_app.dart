@@ -31,17 +31,38 @@ class _TestAppState extends State<TestApp> {
         onCreate: () {
           print("TestApp - THEOplayer - onCreate");
           player.addEventListener(PlayerEventTypes.SOURCECHANGE, (event) { 
-            print("SOURCECHANGE received");
+            print("_DEBUG: SOURCECHANGE received");
           });
           player.addEventListener(PlayerEventTypes.PLAYING, (event) { 
-            print("PLAYING received");
+            print("_DEBUG: PLAYING received");
           });
           player.addEventListener(PlayerEventTypes.PROGRESS, (event) { 
-            print("PROGRESS received");
+            print("_DEBUG: PROGRESS received");
           });
           player.addEventListener(PlayerEventTypes.ERROR, (event) {
-            print("ERROR: ${(event as ErrorEvent).error}");
+            print("_DEBUG: ERROR: ${(event as ErrorEvent).error}");
            });
+          player.addEventListener(PlayerEventTypes.TIMEUPDATE, (event) { 
+            print("_DEBUG: TIMEUPDATE received");
+          });
+          player.addEventListener(PlayerEventTypes.CANPLAY, (event) { 
+            print("_DEBUG: CANPLAY received");
+          });
+          player.addEventListener(PlayerEventTypes.DURATIONCHANGE, (event) { 
+            print("_DEBUG: DURATIONCHANGE received");
+          });
+          player.addEventListener(PlayerEventTypes.LOADSTART, (event) { 
+            print("_DEBUG: LOADSTART received");
+          });
+          player.addEventListener(PlayerEventTypes.PLAY, (event) { 
+            print("_DEBUG: PLAY received");
+          });
+          player.addEventListener(PlayerEventTypes.PAUSE, (event) { 
+            print("_DEBUG: PAUSE received");
+          });
+          player.addEventListener(PlayerEventTypes.WAITING, (event) { 
+            print("_DEBUG: PAUSE received");
+          });
         });
 
 
