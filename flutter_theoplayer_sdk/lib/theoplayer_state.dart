@@ -218,6 +218,7 @@ class PlayerState {
   }
 
   void dispose() {
+    isInitialized = false;
     _removeEventListeners();
     eventManager.clear();
     resetState();
