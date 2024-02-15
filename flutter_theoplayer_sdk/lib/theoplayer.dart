@@ -52,6 +52,7 @@ class THEOplayer implements EventDispatcher {
           _audioTrackListHolder.setup(viewController.getAudioTracks());
           _videoTrackListHolder.setup(viewController.getVideoTracks());
           onCreate?.call();
+          _playerState.initialized();
         });
   }
 
