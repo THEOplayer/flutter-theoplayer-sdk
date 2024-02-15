@@ -52,6 +52,7 @@ class THEOplayer implements EventDispatcher {
           _audioTrackListHolder.setup(viewController.getAudioTracks());
           _videoTrackListHolder.setup(viewController.getVideoTracks());
           onCreate?.call();
+          _playerState.initialized();
         });
   }
 
@@ -230,6 +231,10 @@ class THEOplayer implements EventDispatcher {
   /// Whether the player is seeking.
   bool isSeeking() {
     return _playerState.isSeeking;
+  }
+
+  bool isInitialized() {
+    return _playerState.isInitialized;
   }
 
   /// Whether playback of the media is ended.
