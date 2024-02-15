@@ -6,7 +6,7 @@ repository: https://github.com/THEOplayer/flutter-theoplayer-sdk
 
 environment:
   sdk: ^3.2.6
-  flutter: ^3.16.9
+  flutter: ">=3.16.9"
 
 dependencies:
   flutter:
