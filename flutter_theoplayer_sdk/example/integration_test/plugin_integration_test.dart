@@ -62,7 +62,7 @@ void main() {
     player.play();
     await tester.pumpAndSettle();
 
-    await tester.pump(const Duration(seconds: 10));
+    await tester.pumpAndSettle(const Duration(seconds: 10));
     print("Testing playback duration():  ${player.getDuration()}");
     print("Testing playback currentTime():  ${player.getCurrentTime()}");
     expect(player.getCurrentTime() >= 5, isTrue );
