@@ -62,7 +62,10 @@ void main() {
     player.play();
     await tester.pumpAndSettle();
 
+    print("Pressing pumpAndSettle() before 10");
     await tester.pumpAndSettle(const Duration(seconds: 10));
+    print("Pressing pumpAndSettle() after 10");
+    await Future.delayed(const Duration(seconds: 10), () => print("Testing 10 sec wait") );
     print("Testing playback duration():  ${player.getDuration()}");
     print("Testing playback currentTime():  ${player.getCurrentTime()}");
     expect(player.getCurrentTime() >= 5, isTrue );
