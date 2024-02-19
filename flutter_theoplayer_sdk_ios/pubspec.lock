@@ -171,9 +171,10 @@ packages:
   theoplayer_platform_interface:
     dependency: "direct main"
     description:
-      path: "../flutter_theoplayer_sdk_platform_interface"
-      relative: true
-    source: path
+      name: theoplayer_platform_interface
+      sha256: "059991ac3954806b63e6956c90983a1f24e22673285fa37c924dabbb40f2c4ed"
+      url: "https://pub.dev"
+    source: hosted
     version: "1.0.0"
   vector_math:
     dependency: transitive
