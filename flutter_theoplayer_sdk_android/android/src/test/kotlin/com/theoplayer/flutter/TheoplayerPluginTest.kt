@@ -1,4 +1,4 @@
-package com.theoplayer.theoplayer
+package com.theoplayer.flutter
 
 import kotlin.test.Test
 import kotlin.test.assertTrue
