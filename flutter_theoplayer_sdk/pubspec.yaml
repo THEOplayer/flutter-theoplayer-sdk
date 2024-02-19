@@ -14,14 +14,10 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
-  theoplayer_platform_interface:
-    path: ../flutter_theoplayer_sdk_platform_interface
-  theoplayer_web:
-    path: ../flutter_theoplayer_sdk_web
-  theoplayer_android:
-    path: ../flutter_theoplayer_sdk_android
-  theoplayer_ios:
-    path: ../flutter_theoplayer_sdk_ios
+  theoplayer_platform_interface: 1.0.0
+  theoplayer_android: 1.0.0
+  theoplayer_ios: 1.0.0
+  theoplayer_web: 1.0.0
 
 dev_dependencies:
   flutter_test:
