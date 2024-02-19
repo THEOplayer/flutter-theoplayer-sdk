@@ -1,8 +1,8 @@
-import 'package:flutter_theoplayer_sdk_platform_interface/pigeon/apis.g.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_event_dispatcher_interface.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/texttrack/theoplayer_texttrack.dart';
+import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
+import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
+import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack.dart';
 
 abstract class THEOplayerViewController implements EventDispatcher {
   static const String TAG = "THEOplayerViewController";

@@ -12,7 +12,8 @@ In this section we start from an empty Flutter project, include a dependency to 
 ### Setting up a new project
 
 #### Getting a new project ready
-After [setting up your Flutter development environment](https://docs.flutter.dev/get-started/install) you can run the following command to create a new project from Terminal. (You can use Android Studio too)
+After [setting up your Flutter development environment](https://docs.flutter.dev/get-started/install)
+you can run the following command to create a new project from Terminal. (You can use Android Studio too)
 
 ```bash
 $ flutter create -a kotlin -i swift -t app --org com.theoplayer --description "New THEOplayer project" --project-name "flutter_theoplayer_sample_app" --platform web,ios,android flutter_theoplayer_sample_app
@@ -54,7 +55,7 @@ To use the SDK, you need to initialize `git` in your project and **add the SDK a
 
 ```bash
 $ git init
-$ git submodule add https://GITHUB_USERNAME:GITHUB_PASSWORD@github.com/THEOplayer/flutter-theoplayer-sdk-eap flutter-theoplayer-sdk
+$ git submodule add https://GITHUB_USERNAME:GITHUB_PASSWORD@github.com/THEOplayer/flutter-theoplayer-sdk flutter-theoplayer-sdk
 ```
 
 Your project structure will look like this:
@@ -73,7 +74,8 @@ After the submodule added, you can add the THEOplayer Flutter SDK as a dependenc
 $ flutter pub add 'theoplayer:{"path":"./flutter-theoplayer-sdk/flutter_theoplayer_sdk"}' --directory .
 ```
 
-You should get an output like this after executing the command, meaning `flutter` found and added the SDK as a dependency, and fetched the necessary packages too.
+You should get an output like this after executing the command,
+meaning `flutter` found and added the SDK as a dependency, and fetched the necessary packages too.
 
 ```diff
 Resolving dependencies... 
@@ -116,9 +118,10 @@ Changed 8 dependencies!
         });
   }
 ```
-Keep in mind, you need to have a license from [THEOportal](https://portal.theoplayer.com).
+Keep in mind, you need to have a valid license from [THEOportal](https://portal.theoplayer.com).
 
-Without a license you can only play sources hosted on `theoplayer.com` domain. (If you want to try this, just delete the `license` String from the `THEOplayerConfig`)
+Without a license you can only play sources hosted on `theoplayer.com` domain.
+(If you want to try this, just delete the `license` String from the `THEOplayerConfig`)
 
 2. Adding THEOplayer to the view hierarchy
 
@@ -160,7 +163,8 @@ By declaring the `INTERNET` the `AndroidManifest.xml`, your app can reach the In
 <uses-permission android:name="android.permission.INTERNET"/>
 ```
 
-As noted in the [limitations](./limitations.md), THEOplayer on Android supports Android 5 (API level 21) and above, so defining this in the `android/app/build.gradle` is necessary:
+As noted in the [limitations](./limitations.md), THEOplayer on Android supports Android 5 (API level 21) and above, 
+so defining this in the `android/app/build.gradle` is necessary:
 ```java
 defaultConfig {
     // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
@@ -184,11 +188,14 @@ By using the `flutter run ios` command, you can try out your applicaiton on an i
 
 ### Getting started on Web
 
-You need to acquire THEOplayer HTML5 SDK from [THEOportal](https://portal.theoplayer.com/) (or from an NPM package, e.g. from [6.5.0](https://registry.npmjs.org/theoplayer/-/theoplayer-6.5.0.tgz)).
+You need to acquire THEOplayer HTML5 SDK from [THEOportal](https://portal.theoplayer.com/) (or from an NPM package, e.g. from [6.9.0](https://registry.npmjs.org/theoplayer/-/theoplayer-6.9.0.tgz)).
 
-**The current iteration of the THEOplayer Flutter SDK is not able to automatically pull THEOplayer HTML5 SDK from NPM, so this is now a manualy procedure.**
+**The current iteration of the THEOplayer Flutter SDK is not able to automatically pull THEOplayer HTML5 SDK from NPM, 
+so this is now a manual procedure.**
 
-If you have all files at your hand (`THEOplayer.chromeless.js`, `common` and `transmux` files) copy them into the root of your Web project. (Next to the `index.html`, which is the entry point of your Flutter Web application)
+If you have all the files at your hand (`THEOplayer.chromeless.js`, `common` and `transmux` files) 
+copy them into the root of your Web project. 
+(Next to the `index.html`, which is the entry point of your Flutter Web application)
 
 Load the `THEOplayer.chromeless.js` Javascript in the `<HEAD>` of your `index.html` page:
 
@@ -202,4 +209,4 @@ Load the `THEOplayer.chromeless.js` Javascript in the `<HEAD>` of your `index.ht
 
 After these steps, you are good to go.
 
-By using the `flutter run chrome` command, you can try out your applicaiton in the Chrome browser.
+By using the `flutter run chrome` command, you can try out your application in the Chrome browser.

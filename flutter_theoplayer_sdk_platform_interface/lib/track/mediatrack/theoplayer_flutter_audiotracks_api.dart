@@ -1,8 +1,8 @@
 import 'package:flutter/services.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/pigeon/apis.g.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_audiotrack_events.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_audiotrack_impl.dart';
+import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack_events.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack_impl.dart';
 
 class THEOplayerFlutterAudioTracksAPIImpl implements THEOplayerFlutterAudioTracksAPI {
   late final THEOplayerNativeAudioTracksAPI _nativeAudioTrackAPI;

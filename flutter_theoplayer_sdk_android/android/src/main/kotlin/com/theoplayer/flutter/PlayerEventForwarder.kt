@@ -1,4 +1,4 @@
-package com.theoplayer.theoplayer
+package com.theoplayer.flutter
 
 import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.player.CanPlayEvent
@@ -25,9 +25,9 @@ import com.theoplayer.android.api.event.player.TimeUpdateEvent
 import com.theoplayer.android.api.event.player.VolumeChangeEvent
 import com.theoplayer.android.api.event.player.WaitingEvent
 import com.theoplayer.android.api.player.Player
-import com.theoplayer.theoplayer.pigeon.THEOplayerFlutterAPI
-import com.theoplayer.theoplayer.transformers.PlayerEnumTransformer
-import com.theoplayer.theoplayer.transformers.SourceTransformer
+import com.theoplayer.flutter.pigeon.THEOplayerFlutterAPI
+import com.theoplayer.flutter.transformers.PlayerEnumTransformer
+import com.theoplayer.flutter.transformers.SourceTransformer
 
 class PlayerEventForwarder(
     private val player: Player,

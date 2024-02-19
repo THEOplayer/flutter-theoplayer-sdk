@@ -235,7 +235,7 @@ class THEOplayerNativeTextTracksAPISetup {
   /// The codec used by THEOplayerNativeTextTracksAPI.
   /// Sets up an instance of `THEOplayerNativeTextTracksAPI` to handle messages through the `binaryMessenger`.
   static func setUp(binaryMessenger: FlutterBinaryMessenger, api: THEOplayerNativeTextTracksAPI?) {
-    let setModeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeTextTracksAPI.setMode", binaryMessenger: binaryMessenger)
+    let setModeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeTextTracksAPI.setMode", binaryMessenger: binaryMessenger)
     if let api = api {
       setModeChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -260,73 +260,73 @@ class THEOplayerFlutterTextTracksAPI {
     self.binaryMessenger = binaryMessenger
   }
   func onAddTextTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, inBandMetadataTrackDispatchType inBandMetadataTrackDispatchTypeArg: String?, readyState readyStateArg: TextTrackReadyState, type typeArg: TextTrackType, source sourceArg: String?, isForced isForcedArg: Bool, mode modeArg: TextTrackMode, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack", binaryMessenger: binaryMessenger)
     channel.sendMessage([idArg, uidArg, labelArg, languageArg, kindArg, inBandMetadataTrackDispatchTypeArg, readyStateArg.rawValue, typeArg.rawValue, sourceArg, isForcedArg, modeArg.rawValue] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onRemoveTextTrack(uid uidArg: Int64, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onRemoveTextTrack", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onRemoveTextTrack", binaryMessenger: binaryMessenger)
     channel.sendMessage([uidArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onTextTrackListChange(uid uidArg: Int64, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackListChange", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackListChange", binaryMessenger: binaryMessenger)
     channel.sendMessage([uidArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onTextTrackAddCue(textTrackUid textTrackUidArg: Int64, id idArg: String, uid uidArg: Int64, startTime startTimeArg: Double, endTime endTimeArg: Double, content contentArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue", binaryMessenger: binaryMessenger)
     channel.sendMessage([textTrackUidArg, idArg, uidArg, startTimeArg, endTimeArg, contentArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onTextTrackRemoveCue(textTrackUid textTrackUidArg: Int64, cueUid cueUidArg: Int64, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackRemoveCue", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackRemoveCue", binaryMessenger: binaryMessenger)
     channel.sendMessage([textTrackUidArg, cueUidArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onTextTrackEnterCue(textTrackUid textTrackUidArg: Int64, cueUid cueUidArg: Int64, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackEnterCue", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackEnterCue", binaryMessenger: binaryMessenger)
     channel.sendMessage([textTrackUidArg, cueUidArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onTextTrackExitCue(textTrackUid textTrackUidArg: Int64, cueUid cueUidArg: Int64, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackExitCue", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackExitCue", binaryMessenger: binaryMessenger)
     channel.sendMessage([textTrackUidArg, cueUidArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onTextTrackCueChange(textTrackUid textTrackUidArg: Int64, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackCueChange", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackCueChange", binaryMessenger: binaryMessenger)
     channel.sendMessage([textTrackUidArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onTextTrackChange(textTrackUid textTrackUidArg: Int64, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackChange", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackChange", binaryMessenger: binaryMessenger)
     channel.sendMessage([textTrackUidArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onCueEnter(textTrackUid textTrackUidArg: Int64, cueUid cueUidArg: Int64, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onCueEnter", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueEnter", binaryMessenger: binaryMessenger)
     channel.sendMessage([textTrackUidArg, cueUidArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onCueExit(textTrackUid textTrackUidArg: Int64, cueUid cueUidArg: Int64, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onCueExit", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueExit", binaryMessenger: binaryMessenger)
     channel.sendMessage([textTrackUidArg, cueUidArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onCueUpdate(textTrackUid textTrackUidArg: Int64, cueUid cueUidArg: Int64, endTime endTimeArg: Double, content contentArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate", binaryMessenger: binaryMessenger)
     channel.sendMessage([textTrackUidArg, cueUidArg, endTimeArg, contentArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
@@ -434,7 +434,7 @@ class THEOplayerNativeAPISetup {
   static var codec: FlutterStandardMessageCodec { THEOplayerNativeAPICodec.shared }
   /// Sets up an instance of `THEOplayerNativeAPI` to handle messages through the `binaryMessenger`.
   static func setUp(binaryMessenger: FlutterBinaryMessenger, api: THEOplayerNativeAPI?) {
-    let setSourceChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.setSource", binaryMessenger: binaryMessenger, codec: codec)
+    let setSourceChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setSource", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       setSourceChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -449,7 +449,7 @@ class THEOplayerNativeAPISetup {
     } else {
       setSourceChannel.setMessageHandler(nil)
     }
-    let getSourceChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getSource", binaryMessenger: binaryMessenger, codec: codec)
+    let getSourceChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getSource", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getSourceChannel.setMessageHandler { _, reply in
         do {
@@ -462,7 +462,7 @@ class THEOplayerNativeAPISetup {
     } else {
       getSourceChannel.setMessageHandler(nil)
     }
-    let setAutoplayChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.setAutoplay", binaryMessenger: binaryMessenger, codec: codec)
+    let setAutoplayChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setAutoplay", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       setAutoplayChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -477,7 +477,7 @@ class THEOplayerNativeAPISetup {
     } else {
       setAutoplayChannel.setMessageHandler(nil)
     }
-    let isAutoplayChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.isAutoplay", binaryMessenger: binaryMessenger, codec: codec)
+    let isAutoplayChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.isAutoplay", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       isAutoplayChannel.setMessageHandler { _, reply in
         do {
@@ -490,7 +490,7 @@ class THEOplayerNativeAPISetup {
     } else {
       isAutoplayChannel.setMessageHandler(nil)
     }
-    let playChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.play", binaryMessenger: binaryMessenger, codec: codec)
+    let playChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.play", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       playChannel.setMessageHandler { _, reply in
         do {
@@ -503,7 +503,7 @@ class THEOplayerNativeAPISetup {
     } else {
       playChannel.setMessageHandler(nil)
     }
-    let pauseChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.pause", binaryMessenger: binaryMessenger, codec: codec)
+    let pauseChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.pause", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       pauseChannel.setMessageHandler { _, reply in
         do {
@@ -516,7 +516,7 @@ class THEOplayerNativeAPISetup {
     } else {
       pauseChannel.setMessageHandler(nil)
     }
-    let isPausedChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.isPaused", binaryMessenger: binaryMessenger, codec: codec)
+    let isPausedChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.isPaused", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       isPausedChannel.setMessageHandler { _, reply in
         do {
@@ -529,7 +529,7 @@ class THEOplayerNativeAPISetup {
     } else {
       isPausedChannel.setMessageHandler(nil)
     }
-    let setCurrentTimeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.setCurrentTime", binaryMessenger: binaryMessenger, codec: codec)
+    let setCurrentTimeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setCurrentTime", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       setCurrentTimeChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -544,7 +544,7 @@ class THEOplayerNativeAPISetup {
     } else {
       setCurrentTimeChannel.setMessageHandler(nil)
     }
-    let getCurrentTimeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getCurrentTime", binaryMessenger: binaryMessenger, codec: codec)
+    let getCurrentTimeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getCurrentTime", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getCurrentTimeChannel.setMessageHandler { _, reply in
         do {
@@ -557,7 +557,7 @@ class THEOplayerNativeAPISetup {
     } else {
       getCurrentTimeChannel.setMessageHandler(nil)
     }
-    let setCurrentProgramDateTimeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.setCurrentProgramDateTime", binaryMessenger: binaryMessenger, codec: codec)
+    let setCurrentProgramDateTimeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setCurrentProgramDateTime", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       setCurrentProgramDateTimeChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -572,7 +572,7 @@ class THEOplayerNativeAPISetup {
     } else {
       setCurrentProgramDateTimeChannel.setMessageHandler(nil)
     }
-    let getCurrentProgramDateTimeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getCurrentProgramDateTime", binaryMessenger: binaryMessenger, codec: codec)
+    let getCurrentProgramDateTimeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getCurrentProgramDateTime", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getCurrentProgramDateTimeChannel.setMessageHandler { _, reply in
         do {
@@ -585,7 +585,7 @@ class THEOplayerNativeAPISetup {
     } else {
       getCurrentProgramDateTimeChannel.setMessageHandler(nil)
     }
-    let getDurationChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getDuration", binaryMessenger: binaryMessenger, codec: codec)
+    let getDurationChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getDuration", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getDurationChannel.setMessageHandler { _, reply in
         do {
@@ -598,7 +598,7 @@ class THEOplayerNativeAPISetup {
     } else {
       getDurationChannel.setMessageHandler(nil)
     }
-    let setPlaybackRateChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.setPlaybackRate", binaryMessenger: binaryMessenger, codec: codec)
+    let setPlaybackRateChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setPlaybackRate", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       setPlaybackRateChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -613,7 +613,7 @@ class THEOplayerNativeAPISetup {
     } else {
       setPlaybackRateChannel.setMessageHandler(nil)
     }
-    let getPlaybackRateChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getPlaybackRate", binaryMessenger: binaryMessenger, codec: codec)
+    let getPlaybackRateChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getPlaybackRate", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getPlaybackRateChannel.setMessageHandler { _, reply in
         do {
@@ -626,7 +626,7 @@ class THEOplayerNativeAPISetup {
     } else {
       getPlaybackRateChannel.setMessageHandler(nil)
     }
-    let setVolumeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.setVolume", binaryMessenger: binaryMessenger, codec: codec)
+    let setVolumeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setVolume", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       setVolumeChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -641,7 +641,7 @@ class THEOplayerNativeAPISetup {
     } else {
       setVolumeChannel.setMessageHandler(nil)
     }
-    let getVolumeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getVolume", binaryMessenger: binaryMessenger, codec: codec)
+    let getVolumeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getVolume", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getVolumeChannel.setMessageHandler { _, reply in
         do {
@@ -654,7 +654,7 @@ class THEOplayerNativeAPISetup {
     } else {
       getVolumeChannel.setMessageHandler(nil)
     }
-    let setMutedChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.setMuted", binaryMessenger: binaryMessenger, codec: codec)
+    let setMutedChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setMuted", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       setMutedChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -669,7 +669,7 @@ class THEOplayerNativeAPISetup {
     } else {
       setMutedChannel.setMessageHandler(nil)
     }
-    let isMutedChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.isMuted", binaryMessenger: binaryMessenger, codec: codec)
+    let isMutedChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.isMuted", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       isMutedChannel.setMessageHandler { _, reply in
         do {
@@ -682,7 +682,7 @@ class THEOplayerNativeAPISetup {
     } else {
       isMutedChannel.setMessageHandler(nil)
     }
-    let setPreloadChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.setPreload", binaryMessenger: binaryMessenger, codec: codec)
+    let setPreloadChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setPreload", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       setPreloadChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -697,7 +697,7 @@ class THEOplayerNativeAPISetup {
     } else {
       setPreloadChannel.setMessageHandler(nil)
     }
-    let getPreloadChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getPreload", binaryMessenger: binaryMessenger, codec: codec)
+    let getPreloadChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getPreload", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getPreloadChannel.setMessageHandler { _, reply in
         do {
@@ -710,7 +710,7 @@ class THEOplayerNativeAPISetup {
     } else {
       getPreloadChannel.setMessageHandler(nil)
     }
-    let getReadyStateChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getReadyState", binaryMessenger: binaryMessenger, codec: codec)
+    let getReadyStateChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getReadyState", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getReadyStateChannel.setMessageHandler { _, reply in
         do {
@@ -723,7 +723,7 @@ class THEOplayerNativeAPISetup {
     } else {
       getReadyStateChannel.setMessageHandler(nil)
     }
-    let isSeekingChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.isSeeking", binaryMessenger: binaryMessenger, codec: codec)
+    let isSeekingChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.isSeeking", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       isSeekingChannel.setMessageHandler { _, reply in
         do {
@@ -736,7 +736,7 @@ class THEOplayerNativeAPISetup {
     } else {
       isSeekingChannel.setMessageHandler(nil)
     }
-    let isEndedChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.isEnded", binaryMessenger: binaryMessenger, codec: codec)
+    let isEndedChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.isEnded", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       isEndedChannel.setMessageHandler { _, reply in
         do {
@@ -749,7 +749,7 @@ class THEOplayerNativeAPISetup {
     } else {
       isEndedChannel.setMessageHandler(nil)
     }
-    let getVideoWidthChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getVideoWidth", binaryMessenger: binaryMessenger, codec: codec)
+    let getVideoWidthChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getVideoWidth", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getVideoWidthChannel.setMessageHandler { _, reply in
         do {
@@ -762,7 +762,7 @@ class THEOplayerNativeAPISetup {
     } else {
       getVideoWidthChannel.setMessageHandler(nil)
     }
-    let getVideoHeightChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getVideoHeight", binaryMessenger: binaryMessenger, codec: codec)
+    let getVideoHeightChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getVideoHeight", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getVideoHeightChannel.setMessageHandler { _, reply in
         do {
@@ -775,7 +775,7 @@ class THEOplayerNativeAPISetup {
     } else {
       getVideoHeightChannel.setMessageHandler(nil)
     }
-    let getBufferedChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getBuffered", binaryMessenger: binaryMessenger, codec: codec)
+    let getBufferedChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getBuffered", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getBufferedChannel.setMessageHandler { _, reply in
         do {
@@ -788,7 +788,7 @@ class THEOplayerNativeAPISetup {
     } else {
       getBufferedChannel.setMessageHandler(nil)
     }
-    let getSeekableChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getSeekable", binaryMessenger: binaryMessenger, codec: codec)
+    let getSeekableChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getSeekable", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getSeekableChannel.setMessageHandler { _, reply in
         do {
@@ -801,7 +801,7 @@ class THEOplayerNativeAPISetup {
     } else {
       getSeekableChannel.setMessageHandler(nil)
     }
-    let getPlayedChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getPlayed", binaryMessenger: binaryMessenger, codec: codec)
+    let getPlayedChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getPlayed", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getPlayedChannel.setMessageHandler { _, reply in
         do {
@@ -814,7 +814,7 @@ class THEOplayerNativeAPISetup {
     } else {
       getPlayedChannel.setMessageHandler(nil)
     }
-    let getErrorChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getError", binaryMessenger: binaryMessenger, codec: codec)
+    let getErrorChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getError", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       getErrorChannel.setMessageHandler { _, reply in
         do {
@@ -827,7 +827,7 @@ class THEOplayerNativeAPISetup {
     } else {
       getErrorChannel.setMessageHandler(nil)
     }
-    let stopChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.stop", binaryMessenger: binaryMessenger, codec: codec)
+    let stopChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.stop", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       stopChannel.setMessageHandler { _, reply in
         do {
@@ -840,7 +840,7 @@ class THEOplayerNativeAPISetup {
     } else {
       stopChannel.setMessageHandler(nil)
     }
-    let disposeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.dispose", binaryMessenger: binaryMessenger, codec: codec)
+    let disposeChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.dispose", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
       disposeChannel.setMessageHandler { _, reply in
         do {
@@ -921,133 +921,133 @@ class THEOplayerFlutterAPI {
     return THEOplayerFlutterAPICodec.shared
   }
   func onSourceChange(source sourceArg: SourceDescription?, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onSourceChange", binaryMessenger: binaryMessenger, codec: codec)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSourceChange", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([sourceArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onPlay(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onPlay", binaryMessenger: binaryMessenger, codec: codec)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPlay", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([currentTimeArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onPlaying(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onPlaying", binaryMessenger: binaryMessenger, codec: codec)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPlaying", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([currentTimeArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onPause(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onPause", binaryMessenger: binaryMessenger, codec: codec)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPause", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([currentTimeArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onWaiting(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onWaiting", binaryMessenger: binaryMessenger, codec: codec)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onWaiting", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([currentTimeArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onDurationChange(duration durationArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onDurationChange", binaryMessenger: binaryMessenger, codec: codec)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onDurationChange", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([durationArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onProgress(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onProgress", binaryMessenger: binaryMessenger, codec: codec)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onProgress", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([currentTimeArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onTimeUpdate(currentTime currentTimeArg: Double, currentProgramDateTime currentProgramDateTimeArg: Int64?, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onTimeUpdate", binaryMessenger: binaryMessenger, codec: codec)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onTimeUpdate", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([currentTimeArg, currentProgramDateTimeArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onRateChange(currentTime currentTimeArg: Double, playbackRate playbackRateArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onRateChange", binaryMessenger: binaryMessenger, codec: codec)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onRateChange", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([currentTimeArg, playbackRateArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onSeeking(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onSeeking", binaryMessenger: binaryMessenger, codec: codec)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSeeking", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([currentTimeArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onSeeked(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onSeeked", binaryMessenger: binaryMessenger, codec: codec)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSeeked", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([currentTimeArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onVolumeChange(currentTime currentTimeArg: Double, volume volumeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onVolumeChange", binaryMessenger: binaryMessenger, codec: codec)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onVolumeChange", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([currentTimeArg, volumeArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onResize(currentTime currentTimeArg: Double, width widthArg: Int64, height heightArg: Int64, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onResize", binaryMessenger: binaryMessenger, codec: codec)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onResize", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([currentTimeArg, widthArg, heightArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onEnded(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onEnded", binaryMessenger: binaryMessenger, codec: codec)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onEnded", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([currentTimeArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onError(error errorArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onError", binaryMessenger: binaryMessenger, codec: codec)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onError", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([errorArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onDestroy(completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onDestroy", binaryMessenger: binaryMessenger, codec: codec)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onDestroy", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage(nil) { _ in
       completion(.success(Void()))
     }
   }
   func onReadyStateChange(currentTime currentTimeArg: Double, readyState readyStateArg: ReadyState, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onReadyStateChange", binaryMessenger: binaryMessenger, codec: codec)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onReadyStateChange", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([currentTimeArg, readyStateArg.rawValue] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onLoadStart(completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onLoadStart", binaryMessenger: binaryMessenger, codec: codec)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onLoadStart", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage(nil) { _ in
       completion(.success(Void()))
     }
   }
   func onLoadedMetadata(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onLoadedMetadata", binaryMessenger: binaryMessenger, codec: codec)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onLoadedMetadata", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([currentTimeArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onLoadedData(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onLoadedData", binaryMessenger: binaryMessenger, codec: codec)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onLoadedData", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([currentTimeArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onCanPlay(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onCanPlay", binaryMessenger: binaryMessenger, codec: codec)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onCanPlay", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([currentTimeArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onCanPlayThrough(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onCanPlayThrough", binaryMessenger: binaryMessenger, codec: codec)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onCanPlayThrough", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([currentTimeArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
@@ -1065,7 +1065,7 @@ class THEOplayerNativeVideoTracksAPISetup {
   /// The codec used by THEOplayerNativeVideoTracksAPI.
   /// Sets up an instance of `THEOplayerNativeVideoTracksAPI` to handle messages through the `binaryMessenger`.
   static func setUp(binaryMessenger: FlutterBinaryMessenger, api: THEOplayerNativeVideoTracksAPI?) {
-    let setTargetQualityChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeVideoTracksAPI.setTargetQuality", binaryMessenger: binaryMessenger)
+    let setTargetQualityChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeVideoTracksAPI.setTargetQuality", binaryMessenger: binaryMessenger)
     if let api = api {
       setTargetQualityChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -1081,7 +1081,7 @@ class THEOplayerNativeVideoTracksAPISetup {
     } else {
       setTargetQualityChannel.setMessageHandler(nil)
     }
-    let setTargetQualitiesChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeVideoTracksAPI.setTargetQualities", binaryMessenger: binaryMessenger)
+    let setTargetQualitiesChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeVideoTracksAPI.setTargetQualities", binaryMessenger: binaryMessenger)
     if let api = api {
       setTargetQualitiesChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -1097,7 +1097,7 @@ class THEOplayerNativeVideoTracksAPISetup {
     } else {
       setTargetQualitiesChannel.setMessageHandler(nil)
     }
-    let setEnabledChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeVideoTracksAPI.setEnabled", binaryMessenger: binaryMessenger)
+    let setEnabledChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeVideoTracksAPI.setEnabled", binaryMessenger: binaryMessenger)
     if let api = api {
       setEnabledChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -1122,43 +1122,43 @@ class THEOplayerFlutterVideoTracksAPI {
     self.binaryMessenger = binaryMessenger
   }
   func onAddVideoTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, isEnabled isEnabledArg: Bool, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onAddVideoTrack", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onAddVideoTrack", binaryMessenger: binaryMessenger)
     channel.sendMessage([idArg, uidArg, labelArg, languageArg, kindArg, isEnabledArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onVideoTrackAddQuality(videoTrackUid videoTrackUidArg: Int64, qualityId qualityIdArg: String, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, width widthArg: Int64, height heightArg: Int64, frameRate frameRateArg: Double, firstFrame firstFrameArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality", binaryMessenger: binaryMessenger)
     channel.sendMessage([videoTrackUidArg, qualityIdArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, widthArg, heightArg, frameRateArg, firstFrameArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onRemoveVideoTrack(uid uidArg: Int64, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onRemoveVideoTrack", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onRemoveVideoTrack", binaryMessenger: binaryMessenger)
     channel.sendMessage([uidArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onVideoTrackListChange(uid uidArg: Int64, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackListChange", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackListChange", binaryMessenger: binaryMessenger)
     channel.sendMessage([uidArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onTargetQualityChange(videoTrackUid videoTrackUidArg: Int64, qualitiesUid qualitiesUidArg: [Int64], qualityUid qualityUidArg: Int64?, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onTargetQualityChange", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onTargetQualityChange", binaryMessenger: binaryMessenger)
     channel.sendMessage([videoTrackUidArg, qualitiesUidArg, qualityUidArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onActiveQualityChange(videoTrackUid videoTrackUidArg: Int64, qualityUid qualityUidArg: Int64, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onActiveQualityChange", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onActiveQualityChange", binaryMessenger: binaryMessenger)
     channel.sendMessage([videoTrackUidArg, qualityUidArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onQualityUpdate(videoTrackUid videoTrackUidArg: Int64, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, width widthArg: Int64, height heightArg: Int64, frameRate frameRateArg: Double, firstFrame firstFrameArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate", binaryMessenger: binaryMessenger)
     channel.sendMessage([videoTrackUidArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, widthArg, heightArg, frameRateArg, firstFrameArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
@@ -1176,7 +1176,7 @@ class THEOplayerNativeAudioTracksAPISetup {
   /// The codec used by THEOplayerNativeAudioTracksAPI.
   /// Sets up an instance of `THEOplayerNativeAudioTracksAPI` to handle messages through the `binaryMessenger`.
   static func setUp(binaryMessenger: FlutterBinaryMessenger, api: THEOplayerNativeAudioTracksAPI?) {
-    let setTargetQualityChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAudioTracksAPI.setTargetQuality", binaryMessenger: binaryMessenger)
+    let setTargetQualityChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAudioTracksAPI.setTargetQuality", binaryMessenger: binaryMessenger)
     if let api = api {
       setTargetQualityChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -1192,7 +1192,7 @@ class THEOplayerNativeAudioTracksAPISetup {
     } else {
       setTargetQualityChannel.setMessageHandler(nil)
     }
-    let setTargetQualitiesChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAudioTracksAPI.setTargetQualities", binaryMessenger: binaryMessenger)
+    let setTargetQualitiesChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAudioTracksAPI.setTargetQualities", binaryMessenger: binaryMessenger)
     if let api = api {
       setTargetQualitiesChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -1208,7 +1208,7 @@ class THEOplayerNativeAudioTracksAPISetup {
     } else {
       setTargetQualitiesChannel.setMessageHandler(nil)
     }
-    let setEnabledChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAudioTracksAPI.setEnabled", binaryMessenger: binaryMessenger)
+    let setEnabledChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAudioTracksAPI.setEnabled", binaryMessenger: binaryMessenger)
     if let api = api {
       setEnabledChannel.setMessageHandler { message, reply in
         let args = message as! [Any?]
@@ -1233,43 +1233,43 @@ class THEOplayerFlutterAudioTracksAPI {
     self.binaryMessenger = binaryMessenger
   }
   func onAddAudioTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, isEnabled isEnabledArg: Bool, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onAddAudioTrack", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAddAudioTrack", binaryMessenger: binaryMessenger)
     channel.sendMessage([idArg, uidArg, labelArg, languageArg, kindArg, isEnabledArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onAudioTrackAddQuality(audioTrackUid audioTrackUidArg: Int64, qualityId qualityIdArg: String, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, audioSamplingRate audioSamplingRateArg: Int64, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality", binaryMessenger: binaryMessenger)
     channel.sendMessage([audioTrackUidArg, qualityIdArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, audioSamplingRateArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onRemoveAudioTrack(uid uidArg: Int64, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onRemoveAudioTrack", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onRemoveAudioTrack", binaryMessenger: binaryMessenger)
     channel.sendMessage([uidArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onAudioTrackListChange(uid uidArg: Int64, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackListChange", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackListChange", binaryMessenger: binaryMessenger)
     channel.sendMessage([uidArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onTargetQualityChange(audioTrackUid audioTrackUidArg: Int64, qualitiesUid qualitiesUidArg: [Int64], qualityUid qualityUidArg: Int64?, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onTargetQualityChange", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onTargetQualityChange", binaryMessenger: binaryMessenger)
     channel.sendMessage([audioTrackUidArg, qualitiesUidArg, qualityUidArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onActiveQualityChange(audioTrackUid audioTrackUidArg: Int64, qualityUid qualityUidArg: Int64, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onActiveQualityChange", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onActiveQualityChange", binaryMessenger: binaryMessenger)
     channel.sendMessage([audioTrackUidArg, qualityUidArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onQualityUpdate(audioTrackUid audioTrackUidArg: Int64, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, audioSamplingRate audioSamplingRateArg: Int64, completion: @escaping (Result<Void, FlutterError>) -> Void) {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate", binaryMessenger: binaryMessenger)
     channel.sendMessage([audioTrackUidArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, audioSamplingRateArg] as [Any?]) { _ in
       completion(.success(Void()))
     }

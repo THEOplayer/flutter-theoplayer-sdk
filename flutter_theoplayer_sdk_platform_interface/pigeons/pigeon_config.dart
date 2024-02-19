@@ -8,9 +8,9 @@ import 'package:pigeon/pigeon.dart';
   dartOptions: DartOptions(),
   kotlinOut: '../flutter_theoplayer_sdk_android/android/src/main/kotlin/com/theoplayer/theoplayer/pigeon/APIs.g.kt',
   kotlinOptions: KotlinOptions(
-      package: 'com.theoplayer.theoplayer.pigeon'
+      package: 'com.theoplayer.flutter.pigeon'
   ),
   swiftOut: '../flutter_theoplayer_sdk_ios/ios/Classes/pigeon/APIs.g.swift',
   swiftOptions: SwiftOptions(),
-  dartPackageName: 'flutter_theoplayer_sdk_platform_interface',
+  dartPackageName: 'theoplayer_platform_interface',
 ))

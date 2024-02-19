@@ -1,8 +1,8 @@
 import 'package:flutter/services.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/pigeon/apis.g.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/texttrack/theoplayer_texttrack.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/texttrack/theoplayer_texttrack_events.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/texttrack/theoplayer_texttrack_impl.dart';
+import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
+import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack.dart';
+import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack_events.dart';
+import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack_impl.dart';
 
 class THEOplayerFlutterTextTracksAPIImpl implements THEOplayerFlutterTextTracksAPI {
   late final THEOplayerNativeTextTracksAPI _nativeTextTrackAPI;

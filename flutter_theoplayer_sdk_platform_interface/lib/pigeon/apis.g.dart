@@ -240,7 +240,7 @@ class THEOplayerNativeTextTracksAPI {
 
   Future<void> setMode(int arg_textTrackUid, TextTrackMode arg_mode) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeTextTracksAPI.setMode', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeTextTracksAPI.setMode', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(<Object?>[arg_textTrackUid, arg_mode.index]) as List<Object?>?;
@@ -291,36 +291,36 @@ abstract class THEOplayerFlutterTextTracksAPI {
   static void setup(THEOplayerFlutterTextTracksAPI? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_id = (args[0] as String?);
           final int? arg_uid = (args[1] as int?);
           assert(arg_uid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null, expected non-null int.');
           final String? arg_label = (args[2] as String?);
           final String? arg_language = (args[3] as String?);
           final String? arg_kind = (args[4] as String?);
           final String? arg_inBandMetadataTrackDispatchType = (args[5] as String?);
           final TextTrackReadyState? arg_readyState = args[6] == null ? null : TextTrackReadyState.values[args[6]! as int];
           assert(arg_readyState != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null, expected non-null TextTrackReadyState.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null, expected non-null TextTrackReadyState.');
           final TextTrackType? arg_type = args[7] == null ? null : TextTrackType.values[args[7]! as int];
           assert(arg_type != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null, expected non-null TextTrackType.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null, expected non-null TextTrackType.');
           final String? arg_source = (args[8] as String?);
           final bool? arg_isForced = (args[9] as bool?);
           assert(arg_isForced != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null, expected non-null bool.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null, expected non-null bool.');
           final TextTrackMode? arg_mode = args[10] == null ? null : TextTrackMode.values[args[10]! as int];
           assert(arg_mode != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null, expected non-null TextTrackMode.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null, expected non-null TextTrackMode.');
           try {
             api.onAddTextTrack(arg_id, arg_uid!, arg_label, arg_language, arg_kind, arg_inBandMetadataTrackDispatchType, arg_readyState!, arg_type!, arg_source, arg_isForced!, arg_mode!);
             return wrapResponse(empty: true);
@@ -334,18 +334,18 @@ abstract class THEOplayerFlutterTextTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onRemoveTextTrack', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onRemoveTextTrack', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onRemoveTextTrack was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onRemoveTextTrack was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_uid = (args[0] as int?);
           assert(arg_uid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onRemoveTextTrack was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onRemoveTextTrack was null, expected non-null int.');
           try {
             api.onRemoveTextTrack(arg_uid!);
             return wrapResponse(empty: true);
@@ -359,18 +359,18 @@ abstract class THEOplayerFlutterTextTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackListChange', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackListChange', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackListChange was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackListChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_uid = (args[0] as int?);
           assert(arg_uid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackListChange was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackListChange was null, expected non-null int.');
           try {
             api.onTextTrackListChange(arg_uid!);
             return wrapResponse(empty: true);
@@ -384,33 +384,33 @@ abstract class THEOplayerFlutterTextTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_textTrackUid = (args[0] as int?);
           assert(arg_textTrackUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null int.');
           final String? arg_id = (args[1] as String?);
           assert(arg_id != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null String.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null String.');
           final int? arg_uid = (args[2] as int?);
           assert(arg_uid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null int.');
           final double? arg_startTime = (args[3] as double?);
           assert(arg_startTime != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null double.');
           final double? arg_endTime = (args[4] as double?);
           assert(arg_endTime != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null double.');
           final String? arg_content = (args[5] as String?);
           assert(arg_content != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null String.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null String.');
           try {
             api.onTextTrackAddCue(arg_textTrackUid!, arg_id!, arg_uid!, arg_startTime!, arg_endTime!, arg_content!);
             return wrapResponse(empty: true);
@@ -424,21 +424,21 @@ abstract class THEOplayerFlutterTextTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackRemoveCue', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackRemoveCue', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackRemoveCue was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackRemoveCue was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_textTrackUid = (args[0] as int?);
           assert(arg_textTrackUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackRemoveCue was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackRemoveCue was null, expected non-null int.');
           final int? arg_cueUid = (args[1] as int?);
           assert(arg_cueUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackRemoveCue was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackRemoveCue was null, expected non-null int.');
           try {
             api.onTextTrackRemoveCue(arg_textTrackUid!, arg_cueUid!);
             return wrapResponse(empty: true);
@@ -452,21 +452,21 @@ abstract class THEOplayerFlutterTextTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackEnterCue', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackEnterCue', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackEnterCue was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackEnterCue was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_textTrackUid = (args[0] as int?);
           assert(arg_textTrackUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackEnterCue was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackEnterCue was null, expected non-null int.');
           final int? arg_cueUid = (args[1] as int?);
           assert(arg_cueUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackEnterCue was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackEnterCue was null, expected non-null int.');
           try {
             api.onTextTrackEnterCue(arg_textTrackUid!, arg_cueUid!);
             return wrapResponse(empty: true);
@@ -480,21 +480,21 @@ abstract class THEOplayerFlutterTextTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackExitCue', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackExitCue', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackExitCue was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackExitCue was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_textTrackUid = (args[0] as int?);
           assert(arg_textTrackUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackExitCue was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackExitCue was null, expected non-null int.');
           final int? arg_cueUid = (args[1] as int?);
           assert(arg_cueUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackExitCue was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackExitCue was null, expected non-null int.');
           try {
             api.onTextTrackExitCue(arg_textTrackUid!, arg_cueUid!);
             return wrapResponse(empty: true);
@@ -508,18 +508,18 @@ abstract class THEOplayerFlutterTextTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackCueChange', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackCueChange', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackCueChange was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackCueChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_textTrackUid = (args[0] as int?);
           assert(arg_textTrackUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackCueChange was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackCueChange was null, expected non-null int.');
           try {
             api.onTextTrackCueChange(arg_textTrackUid!);
             return wrapResponse(empty: true);
@@ -533,18 +533,18 @@ abstract class THEOplayerFlutterTextTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackChange', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackChange', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackChange was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_textTrackUid = (args[0] as int?);
           assert(arg_textTrackUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackChange was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackChange was null, expected non-null int.');
           try {
             api.onTextTrackChange(arg_textTrackUid!);
             return wrapResponse(empty: true);
@@ -558,21 +558,21 @@ abstract class THEOplayerFlutterTextTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onCueEnter', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueEnter', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onCueEnter was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueEnter was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_textTrackUid = (args[0] as int?);
           assert(arg_textTrackUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onCueEnter was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueEnter was null, expected non-null int.');
           final int? arg_cueUid = (args[1] as int?);
           assert(arg_cueUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onCueEnter was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueEnter was null, expected non-null int.');
           try {
             api.onCueEnter(arg_textTrackUid!, arg_cueUid!);
             return wrapResponse(empty: true);
@@ -586,21 +586,21 @@ abstract class THEOplayerFlutterTextTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onCueExit', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueExit', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onCueExit was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueExit was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_textTrackUid = (args[0] as int?);
           assert(arg_textTrackUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onCueExit was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueExit was null, expected non-null int.');
           final int? arg_cueUid = (args[1] as int?);
           assert(arg_cueUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onCueExit was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueExit was null, expected non-null int.');
           try {
             api.onCueExit(arg_textTrackUid!, arg_cueUid!);
             return wrapResponse(empty: true);
@@ -614,27 +614,27 @@ abstract class THEOplayerFlutterTextTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_textTrackUid = (args[0] as int?);
           assert(arg_textTrackUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate was null, expected non-null int.');
           final int? arg_cueUid = (args[1] as int?);
           assert(arg_cueUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate was null, expected non-null int.');
           final double? arg_endTime = (args[2] as double?);
           assert(arg_endTime != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate was null, expected non-null double.');
           final String? arg_content = (args[3] as String?);
           assert(arg_content != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate was null, expected non-null String.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate was null, expected non-null String.');
           try {
             api.onCueUpdate(arg_textTrackUid!, arg_cueUid!, arg_endTime!, arg_content!);
             return wrapResponse(empty: true);
@@ -709,7 +709,7 @@ class THEOplayerNativeAPI {
 
   Future<void> setSource(SourceDescription? arg_source) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.setSource', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setSource', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(<Object?>[arg_source]) as List<Object?>?;
@@ -731,7 +731,7 @@ class THEOplayerNativeAPI {
 
   Future<SourceDescription?> getSource() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getSource', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getSource', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -753,7 +753,7 @@ class THEOplayerNativeAPI {
 
   Future<void> setAutoplay(bool arg_autoplay) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.setAutoplay', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setAutoplay', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(<Object?>[arg_autoplay]) as List<Object?>?;
@@ -775,7 +775,7 @@ class THEOplayerNativeAPI {
 
   Future<bool> isAutoplay() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.isAutoplay', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.isAutoplay', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -802,7 +802,7 @@ class THEOplayerNativeAPI {
 
   Future<void> play() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.play', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.play', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -824,7 +824,7 @@ class THEOplayerNativeAPI {
 
   Future<void> pause() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.pause', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.pause', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -846,7 +846,7 @@ class THEOplayerNativeAPI {
 
   Future<bool> isPaused() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.isPaused', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.isPaused', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -873,7 +873,7 @@ class THEOplayerNativeAPI {
 
   Future<void> setCurrentTime(double arg_currentTime) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.setCurrentTime', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setCurrentTime', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(<Object?>[arg_currentTime]) as List<Object?>?;
@@ -895,7 +895,7 @@ class THEOplayerNativeAPI {
 
   Future<double> getCurrentTime() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getCurrentTime', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getCurrentTime', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -922,7 +922,7 @@ class THEOplayerNativeAPI {
 
   Future<void> setCurrentProgramDateTime(int arg_currentProgramDateTime) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.setCurrentProgramDateTime', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setCurrentProgramDateTime', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(<Object?>[arg_currentProgramDateTime]) as List<Object?>?;
@@ -944,7 +944,7 @@ class THEOplayerNativeAPI {
 
   Future<int?> getCurrentProgramDateTime() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getCurrentProgramDateTime', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getCurrentProgramDateTime', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -966,7 +966,7 @@ class THEOplayerNativeAPI {
 
   Future<double> getDuration() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getDuration', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getDuration', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -993,7 +993,7 @@ class THEOplayerNativeAPI {
 
   Future<void> setPlaybackRate(double arg_playbackRate) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.setPlaybackRate', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setPlaybackRate', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(<Object?>[arg_playbackRate]) as List<Object?>?;
@@ -1015,7 +1015,7 @@ class THEOplayerNativeAPI {
 
   Future<double> getPlaybackRate() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getPlaybackRate', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getPlaybackRate', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -1042,7 +1042,7 @@ class THEOplayerNativeAPI {
 
   Future<void> setVolume(double arg_volume) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.setVolume', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setVolume', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(<Object?>[arg_volume]) as List<Object?>?;
@@ -1064,7 +1064,7 @@ class THEOplayerNativeAPI {
 
   Future<double> getVolume() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getVolume', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getVolume', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -1091,7 +1091,7 @@ class THEOplayerNativeAPI {
 
   Future<void> setMuted(bool arg_muted) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.setMuted', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setMuted', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(<Object?>[arg_muted]) as List<Object?>?;
@@ -1113,7 +1113,7 @@ class THEOplayerNativeAPI {
 
   Future<bool> isMuted() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.isMuted', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.isMuted', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -1140,7 +1140,7 @@ class THEOplayerNativeAPI {
 
   Future<void> setPreload(PreloadType arg_preload) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.setPreload', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setPreload', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(<Object?>[arg_preload.index]) as List<Object?>?;
@@ -1162,7 +1162,7 @@ class THEOplayerNativeAPI {
 
   Future<PreloadType> getPreload() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getPreload', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getPreload', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -1189,7 +1189,7 @@ class THEOplayerNativeAPI {
 
   Future<ReadyState> getReadyState() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getReadyState', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getReadyState', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -1216,7 +1216,7 @@ class THEOplayerNativeAPI {
 
   Future<bool> isSeeking() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.isSeeking', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.isSeeking', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -1243,7 +1243,7 @@ class THEOplayerNativeAPI {
 
   Future<bool> isEnded() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.isEnded', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.isEnded', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -1270,7 +1270,7 @@ class THEOplayerNativeAPI {
 
   Future<int> getVideoWidth() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getVideoWidth', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getVideoWidth', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -1297,7 +1297,7 @@ class THEOplayerNativeAPI {
 
   Future<int> getVideoHeight() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getVideoHeight', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getVideoHeight', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -1324,7 +1324,7 @@ class THEOplayerNativeAPI {
 
   Future<List<TimeRange?>> getBuffered() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getBuffered', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getBuffered', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -1351,7 +1351,7 @@ class THEOplayerNativeAPI {
 
   Future<List<TimeRange?>> getSeekable() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getSeekable', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getSeekable', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -1378,7 +1378,7 @@ class THEOplayerNativeAPI {
 
   Future<List<TimeRange?>> getPlayed() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getPlayed', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getPlayed', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -1405,7 +1405,7 @@ class THEOplayerNativeAPI {
 
   Future<String?> getError() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.getError', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getError', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -1427,7 +1427,7 @@ class THEOplayerNativeAPI {
 
   Future<void> stop() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.stop', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.stop', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -1449,7 +1449,7 @@ class THEOplayerNativeAPI {
 
   Future<void> dispose() async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAPI.dispose', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.dispose', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(null) as List<Object?>?;
@@ -1563,14 +1563,14 @@ abstract class THEOplayerFlutterAPI {
   static void setup(THEOplayerFlutterAPI? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onSourceChange', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSourceChange', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onSourceChange was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSourceChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final SourceDescription? arg_source = (args[0] as SourceDescription?);
           try {
@@ -1586,18 +1586,18 @@ abstract class THEOplayerFlutterAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onPlay', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPlay', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onPlay was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPlay was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
           assert(arg_currentTime != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onPlay was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPlay was null, expected non-null double.');
           try {
             api.onPlay(arg_currentTime!);
             return wrapResponse(empty: true);
@@ -1611,18 +1611,18 @@ abstract class THEOplayerFlutterAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onPlaying', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPlaying', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onPlaying was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPlaying was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
           assert(arg_currentTime != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onPlaying was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPlaying was null, expected non-null double.');
           try {
             api.onPlaying(arg_currentTime!);
             return wrapResponse(empty: true);
@@ -1636,18 +1636,18 @@ abstract class THEOplayerFlutterAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onPause', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPause', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onPause was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPause was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
           assert(arg_currentTime != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onPause was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPause was null, expected non-null double.');
           try {
             api.onPause(arg_currentTime!);
             return wrapResponse(empty: true);
@@ -1661,18 +1661,18 @@ abstract class THEOplayerFlutterAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onWaiting', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onWaiting', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onWaiting was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onWaiting was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
           assert(arg_currentTime != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onWaiting was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onWaiting was null, expected non-null double.');
           try {
             api.onWaiting(arg_currentTime!);
             return wrapResponse(empty: true);
@@ -1686,18 +1686,18 @@ abstract class THEOplayerFlutterAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onDurationChange', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onDurationChange', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onDurationChange was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onDurationChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_duration = (args[0] as double?);
           assert(arg_duration != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onDurationChange was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onDurationChange was null, expected non-null double.');
           try {
             api.onDurationChange(arg_duration!);
             return wrapResponse(empty: true);
@@ -1711,18 +1711,18 @@ abstract class THEOplayerFlutterAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onProgress', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onProgress', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onProgress was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onProgress was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
           assert(arg_currentTime != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onProgress was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onProgress was null, expected non-null double.');
           try {
             api.onProgress(arg_currentTime!);
             return wrapResponse(empty: true);
@@ -1736,18 +1736,18 @@ abstract class THEOplayerFlutterAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onTimeUpdate', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onTimeUpdate', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onTimeUpdate was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onTimeUpdate was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
           assert(arg_currentTime != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onTimeUpdate was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onTimeUpdate was null, expected non-null double.');
           final int? arg_currentProgramDateTime = (args[1] as int?);
           try {
             api.onTimeUpdate(arg_currentTime!, arg_currentProgramDateTime);
@@ -1762,21 +1762,21 @@ abstract class THEOplayerFlutterAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onRateChange', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onRateChange', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onRateChange was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onRateChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
           assert(arg_currentTime != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onRateChange was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onRateChange was null, expected non-null double.');
           final double? arg_playbackRate = (args[1] as double?);
           assert(arg_playbackRate != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onRateChange was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onRateChange was null, expected non-null double.');
           try {
             api.onRateChange(arg_currentTime!, arg_playbackRate!);
             return wrapResponse(empty: true);
@@ -1790,18 +1790,18 @@ abstract class THEOplayerFlutterAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onSeeking', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSeeking', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onSeeking was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSeeking was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
           assert(arg_currentTime != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onSeeking was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSeeking was null, expected non-null double.');
           try {
             api.onSeeking(arg_currentTime!);
             return wrapResponse(empty: true);
@@ -1815,18 +1815,18 @@ abstract class THEOplayerFlutterAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onSeeked', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSeeked', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onSeeked was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSeeked was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
           assert(arg_currentTime != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onSeeked was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSeeked was null, expected non-null double.');
           try {
             api.onSeeked(arg_currentTime!);
             return wrapResponse(empty: true);
@@ -1840,21 +1840,21 @@ abstract class THEOplayerFlutterAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onVolumeChange', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onVolumeChange', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onVolumeChange was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onVolumeChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
           assert(arg_currentTime != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onVolumeChange was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onVolumeChange was null, expected non-null double.');
           final double? arg_volume = (args[1] as double?);
           assert(arg_volume != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onVolumeChange was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onVolumeChange was null, expected non-null double.');
           try {
             api.onVolumeChange(arg_currentTime!, arg_volume!);
             return wrapResponse(empty: true);
@@ -1868,24 +1868,24 @@ abstract class THEOplayerFlutterAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onResize', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onResize', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onResize was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onResize was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
           assert(arg_currentTime != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onResize was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onResize was null, expected non-null double.');
           final int? arg_width = (args[1] as int?);
           assert(arg_width != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onResize was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onResize was null, expected non-null int.');
           final int? arg_height = (args[2] as int?);
           assert(arg_height != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onResize was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onResize was null, expected non-null int.');
           try {
             api.onResize(arg_currentTime!, arg_width!, arg_height!);
             return wrapResponse(empty: true);
@@ -1899,18 +1899,18 @@ abstract class THEOplayerFlutterAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onEnded', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onEnded', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onEnded was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onEnded was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
           assert(arg_currentTime != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onEnded was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onEnded was null, expected non-null double.');
           try {
             api.onEnded(arg_currentTime!);
             return wrapResponse(empty: true);
@@ -1924,18 +1924,18 @@ abstract class THEOplayerFlutterAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onError', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onError', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onError was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onError was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_error = (args[0] as String?);
           assert(arg_error != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onError was null, expected non-null String.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onError was null, expected non-null String.');
           try {
             api.onError(arg_error!);
             return wrapResponse(empty: true);
@@ -1949,7 +1949,7 @@ abstract class THEOplayerFlutterAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onDestroy', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onDestroy', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
@@ -1968,21 +1968,21 @@ abstract class THEOplayerFlutterAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onReadyStateChange', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onReadyStateChange', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onReadyStateChange was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onReadyStateChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
           assert(arg_currentTime != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onReadyStateChange was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onReadyStateChange was null, expected non-null double.');
           final ReadyState? arg_readyState = args[1] == null ? null : ReadyState.values[args[1]! as int];
           assert(arg_readyState != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onReadyStateChange was null, expected non-null ReadyState.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onReadyStateChange was null, expected non-null ReadyState.');
           try {
             api.onReadyStateChange(arg_currentTime!, arg_readyState!);
             return wrapResponse(empty: true);
@@ -1996,7 +1996,7 @@ abstract class THEOplayerFlutterAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onLoadStart', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onLoadStart', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
@@ -2015,18 +2015,18 @@ abstract class THEOplayerFlutterAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onLoadedMetadata', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onLoadedMetadata', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onLoadedMetadata was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onLoadedMetadata was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
           assert(arg_currentTime != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onLoadedMetadata was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onLoadedMetadata was null, expected non-null double.');
           try {
             api.onLoadedMetadata(arg_currentTime!);
             return wrapResponse(empty: true);
@@ -2040,18 +2040,18 @@ abstract class THEOplayerFlutterAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onLoadedData', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onLoadedData', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onLoadedData was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onLoadedData was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
           assert(arg_currentTime != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onLoadedData was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onLoadedData was null, expected non-null double.');
           try {
             api.onLoadedData(arg_currentTime!);
             return wrapResponse(empty: true);
@@ -2065,18 +2065,18 @@ abstract class THEOplayerFlutterAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onCanPlay', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onCanPlay', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onCanPlay was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onCanPlay was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
           assert(arg_currentTime != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onCanPlay was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onCanPlay was null, expected non-null double.');
           try {
             api.onCanPlay(arg_currentTime!);
             return wrapResponse(empty: true);
@@ -2090,18 +2090,18 @@ abstract class THEOplayerFlutterAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onCanPlayThrough', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onCanPlayThrough', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onCanPlayThrough was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onCanPlayThrough was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
           assert(arg_currentTime != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAPI.onCanPlayThrough was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onCanPlayThrough was null, expected non-null double.');
           try {
             api.onCanPlayThrough(arg_currentTime!);
             return wrapResponse(empty: true);
@@ -2128,7 +2128,7 @@ class THEOplayerNativeVideoTracksAPI {
 
   Future<void> setTargetQuality(int arg_videoTrackUid, int? arg_qualityUid) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeVideoTracksAPI.setTargetQuality', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeVideoTracksAPI.setTargetQuality', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(<Object?>[arg_videoTrackUid, arg_qualityUid]) as List<Object?>?;
@@ -2150,7 +2150,7 @@ class THEOplayerNativeVideoTracksAPI {
 
   Future<void> setTargetQualities(int arg_videoTrackUid, List<int?>? arg_qualitiesUid) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeVideoTracksAPI.setTargetQualities', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeVideoTracksAPI.setTargetQualities', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(<Object?>[arg_videoTrackUid, arg_qualitiesUid]) as List<Object?>?;
@@ -2172,7 +2172,7 @@ class THEOplayerNativeVideoTracksAPI {
 
   Future<void> setEnabled(int arg_videoTrackUid, bool arg_enabled) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeVideoTracksAPI.setEnabled', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeVideoTracksAPI.setEnabled', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(<Object?>[arg_videoTrackUid, arg_enabled]) as List<Object?>?;
@@ -2213,25 +2213,25 @@ abstract class THEOplayerFlutterVideoTracksAPI {
   static void setup(THEOplayerFlutterVideoTracksAPI? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onAddVideoTrack', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onAddVideoTrack', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onAddVideoTrack was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onAddVideoTrack was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_id = (args[0] as String?);
           final int? arg_uid = (args[1] as int?);
           assert(arg_uid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onAddVideoTrack was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onAddVideoTrack was null, expected non-null int.');
           final String? arg_label = (args[2] as String?);
           final String? arg_language = (args[3] as String?);
           final String? arg_kind = (args[4] as String?);
           final bool? arg_isEnabled = (args[5] as bool?);
           assert(arg_isEnabled != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onAddVideoTrack was null, expected non-null bool.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onAddVideoTrack was null, expected non-null bool.');
           try {
             api.onAddVideoTrack(arg_id, arg_uid!, arg_label, arg_language, arg_kind, arg_isEnabled!);
             return wrapResponse(empty: true);
@@ -2245,41 +2245,41 @@ abstract class THEOplayerFlutterVideoTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_videoTrackUid = (args[0] as int?);
           assert(arg_videoTrackUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null int.');
           final String? arg_qualityId = (args[1] as String?);
           assert(arg_qualityId != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null String.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null String.');
           final int? arg_qualityUid = (args[2] as int?);
           assert(arg_qualityUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null int.');
           final String? arg_name = (args[3] as String?);
           final int? arg_bandwidth = (args[4] as int?);
           assert(arg_bandwidth != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null int.');
           final String? arg_codecs = (args[5] as String?);
           final int? arg_width = (args[6] as int?);
           assert(arg_width != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null int.');
           final int? arg_height = (args[7] as int?);
           assert(arg_height != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null int.');
           final double? arg_frameRate = (args[8] as double?);
           assert(arg_frameRate != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null double.');
           final double? arg_firstFrame = (args[9] as double?);
           assert(arg_firstFrame != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null double.');
           try {
             api.onVideoTrackAddQuality(arg_videoTrackUid!, arg_qualityId!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_width!, arg_height!, arg_frameRate!, arg_firstFrame!);
             return wrapResponse(empty: true);
@@ -2293,18 +2293,18 @@ abstract class THEOplayerFlutterVideoTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onRemoveVideoTrack', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onRemoveVideoTrack', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onRemoveVideoTrack was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onRemoveVideoTrack was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_uid = (args[0] as int?);
           assert(arg_uid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onRemoveVideoTrack was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onRemoveVideoTrack was null, expected non-null int.');
           try {
             api.onRemoveVideoTrack(arg_uid!);
             return wrapResponse(empty: true);
@@ -2318,18 +2318,18 @@ abstract class THEOplayerFlutterVideoTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackListChange', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackListChange', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackListChange was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackListChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_uid = (args[0] as int?);
           assert(arg_uid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackListChange was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackListChange was null, expected non-null int.');
           try {
             api.onVideoTrackListChange(arg_uid!);
             return wrapResponse(empty: true);
@@ -2343,21 +2343,21 @@ abstract class THEOplayerFlutterVideoTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onTargetQualityChange', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onTargetQualityChange', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onTargetQualityChange was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onTargetQualityChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_videoTrackUid = (args[0] as int?);
           assert(arg_videoTrackUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onTargetQualityChange was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onTargetQualityChange was null, expected non-null int.');
           final List<int?>? arg_qualitiesUid = (args[1] as List<Object?>?)?.cast<int?>();
           assert(arg_qualitiesUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onTargetQualityChange was null, expected non-null List<int?>.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onTargetQualityChange was null, expected non-null List<int?>.');
           final int? arg_qualityUid = (args[2] as int?);
           try {
             api.onTargetQualityChange(arg_videoTrackUid!, arg_qualitiesUid!, arg_qualityUid);
@@ -2372,21 +2372,21 @@ abstract class THEOplayerFlutterVideoTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onActiveQualityChange', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onActiveQualityChange', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onActiveQualityChange was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onActiveQualityChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_videoTrackUid = (args[0] as int?);
           assert(arg_videoTrackUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onActiveQualityChange was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onActiveQualityChange was null, expected non-null int.');
           final int? arg_qualityUid = (args[1] as int?);
           assert(arg_qualityUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onActiveQualityChange was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onActiveQualityChange was null, expected non-null int.');
           try {
             api.onActiveQualityChange(arg_videoTrackUid!, arg_qualityUid!);
             return wrapResponse(empty: true);
@@ -2400,38 +2400,38 @@ abstract class THEOplayerFlutterVideoTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_videoTrackUid = (args[0] as int?);
           assert(arg_videoTrackUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null int.');
           final int? arg_qualityUid = (args[1] as int?);
           assert(arg_qualityUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null int.');
           final String? arg_name = (args[2] as String?);
           final int? arg_bandwidth = (args[3] as int?);
           assert(arg_bandwidth != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null int.');
           final String? arg_codecs = (args[4] as String?);
           final int? arg_width = (args[5] as int?);
           assert(arg_width != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null int.');
           final int? arg_height = (args[6] as int?);
           assert(arg_height != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null int.');
           final double? arg_frameRate = (args[7] as double?);
           assert(arg_frameRate != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null double.');
           final double? arg_firstFrame = (args[8] as double?);
           assert(arg_firstFrame != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null double.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null double.');
           try {
             api.onQualityUpdate(arg_videoTrackUid!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_width!, arg_height!, arg_frameRate!, arg_firstFrame!);
             return wrapResponse(empty: true);
@@ -2458,7 +2458,7 @@ class THEOplayerNativeAudioTracksAPI {
 
   Future<void> setTargetQuality(int arg_audioTrackUid, int? arg_qualityUid) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAudioTracksAPI.setTargetQuality', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAudioTracksAPI.setTargetQuality', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(<Object?>[arg_audioTrackUid, arg_qualityUid]) as List<Object?>?;
@@ -2480,7 +2480,7 @@ class THEOplayerNativeAudioTracksAPI {
 
   Future<void> setTargetQualities(int arg_audioTrackUid, List<int?>? arg_qualitiesUid) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAudioTracksAPI.setTargetQualities', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAudioTracksAPI.setTargetQualities', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(<Object?>[arg_audioTrackUid, arg_qualitiesUid]) as List<Object?>?;
@@ -2502,7 +2502,7 @@ class THEOplayerNativeAudioTracksAPI {
 
   Future<void> setEnabled(int arg_audioTrackUid, bool arg_enabled) async {
     final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-        'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerNativeAudioTracksAPI.setEnabled', codec,
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAudioTracksAPI.setEnabled', codec,
         binaryMessenger: _binaryMessenger);
     final List<Object?>? replyList =
         await channel.send(<Object?>[arg_audioTrackUid, arg_enabled]) as List<Object?>?;
@@ -2543,25 +2543,25 @@ abstract class THEOplayerFlutterAudioTracksAPI {
   static void setup(THEOplayerFlutterAudioTracksAPI? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onAddAudioTrack', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAddAudioTrack', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onAddAudioTrack was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAddAudioTrack was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_id = (args[0] as String?);
           final int? arg_uid = (args[1] as int?);
           assert(arg_uid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onAddAudioTrack was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAddAudioTrack was null, expected non-null int.');
           final String? arg_label = (args[2] as String?);
           final String? arg_language = (args[3] as String?);
           final String? arg_kind = (args[4] as String?);
           final bool? arg_isEnabled = (args[5] as bool?);
           assert(arg_isEnabled != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onAddAudioTrack was null, expected non-null bool.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAddAudioTrack was null, expected non-null bool.');
           try {
             api.onAddAudioTrack(arg_id, arg_uid!, arg_label, arg_language, arg_kind, arg_isEnabled!);
             return wrapResponse(empty: true);
@@ -2575,32 +2575,32 @@ abstract class THEOplayerFlutterAudioTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_audioTrackUid = (args[0] as int?);
           assert(arg_audioTrackUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null int.');
           final String? arg_qualityId = (args[1] as String?);
           assert(arg_qualityId != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null String.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null String.');
           final int? arg_qualityUid = (args[2] as int?);
           assert(arg_qualityUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null int.');
           final String? arg_name = (args[3] as String?);
           final int? arg_bandwidth = (args[4] as int?);
           assert(arg_bandwidth != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null int.');
           final String? arg_codecs = (args[5] as String?);
           final int? arg_audioSamplingRate = (args[6] as int?);
           assert(arg_audioSamplingRate != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null int.');
           try {
             api.onAudioTrackAddQuality(arg_audioTrackUid!, arg_qualityId!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_audioSamplingRate!);
             return wrapResponse(empty: true);
@@ -2614,18 +2614,18 @@ abstract class THEOplayerFlutterAudioTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onRemoveAudioTrack', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onRemoveAudioTrack', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onRemoveAudioTrack was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onRemoveAudioTrack was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_uid = (args[0] as int?);
           assert(arg_uid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onRemoveAudioTrack was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onRemoveAudioTrack was null, expected non-null int.');
           try {
             api.onRemoveAudioTrack(arg_uid!);
             return wrapResponse(empty: true);
@@ -2639,18 +2639,18 @@ abstract class THEOplayerFlutterAudioTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackListChange', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackListChange', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackListChange was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackListChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_uid = (args[0] as int?);
           assert(arg_uid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackListChange was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackListChange was null, expected non-null int.');
           try {
             api.onAudioTrackListChange(arg_uid!);
             return wrapResponse(empty: true);
@@ -2664,21 +2664,21 @@ abstract class THEOplayerFlutterAudioTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onTargetQualityChange', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onTargetQualityChange', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onTargetQualityChange was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onTargetQualityChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_audioTrackUid = (args[0] as int?);
           assert(arg_audioTrackUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onTargetQualityChange was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onTargetQualityChange was null, expected non-null int.');
           final List<int?>? arg_qualitiesUid = (args[1] as List<Object?>?)?.cast<int?>();
           assert(arg_qualitiesUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onTargetQualityChange was null, expected non-null List<int?>.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onTargetQualityChange was null, expected non-null List<int?>.');
           final int? arg_qualityUid = (args[2] as int?);
           try {
             api.onTargetQualityChange(arg_audioTrackUid!, arg_qualitiesUid!, arg_qualityUid);
@@ -2693,21 +2693,21 @@ abstract class THEOplayerFlutterAudioTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onActiveQualityChange', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onActiveQualityChange', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onActiveQualityChange was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onActiveQualityChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_audioTrackUid = (args[0] as int?);
           assert(arg_audioTrackUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onActiveQualityChange was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onActiveQualityChange was null, expected non-null int.');
           final int? arg_qualityUid = (args[1] as int?);
           assert(arg_qualityUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onActiveQualityChange was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onActiveQualityChange was null, expected non-null int.');
           try {
             api.onActiveQualityChange(arg_audioTrackUid!, arg_qualityUid!);
             return wrapResponse(empty: true);
@@ -2721,29 +2721,29 @@ abstract class THEOplayerFlutterAudioTracksAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_audioTrackUid = (args[0] as int?);
           assert(arg_audioTrackUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null, expected non-null int.');
           final int? arg_qualityUid = (args[1] as int?);
           assert(arg_qualityUid != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null, expected non-null int.');
           final String? arg_name = (args[2] as String?);
           final int? arg_bandwidth = (args[3] as int?);
           assert(arg_bandwidth != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null, expected non-null int.');
           final String? arg_codecs = (args[4] as String?);
           final int? arg_audioSamplingRate = (args[5] as int?);
           assert(arg_audioSamplingRate != null,
-              'Argument for dev.flutter.pigeon.flutter_theoplayer_sdk_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null, expected non-null int.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null, expected non-null int.');
           try {
             api.onQualityUpdate(arg_audioTrackUid!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_audioSamplingRate!);
             return wrapResponse(empty: true);

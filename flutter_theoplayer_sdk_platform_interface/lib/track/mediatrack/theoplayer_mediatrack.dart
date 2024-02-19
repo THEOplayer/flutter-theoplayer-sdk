@@ -1,7 +1,7 @@
 import 'dart:collection';
 
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_event_dispatcher_interface.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/theoplayer_track.dart';
+import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
+import 'package:theoplayer_platform_interface/track/theoplayer_track.dart';
 
 abstract class MediaTracks<T extends MediaTrack> extends Tracks<T> {}
 

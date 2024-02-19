@@ -1,4 +1,4 @@
-package com.theoplayer.theoplayer
+package com.theoplayer.flutter
 
 import android.content.Context
 import android.view.View
@@ -9,20 +9,20 @@ import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.event.player.PlayingEvent
-import com.theoplayer.theoplayer.pigeon.THEOplayerFlutterAPI
-import com.theoplayer.theoplayer.pigeon.THEOplayerNativeAPI
-import com.theoplayer.theoplayer.pigeon.THEOplayerNativeAPI.Companion.setUp
-import com.theoplayer.theoplayer.transformers.PlayerEnumTransformer
-import com.theoplayer.theoplayer.transformers.SourceTransformer
-import com.theoplayer.theoplayer.transformers.TimeRangeTransformer
+import com.theoplayer.flutter.pigeon.THEOplayerFlutterAPI
+import com.theoplayer.flutter.pigeon.THEOplayerNativeAPI
+import com.theoplayer.flutter.pigeon.THEOplayerNativeAPI.Companion.setUp
+import com.theoplayer.flutter.transformers.PlayerEnumTransformer
+import com.theoplayer.flutter.transformers.SourceTransformer
+import com.theoplayer.flutter.transformers.TimeRangeTransformer
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.platform.PlatformView
 import java.util.Date
 
-typealias FlutterSourceDescription = com.theoplayer.theoplayer.pigeon.SourceDescription
-typealias FlutterReadyState = com.theoplayer.theoplayer.pigeon.ReadyState
-typealias FlutterPreloadType = com.theoplayer.theoplayer.pigeon.PreloadType
-typealias FlutterTimeRange = com.theoplayer.theoplayer.pigeon.TimeRange
+typealias FlutterSourceDescription = com.theoplayer.flutter.pigeon.SourceDescription
+typealias FlutterReadyState = com.theoplayer.flutter.pigeon.ReadyState
+typealias FlutterPreloadType = com.theoplayer.flutter.pigeon.PreloadType
+typealias FlutterTimeRange = com.theoplayer.flutter.pigeon.TimeRange
 
 internal class THEOplayerViewNative(
     context: Context,

@@ -1,4 +1,4 @@
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_event_manager.dart';
+import 'package:theoplayer_platform_interface/theoplayer_event_manager.dart';
 import 'package:theoplayer/theoplayer.dart';
 
 class PlayerState {

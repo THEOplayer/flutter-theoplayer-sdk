@@ -1,4 +1,4 @@
-package com.theoplayer.theoplayer.transformers
+package com.theoplayer.flutter.transformers
 
 import com.theoplayer.android.api.source.SourceDescription
 import com.theoplayer.android.api.source.TypedSource
@@ -6,11 +6,11 @@ import com.theoplayer.android.api.source.drm.DRMConfiguration
 import com.theoplayer.android.api.source.drm.FairPlayKeySystemConfiguration
 import com.theoplayer.android.api.source.drm.KeySystemConfiguration
 
-typealias FlutterSourceDescription = com.theoplayer.theoplayer.pigeon.SourceDescription
-typealias FlutterTypedSource = com.theoplayer.theoplayer.pigeon.TypedSource
-typealias FlutterDRMConfiguration = com.theoplayer.theoplayer.pigeon.DRMConfiguration
-typealias FlutterWidevineDRMConfiguration = com.theoplayer.theoplayer.pigeon.WidevineDRMConfiguration
-typealias FlutterFairPlayDRMConfiguration = com.theoplayer.theoplayer.pigeon.FairPlayDRMConfiguration
+typealias FlutterSourceDescription = com.theoplayer.flutter.pigeon.SourceDescription
+typealias FlutterTypedSource = com.theoplayer.flutter.pigeon.TypedSource
+typealias FlutterDRMConfiguration = com.theoplayer.flutter.pigeon.DRMConfiguration
+typealias FlutterWidevineDRMConfiguration = com.theoplayer.flutter.pigeon.WidevineDRMConfiguration
+typealias FlutterFairPlayDRMConfiguration = com.theoplayer.flutter.pigeon.FairPlayDRMConfiguration
 
 object SourceTransformer {
 

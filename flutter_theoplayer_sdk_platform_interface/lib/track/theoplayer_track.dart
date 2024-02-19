@@ -1,6 +1,6 @@
 import 'dart:collection';
 
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_event_dispatcher_interface.dart';
+import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
 
 abstract class Tracks<T extends Track> extends ListBase<T> implements EventDispatcher {
   //TODO: fix this by making private. Now its used in theoplayer_tracklist_wrapper.dart

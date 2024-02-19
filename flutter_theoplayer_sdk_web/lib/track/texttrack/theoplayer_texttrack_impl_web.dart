@@ -1,14 +1,14 @@
 import 'dart:js';
 
-import 'package:flutter_theoplayer_sdk_platform_interface/pigeon/apis.g.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/texttrack/theoplayer_texttrack_events.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/texttrack/theoplayer_texttrack.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/texttrack/theoplayer_texttrack_impl.dart';
-import 'package:flutter_theoplayer_sdk_web/theoplayer_api_event_web.dart';
-import 'package:flutter_theoplayer_sdk_web/theoplayer_api_web.dart';
-import 'package:flutter_theoplayer_sdk_web/track/texttrack/theoplayer_texttrackcue_impl_web.dart';
-import 'package:flutter_theoplayer_sdk_web/transformers_web.dart';
-import 'package:flutter_theoplayer_sdk_web/utils/js_utils.dart';
+import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
+import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack_events.dart';
+import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack.dart';
+import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack_impl.dart';
+import 'package:theoplayer_web/theoplayer_api_event_web.dart';
+import 'package:theoplayer_web/theoplayer_api_web.dart';
+import 'package:theoplayer_web/track/texttrack/theoplayer_texttrackcue_impl_web.dart';
+import 'package:theoplayer_web/transformers_web.dart';
+import 'package:theoplayer_web/utils/js_utils.dart';
 
 class TextTrackImplWeb extends TextTrackImpl {
   final THEOplayerTextTrack _nativeTextTrack;

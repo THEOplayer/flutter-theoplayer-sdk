@@ -1,9 +1,9 @@
-import 'package:flutter_theoplayer_sdk_platform_interface/pigeon/apis.g.dart' as PlatformInterface;
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_audiotrack_impl.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_videotrack_impl.dart';
-import 'package:flutter_theoplayer_sdk_web/theoplayer_api_web.dart';
+import 'package:theoplayer_platform_interface/pigeon/apis.g.dart' as PlatformInterface;
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack_impl.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack_impl.dart';
+import 'package:theoplayer_web/theoplayer_api_web.dart';
 
 PlatformInterface.ReadyState toFlutterReadyState(int readyState) {
     PlatformInterface.ReadyState flutterReadyState = PlatformInterface.ReadyState.have_nothing;

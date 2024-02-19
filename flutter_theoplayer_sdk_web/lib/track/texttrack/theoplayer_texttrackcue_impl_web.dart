@@ -1,10 +1,10 @@
 import 'dart:js';
 
-import 'package:flutter_theoplayer_sdk_platform_interface/track/texttrack/theoplayer_texttrack_events.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/texttrack/theoplayer_texttrack_impl.dart';
-import 'package:flutter_theoplayer_sdk_web/theoplayer_api_event_web.dart';
-import 'package:flutter_theoplayer_sdk_web/theoplayer_api_web.dart';
-import 'package:flutter_theoplayer_sdk_web/utils/js_utils.dart';
+import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack_events.dart';
+import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack_impl.dart';
+import 'package:theoplayer_web/theoplayer_api_event_web.dart';
+import 'package:theoplayer_web/theoplayer_api_web.dart';
+import 'package:theoplayer_web/utils/js_utils.dart';
 
 class CueImplWeb extends CueImpl {
   final THEOplayerTextTrackCue _nativeTextTrackCue;

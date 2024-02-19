@@ -1,5 +1,5 @@
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_events.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/texttrack/theoplayer_texttrack.dart';
+import 'package:theoplayer_platform_interface/theoplayer_events.dart';
+import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack.dart';
 
 class TextTracksEventTypes {
   static const ADDTRACK = "ADDTRACK";

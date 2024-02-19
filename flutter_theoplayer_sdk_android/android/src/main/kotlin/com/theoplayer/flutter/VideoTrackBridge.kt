@@ -1,4 +1,4 @@
-package com.theoplayer.theoplayer
+package com.theoplayer.flutter
 
 import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.track.mediatrack.video.ActiveQualityChangedEvent
@@ -13,9 +13,9 @@ import com.theoplayer.android.api.event.track.mediatrack.quality.QualityUpdateEv
 import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.api.player.track.mediatrack.MediaTrack
 import com.theoplayer.android.api.player.track.mediatrack.quality.VideoQuality
-import com.theoplayer.theoplayer.pigeon.THEOplayerFlutterVideoTracksAPI
-import com.theoplayer.theoplayer.pigeon.THEOplayerNativeVideoTracksAPI
-import com.theoplayer.theoplayer.pigeon.THEOplayerNativeVideoTracksAPI.Companion.setUp
+import com.theoplayer.flutter.pigeon.THEOplayerFlutterVideoTracksAPI
+import com.theoplayer.flutter.pigeon.THEOplayerNativeVideoTracksAPI
+import com.theoplayer.flutter.pigeon.THEOplayerNativeVideoTracksAPI.Companion.setUp
 
 class VideoTrackBridge(
     private val player: Player,

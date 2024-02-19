@@ -31,18 +31,18 @@ class _QualityChangeState extends State<QualityChangeWidget> {
   void addAudioTrackListener(Event event) {
     var addEvent = event as AddAudioTrackEvent;
     print("addAudioTrack ${addEvent.track.uid}");
-    addEvent.track.qualities.forEach((quality) {
+    for (var quality in addEvent.track.qualities) {
           print("addAudioTrack quality ${quality.uid}");
-    });
+    }
     addEvent.track.addEventListener(AudioTrackEventTypes.ACTIVEQUALITYCHANGED, activeAudioQualityListener);
   }
 
   void addVideoTrackListener(Event event) {
     var addEvent = event as AddVideoTrackEvent;
     print("addVideoTrack ${addEvent.track.uid}");
-    addEvent.track.qualities.forEach((quality) {
+    for (var quality in addEvent.track.qualities) {
           print("addVideoTrack quality ${quality.uid}");
-    });
+    }
     addEvent.track.addEventListener(VideoTrackEventTypes.ACTIVEQUALITYCHANGED, activeVideoQualityListener);
   }
 

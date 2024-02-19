@@ -1,17 +1,17 @@
 import 'dart:html';
 
-import 'package:flutter_theoplayer_sdk_platform_interface/pigeon/apis.g.dart' as PlatformInterface;
-import 'package:flutter_theoplayer_sdk_platform_interface/theopalyer_config.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_event_dispatcher_interface.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_events.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/theoplayer_view_controller_interface.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/texttrack/theoplayer_texttrack.dart';
-import 'package:flutter_theoplayer_sdk_web/player_event_forwarder_web.dart';
-import 'package:flutter_theoplayer_sdk_web/theoplayer_api_web.dart';
-import 'package:flutter_theoplayer_sdk_web/track/theoplayer_track_controller_web.dart';
-import 'package:flutter_theoplayer_sdk_web/transformers_web.dart';
+import 'package:theoplayer_platform_interface/pigeon/apis.g.dart' as PlatformInterface;
+import 'package:theoplayer_platform_interface/theopalyer_config.dart';
+import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
+import 'package:theoplayer_platform_interface/theoplayer_events.dart';
+import 'package:theoplayer_platform_interface/theoplayer_view_controller_interface.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
+import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack.dart';
+import 'package:theoplayer_web/player_event_forwarder_web.dart';
+import 'package:theoplayer_web/theoplayer_api_web.dart';
+import 'package:theoplayer_web/track/theoplayer_track_controller_web.dart';
+import 'package:theoplayer_web/transformers_web.dart';
 
 class THEOplayerViewControllerWeb extends THEOplayerViewController {
 

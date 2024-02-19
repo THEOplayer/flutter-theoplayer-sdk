@@ -1,11 +1,11 @@
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/texttrack/theoplayer_texttrack.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/theoplayer_track_controller_interface.dart';
-import 'package:flutter_theoplayer_sdk_web/theoplayer_api_web.dart';
-import 'package:flutter_theoplayer_sdk_web/track/texttrack/theoplayer_texttracklist_impl_web.dart';
-import 'package:flutter_theoplayer_sdk_web/track/audiotrack/theoplayer_audiotracklist_impl_web.dart';
-import 'package:flutter_theoplayer_sdk_web/track/videotrack/theoplayer_videotracklist_impl_web.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
+import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack.dart';
+import 'package:theoplayer_platform_interface/track/theoplayer_track_controller_interface.dart';
+import 'package:theoplayer_web/theoplayer_api_web.dart';
+import 'package:theoplayer_web/track/texttrack/theoplayer_texttracklist_impl_web.dart';
+import 'package:theoplayer_web/track/audiotrack/theoplayer_audiotracklist_impl_web.dart';
+import 'package:theoplayer_web/track/videotrack/theoplayer_videotracklist_impl_web.dart';
 
 class THEOplayerTrackControllerWeb extends THEOplayerTrackControllerInterface {
   static const String TAG = "THEOplayerTextTrackControllerWeb";

@@ -1,11 +1,11 @@
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_audiotrack_impl.dart';
-import 'package:flutter_theoplayer_sdk_platform_interface/track/mediatrack/theoplayer_audiotrack_events.dart';
-import 'package:flutter_theoplayer_sdk_web/theoplayer_api_event_web.dart';
-import 'package:flutter_theoplayer_sdk_web/theoplayer_api_web.dart';
-import 'package:flutter_theoplayer_sdk_web/track/audiotrack/theoplayer_audiotrack_impl_web.dart';
-import 'package:flutter_theoplayer_sdk_web/track/texttrack/theoplayer_texttrack_impl_web.dart';
-import 'package:flutter_theoplayer_sdk_web/transformers_web.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack_impl.dart';
+import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack_events.dart';
+import 'package:theoplayer_web/theoplayer_api_event_web.dart';
+import 'package:theoplayer_web/theoplayer_api_web.dart';
+import 'package:theoplayer_web/track/audiotrack/theoplayer_audiotrack_impl_web.dart';
+import 'package:theoplayer_web/track/texttrack/theoplayer_texttrack_impl_web.dart';
+import 'package:theoplayer_web/transformers_web.dart';
 import 'package:js/js.dart';
 
 class AudioTrackListImplWeb extends AudioTracksImpl {

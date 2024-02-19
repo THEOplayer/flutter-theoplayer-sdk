@@ -51,7 +51,7 @@ class _FullscreenStatelessWidgetState extends State<FullscreenStatelessWidget> {
 
 // Custom WillPopScope, because the original WillPopScope breaks the back navigation on iOS
 class CustomWillPopScope extends StatelessWidget {
-  CustomWillPopScope({required this.child, required this.onWillPop, Key? key})
+  const CustomWillPopScope({required this.child, required this.onWillPop, Key? key})
       : super(key: key);
 
   final Widget child;
@@ -77,6 +77,6 @@ class CustomWillPopScope extends StatelessWidget {
               ));
       }
     }
-    return WillPopScope(child: child, onWillPop: onWillPop);
+    return WillPopScope(onWillPop: onWillPop, child: child);
   }
 }
