@@ -1,8 +1,8 @@
 @JS()
 library THEOplayer.js;
 
-import 'dart:html';
 import 'package:js/js.dart';
+import 'package:web/web.dart';
 
 void initializeTHEOplayer() {
   //prepare for initialization
@@ -24,7 +24,7 @@ class THEOplayerEventListener {
 
 @JS("THEOplayer.ChromelessPlayer")
 class THEOplayerJS extends THEOplayerEventListener {
-  external THEOplayerJS(HtmlElement videoElement, THEOplayerConfigParams theoPlayerConfig);
+  external THEOplayerJS(HTMLElement videoElement, THEOplayerConfigParams theoPlayerConfig);
 
   external play();
   external pause();
