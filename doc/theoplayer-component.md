@@ -2,7 +2,7 @@
 
 ### Architecture
 
-<img src="theoplayer_flutter_sdk_arch.png">
+<img src="https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/theoplayer_flutter_sdk_arch.png">
 
 THEOplayer Flutter SDK utilizes the well-known THEOplayer native SDKs under the hood 
 and exposes the APIs on a single API layer in Flutter to speed up prototyping and development.
