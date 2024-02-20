@@ -1,5 +1,5 @@
 name: theoplayer
-description: THEOplayer Flutter SDK
+description: THEOplayer Flutter SDK covering Android, iOS and Web platforms.
 version: 1.0.0
 homepage: https://theoplayer.com
 repository: https://github.com/THEOplayer/flutter-theoplayer-sdk
