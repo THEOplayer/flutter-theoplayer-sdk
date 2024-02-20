@@ -28,8 +28,7 @@ class THEOplayerFlutterVideoTracksAPIImpl implements THEOplayerFlutterVideoTrack
         kind,
         VideoQualitiesImpl(), // qualities will be populated in onVideoTrackAddQuality
         isEnabled,
-        _nativeVideoTrackAPI
-    );
+        _nativeVideoTrackAPI);
 
     _videoTracks.add(videoTrack);
     _videoTracks.dispatchEvent(AddVideoTrackEvent(track: videoTrack));
@@ -41,7 +40,7 @@ class THEOplayerFlutterVideoTracksAPIImpl implements THEOplayerFlutterVideoTrack
     if (videoTrack == null) {
       return;
     }
-    
+
     VideoQualityImpl videoQuality = VideoQualityImpl(qualityId, qualityUid, name, bandwidth, codecs, width, height, frameRate, firstFrame);
     videoTrack.qualities.add(videoQuality);
   }
@@ -112,5 +111,4 @@ class THEOplayerFlutterVideoTracksAPIImpl implements THEOplayerFlutterVideoTrack
   void dispose() {
     _videoTracks.dispose();
   }
-
 }

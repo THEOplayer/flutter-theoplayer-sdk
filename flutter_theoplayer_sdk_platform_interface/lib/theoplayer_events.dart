@@ -3,7 +3,7 @@ import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
 class Event {
   final String type;
   final DateTime date = DateTime.now();
-  
+
   Event({required this.type});
 }
 

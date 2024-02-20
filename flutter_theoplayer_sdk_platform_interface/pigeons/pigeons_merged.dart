@@ -47,6 +47,7 @@ enum TextTrackReadyState {
   loaded,
   error;
 }
+
 class TimeRange {
   final double start;
   final double end;
@@ -59,6 +60,7 @@ enum PreloadType {
   auto,
   metadata;
 }
+
 class SourceDescription {
   final List<TypedSource?> sources;
 
@@ -96,9 +98,6 @@ class FairPlayDRMConfiguration {
   FairPlayDRMConfiguration({required this.licenseAcquisitionURL, required this.certificateURL, this.headers});
 }
 
-
-
-
 @HostApi()
 abstract class THEOplayerNativeTextTracksAPI {
   void setMode(int textTrackUid, TextTrackMode mode);
@@ -106,7 +105,6 @@ abstract class THEOplayerNativeTextTracksAPI {
 
 @FlutterApi()
 abstract class THEOplayerFlutterTextTracksAPI {
-
   // TextTrackList events
   void onAddTextTrack(
       String? id,
@@ -145,9 +143,6 @@ abstract class THEOplayerFlutterTextTracksAPI {
 
   void onCueUpdate(int textTrackUid, int cueUid, double endTime, String content);
 }
-
-
-
 
 //Talking to the native
 @HostApi()
@@ -215,9 +210,6 @@ abstract class THEOplayerNativeAPI {
   void dispose();
 }
 
-
-
-
 //Talking from Native to Dart
 @FlutterApi()
 abstract class THEOplayerFlutterAPI {
@@ -266,8 +258,6 @@ abstract class THEOplayerFlutterAPI {
   void onCanPlayThrough(double currentTime);
 }
 
-
-
 @HostApi()
 abstract class THEOplayerNativeVideoTracksAPI {
   void setTargetQuality(int videoTrackUid, int? qualityUid);
@@ -298,8 +288,6 @@ abstract class THEOplayerFlutterVideoTracksAPI {
   void onQualityUpdate(int videoTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame);
 }
 
-
-
 @HostApi()
 abstract class THEOplayerNativeAudioTracksAPI {
   void setTargetQuality(int audioTrackUid, int? qualityUid);
@@ -329,4 +317,3 @@ abstract class THEOplayerFlutterAudioTracksAPI {
   // Quality events
   void onQualityUpdate(int audioTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate);
 }
-

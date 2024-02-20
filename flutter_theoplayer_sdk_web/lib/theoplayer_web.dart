@@ -13,7 +13,6 @@ import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 /// A web implementation of the TheoplayerPlatform of the Theoplayer plugin.
 class TheoplayerWeb extends TheoplayerPlatform {
-
   String viewType = 'com.theoplayer/theoplayer-view-native';
   String viewIDString = 'theoplayer_wrapper_';
   int theoViewUniqueID = 0;
@@ -22,7 +21,6 @@ class TheoplayerWeb extends TheoplayerPlatform {
   TheoplayerWeb() {
     // ignore: undefined_prefixed_name
     ui.platformViewRegistry.registerViewFactory(viewType, (int viewId, {Object? params}) {
-
       final div = DivElement();
       div.id = (params as dynamic)["theoViewID"];
       div.className = 'theoplayer_wrapper';
@@ -47,7 +45,10 @@ class TheoplayerWeb extends TheoplayerPlatform {
 
     creationParams["playerConfig"] = theoPlayerConfig.toJson();
 
-    return HtmlElementView(viewType: viewType, creationParams: creationParams, onPlatformViewCreated: (id) {
+    return HtmlElementView(
+      viewType: viewType,
+      creationParams: creationParams,
+      onPlatformViewCreated: (id) {
         createdCallback(THEOplayerViewControllerWeb(id, generatedViewId, theoPlayerConfig));
       },
     );

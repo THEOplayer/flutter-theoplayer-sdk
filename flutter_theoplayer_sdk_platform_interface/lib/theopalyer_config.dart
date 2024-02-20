@@ -9,7 +9,7 @@ class THEOplayerConfig {
     if (androidConfiguration != null) {
       androidConfig = androidConfiguration;
     }
-  } 
+  }
   String? getLicense() {
     return _license;
   }
@@ -20,11 +20,10 @@ class THEOplayerConfig {
 
   //TODO: fix this, don't generate JSON manually.
   Map<String, dynamic> toJson() => {
-    'license': _license,
-    'licenseUrl': _licenseUrl,
-    'androidConfig': androidConfig.toJson(),
-  };
-
+        'license': _license,
+        'licenseUrl': _licenseUrl,
+        'androidConfig': androidConfig.toJson(),
+      };
 }
 
 class AndroidConfig {
@@ -32,6 +31,6 @@ class AndroidConfig {
   AndroidConfig({this.useHybridComposition = false});
 
   Map<String, dynamic> toJson() => {
-    'useHybridComposition': useHybridComposition,
-  };
+        'useHybridComposition': useHybridComposition,
+      };
 }

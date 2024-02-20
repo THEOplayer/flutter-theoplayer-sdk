@@ -9,17 +9,14 @@ import 'package:theoplayer_web/transformers_web.dart';
 import 'package:js/js.dart';
 
 class AudioTrackListImplWeb extends AudioTracksImpl {
-
   final THEOplayerArrayList<THEOplayerAudioTrack> _theoPlayerAudioTracks;
 
   late final addTrackEventListener;
   late final removeTrackEventListener;
   late final changeTrackEventListener;
 
-
   AudioTrackListImplWeb(this._theoPlayerAudioTracks) {
-
-    addTrackEventListener = allowInterop((AddAudioTrackEventJS event){
+    addTrackEventListener = allowInterop((AddAudioTrackEventJS event) {
       var track = event.track;
 
       AudioQualities qualities = toFlutterAudioQualities(track.qualities);
@@ -38,9 +35,9 @@ class AudioTrackListImplWeb extends AudioTracksImpl {
       dispatchEvent(AddAudioTrackEvent(track: flutterTrack));
     });
 
-    removeTrackEventListener = allowInterop((RemoveAudioTrackEventJS event){
+    removeTrackEventListener = allowInterop((RemoveAudioTrackEventJS event) {
       var track = event.track;
-      
+
       var flutterTrack = firstWhereOrNull((item) => item.uid == track.uid);
       if (flutterTrack == null) {
         return;
@@ -51,7 +48,7 @@ class AudioTrackListImplWeb extends AudioTracksImpl {
     });
 
     //only triggered for enable/disable
-    changeTrackEventListener = allowInterop((AudioTrackListChangeEventJS event){
+    changeTrackEventListener = allowInterop((AudioTrackListChangeEventJS event) {
       var track = event.track;
 
       var flutterTrack = firstWhereOrNull((item) => item.uid == track.uid);
@@ -65,7 +62,6 @@ class AudioTrackListImplWeb extends AudioTracksImpl {
     _theoPlayerAudioTracks.addEventListener(AudioTracksEventTypes.ADDTRACK.toLowerCase(), addTrackEventListener);
     _theoPlayerAudioTracks.addEventListener(AudioTracksEventTypes.REMOVETRACK.toLowerCase(), removeTrackEventListener);
     _theoPlayerAudioTracks.addEventListener(AudioTracksEventTypes.CHANGE.toLowerCase(), changeTrackEventListener);
-
   }
 
   void dispose() {
@@ -81,6 +77,4 @@ class AudioTrackListImplWeb extends AudioTracksImpl {
 
     clear();
   }
-
-  
 }

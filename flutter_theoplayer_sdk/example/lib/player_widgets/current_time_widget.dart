@@ -8,21 +8,19 @@ class CurrentTimeWidget extends StatefulWidget {
   });
 
   final THEOplayer player;
-  
+
   @override
   State<StatefulWidget> createState() {
     return _CurrentTimeWidgetState();
   }
-
 }
 
 class _CurrentTimeWidgetState extends State<CurrentTimeWidget> {
-
   @override
   void initState() {
     super.initState();
     widget.player.setStateListener(() {
-        setState(() {});
+      setState(() {});
     });
   }
 

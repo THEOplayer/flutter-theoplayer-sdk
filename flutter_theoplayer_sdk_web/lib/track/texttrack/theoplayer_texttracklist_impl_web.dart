@@ -8,17 +8,14 @@ import 'package:theoplayer_web/transformers_web.dart';
 import 'package:js/js.dart';
 
 class TextTrackListImplWeb extends TextTracksImpl {
-
   final THEOplayerArrayList<THEOplayerTextTrack> _theoPlayerTextTracks;
 
   late final addTrackEventListener;
   late final removeTrackEventListener;
   late final changeTrackEventListener;
 
-
   TextTrackListImplWeb(this._theoPlayerTextTracks) {
-
-    addTrackEventListener = allowInterop((AddTextTrackEventJS event){
+    addTrackEventListener = allowInterop((AddTextTrackEventJS event) {
       var track = event.track;
       var flutterTrack = TextTrackImplWeb(
         track.id, 
@@ -40,9 +37,9 @@ class TextTrackListImplWeb extends TextTracksImpl {
       dispatchEvent(AddTextTrackEvent(track: flutterTrack));
     });
 
-    removeTrackEventListener = allowInterop((RemoveTextTrackEventJS event){
+    removeTrackEventListener = allowInterop((RemoveTextTrackEventJS event) {
       var track = event.track;
-      
+
       var flutterTrack = firstWhereOrNull((item) => item.uid == track.uid);
       if (flutterTrack == null) {
         return;
@@ -53,7 +50,7 @@ class TextTrackListImplWeb extends TextTracksImpl {
     });
 
     //only triggered for enable/disable
-    changeTrackEventListener = allowInterop((TextTrackListChangeEventJS event){
+    changeTrackEventListener = allowInterop((TextTrackListChangeEventJS event) {
       var track = event.track;
 
       var flutterTrack = firstWhereOrNull((item) => item.uid == track.uid);
@@ -67,7 +64,6 @@ class TextTrackListImplWeb extends TextTracksImpl {
     _theoPlayerTextTracks.addEventListener(TextTracksEventTypes.ADDTRACK.toLowerCase(), addTrackEventListener);
     _theoPlayerTextTracks.addEventListener(TextTracksEventTypes.REMOVETRACK.toLowerCase(), removeTrackEventListener);
     _theoPlayerTextTracks.addEventListener(TextTracksEventTypes.CHANGE.toLowerCase(), changeTrackEventListener);
-
   }
 
   void dispose() {
@@ -83,6 +79,4 @@ class TextTrackListImplWeb extends TextTracksImpl {
 
     clear();
   }
-
-  
 }

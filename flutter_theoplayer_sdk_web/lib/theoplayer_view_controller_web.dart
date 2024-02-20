@@ -14,7 +14,6 @@ import 'package:theoplayer_web/track/theoplayer_track_controller_web.dart';
 import 'package:theoplayer_web/transformers_web.dart';
 
 class THEOplayerViewControllerWeb extends THEOplayerViewController {
-
   final String _divId;
   late final String _channelSuffix;
   late final THEOplayerJS _theoPlayerJS;
@@ -29,8 +28,7 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
         THEOplayerConfigParams(
           license: theoPlayerConfig.getLicense(),
           licenseUrl: theoPlayerConfig.getLicenseUrl(),
-        )
-    );
+        ));
     _eventForwarder = PlayerEventForwarderWeb(_theoPlayerJS);
     _tracksController = THEOplayerTrackControllerWeb(_theoPlayerJS);
   }

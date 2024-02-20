@@ -6,7 +6,6 @@
 // For more information about Flutter integration tests, please see
 // https://docs.flutter.dev/cookbook/testing/integration/introduction
 
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -57,13 +56,11 @@ void main() {
     await tester.pumpAndSettle(const Duration(seconds: 10));
 
     print("Testing playback duration():  ${player.getDuration()}");
-    expect(player.getDuration() >= 0, isTrue );
+    expect(player.getDuration() >= 0, isTrue);
 
     print("Testing playback currentTime():  ${player.getCurrentTime()}");
-    expect(player.getCurrentTime() >= 5, isTrue );
-
+    expect(player.getCurrentTime() >= 5, isTrue);
   });
-
 
   testWidgets('Success integration test', (WidgetTester tester) async {
     expect(true, isTrue);

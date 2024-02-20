@@ -35,7 +35,6 @@ class PlayerEventForwarderWeb {
   late final sourceChangeEventListener;
 
   PlayerEventForwarderWeb(this._theoplayerJS) {
-
     canPlayEventListener = allowInterop((CanPlayEventJS event) {
       _eventManager.dispatchEvent(CanPlayEvent(currentTime: event.currentTime));
     });
@@ -92,7 +91,7 @@ class PlayerEventForwarderWeb {
       _eventManager.dispatchEvent(EndedEvent(currentTime: event.currentTime));
     });
 
-    errorEventListener  = allowInterop((ErrorEventJS event){
+    errorEventListener = allowInterop((ErrorEventJS event) {
       _eventManager.dispatchEvent(ErrorEvent(error: event.error));
     });
 
