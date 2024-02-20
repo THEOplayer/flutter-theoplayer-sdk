@@ -8,8 +8,11 @@ jobs:
   build_web:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: subosito/flutter-action@v2
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup flutter
+      uses: subosito/flutter-action@v2
       with:
         channel: 'stable'
         cache: true
@@ -18,6 +21,9 @@ jobs:
 
     - name: Print flutter version
       run: flutter --version
+
+    - name: Setup Melos
+      uses: bluefireteam/melos-action@v3
 
     - name: Pub get
       run: flutter pub get
