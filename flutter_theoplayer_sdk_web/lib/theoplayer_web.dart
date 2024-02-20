@@ -25,7 +25,8 @@ class TheoplayerWeb extends TheoplayerPlatform {
       final div = document.createElement('div') as HTMLDivElement;
       div.id = (params as dynamic)["theoViewID"];
       div.className = 'theoplayer_wrapper';
-
+      div.style.width = '100%';
+      div.style.height = '100%';
       return div;
     });
   }
