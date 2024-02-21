@@ -1,12 +1,18 @@
 name: Build Web on PRs
 on:
   workflow_dispatch:
-  #pull_request:
-  #  types: [opened, reopened, synchronize]
+  pull_request:
+    types: [opened, reopened, synchronize]
 
 jobs:
   build_web:
+    
+    strategy:
+      matrix:
+        renderer: [html, canvaskit]
+
     runs-on: ubuntu-latest
+
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -36,47 +42,39 @@ jobs:
     - name: Install Chrome Browser
       uses: browser-actions/setup-chrome@v1
       with:
-        chrome-version: '114.0.5735.90'
+        chrome-version: '121.0.6167.184'
       id: setup-chrome
 
     - name: Check Browser version
       run: |
         echo Installed chromium version: ${{ steps.setup-chrome.outputs.chrome-version }}
         ${{ steps.setup-chrome.outputs.chrome-path }} --version
-        export CHROME_EXECUTABLE=${{ steps.setup-chrome.outputs.chrome-path }}
-        echo CHROME_EXECUTABLE = $CHROME_EXECUTABLE
-        echo Relinking Chrome
-        sudo ln -sf $CHROME_EXECUTABLE /usr/bin/google-chrome
-    - name: Checkout webdriver repo (alternarive way)
-      uses: actions/checkout@v2
-      with:
-        repository: flutter/web_installers
-        path: webdrivers
 
     - name: Install Chromedriver
-      run: |
-        flutter pub get
-        dart lib/web_driver_installer.dart chromedriver --driver-version="114.0.5735.90" --always-install --install-only
-      working-directory: webdrivers/packages/web_drivers/
+      uses: nanasess/setup-chromedriver@v2
+      with:
+        chromedriver-version: '121.0.6167.184'
 
     - name: ⏳ Delay
       run: |
         echo "Waiting for Chromedriver to install..."
-        sleep 2
+        sleep 1
+
+    - name: Check Chromedriver Version
+      run: chromedriver -v
         
     # if we use '-d chrome' and '--no-headless' for 'flutter drive' later, we can enable this
     #
-    #- name: Configure non-headless display
-    #  run: |
-    #    export DISPLAY=:99.0
-    #    echo "DISPLAY=:99.0" >> $GITHUB_ENV
-    #    Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
-    #    sleep 3
+    - name: Configure non-headless display
+      run: |
+        export DISPLAY=:99.0
+        echo "DISPLAY=:99.0" >> $GITHUB_ENV
+        Xvfb -ac :99 -screen 0 1280x1024x24 > /dev/null 2>&1 &
+        sleep 3
 
     - name: Start Chromedriver
       run: |
-        chromedriver/chromedriver --port=4444 --verbose --log-path=chromedriver.log &
-      working-directory: webdrivers/packages/web_drivers/
+        chromedriver --port=4444 --verbose --log-path=chromedriver.log &
 
     - name: ⏳ Delay
       run: |
@@ -90,7 +88,7 @@ jobs:
     - name: Run integration tests
       run: |
         flutter config --enable-web
-        flutter drive --driver=webdriver_integration_test/webdriver.dart --target=integration_test/plugin_integration_test.dart -d web-server --profile --browser-name=chrome --driver-port=4444 -v --web-browser-flag="--disable-web-security --autoplay-policy=no-user-gesture-required"
+        flutter drive --driver=webdriver_integration_test/webdriver.dart --target=integration_test/plugin_integration_test.dart -d web-server --web-renderer ${{ matrix.renderer }} --profile --driver-port=4444 -v --web-browser-flag="--disable-web-security --autoplay-policy=no-user-gesture-required" --chrome-binary ${{ steps.setup-chrome.outputs.chrome-path }}
       working-directory: flutter_theoplayer_sdk/example
       env:
         TEST_LICENSE: ${{ secrets.TEST_LICENSE }}
@@ -99,7 +97,6 @@ jobs:
       if: always()
       run: |
         cat chromedriver.log
-      working-directory: webdrivers/packages/web_drivers/
 
     - name: Build Web
       run: flutter build web
@@ -108,6 +105,6 @@ jobs:
     - name: Save WEB to artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: web
+        name: web-${{ matrix.renderer }}
         path: flutter_theoplayer_sdk/example/build/web/
         retention-days: 5
