@@ -6,24 +6,24 @@ import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videot
 import 'package:theoplayer_web/theoplayer_api_web.dart';
 
 PlatformInterface.ReadyState toFlutterReadyState(int readyState) {
-    PlatformInterface.ReadyState flutterReadyState = PlatformInterface.ReadyState.have_nothing;
+  PlatformInterface.ReadyState flutterReadyState = PlatformInterface.ReadyState.have_nothing;
 
-    switch(readyState) {
-      case 0:
-        flutterReadyState = PlatformInterface.ReadyState.have_nothing;
-      case 1:
-        flutterReadyState = PlatformInterface.ReadyState.have_metadata;
-      case 2:
-        flutterReadyState = PlatformInterface.ReadyState.have_current_data;
-      case 3:
-        flutterReadyState = PlatformInterface.ReadyState.have_future_data;
-      case 4:
-        flutterReadyState = PlatformInterface.ReadyState.have_enough_data;
-      default:
-        throw UnsupportedError("Unsupported readyState: $readyState");
-    }
+  switch (readyState) {
+    case 0:
+      flutterReadyState = PlatformInterface.ReadyState.have_nothing;
+    case 1:
+      flutterReadyState = PlatformInterface.ReadyState.have_metadata;
+    case 2:
+      flutterReadyState = PlatformInterface.ReadyState.have_current_data;
+    case 3:
+      flutterReadyState = PlatformInterface.ReadyState.have_future_data;
+    case 4:
+      flutterReadyState = PlatformInterface.ReadyState.have_enough_data;
+    default:
+      throw UnsupportedError("Unsupported readyState: $readyState");
+  }
 
-    return flutterReadyState;
+  return flutterReadyState;
 }
 
 PlatformInterface.SourceDescription? toFlutterSourceDescription(SourceDescription? sourceDescription) {
@@ -35,13 +35,13 @@ PlatformInterface.SourceDescription? toFlutterSourceDescription(SourceDescriptio
   for (var typedSource in sourceDescription.sources) {
     PlatformInterface.FairPlayDRMConfiguration? fairPlayDRMConfiguration;
     FairplayContentProtectionConfiguration? fairplay = typedSource.contentProtection?.fairplay;
-    if ( fairplay != null) {
+    if (fairplay != null) {
       fairPlayDRMConfiguration = PlatformInterface.FairPlayDRMConfiguration(licenseAcquisitionURL: fairplay.licenseAcquisitionURL, certificateURL: fairplay.certificateURL);
     }
 
     PlatformInterface.WidevineDRMConfiguration? widevineDRMConfiguration;
     WidevineContentProtectionConfiguration? widevine = typedSource.contentProtection?.widevine;
-    if ( widevine != null) {
+    if (widevine != null) {
       widevineDRMConfiguration = PlatformInterface.WidevineDRMConfiguration(licenseAcquisitionURL: widevine.licenseAcquisitionURL);
     }
 
@@ -52,29 +52,29 @@ PlatformInterface.SourceDescription? toFlutterSourceDescription(SourceDescriptio
 }
 
 SourceDescription toSourceDescription(PlatformInterface.SourceDescription flutterSourceDescription) {
-    List<TypedSource> flutterTypedSources = [];
+  List<TypedSource> flutterTypedSources = [];
 
-    for (var flutterTypedSource in flutterSourceDescription.sources) {
-      if (flutterTypedSource == null) {
-        continue;
-      }
-
-      FairplayContentProtectionConfiguration? flutterFairplayDrmConfiguration;
-      PlatformInterface.FairPlayDRMConfiguration? faiplay = flutterTypedSource.drm?.fairplay;
-      if (faiplay != null) {
-        flutterFairplayDrmConfiguration = FairplayContentProtectionConfiguration(licenseAcquisitionURL: faiplay.licenseAcquisitionURL, certificateURL: faiplay.certificateURL);
-      }
-
-      WidevineContentProtectionConfiguration? flutterWidevineDrmConfiguration;
-      PlatformInterface.WidevineDRMConfiguration? widevine = flutterTypedSource.drm?.widevine;
-      if (widevine != null) {
-        flutterWidevineDrmConfiguration = WidevineContentProtectionConfiguration(licenseAcquisitionURL: widevine.licenseAcquisitionURL);
-      }
-
-      flutterTypedSources.add(TypedSource(src: flutterTypedSource.src, contentProtection: ContentProtection(fairplay: flutterFairplayDrmConfiguration, widevine: flutterWidevineDrmConfiguration)));
+  for (var flutterTypedSource in flutterSourceDescription.sources) {
+    if (flutterTypedSource == null) {
+      continue;
     }
 
-    return SourceDescription(sources: flutterTypedSources);
+    FairplayContentProtectionConfiguration? flutterFairplayDrmConfiguration;
+    PlatformInterface.FairPlayDRMConfiguration? faiplay = flutterTypedSource.drm?.fairplay;
+    if (faiplay != null) {
+      flutterFairplayDrmConfiguration = FairplayContentProtectionConfiguration(licenseAcquisitionURL: faiplay.licenseAcquisitionURL, certificateURL: faiplay.certificateURL);
+    }
+
+    WidevineContentProtectionConfiguration? flutterWidevineDrmConfiguration;
+    PlatformInterface.WidevineDRMConfiguration? widevine = flutterTypedSource.drm?.widevine;
+    if (widevine != null) {
+      flutterWidevineDrmConfiguration = WidevineContentProtectionConfiguration(licenseAcquisitionURL: widevine.licenseAcquisitionURL);
+    }
+
+    flutterTypedSources.add(TypedSource(src: flutterTypedSource.src, contentProtection: ContentProtection(fairplay: flutterFairplayDrmConfiguration, widevine: flutterWidevineDrmConfiguration)));
+  }
+
+  return SourceDescription(sources: flutterTypedSources);
 }
 
 PlatformInterface.TextTrackReadyState toFlutterTextTrackReadyState(int textTrackReadyState) {
@@ -142,7 +142,7 @@ String toTextTrackMode(PlatformInterface.TextTrackMode flutterTextTrackmode) {
 AudioQuality toFlutterAudioQuality(THEOplayerAudioQuality q) => AudioQualityImpl(q.id, q.uid, q.name, q.bandwidth, q.codecs, q.audioSamplingRate);
 
 AudioQualities toFlutterAudioQualities(List<THEOplayerAudioQuality> qualities) {
-  AudioQualities flutterQualities  = AudioQualitiesImpl();
+  AudioQualities flutterQualities = AudioQualitiesImpl();
   for (var i = 0; i < qualities.length; i++) {
     THEOplayerAudioQuality q = qualities[i];
     flutterQualities.add(toFlutterAudioQuality(q));
@@ -153,7 +153,7 @@ AudioQualities toFlutterAudioQualities(List<THEOplayerAudioQuality> qualities) {
 VideoQuality toFlutterVideoQuality(THEOplayerVideoQuality q) => VideoQualityImpl(q.id, q.uid, q.name, q.bandwidth, q.codecs, q.width, q.height, q.frameRate, q.firstFrame);
 
 VideoQualities toFlutterVideoQualities(List<THEOplayerVideoQuality> qualities) {
-  VideoQualities flutterQualities  = VideoQualitiesImpl();
+  VideoQualities flutterQualities = VideoQualitiesImpl();
   for (var i = 0; i < qualities.length; i++) {
     THEOplayerVideoQuality q = qualities[i];
     flutterQualities.add(toFlutterVideoQuality(q));

@@ -1,9 +1,7 @@
-import 'dart:html';
-
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart' as PlatformInterface;
 import 'package:theoplayer_platform_interface/theopalyer_config.dart';
-import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
-import 'package:theoplayer_platform_interface/theoplayer_events.dart';
+import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart' as PlatformInterfaceEventDispatcher;
+import 'package:theoplayer_platform_interface/theoplayer_events.dart' as PlatformInterfaceEvents;
 import 'package:theoplayer_platform_interface/theoplayer_view_controller_interface.dart';
 import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
 import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
@@ -12,25 +10,23 @@ import 'package:theoplayer_web/player_event_forwarder_web.dart';
 import 'package:theoplayer_web/theoplayer_api_web.dart';
 import 'package:theoplayer_web/track/theoplayer_track_controller_web.dart';
 import 'package:theoplayer_web/transformers_web.dart';
+import 'package:web/web.dart';
 
 class THEOplayerViewControllerWeb extends THEOplayerViewController {
-
-  final String _divId;
+  final HTMLElement _playerWrapperDiv;
   late final String _channelSuffix;
   late final THEOplayerJS _theoPlayerJS;
   late final PlayerEventForwarderWeb _eventForwarder;
   late final THEOplayerTrackControllerWeb _tracksController;
 
-  THEOplayerViewControllerWeb(int id, this._divId, THEOplayerConfig theoPlayerConfig) : super(id) {
+  THEOplayerViewControllerWeb(int id, this._playerWrapperDiv, THEOplayerConfig theoPlayerConfig) : super(id) {
     _channelSuffix = id.toString();
-    var wrapperDiv = window.document.getElementById(_divId);
     _theoPlayerJS = THEOplayerJS(
-        wrapperDiv as HtmlElement,
+        _playerWrapperDiv,
         THEOplayerConfigParams(
           license: theoPlayerConfig.getLicense(),
           licenseUrl: theoPlayerConfig.getLicenseUrl(),
-        )
-    );
+        ));
     _eventForwarder = PlayerEventForwarderWeb(_theoPlayerJS);
     _tracksController = THEOplayerTrackControllerWeb(_theoPlayerJS);
   }
@@ -38,12 +34,12 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   String get channelSuffix => _channelSuffix;
 
   @override
-  void addEventListener(String eventType, EventListener<Event> listener) {
+  void addEventListener(String eventType, PlatformInterfaceEventDispatcher.EventListener<PlatformInterfaceEvents.Event> listener) {
     _eventForwarder.addEventListener(eventType, listener);
   }
 
   @override
-  void removeEventListener(String eventType, EventListener<Event> listener) {
+  void removeEventListener(String eventType, PlatformInterfaceEventDispatcher.EventListener<PlatformInterfaceEvents.Event> listener) {
     _eventForwarder.removeEventListener(eventType, listener);
   }
 

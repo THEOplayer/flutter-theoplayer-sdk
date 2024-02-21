@@ -1,5 +1,5 @@
-group 'com.theoplayer.theoplayer'
-version '1.0-SNAPSHOT'
+group 'com.theoplayer.flutter'
+version '1.0.1'
 
 buildscript {
     ext.kotlin_version = '1.7.10'
@@ -27,7 +27,7 @@ apply plugin: 'kotlin-android'
 
 android {
     if (project.android.hasProperty("namespace")) {
-        namespace 'com.theoplayer.theoplayer'
+        namespace 'com.theoplayer.flutter'
     }
 
     compileSdkVersion 33

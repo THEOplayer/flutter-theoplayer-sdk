@@ -1,17 +1,17 @@
 name: theoplayer_ios
-description: THEOplayer Flutter SDK iOS
-version: 1.0.0
+description: THEOplayer Flutter SDK iOS used by `theoplayer` to support the iOS platform.
+version: 1.0.1
 homepage: https://theoplayer.com
 repository: https://github.com/THEOplayer/flutter-theoplayer-sdk
 
 environment:
-  sdk: ^3.2.6
-  flutter: ">=3.16.9"
+  sdk: ^3.3.0
+  flutter: ">=3.19.0"
 
 dependencies:
   flutter:
     sdk: flutter
-  theoplayer_platform_interface: 1.0.0
+  theoplayer_platform_interface: 1.0.1
 
 dev_dependencies:
   flutter_test:

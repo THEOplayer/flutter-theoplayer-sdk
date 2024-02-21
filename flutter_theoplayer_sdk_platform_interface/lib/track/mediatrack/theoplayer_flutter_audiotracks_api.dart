@@ -28,8 +28,7 @@ class THEOplayerFlutterAudioTracksAPIImpl implements THEOplayerFlutterAudioTrack
         kind,
         AudioQualitiesImpl(), // qualities will be populated in onAudioTrackAddQuality
         isEnabled,
-        _nativeAudioTrackAPI
-    );
+        _nativeAudioTrackAPI);
 
     _audioTracks.add(audioTrack);
     _audioTracks.dispatchEvent(AddAudioTrackEvent(track: audioTrack));
@@ -112,5 +111,4 @@ class THEOplayerFlutterAudioTracksAPIImpl implements THEOplayerFlutterAudioTrack
   void dispose() {
     _audioTracks.dispose();
   }
-
 }

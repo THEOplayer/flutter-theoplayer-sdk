@@ -217,7 +217,6 @@ class _MyAppState extends State<MyApp> {
 }
 
 class ChromelessPlayer extends StatelessWidget {
-
   static GlobalKey globalKey = GlobalKey();
 
   const ChromelessPlayer({

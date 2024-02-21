@@ -9,7 +9,6 @@ abstract class THEOplayerNativeTextTracksAPI {
 
 @FlutterApi()
 abstract class THEOplayerFlutterTextTracksAPI {
-
   // TextTrackList events
   void onAddTextTrack(
       String? id,

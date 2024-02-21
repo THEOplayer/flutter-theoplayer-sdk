@@ -2,24 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:theoplayer/theoplayer.dart';
 
 class QualityChangeWidget extends StatefulWidget {
-
-
   const QualityChangeWidget({
     super.key,
     required this.player,
   });
 
   final THEOplayer player;
-  
+
   @override
   State<StatefulWidget> createState() {
     return _QualityChangeState();
   }
-
 }
 
 class _QualityChangeState extends State<QualityChangeWidget> {
-
   int? audioID = -1;
   int? videoID = -1;
 
@@ -32,7 +28,7 @@ class _QualityChangeState extends State<QualityChangeWidget> {
     var addEvent = event as AddAudioTrackEvent;
     print("addAudioTrack ${addEvent.track.uid}");
     for (var quality in addEvent.track.qualities) {
-          print("addAudioTrack quality ${quality.uid}");
+      print("addAudioTrack quality ${quality.uid}");
     }
     addEvent.track.addEventListener(AudioTrackEventTypes.ACTIVEQUALITYCHANGED, activeAudioQualityListener);
   }
@@ -41,27 +37,26 @@ class _QualityChangeState extends State<QualityChangeWidget> {
     var addEvent = event as AddVideoTrackEvent;
     print("addVideoTrack ${addEvent.track.uid}");
     for (var quality in addEvent.track.qualities) {
-          print("addVideoTrack quality ${quality.uid}");
+      print("addVideoTrack quality ${quality.uid}");
     }
     addEvent.track.addEventListener(VideoTrackEventTypes.ACTIVEQUALITYCHANGED, activeVideoQualityListener);
   }
 
   void activeAudioQualityListener(Event event) {
-      var audioQualityChangeEvent = event as AudioActiveQualityChangedEvent;
+    var audioQualityChangeEvent = event as AudioActiveQualityChangedEvent;
 
-      setState(() {
-        audioID = audioQualityChangeEvent.quality.uid;
-      });
+    setState(() {
+      audioID = audioQualityChangeEvent.quality.uid;
+    });
   }
 
   void activeVideoQualityListener(Event event) {
-      var videoQualityChangeEvent = event as VideoActiveQualityChangedEvent;
+    var videoQualityChangeEvent = event as VideoActiveQualityChangedEvent;
 
-      setState(() {
-        videoID = videoQualityChangeEvent.quality.uid;
-      });
+    setState(() {
+      videoID = videoQualityChangeEvent.quality.uid;
+    });
   }
-
 
   @override
   void initState() {
@@ -71,7 +66,7 @@ class _QualityChangeState extends State<QualityChangeWidget> {
     widget.player.getVideoTracks().addEventListener(VideoTracksEventTypes.ADDTRACK, addVideoTrackListener);
   }
 
-@override
+  @override
   void dispose() {
     widget.player.getAudioTracks().removeEventListener(AudioTracksEventTypes.ADDTRACK, addAudioTrackListener);
     widget.player.getAudioTracks().forEach((element) {
@@ -122,5 +117,4 @@ class _QualityChangeState extends State<QualityChangeWidget> {
       ),
     ],);
   }
-
 }

@@ -1,12 +1,12 @@
 name: theoplayer
-description: THEOplayer Flutter SDK
-version: 1.0.0
+description: THEOplayer Flutter SDK covering Android, iOS and Web platforms.
+version: 1.0.1
 homepage: https://theoplayer.com
 repository: https://github.com/THEOplayer/flutter-theoplayer-sdk
 
 environment:
-  sdk: ^3.2.6
-  flutter: ">=3.16.9"
+  sdk: ^3.3.0
+  flutter: ">=3.19.0"
 
 dependencies:
   flutter:
@@ -14,10 +14,10 @@ dependencies:
   flutter_web_plugins:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
-  theoplayer_platform_interface: 1.0.0
-  theoplayer_android: 1.0.0
-  theoplayer_ios: 1.0.0
-  theoplayer_web: 1.0.0
+  theoplayer_platform_interface: 1.0.1
+  theoplayer_android: 1.0.1
+  theoplayer_ios: 1.0.1
+  theoplayer_web: 1.0.1
 
 dev_dependencies:
   flutter_test:

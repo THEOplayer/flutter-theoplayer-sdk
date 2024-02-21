@@ -49,16 +49,22 @@ $ flutter run
 ```
 
 #### Adding THEOplayer Flutter SDK
-Becuase THEOplayer Flutter SDK is still under development it is not available from public package managers. (e.g. [pub.dev](https://pub.dev)).
-
-To use the SDK, you need to initialize `git` in your project and **add the SDK as a submodule**:
+##### Option 1: Adding THEOplayer Flutter SDK as dependency (Recommended)
+To add THEOplayer Flutter SDK as a dependency, you can simply fetch it from [pub.dev](https://pub.dev) using:
 
 ```bash
-$ git init
+$ flutter pub add theoplayer
+```
+
+##### Option 2: Adding THEOplayer Flutter SDK as submodule
+As an alternative, you can add the SDK as a submodule in your git project.
+This can be useful if you are trying to fork the project to contribute with us.
+
+```bash
 $ git submodule add https://GITHUB_USERNAME:GITHUB_PASSWORD@github.com/THEOplayer/flutter-theoplayer-sdk flutter-theoplayer-sdk
 ```
 
-Your project structure will look like this:
+Then, your project structure will look like this:
 ```bash
 ➜  flutter_theoplayer_sample_app git:(master) ✗ ls
 README.md                         flutter-theoplayer-sdk            pubspec.lock

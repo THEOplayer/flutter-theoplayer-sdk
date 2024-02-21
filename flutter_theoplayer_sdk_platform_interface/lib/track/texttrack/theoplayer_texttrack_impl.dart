@@ -61,7 +61,6 @@ abstract class TextTrackImpl extends TextTrack {
   void dispose() {
     _eventManager.clear();
   }
-
 }
 
 class TextTrackImplMobile extends TextTrackImpl {
@@ -111,5 +110,4 @@ class CueImpl extends Cue {
   void dispose() {
     _eventManager.clear();
   }
-
 }

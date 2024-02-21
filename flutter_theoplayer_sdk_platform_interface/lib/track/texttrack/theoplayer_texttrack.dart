@@ -40,7 +40,7 @@ abstract class TextTrack extends Track {
   Cues get cues => _cues;
 
   /// The list of active cues of the track.
-  /// 
+  ///
   /// Remarks:
   /// * A cue is active if the current playback position falls within the time bounds of the cue.
   /// * This list dynamically updates based on the current playback position.
@@ -58,7 +58,7 @@ abstract class TextTrack extends Track {
   /// * [TextTrackMode.disabled] : The track is disabled.
   /// * [TextTrackMode.hidden] : The track is hidden.
   /// * [TextTrackMode.showing] : The track is showing.
-  /// 
+  ///
   /// Remarks:
   /// * A disabled track is not displayed and exposes no active cues, nor fires cue events.
   /// * A hidden track is not displayed but exposes active cues and fires cue events.

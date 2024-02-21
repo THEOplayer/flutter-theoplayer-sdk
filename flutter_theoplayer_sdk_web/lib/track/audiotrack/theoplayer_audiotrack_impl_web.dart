@@ -12,10 +12,8 @@ class AudioTrackImplWeb extends AudioTrackImpl {
   late final aciveQualityChangedEventListener;
   late final targetQualityChangedListener;
 
-
   AudioTrackImplWeb(super.id, super.uid, super.label, super.language, super.kind, super.qualities, super.isEnabled, this._nativeAudioTrack) {
-
-    targetQualityChangedListener = allowInterop((AudioTargetQualityChangedEventJS event){
+    targetQualityChangedListener = allowInterop((AudioTargetQualityChangedEventJS event) {
       var eventTargetQualities = event.qualities;
       var eventTargetQuality = event.quality;
 
@@ -37,7 +35,7 @@ class AudioTrackImplWeb extends AudioTrackImpl {
       dispatchEvent(AudioTargetQualityChangedEvent(qualities: flutterTargetQualities, quality: flutterTargetQuality));
     });
 
-    aciveQualityChangedEventListener = allowInterop((AudioActiveQualityChangedEventJS event){
+    aciveQualityChangedEventListener = allowInterop((AudioActiveQualityChangedEventJS event) {
       var eventTargetQuality = event.quality;
       AudioQuality? flutterActiveQuality = this.qualities.firstWhereOrNull((element) => element.uid == eventTargetQuality.uid);
       if (flutterActiveQuality == null) {
@@ -57,7 +55,7 @@ class AudioTrackImplWeb extends AudioTrackImpl {
   set targetQualities(List<AudioQuality>? targetQualities) {
     super.targetQualities = targetQualities;
 
-    List<THEOplayerAudioQuality>? theoplayerQualities = null;
+    List<THEOplayerAudioQuality>? theoplayerQualities;
 
     if (targetQualities != null) {
       theoplayerQualities = [];
@@ -72,15 +70,14 @@ class AudioTrackImplWeb extends AudioTrackImpl {
       }
     }
 
-
     _nativeAudioTrack.targetQuality = theoplayerQualities;
   }
 
   @override
   set targetQuality(AudioQuality? targetQuality) {
     super.targetQuality = targetQuality;
-  
-    List<THEOplayerAudioQuality>? theoplayerQualities = null;
+
+    List<THEOplayerAudioQuality>? theoplayerQualities;
 
     if (targetQuality != null) {
       theoplayerQualities = [];
@@ -93,7 +90,7 @@ class AudioTrackImplWeb extends AudioTrackImpl {
         }
       }
     }
-    
+
     _nativeAudioTrack.targetQuality = theoplayerQualities;
   }
 

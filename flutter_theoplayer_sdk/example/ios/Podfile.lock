@@ -1,16 +1,16 @@
 PODS:
   - Flutter (1.0.0)
-  - flutter_theoplayer_sdk_ios (0.0.1):
-    - Flutter
-    - THEOplayerSDK-core (= 6.9.0)
   - integration_test (0.0.1):
     - Flutter
+  - theoplayer_ios (1.0.1):
+    - Flutter
+    - THEOplayerSDK-core (= 6.9.0)
   - THEOplayerSDK-core (6.9.0)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - flutter_theoplayer_sdk_ios (from `.symlinks/plugins/flutter_theoplayer_sdk_ios/ios`)
   - integration_test (from `.symlinks/plugins/integration_test/ios`)
+  - theoplayer_ios (from `.symlinks/plugins/theoplayer_ios/ios`)
 
 SPEC REPOS:
   trunk:
@@ -19,15 +19,15 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  flutter_theoplayer_sdk_ios:
-    :path: ".symlinks/plugins/flutter_theoplayer_sdk_ios/ios"
   integration_test:
     :path: ".symlinks/plugins/integration_test/ios"
+  theoplayer_ios:
+    :path: ".symlinks/plugins/theoplayer_ios/ios"
 
 SPEC CHECKSUMS:
-  Flutter: f04841e97a9d0b0a8025694d0796dd46242b2854
-  flutter_theoplayer_sdk_ios: 2c361655e85d108415f4278f31ce8ac537a98a87
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   integration_test: 13825b8a9334a850581300559b8839134b124670
+  theoplayer_ios: 266402bcdfd1754e863d48367b49b7ca4db96dab
   THEOplayerSDK-core: df300b41fbedb365e3d83eb4e2356acd07921d1b
 
 PODFILE CHECKSUM: 7be2f5f74864d463a8ad433546ed1de7e0f29aef
