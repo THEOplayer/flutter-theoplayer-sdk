@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:theoplayer/theoplayer.dart';
 
@@ -6,10 +8,16 @@ import 'package:theoplayer/theoplayer.dart';
 const TEST_LICENSE = String.fromEnvironment("TEST_LICENSE", defaultValue: "");
 
 class TestApp extends StatefulWidget {
-  const TestApp({super.key});
+  final _playerReady = Completer();
+
+  TestApp({super.key});
 
   @override
   State<TestApp> createState() => _TestAppState();
+
+  Future<void> waitForPlayerReady() {
+    return _playerReady.future;
+  }
 }
 
 class _TestAppState extends State<TestApp> {
@@ -64,6 +72,8 @@ class _TestAppState extends State<TestApp> {
           player.addEventListener(PlayerEventTypes.WAITING, (event) {
             print("_DEBUG: PAUSE received");
           });
+
+          widget._playerReady.complete();
         });
   }
 
