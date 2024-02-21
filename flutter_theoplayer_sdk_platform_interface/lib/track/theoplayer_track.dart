@@ -40,7 +40,6 @@ abstract class Tracks<T extends Track> extends ListBase<T> implements EventDispa
     if (orElse != null) return orElse();
     return null;
   }
-
 }
 
 abstract class Track implements EventDispatcher {
@@ -53,13 +52,13 @@ abstract class Track implements EventDispatcher {
   Track(this._id, this._uid, this._label, this._language, this._kind);
 
   /// The identifier of the media track.
-  /// 
+  ///
   /// Remarks:
   /// * This identifier can be used to distinguish between related tracks, e.g. tracks in the same list.
   String? get id => _id;
 
   /// A unique identifier of the media track.
-  /// Remarks: 
+  /// Remarks:
   /// * This identifier is unique across tracks of a THEOplayer instance and can be used to distinguish between tracks.
   /// * This identifier is a randomly generated number.
   int get uid => _uid;
@@ -75,4 +74,3 @@ abstract class Track implements EventDispatcher {
   /// * 'alternative': The track is not the default track for playback
   String? get kind => _kind;
 }
-

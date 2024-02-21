@@ -3,15 +3,15 @@
 # Run `pod lib lint theoplayer.podspec` to validate before publishing.
 #
 Pod::Spec.new do |s|
-  s.name             = 'flutter_theoplayer_sdk_ios'
-  s.version          = '0.0.1'
-  s.summary          = 'THEOplayer Flutter SDK'
+  s.name             = 'theoplayer_ios'
+  s.version          = '1.0.0'
+  s.summary          = 'THEOplayer Flutter iOS SDK'
   s.description      = <<-DESC
-THEOplayer Flutter SDK
+THEOplayer Flutter iOS SDK
                        DESC
-  s.homepage         = 'http://example.com'
+  s.homepage         = 'https://theoplayer.com'
   s.license          = { :file => '../LICENSE' }
-  s.author           = { 'Your Company' => 'email@example.com' }
+  s.author           = { 'THEO Technologies' => 'support@theoplayer.com' }
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'

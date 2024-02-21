@@ -12,10 +12,8 @@ class VideoTrackImplWeb extends VideoTrackImpl {
   late final aciveQualityChangedEventListener;
   late final targetQualityChangedListener;
 
-
   VideoTrackImplWeb(super.id, super.uid, super.label, super.language, super.kind, super.qualities, super.isEnabled, this._nativeVideoTrack) {
-
-    targetQualityChangedListener = allowInterop((VideoTargetQualityChangedEventJS event){
+    targetQualityChangedListener = allowInterop((VideoTargetQualityChangedEventJS event) {
       var eventTargetQualities = event.qualities;
       var eventTargetQuality = event.quality;
 
@@ -37,7 +35,7 @@ class VideoTrackImplWeb extends VideoTrackImpl {
       dispatchEvent(VideoTargetQualityChangedEvent(qualities: flutterTargetQualities, quality: flutterTargetQuality));
     });
 
-    aciveQualityChangedEventListener = allowInterop((VideoActiveQualityChangedEventJS event){
+    aciveQualityChangedEventListener = allowInterop((VideoActiveQualityChangedEventJS event) {
       var eventTargetQuality = event.quality;
       VideoQuality? flutterActiveQuality = this.qualities.firstWhereOrNull((element) => element.uid == eventTargetQuality.uid);
       if (flutterActiveQuality == null) {
@@ -57,7 +55,7 @@ class VideoTrackImplWeb extends VideoTrackImpl {
   set targetQualities(List<VideoQuality>? targetQualities) {
     super.targetQualities = targetQualities;
 
-    List<THEOplayerVideoQuality>? theoplayerQualities = null;
+    List<THEOplayerVideoQuality>? theoplayerQualities;
 
     if (targetQualities != null) {
       theoplayerQualities = [];
@@ -78,8 +76,8 @@ class VideoTrackImplWeb extends VideoTrackImpl {
   @override
   set targetQuality(VideoQuality? targetQuality) {
     super.targetQuality = targetQuality;
-  
-    List<THEOplayerVideoQuality>? theoplayerQualities = null;
+
+    List<THEOplayerVideoQuality>? theoplayerQualities;
 
     if (targetQuality != null) {
       theoplayerQualities = [];
@@ -92,7 +90,7 @@ class VideoTrackImplWeb extends VideoTrackImpl {
         }
       }
     }
-    
+
     _nativeVideoTrack.targetQuality = theoplayerQualities;
   }
 

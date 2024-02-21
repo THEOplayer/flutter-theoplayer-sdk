@@ -2,5 +2,4 @@ import 'package:theoplayer_platform_interface/theoplayer_view_controller_mobile.
 
 class THEOplayerViewControllerAndroid extends THEOplayerViewControllerMobile {
   THEOplayerViewControllerAndroid(super.id);
-
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:theoplayer/theoplayer.dart';
 
@@ -6,10 +8,16 @@ import 'package:theoplayer/theoplayer.dart';
 const TEST_LICENSE = String.fromEnvironment("TEST_LICENSE", defaultValue: "");
 
 class TestApp extends StatefulWidget {
-  const TestApp({super.key});
+  final _playerReady = Completer();
+
+  TestApp({super.key});
 
   @override
   State<TestApp> createState() => _TestAppState();
+
+  Future<void> waitForPlayerReady() {
+    return _playerReady.future;
+  }
 }
 
 class _TestAppState extends State<TestApp> {
@@ -31,42 +39,42 @@ class _TestAppState extends State<TestApp> {
           androidConfiguration: AndroidConfig(useHybridComposition: true)        ),
         onCreate: () {
           print("TestApp - THEOplayer - onCreate");
-          player.addEventListener(PlayerEventTypes.SOURCECHANGE, (event) { 
+          player.addEventListener(PlayerEventTypes.SOURCECHANGE, (event) {
             print("_DEBUG: SOURCECHANGE received");
           });
-          player.addEventListener(PlayerEventTypes.PLAYING, (event) { 
+          player.addEventListener(PlayerEventTypes.PLAYING, (event) {
             print("_DEBUG: PLAYING received");
           });
-          player.addEventListener(PlayerEventTypes.PROGRESS, (event) { 
+          player.addEventListener(PlayerEventTypes.PROGRESS, (event) {
             print("_DEBUG: PROGRESS received");
           });
           player.addEventListener(PlayerEventTypes.ERROR, (event) {
             print("_DEBUG: ERROR: ${(event as ErrorEvent).error}");
-           });
-          player.addEventListener(PlayerEventTypes.TIMEUPDATE, (event) { 
+          });
+          player.addEventListener(PlayerEventTypes.TIMEUPDATE, (event) {
             print("_DEBUG: TIMEUPDATE received");
           });
-          player.addEventListener(PlayerEventTypes.CANPLAY, (event) { 
+          player.addEventListener(PlayerEventTypes.CANPLAY, (event) {
             print("_DEBUG: CANPLAY received");
           });
-          player.addEventListener(PlayerEventTypes.DURATIONCHANGE, (event) { 
+          player.addEventListener(PlayerEventTypes.DURATIONCHANGE, (event) {
             print("_DEBUG: DURATIONCHANGE received");
           });
-          player.addEventListener(PlayerEventTypes.LOADSTART, (event) { 
+          player.addEventListener(PlayerEventTypes.LOADSTART, (event) {
             print("_DEBUG: LOADSTART received");
           });
-          player.addEventListener(PlayerEventTypes.PLAY, (event) { 
+          player.addEventListener(PlayerEventTypes.PLAY, (event) {
             print("_DEBUG: PLAY received");
           });
-          player.addEventListener(PlayerEventTypes.PAUSE, (event) { 
+          player.addEventListener(PlayerEventTypes.PAUSE, (event) {
             print("_DEBUG: PAUSE received");
           });
-          player.addEventListener(PlayerEventTypes.WAITING, (event) { 
+          player.addEventListener(PlayerEventTypes.WAITING, (event) {
             print("_DEBUG: PAUSE received");
           });
+
+          widget._playerReady.complete();
         });
-
-
   }
 
   @override
@@ -106,11 +114,9 @@ class _TestAppState extends State<TestApp> {
       ),
     );
   }
-
 }
 
 class ChromelessPlayer extends StatelessWidget {
-
   static GlobalKey globalKey = GlobalKey();
 
   const ChromelessPlayer({

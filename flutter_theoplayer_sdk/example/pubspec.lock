@@ -246,30 +246,34 @@ packages:
   theoplayer_android:
     dependency: transitive
     description:
-      path: "../../flutter_theoplayer_sdk_android"
-      relative: true
-    source: path
+      name: theoplayer_android
+      sha256: "7e5a2cdf4b32ba5ac467c19bf6b38bc3df3ad4176165454e82c3c5c68129c9af"
+      url: "https://pub.dev"
+    source: hosted
     version: "1.0.0"
   theoplayer_ios:
     dependency: transitive
     description:
-      path: "../../flutter_theoplayer_sdk_ios"
-      relative: true
-    source: path
+      name: theoplayer_ios
+      sha256: "32448899de58710df038952eca0fd19866480ef2b7ed46464d14bf980a644ee0"
+      url: "https://pub.dev"
+    source: hosted
     version: "1.0.0"
   theoplayer_platform_interface:
     dependency: transitive
     description:
-      path: "../../flutter_theoplayer_sdk_platform_interface"
-      relative: true
-    source: path
+      name: theoplayer_platform_interface
+      sha256: "059991ac3954806b63e6956c90983a1f24e22673285fa37c924dabbb40f2c4ed"
+      url: "https://pub.dev"
+    source: hosted
     version: "1.0.0"
   theoplayer_web:
     dependency: transitive
     description:
-      path: "../../flutter_theoplayer_sdk_web"
-      relative: true
-    source: path
+      name: theoplayer_web
+      sha256: "10de262f64df32d859716f40081e1e9eac484b99723f3a3cf699ae44c8f144e6"
+      url: "https://pub.dev"
+    source: hosted
     version: "1.0.0"
   vector_math:
     dependency: transitive

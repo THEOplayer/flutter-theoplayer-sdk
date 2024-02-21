@@ -3,7 +3,6 @@ import 'package:theoplayer/theoplayer.dart';
 import 'package:theoplayer_example/helpers/utils.dart';
 
 class SeekbarWidget extends StatefulWidget {
-
   //this triggers underlying seek on the player ---> can show the new frame where you drag
   final bool seekWhileDragging;
 
@@ -14,35 +13,33 @@ class SeekbarWidget extends StatefulWidget {
   });
 
   final THEOplayer player;
-  
+
   @override
   State<StatefulWidget> createState() {
     return _SeekbarWidgetWidgetState();
   }
-
 }
 
 class _SeekbarWidgetWidgetState extends State<SeekbarWidget> {
-
   double position = 0.0;
   double duration = 0.0;
 
   bool dragging = false;
 
   void timeUpdateListener(Event event) {
-      if (dragging) {
-        return;
-      }
+    if (dragging) {
+      return;
+    }
 
-      setState(() {
-        position = widget.player.getCurrentTime();
-      });
+    setState(() {
+      position = widget.player.getCurrentTime();
+    });
   }
 
   void durartionChangeListener(Event event) {
-      setState(() {
-        duration = widget.player.getDuration();
-      });
+    setState(() {
+      duration = widget.player.getDuration();
+    });
   }
 
   @override
@@ -55,7 +52,7 @@ class _SeekbarWidgetWidgetState extends State<SeekbarWidget> {
     widget.player.addEventListener(PlayerEventTypes.DURATIONCHANGE, durartionChangeListener);
   }
 
-@override
+  @override
   void dispose() {
     widget.player.removeEventListener(PlayerEventTypes.TIMEUPDATE, timeUpdateListener);
     widget.player.removeEventListener(PlayerEventTypes.DURATIONCHANGE, durartionChangeListener);
@@ -65,12 +62,12 @@ class _SeekbarWidgetWidgetState extends State<SeekbarWidget> {
   @override
   Widget build(BuildContext context) {
     return Slider(
-      value: position, 
+      value: position,
       min: 0,
       max: duration,
       activeColor: theoYellow,
       label: "${position.round()}",
-      onChanged: (newPosition){
+      onChanged: (newPosition) {
         if (widget.seekWhileDragging) {
           widget.player.setCurrentTime(newPosition);
         }
@@ -81,11 +78,10 @@ class _SeekbarWidgetWidgetState extends State<SeekbarWidget> {
       onChangeStart: (currentPosition) {
         dragging = true;
       },
-      onChangeEnd: (newPosition){
+      onChangeEnd: (newPosition) {
         dragging = false;
         widget.player.setCurrentTime(newPosition);
       },
     );
   }
-
 }

@@ -19,14 +19,13 @@ class THEOplayerTrackControllerWeb extends THEOplayerTrackControllerInterface {
     _textTracksImpl = TextTrackListImplWeb(_theoplayerJS.textTracks);
     _audioTracksImpl = AudioTrackListImplWeb(_theoplayerJS.audioTracks);
     _videoTracksImpl = VideoTrackListImplWeb(_theoplayerJS.videoTracks);
-
   }
-  
+
   @override
   void dispose() {
     _textTracksImpl.dispose();
   }
-  
+
   @override
   TextTracks getTextTracks() {
     return _textTracksImpl;
@@ -41,5 +40,4 @@ class THEOplayerTrackControllerWeb extends THEOplayerTrackControllerInterface {
   VideoTracks getVideoTracks() {
     return _videoTracksImpl;
   }
-
 }

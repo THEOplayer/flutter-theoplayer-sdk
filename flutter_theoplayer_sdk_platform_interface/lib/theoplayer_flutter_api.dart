@@ -5,7 +5,6 @@ import 'package:theoplayer_platform_interface/theoplayer_event_manager.dart';
 import 'package:theoplayer_platform_interface/theoplayer_events.dart';
 
 class THEOplayerFlutterAPIImpl implements THEOplayerFlutterAPI, EventDispatcher {
-
   final EventManager _eventManager = EventManager();
 
   THEOplayerFlutterAPIImpl({BinaryMessenger? binaryMessenger}) {
@@ -16,7 +15,7 @@ class THEOplayerFlutterAPIImpl implements THEOplayerFlutterAPI, EventDispatcher 
   void addEventListener(String eventType, EventListener<Event> listener) {
     _eventManager.addEventListener(eventType, listener);
   }
-  
+
   @override
   void removeEventListener(String eventType, EventListener<Event> listener) {
     _eventManager.removeEventListener(eventType, listener);
@@ -135,5 +134,4 @@ class THEOplayerFlutterAPIImpl implements THEOplayerFlutterAPI, EventDispatcher 
   void dispose() {
     _eventManager.clear();
   }
-  
 }

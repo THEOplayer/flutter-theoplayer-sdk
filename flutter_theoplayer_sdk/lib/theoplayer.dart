@@ -89,7 +89,7 @@ class THEOplayer implements EventDispatcher {
   }
 
   /// The current source which describes desired playback of a media resource.
-  /// 
+  ///
   /// Remarks:
   /// * Changing source will [stop] the previous source.
   SourceDescription? getSource() {
@@ -116,7 +116,7 @@ class THEOplayer implements EventDispatcher {
   void pause() {
     _theoPlayerViewController?.pause();
   }
-  
+
   /// Whether the player is paused.
   bool isPaused() {
     return _playerState.isPaused;
@@ -138,7 +138,7 @@ class THEOplayer implements EventDispatcher {
   }
 
   /// The current playback position of the media, as a timestamp.
-  /// 
+  ///
   /// Remarks:
   /// * The relation between [getCurrentProgramDateTime] and [getCurrentTime] is determined by the manifest.
   DateTime? getCurrentProgramDateTime() {
@@ -151,12 +151,12 @@ class THEOplayer implements EventDispatcher {
   }
 
   /// Set the playback rate of the media.
-  /// 
+  ///
   /// Remarks:
   /// * Playback rate is represented by a number where 1 is default playback speed.
   /// * Playback rate must be a positive number.
   /// * It is recommended that you limit the range to between 0.5 and 4.
-  /// 
+  ///
   /// Example:
   /// * playbackRate = 0.70 will slow down the playback rate of the media by 30%.
   /// * playbackRate = 1.25 will speed up the playback rate of the media by 25%.
@@ -171,10 +171,10 @@ class THEOplayer implements EventDispatcher {
   }
 
   /// Set the volume of the audio.
-  /// 
+  ///
   /// Remarks:
   /// * Volume is represented by a floating point number between 0.0 and 1.0.
-  /// 
+  ///
   /// Example:
   /// * volume = 0.7 will reduce the audio volume of the media by 30%.
   void setVolume(double volume) {
@@ -187,7 +187,7 @@ class THEOplayer implements EventDispatcher {
   }
 
   /// Set whether audio is muted.
-  /// 
+  ///
   /// Remarks:
   /// * on Web only muted autplay is allowed.
   void setMuted(bool muted) {
@@ -204,7 +204,7 @@ class THEOplayer implements EventDispatcher {
   /// * [PreloadType.none] : The player will not load anything on source change.
   /// * [PreloadType.metadata] : The player will immediately load metadata on source change.
   /// * [PreloadType.auto] : The player will immediately load metadata and media on source change.
-  /// 
+  ///
   /// Remarks:
   /// * 'metadata' loads enough resources to be able to determine the [THEOplayer.getDuration].
   /// * 'auto' loads media up to [ABRConfiguration.targetBuffer].
@@ -221,7 +221,7 @@ class THEOplayer implements EventDispatcher {
   /// The ready state of the player, represented by a value from the following list:
   /// * [ReadyState.have_nothing] : The player has no information about the duration of its source.
   /// * [ReadyState.have_metadata] : The player has information about the duration of its source.
-  /// * [ReadyState.have_current_data] : The player has its current frame in its buffer. 
+  /// * [ReadyState.have_current_data] : The player has its current frame in its buffer.
   /// * [ReadyState.have_future_data] : The player has enough data for immediate playback.
   /// * [ReadyState.have_enough_data] : The player has enough data for continuous playback.
   ReadyState getReadyState() {
@@ -258,7 +258,7 @@ class THEOplayer implements EventDispatcher {
   }
 
   /// Returns a [TimeRange] list object that represents the ranges of the media resource that are seekable by the player.
-  /// 
+  ///
   /// Remarks:
   /// * On source change, seekable becomes available after [getReadyState] is at least HAVE_METADATA.
   List<TimeRange?> getSeekable() {
@@ -276,7 +276,7 @@ class THEOplayer implements EventDispatcher {
   }
 
   /// Stop playback.
-  /// 
+  ///
   /// Remarks:
   /// * All resources associated with the current source are released.
   /// * The player can be reused by setting a new source with [setSource].

@@ -3,7 +3,6 @@ import 'package:theoplayer_platform_interface/theoplayer_events.dart';
 import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_mediatrack.dart';
 
 abstract class AudioTracks extends MediaTracks<AudioTrack> {
-
   /// Add the given listener for the given [AudioTracksEventTypes] type(s).
   @override
   void addEventListener(String eventType, EventListener<Event> listener);

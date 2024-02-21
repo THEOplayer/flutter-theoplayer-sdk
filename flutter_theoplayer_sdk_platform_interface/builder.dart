@@ -8,7 +8,6 @@ import 'package:pigeon/pigeon_cl.dart' as pigeon_cl;
 Builder mergerBuilder(BuilderOptions options) => MergerBuilder();
 
 class MergerBuilder extends Builder {
-
   static const String outputFile = 'pigeons/pigeons_merged.dart';
 
   @override
@@ -76,5 +75,4 @@ class MergerBuilder extends Builder {
       output.writeln();
     }
   }
-
 }

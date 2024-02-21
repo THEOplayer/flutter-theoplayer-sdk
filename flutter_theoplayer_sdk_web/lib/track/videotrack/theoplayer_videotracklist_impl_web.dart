@@ -9,17 +9,14 @@ import 'package:theoplayer_web/transformers_web.dart';
 import 'package:js/js.dart';
 
 class VideoTrackListImplWeb extends VideoTracksImpl {
-
   final THEOplayerArrayList<THEOplayerVideoTrack> _theoPlayerVideoTracks;
 
   late final addTrackEventListener;
   late final removeTrackEventListener;
   late final changeTrackEventListener;
 
-
   VideoTrackListImplWeb(this._theoPlayerVideoTracks) {
-
-    addTrackEventListener = allowInterop((AddVideoTrackEventJS event){
+    addTrackEventListener = allowInterop((AddVideoTrackEventJS event) {
       var track = event.track;
 
       VideoQualities qualities = toFlutterVideoQualities(track.qualities);
@@ -38,9 +35,9 @@ class VideoTrackListImplWeb extends VideoTracksImpl {
       dispatchEvent(AddVideoTrackEvent(track: flutterTrack));
     });
 
-    removeTrackEventListener = allowInterop((RemoveVideoTrackEventJS event){
+    removeTrackEventListener = allowInterop((RemoveVideoTrackEventJS event) {
       var track = event.track;
-      
+
       var flutterTrack = firstWhereOrNull((item) => item.uid == track.uid);
       if (flutterTrack == null) {
         return;
@@ -51,7 +48,7 @@ class VideoTrackListImplWeb extends VideoTracksImpl {
     });
 
     //only triggered for enable/disable
-    changeTrackEventListener = allowInterop((VideoTrackListChangeEventJS event){
+    changeTrackEventListener = allowInterop((VideoTrackListChangeEventJS event) {
       var track = event.track;
 
       var flutterTrack = firstWhereOrNull((item) => item.uid == track.uid);
@@ -65,7 +62,6 @@ class VideoTrackListImplWeb extends VideoTracksImpl {
     _theoPlayerVideoTracks.addEventListener(VideoTracksEventTypes.ADDTRACK.toLowerCase(), addTrackEventListener);
     _theoPlayerVideoTracks.addEventListener(VideoTracksEventTypes.REMOVETRACK.toLowerCase(), removeTrackEventListener);
     _theoPlayerVideoTracks.addEventListener(VideoTracksEventTypes.CHANGE.toLowerCase(), changeTrackEventListener);
-
   }
 
   void dispose() {
@@ -81,6 +77,4 @@ class VideoTrackListImplWeb extends VideoTracksImpl {
 
     clear();
   }
-
-  
 }

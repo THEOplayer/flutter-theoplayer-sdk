@@ -16,11 +16,11 @@ abstract class MediaTrack<Q extends Quality, L extends Qualities> extends Track 
   set targetQualities(List<Q>? targetQualities);
 
   /// One or more desired qualities of the media track.
-  /// 
+  ///
   /// Remarks:
   /// * If desired qualities are present, the Adaptive Bitrate mechanism of the player will limit itself to these qualities.
   /// * If one desired quality is present, the Adaptive Bitrate mechanism of the player will be disabled and the desired quality will be played back.
-  /// 
+  ///
   /// Limitations:
   /// * Not available on iOS
   List<Q>? get targetQualities;
@@ -28,11 +28,11 @@ abstract class MediaTrack<Q extends Quality, L extends Qualities> extends Track 
   set targetQuality(Q? targetQuality);
 
   /// The desired qualities of the media track.
-  /// 
+  ///
   /// Remarks:
   /// * If desired qualities are present, the Adaptive Bitrate mechanism of the player will limit itself to these qualities.
   /// * If one desired quality is present, the Adaptive Bitrate mechanism of the player will be disabled and the desired quality will be played back.
-  /// 
+  ///
   /// Limitations:
   /// * Not available on iOS
   Q? get targetQuality;
@@ -41,7 +41,7 @@ abstract class MediaTrack<Q extends Quality, L extends Qualities> extends Track 
   Q? get activeQuality;
 
   /// Set whether the track is enabled.
-  /// 
+  ///
   /// Remarks:
   /// * Only one track of the same type (e.g. video) can be enabled at the same time.
   /// * Enabling a track will disable all other tracks of the same type.

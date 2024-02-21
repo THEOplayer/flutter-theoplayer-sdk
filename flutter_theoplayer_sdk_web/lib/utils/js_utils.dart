@@ -21,4 +21,4 @@ Map? jsObjectToDartMap(JsObject? obj) {
 
 JsObject dartObjectToJsObject(object) {
   return JsObject.jsify(object);
-} 
+}

@@ -33,5 +33,4 @@ class EventManager implements EventDispatcher {
   void clear() {
     _eventListenerMap.clear();
   }
-
 }

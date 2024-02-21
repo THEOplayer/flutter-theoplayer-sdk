@@ -1,4 +1,4 @@
-<img src="/doc/theoplayer_flutter_sdk_logo.png">
+<img src="https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/theoplayer_flutter_sdk_logo.png">
 
 # THEOplayer Flutter SDK
 
@@ -56,21 +56,21 @@ Depending on the platform on which the application is deployed, a different set 
 If a feature is missing, additional help is needed, or you need to extend the package,
 please reach out to us for support.
 
-<img src="/doc/features.svg">
+<img src="https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/features.svg">
 
 
 ## Getting Started
 
-This section starts with creating a minimal demo app that integrates the `flutter_theoplayer_sdk` package,
+This section starts with creating a minimal demo app that integrates the `theoplayer` package,
 followed by an overview of the available properties and functionality of the THEOplayer component.
 A minimal example application including a basic user interface and demo sources is included in [this repository](./flutter_theoplayer_sdk/example),
 and discussed in the next section. Finally, an overview of features, limitations and known issues is listed.
 
-- [Creating a minimal demo app](./doc/creating-minimal-app.md)
-    - [Getting started on Android](./doc/creating-minimal-app.md#getting-started-on-android)
-    - [Getting started on iOS](./doc/creating-minimal-app.md#getting-started-on-ios)
-    - [Getting started on Web](./doc/creating-minimal-app.md#getting-started-on-web)
-- [The THEOplayer component](./doc/theoplayer-component.md)
+- [Creating a minimal demo app](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/creating-minimal-app.md)
+    - [Getting started on Android](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/creating-minimal-app.md#getting-started-on-android)
+    - [Getting started on iOS](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/creating-minimal-app.md#getting-started-on-ios)
+    - [Getting started on Web](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/creating-minimal-app.md#getting-started-on-web)
+- [The THEOplayer component](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/theoplayer-component.md)
 - Knowledge Base
-  - [Using custom DRM connectors](./doc/custom_drm.md)
-  - [Limitations and known issues](./doc/limitations.md)
+  - [Using custom DRM connectors](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/custom_drm.md)
+  - [Limitations and known issues](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/limitations.md)
