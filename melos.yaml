@@ -8,6 +8,17 @@ packages:
   - flutter_theoplayer_sdk
   - flutter_theoplayer_sdk/example
 
+command:
+  bootstrap:
+    environment:
+      sdk: ^3.3.0
+      flutter: ">=3.19.0"
+    dependencies:
+      theoplayer_platform_interface: 1.0.1
+      theoplayer_android: 1.0.1
+      theoplayer_ios: 1.0.1
+      theoplayer_web: 1.0.1
+
 scripts:
   analyze:
     # We are setting the concurrency to 1 because a higher concurrency can crash
