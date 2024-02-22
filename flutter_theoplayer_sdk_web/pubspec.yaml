@@ -1,6 +1,6 @@
 name: theoplayer_web
 description: THEOplayer Flutter SDK Web used by `theoplayer` to support the Web platform.
-version: 1.0.0
+version: 1.0.1
 homepage: https://theoplayer.com
 repository: https://github.com/THEOplayer/flutter-theoplayer-sdk
 
@@ -15,7 +15,7 @@ dependencies:
     sdk: flutter
   plugin_platform_interface: ^2.0.2
   js: ^0.6.7
-  theoplayer_platform_interface: 1.0.0
+  theoplayer_platform_interface: 1.0.1
   web: ">=0.3.0 <0.6.0"
 
 dev_dependencies:
