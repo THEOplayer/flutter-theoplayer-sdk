@@ -1,6 +1,6 @@
 name: theoplayer_platform_interface
 description: THEOplayer Flutter SDK Platform Interface used by platform specific packages.
-version: 1.0.1
+version: 1.0.2
 homepage: https://theoplayer.com
 repository: https://github.com/THEOplayer/flutter-theoplayer-sdk
 
