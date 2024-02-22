@@ -13,7 +13,6 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  plugin_platform_interface: ^2.0.2
   theoplayer_platform_interface: 1.0.1
   theoplayer_android: 1.0.1
   theoplayer_ios: 1.0.1

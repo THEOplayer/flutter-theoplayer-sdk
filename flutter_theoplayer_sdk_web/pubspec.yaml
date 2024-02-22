@@ -13,9 +13,8 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  plugin_platform_interface: ^2.0.2
-  js: ^0.6.7
   theoplayer_platform_interface: 1.0.1
+  js: ^0.6.7
   web: ">=0.3.0 <0.6.0"
 
 dev_dependencies:
