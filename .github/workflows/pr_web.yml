@@ -88,7 +88,7 @@ jobs:
     - name: Run integration tests
       run: |
         flutter config --enable-web
-        flutter drive --driver=webdriver_integration_test/webdriver.dart --target=integration_test/plugin_integration_test.dart -d web-server --web-renderer ${{ matrix.renderer }} --profile --driver-port=4444 -v --web-browser-flag="--disable-web-security --autoplay-policy=no-user-gesture-required" --chrome-binary ${{ steps.setup-chrome.outputs.chrome-path }}
+        flutter drive --driver=webdriver_integration_test/webdriver.dart --target=integration_test_web/web_entrypoint.dart -d web-server --web-renderer ${{ matrix.renderer }} --profile --driver-port=4444 -v --web-browser-flag="--disable-web-security --autoplay-policy=no-user-gesture-required" --chrome-binary ${{ steps.setup-chrome.outputs.chrome-path }}
       working-directory: flutter_theoplayer_sdk/example
       env:
         TEST_LICENSE: ${{ secrets.TEST_LICENSE }}
