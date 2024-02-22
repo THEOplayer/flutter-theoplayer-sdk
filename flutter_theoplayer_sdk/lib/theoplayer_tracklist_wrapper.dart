@@ -8,6 +8,9 @@ import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videot
 import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack.dart';
 import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack_events.dart';
 
+//TODO: move this into theoplayer.dart
+
+/// Internal helper class to catch TextTrack events in time.
 class TextTracksHolder extends TextTracks {
   final EventManager _eventManager = EventManager();
   TextTracks? _wrappedTrackList;
@@ -18,6 +21,7 @@ class TextTracksHolder extends TextTracks {
 
   TextTracksHolder();
 
+  /// Method to setup the TextTrack event listeners on a TextTrack list ([TextTracks])
   void setup(TextTracks trackListToWrap) {
     _wrappedTrackList = trackListToWrap;
     innerList = trackListToWrap;
@@ -27,16 +31,19 @@ class TextTracksHolder extends TextTracks {
     _wrappedTrackList?.addEventListener(TextTracksEventTypes.CHANGE, forwardingkEventListener);
   }
 
+  /// Method to add eventlisteners for [TextTracksEventTypes].
   @override
   void addEventListener(String eventType, EventListener<Event> listener) {
     _eventManager.addEventListener(eventType, listener);
   }
 
+  /// Method to remove already added eventlisteners for [TextTracksEventTypes].
   @override
   void removeEventListener(String eventType, EventListener<Event> listener) {
     _eventManager.removeEventListener(eventType, listener);
   }
 
+  /// Method to clean the listeners
   void dispose() {
     _wrappedTrackList?.removeEventListener(TextTracksEventTypes.ADDTRACK, forwardingkEventListener);
     _wrappedTrackList?.removeEventListener(TextTracksEventTypes.REMOVETRACK, forwardingkEventListener);
@@ -45,6 +52,7 @@ class TextTracksHolder extends TextTracks {
   }
 }
 
+/// Internal helper class to catch AudioTrack events in time.
 class AudioTracksHolder extends AudioTracks {
   final EventManager _eventManager = EventManager();
   AudioTracks? _wrappedTrackList;
@@ -55,6 +63,7 @@ class AudioTracksHolder extends AudioTracks {
 
   AudioTracksHolder();
 
+  /// Method to setup the AudioTrack event listeners on a TextTrack list ([AudioTracks]).
   void setup(AudioTracks trackListToWrap) {
     _wrappedTrackList = trackListToWrap;
     innerList = trackListToWrap;
@@ -64,16 +73,19 @@ class AudioTracksHolder extends AudioTracks {
     _wrappedTrackList?.addEventListener(AudioTracksEventTypes.CHANGE, forwardingkEventListener);
   }
 
+  /// Method to add eventlisteners for [AudioTracksEventTypes].
   @override
   void addEventListener(String eventType, EventListener<Event> listener) {
     _eventManager.addEventListener(eventType, listener);
   }
 
+  /// Method to remove already added eventlisteners for [AudioTracksEventTypes].
   @override
   void removeEventListener(String eventType, EventListener<Event> listener) {
     _eventManager.removeEventListener(eventType, listener);
   }
 
+  /// Method to clean the listeners.
   void dispose() {
     _wrappedTrackList?.removeEventListener(AudioTracksEventTypes.ADDTRACK, forwardingkEventListener);
     _wrappedTrackList?.removeEventListener(AudioTracksEventTypes.REMOVETRACK, forwardingkEventListener);
@@ -82,6 +94,7 @@ class AudioTracksHolder extends AudioTracks {
   }
 }
 
+/// Internal helper class to catch VideoTrack events in time.
 class VideoTracksHolder extends VideoTracks {
   final EventManager _eventManager = EventManager();
   VideoTracks? _wrappedTrackList;
@@ -92,6 +105,7 @@ class VideoTracksHolder extends VideoTracks {
 
   VideoTracksHolder();
 
+  /// Method to setup the VideoTrack event listeners on a TextTrack list ([VideoTracks]).
   void setup(VideoTracks trackListToWrap) {
     _wrappedTrackList = trackListToWrap;
     innerList = trackListToWrap;
@@ -101,16 +115,19 @@ class VideoTracksHolder extends VideoTracks {
     _wrappedTrackList?.addEventListener(VideoTracksEventTypes.CHANGE, forwardingkEventListener);
   }
 
+  /// Method to add eventlisteners for [VideoTracksEventTypes].
   @override
   void addEventListener(String eventType, EventListener<Event> listener) {
     _eventManager.addEventListener(eventType, listener);
   }
 
+  /// Method to remove already added eventlisteners for [VideoTracksEventTypes].
   @override
   void removeEventListener(String eventType, EventListener<Event> listener) {
     _eventManager.removeEventListener(eventType, listener);
   }
 
+  /// Method to clean the listeners.
   void dispose() {
     _wrappedTrackList?.removeEventListener(VideoTracksEventTypes.ADDTRACK, forwardingkEventListener);
     _wrappedTrackList?.removeEventListener(VideoTracksEventTypes.REMOVETRACK, forwardingkEventListener);
