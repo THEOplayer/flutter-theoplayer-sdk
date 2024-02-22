@@ -1,6 +1,9 @@
 import 'package:theoplayer_platform_interface/theoplayer_event_manager.dart';
 import 'package:theoplayer/theoplayer.dart';
 
+//TODO: move this into theoplayer.dart
+
+/// Internal Flutter representation of the underlying native THEOplayer state.
 class PlayerState {
   late THEOplayerViewController _theoPlayerViewController;
   StateChangeListener? _stateChangeListener;
@@ -34,96 +37,99 @@ class PlayerState {
     resetState();
   }
 
+  /// Method to setup the connection with the platform-specific [THEOplayerViewController] classes.
   void setViewController(THEOplayerViewController theoPlayerViewController) {
     _theoPlayerViewController = theoPlayerViewController;
     _attachEventListeners();
   }
 
+  /// Use it signal that the native player creation is done.
   void initialized() {
     isInitialized = true;
     _stateChangeListener?.call();
   }
 
   void _attachEventListeners() {
-    _theoPlayerViewController.addEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeEventListener);
-    _theoPlayerViewController.addEventListener(PlayerEventTypes.PLAY, playEventListener);
-    _theoPlayerViewController.addEventListener(PlayerEventTypes.PLAYING, playingEventListener);
-    _theoPlayerViewController.addEventListener(PlayerEventTypes.PAUSE, pauseEventListener);
-    _theoPlayerViewController.addEventListener(PlayerEventTypes.WAITING, waitingEventListener);
-    _theoPlayerViewController.addEventListener(PlayerEventTypes.DURATIONCHANGE, durationChangeEventListener);
-    _theoPlayerViewController.addEventListener(PlayerEventTypes.PROGRESS, progressEventListener);
-    _theoPlayerViewController.addEventListener(PlayerEventTypes.TIMEUPDATE, timeUpdateEventListener);
-    _theoPlayerViewController.addEventListener(PlayerEventTypes.RATECHANGE, rateChangeEventListener);
-    _theoPlayerViewController.addEventListener(PlayerEventTypes.SEEKING, seekingEventListener);
-    _theoPlayerViewController.addEventListener(PlayerEventTypes.SEEKED, seekedEventListener);
-    _theoPlayerViewController.addEventListener(PlayerEventTypes.VOLUMECHANGE, volumeChangeEventListener);
-    _theoPlayerViewController.addEventListener(PlayerEventTypes.RESIZE, resizeEventListener);
-    _theoPlayerViewController.addEventListener(PlayerEventTypes.ENDED, endedEventListener);
-    _theoPlayerViewController.addEventListener(PlayerEventTypes.ERROR, errorEventListener);
-    _theoPlayerViewController.addEventListener(PlayerEventTypes.DESTROY, destroyEventListener);
-    _theoPlayerViewController.addEventListener(PlayerEventTypes.READYSTATECHANGE, readyStateChangeEventListener);
+    _theoPlayerViewController.addEventListener(PlayerEventTypes.SOURCECHANGE, _sourceChangeEventListener);
+    _theoPlayerViewController.addEventListener(PlayerEventTypes.PLAY, _playEventListener);
+    _theoPlayerViewController.addEventListener(PlayerEventTypes.PLAYING, _playingEventListener);
+    _theoPlayerViewController.addEventListener(PlayerEventTypes.PAUSE, _pauseEventListener);
+    _theoPlayerViewController.addEventListener(PlayerEventTypes.WAITING, _waitingEventListener);
+    _theoPlayerViewController.addEventListener(PlayerEventTypes.DURATIONCHANGE, _durationChangeEventListener);
+    _theoPlayerViewController.addEventListener(PlayerEventTypes.PROGRESS, _progressEventListener);
+    _theoPlayerViewController.addEventListener(PlayerEventTypes.TIMEUPDATE, _timeUpdateEventListener);
+    _theoPlayerViewController.addEventListener(PlayerEventTypes.RATECHANGE, _rateChangeEventListener);
+    _theoPlayerViewController.addEventListener(PlayerEventTypes.SEEKING, _seekingEventListener);
+    _theoPlayerViewController.addEventListener(PlayerEventTypes.SEEKED, _seekedEventListener);
+    _theoPlayerViewController.addEventListener(PlayerEventTypes.VOLUMECHANGE, _volumeChangeEventListener);
+    _theoPlayerViewController.addEventListener(PlayerEventTypes.RESIZE, _resizeEventListener);
+    _theoPlayerViewController.addEventListener(PlayerEventTypes.ENDED, _endedEventListener);
+    _theoPlayerViewController.addEventListener(PlayerEventTypes.ERROR, _errorEventListener);
+    _theoPlayerViewController.addEventListener(PlayerEventTypes.DESTROY, _destroyEventListener);
+    _theoPlayerViewController.addEventListener(PlayerEventTypes.READYSTATECHANGE, _readyStateChangeEventListener);
   }
 
   void _removeEventListeners() {
-    _theoPlayerViewController.removeEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeEventListener);
-    _theoPlayerViewController.removeEventListener(PlayerEventTypes.PLAY, playEventListener);
-    _theoPlayerViewController.removeEventListener(PlayerEventTypes.PLAYING, playingEventListener);
-    _theoPlayerViewController.removeEventListener(PlayerEventTypes.PAUSE, pauseEventListener);
-    _theoPlayerViewController.removeEventListener(PlayerEventTypes.WAITING, waitingEventListener);
-    _theoPlayerViewController.removeEventListener(PlayerEventTypes.DURATIONCHANGE, durationChangeEventListener);
-    _theoPlayerViewController.removeEventListener(PlayerEventTypes.PROGRESS, progressEventListener);
-    _theoPlayerViewController.removeEventListener(PlayerEventTypes.TIMEUPDATE, timeUpdateEventListener);
-    _theoPlayerViewController.removeEventListener(PlayerEventTypes.RATECHANGE, rateChangeEventListener);
-    _theoPlayerViewController.removeEventListener(PlayerEventTypes.SEEKING, seekingEventListener);
-    _theoPlayerViewController.removeEventListener(PlayerEventTypes.SEEKED, seekedEventListener);
-    _theoPlayerViewController.removeEventListener(PlayerEventTypes.VOLUMECHANGE, volumeChangeEventListener);
-    _theoPlayerViewController.removeEventListener(PlayerEventTypes.RESIZE, resizeEventListener);
-    _theoPlayerViewController.removeEventListener(PlayerEventTypes.ENDED, endedEventListener);
-    _theoPlayerViewController.removeEventListener(PlayerEventTypes.ERROR, errorEventListener);
-    _theoPlayerViewController.removeEventListener(PlayerEventTypes.DESTROY, destroyEventListener);
-    _theoPlayerViewController.removeEventListener(PlayerEventTypes.READYSTATECHANGE, readyStateChangeEventListener);
+    _theoPlayerViewController.removeEventListener(PlayerEventTypes.SOURCECHANGE, _sourceChangeEventListener);
+    _theoPlayerViewController.removeEventListener(PlayerEventTypes.PLAY, _playEventListener);
+    _theoPlayerViewController.removeEventListener(PlayerEventTypes.PLAYING, _playingEventListener);
+    _theoPlayerViewController.removeEventListener(PlayerEventTypes.PAUSE, _pauseEventListener);
+    _theoPlayerViewController.removeEventListener(PlayerEventTypes.WAITING, _waitingEventListener);
+    _theoPlayerViewController.removeEventListener(PlayerEventTypes.DURATIONCHANGE, _durationChangeEventListener);
+    _theoPlayerViewController.removeEventListener(PlayerEventTypes.PROGRESS, _progressEventListener);
+    _theoPlayerViewController.removeEventListener(PlayerEventTypes.TIMEUPDATE, _timeUpdateEventListener);
+    _theoPlayerViewController.removeEventListener(PlayerEventTypes.RATECHANGE, _rateChangeEventListener);
+    _theoPlayerViewController.removeEventListener(PlayerEventTypes.SEEKING, _seekingEventListener);
+    _theoPlayerViewController.removeEventListener(PlayerEventTypes.SEEKED, _seekedEventListener);
+    _theoPlayerViewController.removeEventListener(PlayerEventTypes.VOLUMECHANGE, _volumeChangeEventListener);
+    _theoPlayerViewController.removeEventListener(PlayerEventTypes.RESIZE, _resizeEventListener);
+    _theoPlayerViewController.removeEventListener(PlayerEventTypes.ENDED, _endedEventListener);
+    _theoPlayerViewController.removeEventListener(PlayerEventTypes.ERROR, _errorEventListener);
+    _theoPlayerViewController.removeEventListener(PlayerEventTypes.DESTROY, _destroyEventListener);
+    _theoPlayerViewController.removeEventListener(PlayerEventTypes.READYSTATECHANGE, _readyStateChangeEventListener);
   }
 
+  /// Sets a [StateChangeListener] that gets triggered on every state change.
   void setStateListener(StateChangeListener listener) {
     _stateChangeListener = listener;
   }
 
-  void sourceChangeEventListener(Event event) {
+  void _sourceChangeEventListener(Event event) {
     source = (event as SourceChangeEvent).source;
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
   }
 
-  void playEventListener(Event event) {
+  void _playEventListener(Event event) {
     isPaused = false;
     isEnded = false;
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
   }
 
-  void playingEventListener(Event event) {
+  void _playingEventListener(Event event) {
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
   }
 
-  void pauseEventListener(Event event) {
+  void _pauseEventListener(Event event) {
     isPaused = true;
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
   }
 
-  void waitingEventListener(Event event) {
+  void _waitingEventListener(Event event) {
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
   }
 
-  void durationChangeEventListener(Event event) {
+  void _durationChangeEventListener(Event event) {
     duration = (event as DurationChangeEvent).duration;
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
   }
 
-  void progressEventListener(Event event) {
+  void _progressEventListener(Event event) {
     _theoPlayerViewController.getBuffered().then((value) => buffered = value);
     _theoPlayerViewController.getSeekable().then((value) => seekable = value);
     _theoPlayerViewController.getPlayed().then((value) => played = value);
@@ -131,9 +137,10 @@ class PlayerState {
     _stateChangeListener?.call();
   }
 
-  void timeUpdateEventListener(Event event) {
-    currentTime = (event as TimeUpdateEvent).currentTime;
-    int? programDateTime = (event as TimeUpdateEvent).currentProgramDateTime;
+  void _timeUpdateEventListener(Event event) {
+    TimeUpdateEvent timeupdateEvent = event as TimeUpdateEvent;
+    currentTime = timeupdateEvent.currentTime;
+    int? programDateTime = timeupdateEvent.currentProgramDateTime;
     if (programDateTime == null) {
       currentProgramDateTime = null;
     } else {
@@ -143,62 +150,64 @@ class PlayerState {
     _stateChangeListener?.call();
   }
 
-  void rateChangeEventListener(Event event) {
+  void _rateChangeEventListener(Event event) {
     playbackRate = (event as RateChangeEvent).playbackRate;
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
   }
 
-  void seekingEventListener(Event event) {
+  void _seekingEventListener(Event event) {
     isSeeking = true;
     isEnded = false;
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
   }
 
-  void seekedEventListener(Event event) {
+  void _seekedEventListener(Event event) {
     isSeeking = false;
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
   }
 
-  void volumeChangeEventListener(Event event) {
+  void _volumeChangeEventListener(Event event) {
     volume = (event as VolumeChangeEvent).volume;
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
   }
 
-  void resizeEventListener(Event event) {
-    videoWidth = (event as ResizeEvent).width;
-    videoHeight = (event as ResizeEvent).height;
+  void _resizeEventListener(Event event) {
+    ResizeEvent resizeEvent = event as ResizeEvent;
+    videoWidth = resizeEvent.width;
+    videoHeight = resizeEvent.height;
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
   }
 
-  void endedEventListener(Event event) {
+  void _endedEventListener(Event event) {
     isEnded = true;
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
   }
 
-  void errorEventListener(Event event) {
+  void _errorEventListener(Event event) {
     error = (event as ErrorEvent).error;
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
   }
 
-  void destroyEventListener(Event event) {
+  void _destroyEventListener(Event event) {
     resetState();
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
   }
 
-  void readyStateChangeEventListener(Event event) {
+  void _readyStateChangeEventListener(Event event) {
     readyState = (event as ReadyStateChangeEvent).readyState;
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
   }
 
+  /// Method to reset the player state.
   void resetState() {
     source = null;
     isPaused = true;
@@ -217,6 +226,7 @@ class PlayerState {
     error = null;
   }
 
+  /// Method to clean the internal state on player dispose.
   void dispose() {
     isInitialized = false;
     _removeEventListeners();
