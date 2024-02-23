@@ -1,6 +1,6 @@
 name: theoplayer_android
-description: THEOplayer Flutter SDK Android used by `theoplayer` to support the Android platform.
-version: 1.0.1
+description: THEOplayer Flutter SDK for Android. Used by `theoplayer` to support streaming video playback on Android platforms.
+version: 1.0.2
 homepage: https://theoplayer.com
 repository: https://github.com/THEOplayer/flutter-theoplayer-sdk
 
@@ -11,7 +11,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  theoplayer_platform_interface: 1.0.1
+  theoplayer_platform_interface: 1.0.2
 
 dev_dependencies:
   flutter_test:

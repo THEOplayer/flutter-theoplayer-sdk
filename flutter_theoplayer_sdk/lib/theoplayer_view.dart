@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:theoplayer_platform_interface/theoplayer_platform_interface.dart';
 import 'package:theoplayer_platform_interface/theopalyer_config.dart';
 
+//TODO: move this into theoplayer.dart (?)
+
+/// Internal Flutter representation of the underlying native THEOplayer views.
+/// Use [THEOplayer] to initialize it.
 class THEOplayerView extends StatefulWidget {
   final THEOplayerConfig theoPlayerConfig;
   final THEOplayerViewCreatedCallback onCreated;

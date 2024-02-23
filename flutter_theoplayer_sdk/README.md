@@ -1,4 +1,4 @@
-<img src="https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/theoplayer_flutter_sdk_logo.png">
+<img src="https://raw.githubusercontent.com/THEOplayer/flutter-theoplayer-sdk/main/doc/theoplayer_flutter_sdk_logo.png">
 
 # THEOplayer Flutter SDK
 
@@ -56,7 +56,7 @@ Depending on the platform on which the application is deployed, a different set 
 If a feature is missing, additional help is needed, or you need to extend the package,
 please reach out to us for support.
 
-<img src="https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/features.svg">
+<img src="https://raw.githubusercontent.com/THEOplayer/flutter-theoplayer-sdk/main/doc/features.svg">
 
 
 ## Getting Started

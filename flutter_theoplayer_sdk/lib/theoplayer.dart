@@ -23,9 +23,14 @@ export 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videot
 export 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack_events.dart';
 export 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack.dart';
 
+/// Callback that's used at player creation.
+/// This is called once the underlying native THEOplayerView is fully created and available to use.
 typedef PlayerCreatedCallback = void Function();
+
+/// Callback that's triggered every time the internal player state is changing. See [THEOplayer.setStateListener].
 typedef StateChangeListener = void Function();
 
+/// Class to initialize and interact with THEOplayer
 class THEOplayer implements EventDispatcher {
   final THEOplayerConfig theoPlayerConfig;
   final PlayerCreatedCallback? onCreate;
@@ -76,7 +81,7 @@ class THEOplayer implements EventDispatcher {
     return _videoTrackListHolder;
   }
 
-  /// [StateListener] that's triggered every time the internal player state is changing.
+  /// [StateChangeListener] that's triggered every time the internal player state is changing.
   /// For more granular control use [addEventListener] instead.
   void setStateListener(StateChangeListener listener) {
     _playerState.setStateListener(listener);
@@ -207,7 +212,9 @@ class THEOplayer implements EventDispatcher {
   ///
   /// Remarks:
   /// * 'metadata' loads enough resources to be able to determine the [THEOplayer.getDuration].
-  /// * 'auto' loads media up to [ABRConfiguration.targetBuffer].
+  /// * 'auto' loads media up to ABRConfiguration.targetBuffer.
+  /// 
+  /// * ABRConfiguration is not exposed yet in Flutter.
   void setPreload(PreloadType preload) {
     _playerState.preload = preload;
     _theoPlayerViewController?.setPreload(preload);
