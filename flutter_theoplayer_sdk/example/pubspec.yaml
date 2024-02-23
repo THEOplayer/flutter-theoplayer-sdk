@@ -1,5 +1,5 @@
 name: theoplayer_example
-description: Demonstrates how to use the THEOplayer plugin.
+description: An example project that demonstrates how to use the THEOplayer plugin.
 publish_to: 'none'
 
 environment:
