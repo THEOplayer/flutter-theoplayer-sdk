@@ -149,6 +149,11 @@ class _MyAppState extends State<MyApp> {
                                 player.getVideoTracks().first.targetQuality = player.getVideoTracks().first.qualities.first;
                               },
                               child: const Text("set video target quality")),
+                          FilledButton(
+                              onPressed: (){
+                                player.startChromecast();
+                              },
+                              child: const Text("start casting")),
                           Column(
                             children: [
                               const Text("Sources"),

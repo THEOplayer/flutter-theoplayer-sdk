@@ -422,4 +422,12 @@ class THEOplayer implements EventDispatcher {
   void removeEventListener(String eventType, EventListener<Event> listener) {
     _playerState.eventManager.removeEventListener(eventType, listener);
   }
+
+  void startChromecast() {
+    _theoPlayerViewController?.startChromecast();
+  }
+
+  void stopChromecast() {
+    _theoPlayerViewController?.stopChromecast();
+  }
 }
