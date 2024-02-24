@@ -6,7 +6,7 @@ import 'package:pigeon/pigeon.dart';
 @ConfigurePigeon(PigeonOptions(
   dartOut: 'lib/pigeon/apis.g.dart',
   dartOptions: DartOptions(),
-  kotlinOut: '../flutter_theoplayer_sdk_android/android/src/main/kotlin/com/theoplayer/theoplayer/pigeon/APIs.g.kt',
+  kotlinOut: '../flutter_theoplayer_sdk_android/android/src/main/kotlin/com/theoplayer/flutter/pigeon/APIs.g.kt',
   kotlinOptions: KotlinOptions(
       package: 'com.theoplayer.flutter.pigeon'
   ),
@@ -98,6 +98,9 @@ class FairPlayDRMConfiguration {
   FairPlayDRMConfiguration({required this.licenseAcquisitionURL, required this.certificateURL, this.headers});
 }
 
+
+
+
 @HostApi()
 abstract class THEOplayerNativeTextTracksAPI {
   void setMode(int textTrackUid, TextTrackMode mode);
@@ -143,6 +146,9 @@ abstract class THEOplayerFlutterTextTracksAPI {
 
   void onCueUpdate(int textTrackUid, int cueUid, double endTime, String content);
 }
+
+
+
 
 //Talking to the native
 @HostApi()
@@ -208,7 +214,14 @@ abstract class THEOplayerNativeAPI {
   void stop();
 
   void dispose();
+
+  //TODO: move this into a separate class
+  void startChromecast();
+  void stopChromecast();
 }
+
+
+
 
 //Talking from Native to Dart
 @FlutterApi()
@@ -258,6 +271,8 @@ abstract class THEOplayerFlutterAPI {
   void onCanPlayThrough(double currentTime);
 }
 
+
+
 @HostApi()
 abstract class THEOplayerNativeVideoTracksAPI {
   void setTargetQuality(int videoTrackUid, int? qualityUid);
@@ -288,6 +303,8 @@ abstract class THEOplayerFlutterVideoTracksAPI {
   void onQualityUpdate(int videoTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame);
 }
 
+
+
 @HostApi()
 abstract class THEOplayerNativeAudioTracksAPI {
   void setTargetQuality(int audioTrackUid, int? qualityUid);
@@ -317,3 +334,4 @@ abstract class THEOplayerFlutterAudioTracksAPI {
   // Quality events
   void onQualityUpdate(int audioTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate);
 }
+

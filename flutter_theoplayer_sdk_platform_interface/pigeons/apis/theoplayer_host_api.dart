@@ -69,4 +69,8 @@ abstract class THEOplayerNativeAPI {
   void stop();
 
   void dispose();
+
+  //TODO: move this into a separate class
+  void startChromecast();
+  void stopChromecast();
 }
