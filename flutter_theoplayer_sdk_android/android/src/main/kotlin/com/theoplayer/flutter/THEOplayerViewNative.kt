@@ -6,6 +6,9 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.THEOplayerView
+import com.theoplayer.android.api.cast.CastConfiguration
+import com.theoplayer.android.api.cast.CastIntegrationFactory
+import com.theoplayer.android.api.cast.CastStrategy
 import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.event.player.PlayingEvent
@@ -102,6 +105,17 @@ internal class THEOplayerViewNative(
 
         videoTrackBridge = VideoTrackBridge(tpv.player, pigeonMessenger)
         videoTrackBridge.attachListeners()
+
+        configureCastIntegration()
+    }
+
+    fun configureCastIntegration() {
+        val castIntegration = CastIntegrationFactory.createCastIntegration(
+            theoplayerView = tpv,
+            castConfiguration = CastConfiguration.Builder().castStrategy(CastStrategy.AUTO).build()
+        )
+
+        tpv.player.addIntegration(castIntegration);
     }
 
     override fun getView(): View {
@@ -237,6 +251,14 @@ internal class THEOplayerViewNative(
     override fun stop() {
         isFirstPlaying = false
         tpv.player.stop()
+    }
+
+    override fun startChromecast() {
+        tpv.cast?.chromecast?.start()
+    }
+
+    override fun stopChromecast() {
+        tpv.cast?.chromecast?.start()
     }
 
 }
