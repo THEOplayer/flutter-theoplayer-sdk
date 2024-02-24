@@ -1,6 +1,7 @@
 import Foundation
 import Flutter
 import THEOplayerSDK
+import THEOplayerGoogleCastIntegration
 
 //TODO: This extension of Error is required to do use FlutterError in any Swift code.
 //TODO: https://github.com/flutter/packages/blob/main/packages/pigeon/example/README.md#swift
@@ -21,6 +22,7 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView {
     }
 
     init(frame: CGRect, viewIdentifier viewId: Int64, arguments args: Any?, binaryMessenger messenger: FlutterBinaryMessenger?) {
+        
         _view = UIView()
         _view.frame = frame
 
@@ -52,15 +54,26 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView {
         
         _videoTrackBridge = VideoTrackBridge(theoplayer: _theoplayer, pigeonMessenger: _pigeonMessenger)
         _videoTrackBridge.attachListeners()
+        
 
         super.init()
         
+        configureCastIntegration()
+        
         THEOplayerNativeAPISetup.setUp(binaryMessenger: _pigeonMessenger, api: self)
+    }
+    
+    func configureCastIntegration() {
+        //TODO: probably we can move this around
+        CastIntegrationHelper.setGCKCastContextSharedInstanceWithDefaultCastOptions()
+        
+        let castConfiguration: CastConfiguration = CastConfiguration(strategy: .auto)
+        let castIntegration: THEOplayerSDK.Integration = GoogleCastIntegrationFactory.createIntegration(on: _theoplayer, with: castConfiguration)
+        _theoplayer.addIntegration(castIntegration)
     }
 }
 
 extension THEOplayerViewNative: THEOplayerNativeAPI {
-    
     func setSource(source: SourceDescription?) throws {
         _theoplayer.source = SourceTransformer.toSourceDescription(source: source)
     }
@@ -182,6 +195,14 @@ extension THEOplayerViewNative: THEOplayerNativeAPI {
     
     func stop() throws {
         return _theoplayer.stop()
+    }
+    
+    func startChromecast() throws {
+        _theoplayer.cast?.chromecast?.start()
+    }
+    
+    func stopChromecast() throws {
+        _theoplayer.cast?.chromecast?.stop()
     }
     
     func dispose() throws {
