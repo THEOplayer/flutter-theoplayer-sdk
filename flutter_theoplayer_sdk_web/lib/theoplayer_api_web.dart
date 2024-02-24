@@ -54,6 +54,8 @@ class THEOplayerJS extends THEOplayerEventListener {
   external THEOplayerArrayList<THEOplayerTextTrack> get textTracks;
   external THEOplayerArrayList<THEOplayerAudioTrack> get audioTracks;
   external THEOplayerArrayList<THEOplayerVideoTrack> get videoTracks;
+
+  external THEOplayerCast get cast;
 }
 
 @JS("Date")
@@ -248,4 +250,17 @@ class THEOplayerVideoQuality extends THEOplayerMediaQuality {
   external int get width;
   external double get frameRate;
   external double get firstFrame;
+}
+
+@JS()
+@anonymous
+abstract class THEOplayerCast extends THEOplayerEventListener {
+  THEOplayerCastChromecast get chromecast;
+}
+
+@JS()
+@anonymous
+class THEOplayerCastChromecast extends THEOplayerEventListener {
+  external void start();
+  external void stop();
 }
