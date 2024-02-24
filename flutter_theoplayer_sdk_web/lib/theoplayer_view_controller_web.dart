@@ -322,6 +322,16 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   @override
   void configureSurface(int surfaceId, int width, int height) {
   }
+
+  @override
+  void startChromecast() {
+    _theoPlayerJS.cast.chromecast.start();
+  }
+  
+  @override
+  void stopChromecast() {
+    _theoPlayerJS.cast.chromecast.stop();
+  }
 }
 
 extension on HTMLElement {
