@@ -1,14 +1,17 @@
 package com.theoplayer.flutter
 
+import com.theoplayer.android.api.THEOplayerView
 import android.util.Log
 import android.util.LongSparseArray
 import io.flutter.embedding.engine.plugins.FlutterPlugin
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.view.TextureRegistry
 
-class TheoplayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
+class TheoplayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware {
 
     private lateinit var flutterPluginBinding:  FlutterPluginBinding
 
@@ -33,6 +36,7 @@ class TheoplayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
     override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
 
     }
+
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         Log.d("TheoplayerPlugin", "onMethodCall: ${call.method}")
 
@@ -67,4 +71,19 @@ class TheoplayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
             }
         }
     }
+
+    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        // workaround to make sure Chromecast knows about the activity context
+        THEOplayerView.getGlobalCast(binding.activity)
+    }
+
+    override fun onDetachedFromActivityForConfigChanges() {
+    }
+
+    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+    }
+
+    override fun onDetachedFromActivity() {
+    }
+
 }
