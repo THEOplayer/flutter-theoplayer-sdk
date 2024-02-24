@@ -235,4 +235,14 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   VideoTracks getVideoTracks() {
     return _tracksController.getVideoTracks();
   }
+  
+  @override
+  void startChromecast() {
+    _theoPlayerJS.cast.chromecast.start();
+  }
+  
+  @override
+  void stopChromecast() {
+    _theoPlayerJS.cast.chromecast.stop();
+  }
 }
