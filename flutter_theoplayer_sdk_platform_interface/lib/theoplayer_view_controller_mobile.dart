@@ -208,4 +208,14 @@ class THEOplayerViewControllerMobile extends THEOplayerViewController {
   void configureSurface(int surfaceId, int width, int height) {
     _nativeAPI.configureSurface(surfaceId, width, height);
   }
+
+  @override
+  void startChromecast() {
+    _nativeAPI.startChromecast();
+  }
+  
+  @override
+  void stopChromecast() {
+    _nativeAPI.stopChromecast();
+  }
 }
