@@ -292,6 +292,14 @@ class THEOplayer implements EventDispatcher {
     _playerState.resetState();
   }
 
+  void startChromecast() {
+    _theoPlayerViewController?.startChromecast();
+  }
+
+  void stopChromecast() {
+    _theoPlayerViewController?.stopChromecast();
+  }
+
   /// Releases and destroys all resources
   void dispose() {
     _theoPlayerViewController?.dispose();

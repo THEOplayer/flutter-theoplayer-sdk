@@ -181,4 +181,14 @@ class THEOplayerViewControllerMobile extends THEOplayerViewController {
   VideoTracks getVideoTracks() {
     return _trackController.getVideoTracks();
   }
+  
+  @override
+  void startChromecast() {
+    _nativeAPI.startChromecast();
+  }
+  
+  @override
+  void stopChromecast() {
+    _nativeAPI.stopChromecast();
+  }
 }
