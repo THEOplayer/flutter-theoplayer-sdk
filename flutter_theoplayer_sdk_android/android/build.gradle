@@ -52,7 +52,7 @@ android {
 
     dependencies {
         // Dependency on THEOplayer
-        implementation 'com.theoplayer.theoplayer-sdk-android:core:6.1.0'
+        implementation 'com.theoplayer.theoplayer-sdk-android:core:6.10.1'
         implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
         implementation "androidx.appcompat:appcompat:1.6.1"
 
