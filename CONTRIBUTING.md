@@ -11,7 +11,7 @@
 1. Clone the repository
 2. Run `melos bootstrap` to setup the project and the local package overrides
 3. Open the root of the project in Visual Studio / Android Studio to start development
-4. The project contains an `flutter_theoplayer_sdk/example` folder that can be used during development.
+4. The project contains the `flutter_theoplayer_sdk/example` folder that can be used during development.
 5. Use `main.dart` to run the project
 
 ### Pigeon
