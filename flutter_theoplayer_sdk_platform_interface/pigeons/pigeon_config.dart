@@ -6,7 +6,7 @@ import 'package:pigeon/pigeon.dart';
 @ConfigurePigeon(PigeonOptions(
   dartOut: 'lib/pigeon/apis.g.dart',
   dartOptions: DartOptions(),
-  kotlinOut: '../flutter_theoplayer_sdk_android/android/src/main/kotlin/com/theoplayer/theoplayer/pigeon/APIs.g.kt',
+  kotlinOut: '../flutter_theoplayer_sdk_android/android/src/main/kotlin/com/theoplayer/flutter/pigeon/APIs.g.kt',
   kotlinOptions: KotlinOptions(
       package: 'com.theoplayer.flutter.pigeon'
   ),
