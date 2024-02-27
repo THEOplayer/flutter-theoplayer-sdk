@@ -69,4 +69,9 @@ abstract class THEOplayerNativeAPI {
   void stop();
 
   void dispose();
+
+  // application lifecycle listeners
+  void onLifecycleResume();
+  
+  void onLifecyclePause();
 }
