@@ -58,7 +58,7 @@ $ flutter pub add theoplayer
 
 ##### Option 2: Adding THEOplayer Flutter SDK as submodule
 As an alternative, you can add the SDK as a submodule in your git project.
-This can be useful if you are trying to fork the project to contribute with us.
+This can be useful if you are trying to fork the project to [contribute](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/CONTRIBUTING.md) with us.
 
 ```bash
 $ git submodule add https://GITHUB_USERNAME:GITHUB_PASSWORD@github.com/THEOplayer/flutter-theoplayer-sdk flutter-theoplayer-sdk
@@ -104,6 +104,17 @@ Resolving dependencies...
   web 0.1.4-beta (0.4.0 available)
 Changed 8 dependencies!
 ```
+
+To make sure the submodule references the platform-specific SDKs from within the repository run `melos bootstrap`.
+
+If your main project doesn't pick up the changes, it is possible you need to configure `melos` to include your project too.
+
+You can do it in 2 ways.
+
+1. Create your `melos.yaml` file in your root project and configure it according to your setup (including the `theopalyer` submodule and its packages).
+2. Or, modifiy the `flutter-theoplayer-sdk/melos.yaml` to include your project by adding `../` into the `packages` section of the melos file.
+
+Don't forget to run `melos bootstrap` again in the directory according to your choice from above.
 
 #### Adding THEOplayer to your view hierarchy
 
