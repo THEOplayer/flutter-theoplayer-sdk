@@ -117,6 +117,15 @@ internal class THEOplayerViewNative(
         tpv.onDestroy()
     }
 
+    // activity lifecycle events
+    override fun onLifecycleResume() {
+        tpv.onResume()
+    }
+
+    override fun onLifecyclePause() {
+        tpv.onPause()
+    }
+
     override fun setSource(source: FlutterSourceDescription?) {
         isFirstPlaying = false
         tpv.player.source = SourceTransformer.toSourceDescription(source)
