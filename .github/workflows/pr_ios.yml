@@ -47,7 +47,7 @@ jobs:
         os_version: '>=16.0'
 
     - name: Run integration tests
-      run: flutter test integration_test
+      run: flutter test integration_test_single_entrypoint/entrypoint.dart
       working-directory: flutter_theoplayer_sdk/example
       env:
         TEST_LICENSE: ${{ secrets.TEST_LICENSE }}
