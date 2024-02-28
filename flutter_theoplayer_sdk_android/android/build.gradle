@@ -1,5 +1,5 @@
 group 'com.theoplayer.flutter'
-version '1.0.2'
+version '1.0.3'
 
 buildscript {
     ext.kotlin_version = '1.7.10'
@@ -52,7 +52,7 @@ android {
 
     dependencies {
         // Dependency on THEOplayer
-        implementation 'com.theoplayer.theoplayer-sdk-android:core:6.1.0'
+        implementation 'com.theoplayer.theoplayer-sdk-android:core:6.10.1'
         implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
         implementation "androidx.appcompat:appcompat:1.6.1"
 

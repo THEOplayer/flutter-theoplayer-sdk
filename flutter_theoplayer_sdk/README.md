@@ -9,6 +9,7 @@
 3. [How to use these guides](#how-to-use-these-guides)
 4. [Features](#features)
 5. [Getting Started](#getting-started)
+6. [Contributing](#contributing)
 
 ## Overview
 
@@ -74,3 +75,9 @@ and discussed in the next section. Finally, an overview of features, limitations
 - Knowledge Base
   - [Using custom DRM connectors](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/custom_drm.md)
   - [Limitations and known issues](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/limitations.md)
+
+## Contributing
+
+All contributions are welcomed!
+
+Please read our [Contribution guide](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/CONTRIBUTING.md) on how to get started!

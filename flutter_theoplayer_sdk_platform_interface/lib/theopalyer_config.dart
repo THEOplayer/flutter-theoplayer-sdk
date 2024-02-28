@@ -28,7 +28,10 @@ class THEOplayerConfig {
 
 class AndroidConfig {
   final bool useHybridComposition;
-  AndroidConfig({this.useHybridComposition = false});
+  
+  // TODO: revisit this change after THEOplayer Android refactor with Surface.
+  // with Flutter 3.19 useHybridComposition is the best way to render video with THEOplayer.
+  AndroidConfig({this.useHybridComposition = true});
 
   Map<String, dynamic> toJson() => {
         'useHybridComposition': useHybridComposition,

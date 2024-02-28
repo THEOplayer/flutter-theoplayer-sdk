@@ -1,3 +1,8 @@
+## 1.0.3
+
+* Update THEOplayer to 6.10.1.
+* Add and couple application lifecycle listener.
+
 ## 1.0.2
 
 * Service release, no new features.

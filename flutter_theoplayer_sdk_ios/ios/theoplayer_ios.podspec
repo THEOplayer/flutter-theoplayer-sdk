@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'theoplayer_ios'
-  s.version          = '1.0.2'
+  s.version          = '1.0.3'
   s.summary          = 'THEOplayer Flutter iOS SDK'
   s.description      = <<-DESC
 THEOplayer Flutter iOS SDK
@@ -22,6 +22,6 @@ THEOplayer Flutter iOS SDK
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
   s.swift_version = '5.0'
 
-  s.dependency 'THEOplayerSDK-core', '6.9.0'
+  s.dependency 'THEOplayerSDK-core', '6.10.1'
 
 end

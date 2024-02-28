@@ -192,4 +192,13 @@ extension THEOplayerViewNative: THEOplayerNativeAPI {
         _theoplayer.destroy()
     }
     
+    func onLifecycleResume() throws {
+        // do nothing
+    }
+    
+    func onLifecyclePause() throws {
+        // do nothing
+    }
+    
+    
 }
