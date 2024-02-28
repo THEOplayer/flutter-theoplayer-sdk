@@ -78,4 +78,9 @@ abstract class THEOplayerViewController implements EventDispatcher {
   void stop();
 
   void dispose();
+
+  // application lifecycle listeners
+  void onLifecycleResume();
+  
+  void onLifecyclePause();
 }

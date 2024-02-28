@@ -235,4 +235,14 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   VideoTracks getVideoTracks() {
     return _tracksController.getVideoTracks();
   }
+  
+  @override
+  void onLifecyclePause() {
+    // do nothing
+  }
+  
+  @override
+  void onLifecycleResume() {
+    // do nothing
+  }
 }

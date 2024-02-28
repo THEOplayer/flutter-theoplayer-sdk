@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
 import 'package:theoplayer_platform_interface/theopalyer_config.dart';
@@ -37,6 +38,7 @@ class THEOplayer implements EventDispatcher {
   late final PlayerState _playerState;
   late final THEOplayerView _tpv;
   late THEOplayerViewController? _theoPlayerViewController;
+  AppLifecycleListener? _lifecycleListener;
 
   final TextTracksHolder _textTrackListHolder = TextTracksHolder();
   final AudioTracksHolder _audioTrackListHolder = AudioTracksHolder();
@@ -56,9 +58,26 @@ class THEOplayer implements EventDispatcher {
           _textTrackListHolder.setup(viewController.getTextTracks());
           _audioTrackListHolder.setup(viewController.getAudioTracks());
           _videoTrackListHolder.setup(viewController.getVideoTracks());
+          _setupLifeCycleListeners();
           onCreate?.call();
           _playerState.initialized();
         });
+  }
+
+  void _setupLifeCycleListeners() {
+    _lifecycleListener = AppLifecycleListener(
+      onResume: (){
+        _theoPlayerViewController?.onLifecycleResume();
+      },
+      onPause: () {
+        _theoPlayerViewController?.onLifecyclePause();
+      },
+      onStateChange: (state) {
+        if (kDebugMode) {
+          print("THEOplayer: Detected lifecycle change: $state");
+        }
+      }
+    );
   }
 
   /// Returns the player widget that can be added to the view hierarchy to show videos
@@ -294,6 +313,7 @@ class THEOplayer implements EventDispatcher {
 
   /// Releases and destroys all resources
   void dispose() {
+    _lifecycleListener?.dispose();
     _theoPlayerViewController?.dispose();
     _playerState.dispose();
     _textTrackListHolder.dispose();

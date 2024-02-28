@@ -181,4 +181,14 @@ class THEOplayerViewControllerMobile extends THEOplayerViewController {
   VideoTracks getVideoTracks() {
     return _trackController.getVideoTracks();
   }
+  
+  @override
+  void onLifecyclePause() {
+    _nativeAPI.onLifecyclePause();
+  }
+  
+  @override
+  void onLifecycleResume() {
+    _nativeAPI.onLifecycleResume();
+  }
 }
