@@ -332,6 +332,16 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   void stopChromecast() {
     _theoPlayerJS.cast.chromecast.stop();
   }
+  
+  @override
+  void setChromecastStartingSource(PlatformInterface.SourceDescription? source) {
+    // TODO: implement setChromecastStartingSource
+  }
+  
+  @override
+  void setChromecastStoppingSource(PlatformInterface.SourceDescription? source) {
+    // TODO: implement setChromecastStoppingSource
+  }
 }
 
 extension on HTMLElement {
