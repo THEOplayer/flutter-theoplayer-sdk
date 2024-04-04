@@ -9,9 +9,11 @@ import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.cast.CastConfiguration
 import com.theoplayer.android.api.cast.CastIntegrationFactory
 import com.theoplayer.android.api.cast.CastStrategy
+import com.theoplayer.android.api.cast.chromecast.ChromecastConnectionCallback
 import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.event.player.PlayingEvent
+import com.theoplayer.flutter.pigeon.SourceDescription
 import com.theoplayer.flutter.pigeon.THEOplayerFlutterAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeAPI.Companion.setUp
@@ -32,7 +34,7 @@ internal class THEOplayerViewNative(
     id: Int,
     creationParams: Map<String, Any>?,
     messenger: BinaryMessenger
-) : PlatformView, THEOplayerNativeAPI {
+) : PlatformView, THEOplayerNativeAPI, ChromecastConnectionCallback {
 
     private val theoplayerWrapper: LinearLayout
     private val tpv: THEOplayerView
@@ -42,6 +44,10 @@ internal class THEOplayerViewNative(
     private val textTrackBridge: TextTrackBridge
     private val audioTrackBridge: AudioTrackBridge
     private val videoTrackBridge: VideoTrackBridge
+
+    private var chromecastStartingSource: com.theoplayer.android.api.source.SourceDescription? = null
+    private var chromecastStoppingSource: com.theoplayer.android.api.source.SourceDescription? = null
+
 
     // Workaround to eliminate the initial transparent layout with initExpensiveAndroidView
     // TODO: remove it once initExpensiveAndroidView is not used.
@@ -116,6 +122,8 @@ internal class THEOplayerViewNative(
         )
 
         tpv.player.addIntegration(castIntegration);
+        castIntegration!!.setConnectionCallback(this)
+
     }
 
     override fun getView(): View {
@@ -259,6 +267,32 @@ internal class THEOplayerViewNative(
 
     override fun stopChromecast() {
         tpv.cast?.chromecast?.start()
+    }
+
+    override fun setChromecastStartingSource(source: SourceDescription?) {
+        chromecastStartingSource = SourceTransformer.toSourceDescription(source)
+    }
+
+    override fun setChromecastStoppingSource(source: SourceDescription?) {
+        chromecastStoppingSource = SourceTransformer.toSourceDescription(source)
+    }
+
+    // ChromecastConnectionCallback
+
+    override fun onStart(source: com.theoplayer.android.api.source.SourceDescription?): com.theoplayer.android.api.source.SourceDescription? {
+        return chromecastStartingSource ?: source
+    }
+
+    override fun onStop(source: com.theoplayer.android.api.source.SourceDescription?): com.theoplayer.android.api.source.SourceDescription? {
+        return chromecastStoppingSource ?: source
+    }
+
+    override fun onJoin(source: com.theoplayer.android.api.source.SourceDescription?): com.theoplayer.android.api.source.SourceDescription? {
+        return chromecastStartingSource ?: source
+    }
+
+    override fun onLeave(source: com.theoplayer.android.api.source.SourceDescription?): com.theoplayer.android.api.source.SourceDescription? {
+        return chromecastStoppingSource ?: source
     }
 
 }
