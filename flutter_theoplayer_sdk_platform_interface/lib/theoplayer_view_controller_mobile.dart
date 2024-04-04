@@ -218,4 +218,14 @@ class THEOplayerViewControllerMobile extends THEOplayerViewController {
   void stopChromecast() {
     _nativeAPI.stopChromecast();
   }
+  
+  @override
+  void setChromecastStartingSource(SourceDescription? source) {
+    _nativeAPI.setChromecastStartingSource(source);
+  }
+  
+  @override
+  void setChromecastStoppingSource(SourceDescription? source) {
+    _nativeAPI.setChromecastStoppingSource(source);
+  }
 }

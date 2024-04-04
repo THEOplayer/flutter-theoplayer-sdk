@@ -152,6 +152,11 @@ class _MyAppState extends State<MyApp> {
                               child: const Text("set video target quality")),
                           FilledButton(
                               onPressed: (){
+                                player.setChromecastStartingSource(HLS);
+                              },
+                              child: const Text("set different casting source")),
+                          FilledButton(
+                              onPressed: (){
                                 player.startChromecast();
                               },
                               child: const Text("start casting")),
