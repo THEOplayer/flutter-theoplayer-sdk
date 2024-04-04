@@ -571,6 +571,8 @@ interface THEOplayerNativeAPI {
   fun dispose()
   fun startChromecast()
   fun stopChromecast()
+  fun setChromecastStartingSource(source: SourceDescription?)
+  fun setChromecastStoppingSource(source: SourceDescription?)
 
   companion object {
     /** The codec used by THEOplayerNativeAPI. */
@@ -1128,6 +1130,44 @@ interface THEOplayerNativeAPI {
             var wrapped: List<Any?>
             try {
               api.stopChromecast()
+              wrapped = listOf<Any?>(null)
+            } catch (exception: Throwable) {
+              wrapped = wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setChromecastStartingSource", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val sourceArg = args[0] as SourceDescription?
+            var wrapped: List<Any?>
+            try {
+              api.setChromecastStartingSource(sourceArg)
+              wrapped = listOf<Any?>(null)
+            } catch (exception: Throwable) {
+              wrapped = wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setChromecastStoppingSource", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val sourceArg = args[0] as SourceDescription?
+            var wrapped: List<Any?>
+            try {
+              api.setChromecastStoppingSource(sourceArg)
               wrapped = listOf<Any?>(null)
             } catch (exception: Throwable) {
               wrapped = wrapError(exception)

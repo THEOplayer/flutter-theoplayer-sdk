@@ -442,6 +442,8 @@ protocol THEOplayerNativeAPI {
   func dispose() throws
   func startChromecast() throws
   func stopChromecast() throws
+  func setChromecastStartingSource(source: SourceDescription?) throws
+  func setChromecastStoppingSource(source: SourceDescription?) throws
 }
 
 /// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
@@ -894,6 +896,36 @@ class THEOplayerNativeAPISetup {
       }
     } else {
       stopChromecastChannel.setMessageHandler(nil)
+    }
+    let setChromecastStartingSourceChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setChromecastStartingSource", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      setChromecastStartingSourceChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let sourceArg: SourceDescription? = nilOrValue(args[0])
+        do {
+          try api.setChromecastStartingSource(source: sourceArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      setChromecastStartingSourceChannel.setMessageHandler(nil)
+    }
+    let setChromecastStoppingSourceChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setChromecastStoppingSource", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      setChromecastStoppingSourceChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let sourceArg: SourceDescription? = nilOrValue(args[0])
+        do {
+          try api.setChromecastStoppingSource(source: sourceArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      setChromecastStoppingSourceChannel.setMessageHandler(nil)
     }
   }
 }
