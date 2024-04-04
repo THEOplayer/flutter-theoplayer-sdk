@@ -17,6 +17,9 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
     private let _audioTrackBridge: AudioTrackBridge
     private let _videoTrackBridge: VideoTrackBridge
     private var _allowBackgroundPlayback = false
+    
+    private var _chromecastStartingSource: THEOplayerSDK.SourceDescription?
+    private var _chromecastStoppingSource: THEOplayerSDK.SourceDescription?
 
     func view() -> UIView {
         return _view
@@ -74,12 +77,15 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
         CastIntegrationHelper.setGCKCastContextSharedInstanceWithDefaultCastOptions()
         
         let castConfiguration: CastConfiguration = CastConfiguration(strategy: .auto)
-        let castIntegration: THEOplayerSDK.Integration = GoogleCastIntegrationFactory.createIntegration(on: _theoplayer, with: castConfiguration)
+        let castIntegration: THEOplayerGoogleCastIntegration.CastIntegration = GoogleCastIntegrationFactory.createIntegration(on: _theoplayer, with: castConfiguration)
         _theoplayer.addIntegration(castIntegration)
+        
+        castIntegration.setConnectionDelegate(self)
     }
 }
 
 extension THEOplayerViewNative: THEOplayerNativeAPI {
+
     func setSource(source: SourceDescription?) throws {
         _theoplayer.source = SourceTransformer.toSourceDescription(source: source)
     }
@@ -219,6 +225,15 @@ extension THEOplayerViewNative: THEOplayerNativeAPI {
         _theoplayer.cast?.chromecast?.stop()
     }
     
+    func setChromecastStartingSource(source: SourceDescription?) throws {
+        _chromecastStartingSource = SourceTransformer.toSourceDescription(source: source)
+    }
+    
+    func setChromecastStoppingSource(source: SourceDescription?) throws {
+        _chromecastStoppingSource = SourceTransformer.toSourceDescription(source: source)
+    }
+    
+    
     func dispose() throws {
         _playerEventForwarder.removeListeners()
         _textTrackBridge.removeListeners()
@@ -239,4 +254,22 @@ extension THEOplayerViewNative: THEOplayerNativeAPI {
         // do nothing
     }
     
+}
+
+extension THEOplayerViewNative : THEOplayerSDK.ChromecastConnectionDelegate {
+    func onJoin(sourceDescription: THEOplayerSDK.SourceDescription?) -> THEOplayerSDK.SourceDescription? {
+        return _chromecastStartingSource ?? sourceDescription
+    }
+    
+    func onStart(sourceDescription: THEOplayerSDK.SourceDescription?) -> THEOplayerSDK.SourceDescription? {
+        return _chromecastStartingSource ?? sourceDescription
+    }
+    
+    func onLeave(sourceDescription: THEOplayerSDK.SourceDescription?) -> THEOplayerSDK.SourceDescription? {
+        return _chromecastStoppingSource ?? sourceDescription
+    }
+    
+    func onStop(sourceDescription: THEOplayerSDK.SourceDescription?) -> THEOplayerSDK.SourceDescription? {
+        return _chromecastStoppingSource ?? sourceDescription
+    }
 }
