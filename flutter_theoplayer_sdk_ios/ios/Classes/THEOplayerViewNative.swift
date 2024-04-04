@@ -2,6 +2,7 @@ import Foundation
 import Flutter
 import THEOplayerSDK
 import THEOplayerGoogleCastIntegration
+import GoogleCast
 
 //TODO: This extension of Error is required to do use FlutterError in any Swift code.
 //TODO: https://github.com/flutter/packages/blob/main/packages/pigeon/example/README.md#swift
@@ -74,7 +75,15 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
     
     func configureCastIntegration() {
         //TODO: probably we can move this around
-        CastIntegrationHelper.setGCKCastContextSharedInstanceWithDefaultCastOptions()
+        // default setup:
+        //CastIntegrationHelper.setGCKCastContextSharedInstanceWithDefaultCastOptions()
+        
+        // custom receiver setup:
+        let discoveryCriteria = GCKDiscoveryCriteria(applicationID: CastIntegrationHelper.defaultV3ReceiverApplicationID)
+        let castOptions = GCKCastOptions(discoveryCriteria: discoveryCriteria)
+        castOptions.physicalVolumeButtonsWillControlDeviceVolume = true
+        castOptions.suspendSessionsWhenBackgrounded = false
+        GCKCastContext.setSharedInstanceWith(castOptions)
         
         let castConfiguration: CastConfiguration = CastConfiguration(strategy: .auto)
         let castIntegration: THEOplayerGoogleCastIntegration.CastIntegration = GoogleCastIntegrationFactory.createIntegration(on: _theoplayer, with: castConfiguration)
