@@ -1,7 +1,7 @@
 import 'package:pigeon/pigeon.dart';
 
-// 1. run in the root folder: dart run build_runner build --delete-conflicting-outputs
-//run in the root folder: flutter pub run pigeon --input pigeons/pigeons_merged.dart
+// run in the `flutter_theoplayer_sdk_platform_interface` folder:
+// dart run build_runner build --delete-conflicting-outputs
 
 @ConfigurePigeon(PigeonOptions(
   dartOut: 'lib/pigeon/apis.g.dart',
