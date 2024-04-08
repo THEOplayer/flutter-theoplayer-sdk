@@ -1,6 +1,7 @@
 /**
  * Fired when an event occurs.
  *
+ * @category Events
  * @public
  */
 interface Event<TType extends string = string> {
@@ -17,6 +18,7 @@ interface Event<TType extends string = string> {
 /**
  * The function to be executed when an event occurred.
  *
+ * @category Events
  * @public
  */
 type EventListener<TEvent extends Event> = (event: TEvent) => void;
@@ -33,6 +35,7 @@ type EventListener<TEvent extends Event> = (event: TEvent) => void;
  * }
  * ```
  *
+ * @category Events
  * @public
  */
 type EventMap<TType extends string> = {
@@ -47,6 +50,7 @@ type StringKeyOf<T> = Extract<keyof T, string>;
 /**
  * Dispatches events that are fired.
  *
+ * @category Events
  * @public
  */
 interface EventDispatcher<TEventMap extends EventMap<StringKeyOf<TEventMap>>> {
@@ -69,6 +73,8 @@ interface EventDispatcher<TEventMap extends EventMap<StringKeyOf<TEventMap>>> {
 /**
  * Fired when the ad has stalled playback to buffer.
  *
+ * @category Ads
+ * @category Events
  * @public
  */
 interface AdBufferingEvent extends AdEvent<'adbuffering'> {
@@ -81,6 +87,8 @@ interface AdBufferingEvent extends AdEvent<'adbuffering'> {
 /**
  * Fired when an ads list is loaded.
  *
+ * @category Ads
+ * @category Events
  * @public
  */
 interface AdMetadataEvent extends Event<'admetadata'> {
@@ -92,6 +100,7 @@ interface AdMetadataEvent extends Event<'admetadata'> {
  * @remarks
  * <br/> - Available since v3.7.0.
  *
+ * @category Ads
  * @public
  */
 interface GoogleDAI {
@@ -127,6 +136,7 @@ interface GoogleDAI {
 /**
  * Represents a VAST creative. It is either a linear or non-linear ad.
  *
+ * @category Ads
  * @public
  */
 interface Ad {
@@ -250,6 +260,7 @@ interface Ad {
  * @remarks
  * <br/> - For Google IMA, preloading starts 4 seconds before ad playback.
  *
+ * @category Ads
  * @public
  */
 type AdPreloadType = 'none' | 'midroll-and-postroll';
@@ -262,12 +273,14 @@ type AdPreloadType = 'none' | 'midroll-and-postroll';
  * <br/> - An ad is loaded when the ad resource (e.g. VAST file) is downloaded.
  * <br/> - another remark
  *
+ * @category Ads
  * @public
  */
 type AdReadyState = 'none' | 'ready';
 /**
  * Describes the configuration of advertisement.
  *
+ * @category Ads
  * @public
  */
 interface AdsConfiguration {
@@ -284,6 +297,8 @@ interface AdsConfiguration {
     allowedMimeTypes?: string[];
     /**
      * Whether an advertisement duration countdown will be shown in the UI.
+     *
+     * @deprecated use {@link GoogleImaConfiguration.uiElements} instead
      *
      * @remarks
      * <br/> - Available since v2.22.9.
@@ -318,6 +333,7 @@ interface AdsConfiguration {
 /**
  * Describes the configuration of Google IMA.
  *
+ * @category Ads
  * @public
  */
 interface GoogleImaConfiguration {
@@ -337,10 +353,26 @@ interface GoogleImaConfiguration {
      * @defaultValue -1
      */
     bitrate?: number;
+    /**
+     * The language code of the UI elements. See {@link https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/localization | localization docs} for more information.
+     *
+     * @remarks
+     * <br/> - This will default to {@link UIConfiguration.language} when not specified.
+     *
+     */
+    language?: string;
+    /**
+     * The UI elements passed to Google IMA. See {@link https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/reference/js/google.ima#.UiElements | Google IMA docs} for more information.
+     *
+     * @remarks
+     * <br/> - Available since v6.13.0.
+     */
+    uiElements?: string[];
 }
 /**
  * Represents a non-linear ad in the VAST specification.
  *
+ * @category Ads
  * @public
  */
 interface NonLinearAd extends Ad {
@@ -374,6 +406,7 @@ interface NonLinearAd extends Ad {
  * @remarks
  * <br/> - `'streaming'` is currently not supported.
  *
+ * @category Ads
  * @public
  */
 type DeliveryType = 'progressive' | 'streaming';
@@ -383,6 +416,7 @@ type DeliveryType = 'progressive' | 'streaming';
  * @remarks
  * <br/> - This metadata is retrieved from the VAST file.
  *
+ * @category Ads
  * @public
  */
 interface MediaFile {
@@ -410,6 +444,7 @@ interface MediaFile {
 /**
  * Represents a linear ad in the VAST specification.
  *
+ * @category Ads
  * @public
  */
 interface LinearAd extends Ad {
@@ -431,6 +466,7 @@ interface LinearAd extends Ad {
  * @remarks
  * <br/> - Available since v2.60.0.
  *
+ * @category Ads
  * @public
  */
 interface GoogleImaAd extends Ad {
@@ -505,6 +541,7 @@ interface GoogleImaAd extends Ad {
 /**
  * Represents the information regarding the universal identifier of an ad.
  *
+ * @category Ads
  * @public
  */
 interface UniversalAdId {
@@ -526,6 +563,7 @@ interface UniversalAdId {
 /**
  * Represents an ad break in the VMAP specification or an ad pod in the VAST specification.
  *
+ * @category Ads
  * @public
  */
 interface AdBreak {
@@ -565,6 +603,7 @@ interface AdBreak {
 /**
  * Represents a companion ad which is displayed near the video player.
  *
+ * @category Ads
  * @public
  */
 interface CompanionAd {
@@ -624,6 +663,7 @@ interface CompanionAd {
 /**
  * The events fired by the {@link Ads | ads API}.
  *
+ * @category Ads
  * @public
  */
 interface AdsEventMap {
@@ -732,6 +772,8 @@ interface AdsEventMap {
 /**
  * Base type for events related to a single ad.
  *
+ * @category Ads
+ * @category Events
  * @public
  */
 interface AdEvent<TType extends string> extends Event<TType> {
@@ -743,6 +785,8 @@ interface AdEvent<TType extends string> extends Event<TType> {
 /**
  * Fired when an ad is skipped.
  *
+ * @category Ads
+ * @category Events
  * @public
  */
 interface AdSkipEvent extends AdEvent<'adskip'> {
@@ -754,6 +798,8 @@ interface AdSkipEvent extends AdEvent<'adskip'> {
 /**
  * Base type for events related to an ad break.
  *
+ * @category Ads
+ * @category Events
  * @public
  */
 interface AdBreakEvent<TType extends string> extends Event<TType> {
@@ -774,6 +820,7 @@ interface AdBreakEvent<TType extends string> extends Event<TType> {
  * @remarks
  * <br/> - Integrates with `'theo'`, `'google-ima'`, `'google-dai'` or `'freewheel'`.
  *
+ * @category Ads
  * @public
  */
 interface Ads extends EventDispatcher<AdsEventMap> {
@@ -831,12 +878,14 @@ interface Ads extends EventDispatcher<AdsEventMap> {
  * @remarks
  * <br/> - An ad rule is a simplified VMAP alternative only available in the Google IMA integration.
  *
+ * @category Ads
  * @public
  */
 type AdSourceType = 'vast' | 'vmap' | 'adrule';
 /**
  * Describes the source of the ad.
  *
+ * @category Ads
  * @public
  */
 interface AdSource {
@@ -854,6 +903,7 @@ interface AdSource {
 /**
  * Describes an ad break request.
  *
+ * @category Ads
  * @public
  */
 interface AdDescription {
@@ -940,6 +990,7 @@ interface AdDescription {
  * }
  * ```
  *
+ * @category Ads
  * @public
  */
 interface SpotXAdDescription extends AdDescription {
@@ -1015,6 +1066,7 @@ interface SpotXAdDescription extends AdDescription {
 /**
  * Describes a Google IMA ad break request.
  *
+ * @category Ads
  * @public
  */
 interface IMAAdDescription extends AdDescription {
@@ -1041,12 +1093,14 @@ interface IMAAdDescription extends AdDescription {
  * <br/> - `'postroll'`: The linear ad will play after the content ended.
  * <br/> - `'overlay'`: The non-linear ad.
  *
+ * @category Ads
  * @public
  */
 type FreeWheelAdUnitType = 'preroll' | 'midroll' | 'postroll' | 'overlay';
 /**
  * Represents a FreeWheel cue.
  *
+ * @category Ads
  * @public
  */
 interface FreeWheelCue {
@@ -1065,6 +1119,7 @@ interface FreeWheelCue {
  * @remarks
  * <br/> - Available since v2.42.0.
  *
+ * @category Ads
  * @public
  */
 interface FreeWheelAdDescription extends AdDescription {
@@ -1121,6 +1176,7 @@ interface FreeWheelAdDescription extends AdDescription {
 /**
  * Represents a geographical location.
  *
+ * @category Ads
  * @public
  */
 interface Geo {
@@ -1137,6 +1193,7 @@ interface Geo {
  * A record of SpotX query string parameters.
  * Each entry contains the parameter name with associated value.
  *
+ * @category Ads
  * @public
  */
 interface SpotxData {
@@ -1146,6 +1203,7 @@ interface SpotxData {
  * A record of SpotX query string parameters which can be a nested structure.
  * Each entry contains the parameter name with associated value.
  *
+ * @category Ads
  * @public
  */
 interface SpotxQueryParameter {
@@ -1161,6 +1219,7 @@ interface SpotxQueryParameter {
  * @remarks
  * <br/> - An empty string defaults to `'theo'`.
  *
+ * @category Ads
  * @public
  */
 type AdIntegrationKind = '' | 'theo' | 'google-ima' | 'spotx' | 'freewheel';
@@ -1170,12 +1229,14 @@ type AdIntegrationKind = '' | 'theo' | 'google-ima' | 'spotx' | 'freewheel';
  * <br/> - `'insecure'`: Ads will load in a friendly iframe. This allows access to the site via JavaScript.
  * <br/> - `'disabled'`: Ads will error when requested.
  *
+ * @category Ads
  * @public
  */
 type VPAIDMode = 'enabled' | 'insecure' | 'disabled';
 /**
  * Describes an ad break request.
  *
+ * @category Ads
  * @public
  */
 interface THEOplayerAdDescription extends AdDescription {
@@ -1222,6 +1283,8 @@ type BufferSource = ArrayBufferView | ArrayBuffer;
 /**
  * Describes the key system configuration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface KeySystemConfiguration {
@@ -1314,12 +1377,16 @@ interface KeySystemConfiguration {
  * <br/> - `'temporary'`
  * <br/> - `'persistent'`
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 type LicenseType = 'temporary' | 'persistent';
 /**
  * Describes the FairPlay key system configuration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface FairPlayKeySystemConfiguration extends KeySystemConfiguration {
@@ -1331,6 +1398,8 @@ interface FairPlayKeySystemConfiguration extends KeySystemConfiguration {
 /**
  * Describes the PlayReady key system configuration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface PlayReadyKeySystemConfiguration extends KeySystemConfiguration {
@@ -1342,12 +1411,16 @@ interface PlayReadyKeySystemConfiguration extends KeySystemConfiguration {
 /**
  * Describes the Widevine key system configuration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 type WidevineKeySystemConfiguration = KeySystemConfiguration;
 /**
  * Describes the ClearKey key system configuration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface ClearkeyKeySystemConfiguration extends KeySystemConfiguration {
@@ -1359,6 +1432,8 @@ interface ClearkeyKeySystemConfiguration extends KeySystemConfiguration {
 /**
  * Describes the ClearKey decryption key.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface ClearkeyDecryptionKey {
@@ -1382,6 +1457,8 @@ interface ClearkeyDecryptionKey {
 /**
  * Describes the AES128 key system configuration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface AES128KeySystemConfiguration {
@@ -1398,6 +1475,8 @@ interface AES128KeySystemConfiguration {
 /**
  * Describes the configuration of the DRM.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface DRMConfiguration {
@@ -1448,6 +1527,8 @@ interface DRMConfiguration {
 /**
  * The id of a key system. Possible values are 'widevine', 'fairplay' and 'playready'.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 type KeySystemId = 'widevine' | 'fairplay' | 'playready';
@@ -1455,6 +1536,8 @@ type KeySystemId = 'widevine' | 'fairplay' | 'playready';
 /**
  * The identifier of the Yospace integration.
  *
+ * @category Source
+ * @category SSAI
  * @public
  */
 type YospaceSSAIIntegrationID = 'yospace';
@@ -1465,6 +1548,8 @@ type YospaceSSAIIntegrationID = 'yospace';
  * <br/> - `'nonlinear'`: The stream is a Non-Linear Start-Over stream.
  * <br/> - `'vod'`: The stream is a video-on-demand stream.
  *
+ * @category Source
+ * @category SSAI
  * @public
  */
 type YospaceStreamType = 'vod' | 'live' | 'livepause' | 'nonlinear';
@@ -1474,6 +1559,8 @@ type YospaceStreamType = 'vod' | 'live' | 'livepause' | 'nonlinear';
  * @remarks
  * <br/> - Available since v2.14.7.
  *
+ * @category Source
+ * @category SSAI
  * @public
  */
 interface YospaceServerSideAdInsertionConfiguration extends ServerSideAdInsertionConfiguration {
@@ -1491,6 +1578,8 @@ interface YospaceServerSideAdInsertionConfiguration extends ServerSideAdInsertio
 /**
  * Represents a media resource with a Yospace server-side ad insertion request.
  *
+ * @category Source
+ * @category SSAI
  * @public
  */
 interface YospaceTypedSource extends TypedSource {
@@ -1500,6 +1589,8 @@ interface YospaceTypedSource extends TypedSource {
 /**
  * The identifier of the Google DAI integration.
  *
+ * @category Source
+ * @category SSAI
  * @public
  */
 type GoogleDAISSAIIntegrationID = 'google-dai';
@@ -1508,6 +1599,8 @@ type GoogleDAISSAIIntegrationID = 'google-dai';
  * <br/> - `'live'`: The requested stream is a live stream.
  * <br/> - `'vod'`: The requested stream is a video-on-demand stream.
  *
+ * @category Source
+ * @category SSAI
  * @public
  */
 type DAIAvailabilityType = 'vod' | 'live';
@@ -1517,6 +1610,8 @@ type DAIAvailabilityType = 'vod' | 'live';
  * @remarks
  * <br/> - Available since v2.30.0.
  *
+ * @category Source
+ * @category SSAI
  * @public
  */
 interface GoogleDAIConfiguration extends ServerSideAdInsertionConfiguration {
@@ -1570,6 +1665,8 @@ interface GoogleDAIConfiguration extends ServerSideAdInsertionConfiguration {
  * @remarks
  * <br/> - Available since v2.30.0.
  *
+ * @category Source
+ * @category SSAI
  * @public
  */
 interface GoogleDAILiveConfiguration extends GoogleDAIConfiguration {
@@ -1592,6 +1689,8 @@ interface GoogleDAILiveConfiguration extends GoogleDAIConfiguration {
  * @remarks
  * <br/> - Available since v2.30.0.
  *
+ * @category Source
+ * @category SSAI
  * @public
  */
 interface GoogleDAIVodConfiguration extends GoogleDAIConfiguration {
@@ -1618,6 +1717,8 @@ interface GoogleDAIVodConfiguration extends GoogleDAIConfiguration {
 /**
  * Represents a media resource with a Google DAI server-side ad insertion request.
  *
+ * @category Source
+ * @category SSAI
  * @public
  */
 interface GoogleDAITypedSource extends TypedSource {
@@ -1633,12 +1734,16 @@ interface GoogleDAITypedSource extends TypedSource {
 /**
  * The identifier of the Imagine integration.
  *
+ * @category Source
+ * @category SSAI
  * @public
  */
 type ImagineSSAIIntegrationID = 'imagine';
 /**
  * Describes the SSAI configuration of the Imagine integration.
  *
+ * @category Source
+ * @category SSAI
  * @public
  */
 interface ImagineServerSideAdInsertionConfiguration extends ServerSideAdInsertionConfiguration {
@@ -1650,6 +1755,8 @@ interface ImagineServerSideAdInsertionConfiguration extends ServerSideAdInsertio
 /**
  * Describes a source of the Imagine integration.
  *
+ * @category Source
+ * @category SSAI
  * @public
  */
 interface ImagineTypedSource extends TypedSource {
@@ -1662,6 +1769,8 @@ interface ImagineTypedSource extends TypedSource {
  * <br/> - `'google-dai'`: The configuration with this identifier is a {@link GoogleDAIConfiguration}
  * <br/> - `'imagine'`: The configuration with this identifier is a {@link ImagineServerSideAdInsertionConfiguration}
  *
+ * @category Source
+ * @category SSAI
  * @public
  */
 type SSAIIntegrationId = YospaceSSAIIntegrationID | GoogleDAISSAIIntegrationID | ImagineSSAIIntegrationID;
@@ -1671,6 +1780,8 @@ type SSAIIntegrationId = YospaceSSAIIntegrationID | GoogleDAISSAIIntegrationID |
  * @remarks
  * <br/> - Available since v2.12.0.
  *
+ * @category Source
+ * @category SSAI
  * @public
  */
 interface ServerSideAdInsertionConfiguration {
@@ -1686,6 +1797,7 @@ interface ServerSideAdInsertionConfiguration {
  * <br/> - `'horizontal'`: The two viewpoints are in a side-by-side layout. The view for the left eye is in the left half of the video frame, the view for the right eye is in the right half of the video frame.
  * <br/> - `'vertical'`: The two viewpoints are in a top-bottom layout. The view for the left eye is in the upper half of the video frame, the view for the right eye is in the lower half of the video frame.
  *
+ * @category VR
  * @public
  */
 type VRStereoMode = '' | 'horizontal' | 'vertical';
@@ -1695,6 +1807,7 @@ type VRStereoMode = '' | 'horizontal' | 'vertical';
  * <br/> - `'360'`: The video contains content with a full 360 degree field of view.
  * <br/> - `'180'`: The video contains content with a 180 degree field of view. `'180'` is only available when using the WebXR API.
  *
+ * @category VR
  * @public
  */
 type VRPanoramaMode = '' | '360' | '180';
@@ -1705,6 +1818,7 @@ type VRPanoramaMode = '' | '360' | '180';
  * <br/> - Available since v2.12.0.
  * <br/> - See {@link VR | the VR API} to control display of VR videos.
  *
+ * @category VR
  * @public
  */
 interface VRConfiguration {
@@ -1743,6 +1857,7 @@ interface VRConfiguration {
 /**
  * Describes the configuration of the Cast integrations.
  *
+ * @category Casting
  * @public
  */
 interface CastConfiguration {
@@ -1765,19 +1880,21 @@ interface CastConfiguration {
  * <br/> - `'manual'` : The player will take over an existing session if there is one and the cast button is clicked. Otherwise it will prompt the user with all available devices.
  * <br/> - `'disabled'` : The player is not affected by cast sessions and is not castable.
  *
+ * @category Casting
  * @public
  */
 type JoinStrategy = 'auto' | 'manual' | 'disabled';
 /**
  * Describes the configuration of the Chromecast integration.
  *
+ * @category Casting
  * @public
  */
 interface ChromecastConfiguration {
     /**
      * The identifier of a custom Chromecast receiver app.
      *
-     * @defaultValue The default THEOplayer receiver app.
+     * @defaultValue The default THEOplayer receiver app ID: 8E80B9CE.
      */
     appID?: string;
 }
@@ -1788,12 +1905,14 @@ interface ChromecastConfiguration {
  * <br/> - `'play-none'`: Plays none of the ad breaks skipped due to a seek.
  * <br/> - `'play-last'`: Plays the last ad break skipped due to a seek.
  *
+ * @category Verizon Media
  * @public
  */
 type SkippedAdStrategy = 'play-all' | 'play-none' | 'play-last';
 /**
  * Describes the configuration of the Verizon Media integration.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaConfiguration {
@@ -1825,6 +1944,7 @@ interface VerizonMediaConfiguration {
 /**
  * Describes the UI configuration of the Verizon Media integration.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaUiConfiguration {
@@ -1863,6 +1983,8 @@ interface VerizonMediaUiConfiguration {
 /**
  * Describes the ABR configuration for a specific source.
  *
+ * @category Source
+ * @category ABR
  * @public
  */
 interface SourceAbrConfiguration {
@@ -1891,6 +2013,7 @@ interface SourceAbrConfiguration {
 /**
  * Describes the VR configuration
  *
+ * @category VR
  * @public
  */
 interface VRPlayerConfiguration {
@@ -1905,6 +2028,7 @@ interface VRPlayerConfiguration {
 /**
  * Object containing values used for the player's retry mechanisms.
  *
+ * @category Player
  * @public
  */
 interface RetryConfiguration {
@@ -1929,6 +2053,7 @@ interface RetryConfiguration {
 /**
  * Describes a player's configuration.
  *
+ * @category Player
  * @public
  */
 interface PlayerConfiguration {
@@ -2071,6 +2196,10 @@ interface PlayerConfiguration {
      * <br/> - Available since v5.5.0.
      */
     hideDeprecationWarnings?: boolean;
+    /**
+     * The THEOlive configuration for the player.
+     */
+    theoLive?: TheoLiveConfiguration;
 }
 /**
  * The muted autoplay policy of a player.
@@ -2078,9 +2207,25 @@ interface PlayerConfiguration {
  * <br/> - `'all'`: Allow muted autoplay. If the player is requested to autoplay while unmuted, and the platform supports muted autoplay, the player will start muted playback.
  * <br/> - `'content'`: Allow muted autoplay only for the main content. Disallow muted autoplay for e.g. advertisements. (Not yet supported.)
  *
+ * @category Player
  * @public
  */
 type MutedAutoplayConfiguration = 'none' | 'all' | 'content';
+/**
+ * A configuration to configure THEOlive playback.
+ *
+ * @public
+ */
+interface TheoLiveConfiguration {
+    /**
+     * An id used to report usage analytics, if not explicitely given a random UUID is used.
+     */
+    readonly externalSessionId?: string;
+    /**
+     * Whether this player should fallback or not when it has a fallback configured.
+     */
+    readonly fallbackEnabled?: boolean;
+}
 
 /**
  * Describes the metadata of a Chromecast image.
@@ -2088,6 +2233,8 @@ type MutedAutoplayConfiguration = 'none' | 'all' | 'content';
  * @remarks
  * <br/> - Available since v2.21.0.
  *
+ * @category Source
+ * @category Casting
  * @public
  */
 interface ChromecastMetadataImage {
@@ -2111,6 +2258,8 @@ interface ChromecastMetadataImage {
  * <br/> - `'tv-show'`
  * <br/> - `'generic'`
  *
+ * @category Source
+ * @category Casting
  * @public
  */
 type ChromecastMetadataType = 'movie' | 'audio' | 'tv-show' | 'generic';
@@ -2120,6 +2269,7 @@ type ChromecastMetadataType = 'movie' | 'audio' | 'tv-show' | 'generic';
  * @remarks
  * <br/> - Available since v2.21.0.
  *
+ * @category Source
  * @public
  */
 interface MetadataDescription {
@@ -2137,6 +2287,8 @@ interface MetadataDescription {
  * <br/> - Do not use metadata key `images` if its value doesn't adhere to {@link ChromecastMetadataImage} or `string[]` (where the strings are image URLs).
  * <br/> - All values will be provided with the Media Info's {@link https://developers.google.com/cast/docs/reference/web_sender/chrome.cast.media.MediaInfo#metadata | metadata}.
  *
+ * @category Source
+ * @category Casting
  * @public
  */
 interface ChromecastMetadataDescription extends MetadataDescription {
@@ -2301,6 +2453,8 @@ interface ChromecastMetadataDescription extends MetadataDescription {
 /**
  * Represents a media resource which is found on the Verizon Media Platform.
  *
+ * @category Source
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaSource extends BaseSource {
@@ -2384,6 +2538,8 @@ interface VerizonMediaSource extends BaseSource {
  * @remarks
  * <br/> - This asset identifier determines a unique asset on the Verizon Media Platform.
  *
+ * @category Source
+ * @category Verizon Media
  * @public
  */
 type VerizonMediaAssetId = string;
@@ -2393,6 +2549,8 @@ type VerizonMediaAssetId = string;
  * @remarks
  * <br/> - Each combination of the user identifier and external identifier determines a unique asset on the Verizon Media Platform.
  *
+ * @category Source
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaExternalId {
@@ -2408,6 +2566,8 @@ interface VerizonMediaExternalId {
 /**
  * Describes the configuration of Verizon Media Ping features.
  *
+ * @category Source
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaPingConfiguration {
@@ -2447,6 +2607,8 @@ interface VerizonMediaPingConfiguration {
  * <br/> - `'channel'`: A Live content channel.
  * <br/> - `'event'`: A Live event.
  *
+ * @category Source
+ * @category Verizon Media
  * @public
  */
 type VerizonMediaAssetType = 'asset' | 'channel' | 'event';
@@ -2469,6 +2631,7 @@ type VerizonMediaAssetType = 'asset' | 'channel' | 'event';
  *                      Use this if you notice that the player is attempting but failing to preload the next period on the current platform only when
  *                      content protection is different between periods.
  *
+ * @category Source
  * @public
  */
 type SeamlessPeriodSwitchStrategy = 'auto' | 'always' | 'never' | 'clear-only' | 'same-drm-only';
@@ -2478,6 +2641,7 @@ type SeamlessPeriodSwitchStrategy = 'auto' | 'always' | 'never' | 'clear-only' |
  * @remarks
  * <br/> - Available since v2.79.0.
  *
+ * @category Source
  * @public
  */
 interface DashPlaybackConfiguration {
@@ -2574,6 +2738,7 @@ interface DashPlaybackConfiguration {
  * @remarks
  * <br/> - See {@link HlsPlaybackConfiguration.discontinuityAlignment}.
  *
+ * @category Source
  * @public
  */
 type HlsDiscontinuityAlignment = 'auto' | 'playlist' | 'media';
@@ -2583,6 +2748,7 @@ type HlsDiscontinuityAlignment = 'auto' | 'playlist' | 'media';
  * @remarks
  * <br/> - Available since v2.82.0.
  *
+ * @category Source
  * @public
  */
 interface HlsPlaybackConfiguration {
@@ -2597,6 +2763,8 @@ interface HlsPlaybackConfiguration {
 /**
  * Fired when a text track cue is entered.
  *
+ * @category Media and Text Tracks
+ * @category Events
  * @public
  */
 interface TextTrackCueEnterEvent extends Event<'enter'> {
@@ -2608,6 +2776,8 @@ interface TextTrackCueEnterEvent extends Event<'enter'> {
 /**
  * Fired when a text track cue is exited.
  *
+ * @category Media and Text Tracks
+ * @category Events
  * @public
  */
 interface TextTrackCueExitEvent extends Event<'exit'> {
@@ -2619,6 +2789,8 @@ interface TextTrackCueExitEvent extends Event<'exit'> {
 /**
  * Fired when a text track cue is updated.
  *
+ * @category Media and Text Tracks
+ * @category Events
  * @public
  */
 interface TextTrackCueUpdateEvent extends Event<'update'> {
@@ -2630,6 +2802,7 @@ interface TextTrackCueUpdateEvent extends Event<'update'> {
 /**
  * The events fired by the {@link TextTrackCue}.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface TextTrackCueEventMap {
@@ -2649,6 +2822,7 @@ interface TextTrackCueEventMap {
 /**
  * Represents a cue of a text track.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface TextTrackCue extends EventDispatcher<TextTrackCueEventMap> {
@@ -2692,6 +2866,7 @@ interface TextTrackCue extends EventDispatcher<TextTrackCueEventMap> {
 /**
  * List of text track cues.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface TextTrackCueList extends ReadonlyArray<TextTrackCue> {
@@ -2715,6 +2890,8 @@ interface TextTrackCueList extends ReadonlyArray<TextTrackCue> {
 /**
  * Fired when a new track has been added to this list.
  *
+ * @category Media and Text Tracks
+ * @category Events
  * @public
  */
 interface AddTrackEvent extends Event<'addtrack'> {
@@ -2726,6 +2903,8 @@ interface AddTrackEvent extends Event<'addtrack'> {
 /**
  * Fired when a track has been removed to this list.
  *
+ * @category Media and Text Tracks
+ * @category Events
  * @public
  */
 interface RemoveTrackEvent extends Event<'removetrack'> {
@@ -2737,6 +2916,8 @@ interface RemoveTrackEvent extends Event<'removetrack'> {
 /**
  * Fired when a track has been changed.
  *
+ * @category Media and Text Tracks
+ * @category Events
  * @public
  */
 interface TrackChangeEvent extends Event<'change'> {
@@ -2748,6 +2929,7 @@ interface TrackChangeEvent extends Event<'change'> {
 /**
  * The events fired by a {@link TrackList}.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface TrackListEventMap {
@@ -2768,6 +2950,8 @@ interface TrackListEventMap {
 /**
  * Fired when one or more properties of a track have been updated.
  *
+ * @category Media and Text Tracks
+ * @category Events
  * @public
  */
 interface TrackUpdateEvent extends Event<'update'> {
@@ -2779,6 +2963,7 @@ interface TrackUpdateEvent extends Event<'update'> {
 /**
  * The events fired by a {@link Track}.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface TrackEventMap {
@@ -2800,6 +2985,7 @@ interface TrackEventMap {
  * @remarks
  * <br/> - A specific track type (e.g. {@link TextTrack}) will always be used.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface Track extends EventDispatcher<TrackEventMap> {
@@ -2845,6 +3031,7 @@ interface Track extends EventDispatcher<TrackEventMap> {
 /**
  * Possible accessibility roles.
  *
+ * @category Media and Text Tracks
  * @public
  */
 type AccessibilityRole = 'caption' | 'sign' | 'description' | 'enhanced audio intelligibility' | 'easy reader' | 'transcribes spoken dialog' | 'describes music and sound' | 'describes video';
@@ -2852,6 +3039,7 @@ type AccessibilityRole = 'caption' | 'sign' | 'description' | 'enhanced audio in
 /**
  * A code that indicates the type of error that has occurred.
  *
+ * @category Errors
  * @public
  */
 declare enum ErrorCode {
@@ -3024,11 +3212,28 @@ declare enum ErrorCode {
     /**
      * Something went wrong while caching content protection's license.
      */
-    CACHE_CONTENT_PROTECTION_ERROR = 12001
+    CACHE_CONTENT_PROTECTION_ERROR = 12001,
+    /**
+     * Something went wrong with THEOlive playback.
+     */
+    THEO_LIVE_UNKNOWN_ERROR = 13000,
+    /**
+     * The THEOlive channel could not be played because it was not found. This can be because it was never created, it has been deleted or locked.
+     */
+    THEO_LIVE_CHANNEL_NOT_FOUND = 13001,
+    /**
+     * The THEOlive channel is a demo channel and the demo window has expired.
+     */
+    THEO_LIVE_END_OF_DEMO = 13002,
+    /**
+     * A fatal error occurred regarding THEOlive analytics.
+     */
+    THEO_LIVE_ANALYTICS_ERROR = 13003
 }
 /**
  * The category of an error.
  *
+ * @category Errors
  * @public
  */
 declare enum ErrorCategory {
@@ -3079,9 +3284,16 @@ declare enum ErrorCategory {
     /**
      * This category clusters all errors related to caching.
      */
-    CACHE = 12
+    CACHE = 12,
+    /**
+     * This category clusters all errors related to THEOlive.
+     */
+    THEOLIVE = 13
 }
 /**
+ * The category of an error.
+ *
+ * @category Errors
  * @public
  */
 declare namespace ErrorCategory {
@@ -3096,6 +3308,7 @@ declare namespace ErrorCategory {
 /**
  * An error that is thrown by THEOplayer.
  *
+ * @category Errors
  * @public
  */
 interface THEOplayerError extends Error {
@@ -3119,6 +3332,8 @@ interface THEOplayerError extends Error {
 /**
  * Fired when an error occurs.
  *
+ * @category Errors
+ * @category Events
  * @public
  */
 interface ErrorEvent extends Event<'error'> {
@@ -3137,12 +3352,16 @@ interface ErrorEvent extends Event<'error'> {
 /**
  * An error code whose category is `ErrorCategory.SUBTITLE`.
  *
+ * @category Media and Text Tracks
+ * @category Errors
  * @public
  */
 type TextTrackErrorCode = ErrorCode.SUBTITLE_LOAD_ERROR | ErrorCode.SUBTITLE_CORS_ERROR | ErrorCode.SUBTITLE_PARSE_ERROR;
 /**
  * An error thrown by a text track.
  *
+ * @category Media and Text Tracks
+ * @category Errors
  * @public
  */
 interface TextTrackError extends THEOplayerError {
@@ -3172,6 +3391,7 @@ interface TextTrackError extends THEOplayerError {
  * <br/> - `'daterange'`: The track contains HLS EXT-X-DATERANGE content.
  * <br/> - `''`: The type of the track contents is unknown.
  *
+ * @category Media and Text Tracks
  * @public
  */
 type TextTrackType = 'srt' | 'ttml' | 'webvtt' | 'emsg' | 'eventstream' | 'id3' | 'cea608' | 'daterange' | '';
@@ -3182,12 +3402,16 @@ type TextTrackType = 'srt' | 'ttml' | 'webvtt' | 'emsg' | 'eventstream' | 'id3' 
  * <br/> - `2`: The text track has been loaded with no fatal errors.
  * <br/> - `3`: An error occurred obtaining the cues for the track. Some or all of the cues are likely missing and will not be obtained.
  *
+ * @category Media and Text Tracks
  * @public
  */
 type TextTrackReadyState = 0 | 1 | 2 | 3;
 /**
  * An error event fired by a {@link TextTrack}.
  *
+ * @category Media and Text Tracks
+ * @category Errors
+ * @category Events
  * @public
  */
 interface TextTrackErrorEvent extends ErrorEvent {
@@ -3199,6 +3423,8 @@ interface TextTrackErrorEvent extends ErrorEvent {
 /**
  * Fired when a cue is added to the text track.
  *
+ * @category Media and Text Tracks
+ * @category Events
  * @public
  */
 interface TextTrackAddCueEvent extends Event<'addcue'> {
@@ -3210,6 +3436,8 @@ interface TextTrackAddCueEvent extends Event<'addcue'> {
 /**
  * Fired when a cue is removed from the text track.
  *
+ * @category Media and Text Tracks
+ * @category Events
  * @public
  */
 interface TextTrackRemoveCueEvent extends Event<'removecue'> {
@@ -3221,6 +3449,8 @@ interface TextTrackRemoveCueEvent extends Event<'removecue'> {
 /**
  * Fired when a cue from the text track is updated.
  *
+ * @category Media and Text Tracks
+ * @category Events
  * @public
  */
 interface TextTrackUpdateCueEvent extends Event<'updatecue'> {
@@ -3232,6 +3462,8 @@ interface TextTrackUpdateCueEvent extends Event<'updatecue'> {
 /**
  * Fired when a cue of the text track has entered.
  *
+ * @category Media and Text Tracks
+ * @category Events
  * @public
  */
 interface TextTrackEnterCueEvent extends Event<'entercue'> {
@@ -3243,6 +3475,8 @@ interface TextTrackEnterCueEvent extends Event<'entercue'> {
 /**
  * Fired when a cue of the text track has exited.
  *
+ * @category Media and Text Tracks
+ * @category Events
  * @public
  */
 interface TextTrackExitCueEvent extends Event<'exitcue'> {
@@ -3254,6 +3488,8 @@ interface TextTrackExitCueEvent extends Event<'exitcue'> {
 /**
  * Fired when the displaying cues of the text track has changed.
  *
+ * @category Media and Text Tracks
+ * @category Events
  * @public
  */
 interface TextTrackCueChangeEvent extends Event<'cuechange'> {
@@ -3265,6 +3501,8 @@ interface TextTrackCueChangeEvent extends Event<'cuechange'> {
 /**
  * Fired when the {@link TextTrack.readyState | ready state} of the text track has changed.
  *
+ * @category Media and Text Tracks
+ * @category Events
  * @public
  */
 interface TextTrackReadyStateChangeEvent extends Event<'readystatechange'> {
@@ -3280,6 +3518,8 @@ interface TextTrackReadyStateChangeEvent extends Event<'readystatechange'> {
 /**
  * Fired when the {@link TextTrack."type" | type} of the text track has changed.
  *
+ * @category Media and Text Tracks
+ * @category Events
  * @public
  */
 interface TextTrackTypeChangeEvent extends Event<'typechange'> {
@@ -3291,6 +3531,7 @@ interface TextTrackTypeChangeEvent extends Event<'typechange'> {
 /**
  * The events fired by a {@link TextTrack}.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface TextTrackEventMap extends TrackEventMap {
@@ -3334,6 +3575,7 @@ interface TextTrackEventMap extends TrackEventMap {
 /**
  * Represents a text track of a media resource.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface TextTrack extends Track, EventDispatcher<TextTrackEventMap> {
@@ -3433,20 +3675,32 @@ interface TextTrack extends Track, EventDispatcher<TextTrackEventMap> {
 }
 
 /**
+ * Represents a source for the THEOlive integration.
+ *
+ * @category Source
+ * @public
+ */
+interface TheoLiveSource extends TypedSource {
+    integration: 'theolive';
+}
+
+/**
  * Represents a media resource.
  *
  * @remarks
  * <br/> - Can be a string value representing the URL of a media resource, a {@link TypedSource} or a {@link VerizonMediaSource}.
  *
+ * @category Source
  * @public
  */
-type Source = string | TypedSource | VerizonMediaSource;
+type Source = string | TypedSource | VerizonMediaSource | TheoLiveSource;
 /**
  * A media resource or list of media resources.
  *
  * @remarks
  * <br/> - The order of sources when using a list determines their priority when attempting playback.
  *
+ * @category Source
  * @public
  */
 type Sources = Source | Source[];
@@ -3459,12 +3713,14 @@ type Sources = Source | Source[];
  * @remarks
  * <br/> - See {@link https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_settings_attributes | The crossorigin attribute: Requesting CORS access to content}
  *
+ * @category Source
  * @public
  */
 type CrossOriginSetting = '' | 'anonymous' | 'use-credentials';
 /**
  * Describes the configuration of a player's source.
  *
+ * @category Source
  * @public
  */
 interface SourceConfiguration {
@@ -3486,6 +3742,7 @@ interface SourceConfiguration {
      *
      * @remarks
      * <br/> - This setting is strictly after - e.g. setting `playAdsAfterTime` to 15 will cause the player to ignore an ad break scheduled to play at 15s.
+     * <br/> - When scheduling a VMAP, it is required to set the {@link AdSource} type to `vmap`.
      *
      */
     playAdsAfterTime?: number;
@@ -3567,6 +3824,7 @@ interface SourceConfiguration {
 /**
  * Describes the configuration of a player's source.
  *
+ * @category Source
  * @public
  */
 interface SourceDescription extends SourceConfiguration {
@@ -3621,6 +3879,7 @@ interface SourceDescription extends SourceConfiguration {
 /**
  * Describes the configuration of a side-loaded text track.
  *
+ * @category Source
  * @public
  */
 interface TextTrackDescription {
@@ -3686,6 +3945,7 @@ interface TextTrackDescription {
 /**
  * Represents the common properties of a media resource.
  *
+ * @category Source
  * @public
  */
 interface BaseSource {
@@ -3879,12 +4139,14 @@ interface BaseSource {
  *                      Use this if you notice that the player is attempting but failing to preload the next period on the current platform only when
  *                      content protection is different between discontinuities.
  *                      This is only supported for MPEG-DASH.
+ * @category Source
  * @public
  */
 type SeamlessSwitchStrategy = 'auto' | 'always' | 'never' | 'clear-only' | 'same-drm-only';
 /**
  * Represents a media resource characterized by a URL to the resource and optionally information about the resource.
  *
+ * @category Source
  * @public
  */
 interface TypedSource extends BaseSource {
@@ -3940,6 +4202,7 @@ interface TypedSource extends BaseSource {
  * <br/> - `'dvr'`: Live content with DVR.
  * <br/> - `'vod'`: On demand content.
  *
+ * @category Source
  * @public
  */
 type StreamType = 'live' | 'dvr' | 'vod';
@@ -3948,9 +4211,10 @@ type StreamType = 'live' | 'dvr' | 'vod';
  * <br/> - `'verizon-media'`: The source is a {@link VerizonMediaSource}
  * <br/> - `'mediatailor'`: The source contains the MediaTailor initialization url
  *
+ * @category Source
  * @public
  */
-type SourceIntegrationId = 'verizon-media' | 'mediatailor';
+type SourceIntegrationId = 'verizon-media' | 'mediatailor' | 'theolive';
 /**
  * The integration identifier of an analytics description, represented by a value from the following list:
  * <br/> - `'agama'`: The description is an {@link AgamaConfiguration}
@@ -3960,12 +4224,14 @@ type SourceIntegrationId = 'verizon-media' | 'mediatailor';
  * <br/> - `'streamone'`: The description is a {@link StreamOneConfiguration}
  * <br/> - `'smartsight'`: The description is a {@link SmartSightConfiguration}
  *
+ * @category Source
  * @public
  */
 type AnalyticsIntegrationID = 'agama' | 'conviva' | 'youbora' | 'moat' | 'streamone' | 'smartsight';
 /**
  * Describes the configuration of an analytics integration.
  *
+ * @category Source
  * @public
  */
 interface AnalyticsDescription {
@@ -3978,24 +4244,31 @@ interface AnalyticsDescription {
 /**
  * Fired when {@link RelatedContent.sources} changes.
  *
+ * @category UI
+ * @category Events
  * @public
  */
 type RelatedChangeEvent = Event<'relatedchange'>;
 /**
  * Fired when the related content panel is shown.
  *
+ * @category UI
+ * @category Events
  * @public
  */
 type RelatedShowEvent = Event<'show'>;
 /**
  * Fired when the related content panel is hidden.
  *
+ * @category UI
+ * @category Events
  * @public
  */
 type RelatedHideEvent = Event<'hide'>;
 /**
  * The events fired by the {@link RelatedContent | related content API}.
  *
+ * @category UI
  * @public
  */
 interface RelatedContentEventMap {
@@ -4010,6 +4283,7 @@ interface RelatedContentEventMap {
  * @remarks
  * <br/> - Available since v2.14.2.
  *
+ * @category UI
  * @public
  */
 interface RelatedContent extends EventDispatcher<RelatedContentEventMap> {
@@ -4021,6 +4295,7 @@ interface RelatedContent extends EventDispatcher<RelatedContentEventMap> {
 /**
  * The events fired by the {@link UIRelatedContent | related content API (with ui)}.
  *
+ * @category UI
  * @public
  */
 interface UIRelatedContentEventMap extends RelatedContentEventMap {
@@ -4039,6 +4314,7 @@ interface UIRelatedContentEventMap extends RelatedContentEventMap {
  * @remarks
  * <br/> - Available since v2.14.2.
  *
+ * @category UI
  * @public
  */
 interface UIRelatedContent extends RelatedContent, EventDispatcher<UIRelatedContentEventMap> {
@@ -4069,6 +4345,7 @@ interface UIRelatedContent extends RelatedContent, EventDispatcher<UIRelatedCont
  * @remarks
  * <br/> - Available since v2.14.2.
  *
+ * @category UI
  * @public
  */
 interface RelatedContentSource {
@@ -4105,6 +4382,7 @@ interface RelatedContentSource {
 /**
  * List of tracks.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface TrackList<TTrack extends Track> extends ReadonlyArray<TTrack>, EventDispatcher<TrackListEventMap> {
@@ -4128,6 +4406,7 @@ interface TrackList<TTrack extends Track> extends ReadonlyArray<TTrack>, EventDi
 /**
  * List of text tracks.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface TextTracksList extends TrackList<TextTrack> {
@@ -4158,12 +4437,14 @@ interface TextTracksList extends TrackList<TextTrack> {
  * <br/> - `6` - LICENSE_INVALID: The player's license was determined to be invalid.
  * <br/> - `7` - ADVERTISEMENT_ERROR: Some kind of advertisement related error occurred.
  *
+ * @category Errors
  * @public
  */
 type MediaErrorCode = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 /**
  * Thrown when a media error occurs.
  *
+ * @category Errors
  * @public
  */
 interface MediaError extends Error {
@@ -4184,6 +4465,7 @@ interface MediaError extends Error {
 /**
  * The events fired by a {@link Quality}.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface QualityEventMap {
@@ -4195,6 +4477,8 @@ interface QualityEventMap {
 /**
  * Fired when the quality updates.
  *
+ * @category Media and Text Tracks
+ * @category Events
  * @public
  */
 interface UpdateQualityEvent extends Event<'update'> {
@@ -4206,6 +4490,7 @@ interface UpdateQualityEvent extends Event<'update'> {
 /**
  * Represents a quality of a media track.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface Quality extends EventDispatcher<QualityEventMap> {
@@ -4259,6 +4544,7 @@ interface Quality extends EventDispatcher<QualityEventMap> {
 /**
  * Represents a quality of a video track.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface VideoQuality extends Quality {
@@ -4282,6 +4568,7 @@ interface VideoQuality extends Quality {
 /**
  * Represents a quality of an audio track.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface AudioQuality extends Quality {
@@ -4294,6 +4581,7 @@ interface AudioQuality extends Quality {
 /**
  * List of qualities.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface QualityList extends Array<Quality> {
@@ -4311,8 +4599,10 @@ interface QualityList extends Array<Quality> {
 }
 
 /**
- * An quality-related event fired by a {@link MediaTrack}.
+ * A quality-related event fired by a {@link MediaTrack}.
  *
+ * @category Media and Text Tracks
+ * @category Events
  * @public
  */
 interface QualityEvent<TType extends string> extends Event<TType> {
@@ -4324,6 +4614,8 @@ interface QualityEvent<TType extends string> extends Event<TType> {
 /**
  * Fired when the media track's {@link MediaTrack.targetQuality | target quality} changes.
  *
+ * @category Media and Text Tracks
+ * @category Events
  * @public
  */
 interface TargetQualityChangedEvent extends Event<'targetqualitychanged'> {
@@ -4339,6 +4631,7 @@ interface TargetQualityChangedEvent extends Event<'targetqualitychanged'> {
 /**
  * The events fired by a {@link MediaTrack}.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface MediaTrackEventMap extends TrackEventMap {
@@ -4361,6 +4654,7 @@ interface MediaTrackEventMap extends TrackEventMap {
 /**
  * Represents a media track (audio or video) of a media resource.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface MediaTrack extends Track, EventDispatcher<MediaTrackEventMap> {
@@ -4431,6 +4725,7 @@ interface MediaTrack extends Track, EventDispatcher<MediaTrackEventMap> {
 /**
  * List of media tracks.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface MediaTrackList extends TrackList<MediaTrack> {
@@ -4454,6 +4749,8 @@ interface MediaTrackList extends TrackList<MediaTrack> {
 /**
  * Fires when the cast state changes.
  *
+ * @category Casting
+ * @category Events
  * @public
  */
 interface CastStateChangeEvent extends Event<'statechange'> {
@@ -4470,12 +4767,14 @@ interface CastStateChangeEvent extends Event<'statechange'> {
  * <br/> - `'connecting'`: Cast device available and the player is connecting.
  * <br/> - `'connected'`: Cast device available and the player is connected.
  *
+ * @category Casting
  * @public
  */
 type CastState = 'unavailable' | 'available' | 'connecting' | 'connected';
 /**
  * The events fired by the common vendor APIs.
  *
+ * @category Casting
  * @public
  */
 interface VendorCastEventMap {
@@ -4487,6 +4786,7 @@ interface VendorCastEventMap {
 /**
  * Common API for all cast integrations.
  *
+ * @category Casting
  * @public
  */
 interface VendorCast extends EventDispatcher<VendorCastEventMap> {
@@ -4514,6 +4814,7 @@ interface VendorCast extends EventDispatcher<VendorCastEventMap> {
 /**
  * The events fired by the Chromecast API.
  *
+ * @category Casting
  * @public
  */
 interface ChromecastEventMap extends VendorCastEventMap {
@@ -4525,6 +4826,7 @@ interface ChromecastEventMap extends VendorCastEventMap {
 /**
  * The Chromecast API.
  *
+ * @category Casting
  * @public
  */
 interface Chromecast extends VendorCast, EventDispatcher<ChromecastEventMap> {
@@ -4570,6 +4872,7 @@ interface Chromecast extends VendorCast, EventDispatcher<ChromecastEventMap> {
 /**
  * The ChromecastConnectionCallback.
  *
+ * @category Casting
  * @public
  */
 interface ChromecastConnectionCallback {
@@ -4621,6 +4924,7 @@ interface ChromecastConnectionCallback {
 /**
  * The global Chromecast API.
  *
+ * @category Casting
  * @public
  */
 interface GlobalChromecast {
@@ -4648,6 +4952,8 @@ interface GlobalChromecast {
 /**
  * An error that occurred while casting or attempting to cast to Chromecast.
  *
+ * @category Casting
+ * @category Errors
  * @public
  */
 interface ChromecastError {
@@ -4676,12 +4982,14 @@ interface ChromecastError {
  * @remarks
  * <br/> - The error codes correspond to the error codes documented in the {@link https://developers.google.com/cast/docs/reference/chrome/chrome.cast.html#.ErrorCode | Chromecast API reference}.
  *
+ * @category Casting
  * @public
  */
 type ChromecastErrorCode = 'CANCEL' | 'TIMEOUT' | 'API_NOT_INITIALIZED' | 'INVALID_PARAMETER' | 'EXTENSION_NOT_COMPATIBLE' | 'EXTENSION_MISSING' | 'RECEIVER_UNAVAILABLE' | 'SESSION_ERROR' | 'CHANNEL_ERROR' | 'LOAD_MEDIA_FAILED';
 /**
  * Fired when an error occurs while casting or trying to cast.
  *
+ * @category Casting
  * @public
  */
 interface ChromecastErrorEvent extends Event<'error'> {
@@ -4694,6 +5002,7 @@ interface ChromecastErrorEvent extends Event<'error'> {
 /**
  * The AirPlay API.
  *
+ * @category Casting
  * @public
  */
 interface AirPlay extends VendorCast {
@@ -4702,6 +5011,7 @@ interface AirPlay extends VendorCast {
 /**
  * The events fired by the {@link Cast | cast API}.
  *
+ * @category Casting
  * @public
  */
 interface CastEventMap {
@@ -4713,6 +5023,7 @@ interface CastEventMap {
 /**
  * The cast API.
  *
+ * @category Casting
  * @public
  */
 interface Cast extends EventDispatcher<CastEventMap> {
@@ -4738,6 +5049,7 @@ interface Cast extends EventDispatcher<CastEventMap> {
 /**
  * The global cast API.
  *
+ * @category Casting
  * @public
  */
 interface GlobalCast {
@@ -4753,6 +5065,7 @@ interface GlobalCast {
 /**
  * Represents a direction in the VR feature.
  *
+ * @category VR
  * @public
  */
 interface VRDirection {
@@ -4784,30 +5097,38 @@ interface VRDirection {
  * <br/> - `'available'`
  * <br/> - `'presenting'`
  *
+ * @category VR
  * @public
  */
 type VRState = 'unavailable' | 'available' | 'presenting';
 /**
  * Fired when the {@link VR.direction} changes.
  *
+ * @category VR
+ * @category Events
  * @public
  */
 type DirectionChangeEvent = Event<'directionchange'>;
 /**
  * Fired when the {@link VR.state} changes.
  *
+ * @category VR
+ * @category Events
  * @public
  */
 type StateChangeEvent = Event<'statechange'>;
 /**
  * Fired when the {@link VR.stereo} changes.
  *
+ * @category VR
+ * @category Events
  * @public
  */
 type StereoChangeEvent = Event<'stereochange'>;
 /**
  * The events fired by the {@link VR | VR API}.
  *
+ * @category VR
  * @public
  */
 interface VREventMap {
@@ -4856,6 +5177,7 @@ interface VREventMap {
  * });
  * ```
  *
+ * @category VR
  * @public
  */
 interface VR extends EventDispatcher<VREventMap> {
@@ -4933,6 +5255,7 @@ interface VR extends EventDispatcher<VREventMap> {
  *
  * Available since v2.12.0.
  *
+ * @category Canvas
  * @public
  */
 interface Canvas {
@@ -5024,6 +5347,7 @@ interface Canvas {
  * @param now - The current time in milliseconds, see {@link https://developer.mozilla.org/en-US/docs/Web/API/Performance/now | performance.now()}.
  * @param metadata - The video frame metadata. If `requestVideoFrameCallback()` is not natively supported, this is `undefined`.
  *
+ * @category Canvas
  * @public
  */
 type VideoFrameRequestCallback = (now: DOMHighResTimeStamp, metadata?: VideoFrameCallbackMetadata) => void;
@@ -5033,6 +5357,7 @@ type VideoFrameRequestCallback = (now: DOMHighResTimeStamp, metadata?: VideoFram
  * @remarks
  * <br/> - See {@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLVideoElement/requestVideoFrameCallback#parameters | requestVideoFrameCallback} for more information.
  *
+ * @category Canvas
  * @public
  */
 interface VideoFrameCallbackMetadata {
@@ -5053,12 +5378,14 @@ interface VideoFrameCallbackMetadata {
  *
  * @param ratio - Describes the ratio of visible pixels of the player.
  *
+ * @category Player
  * @public
  */
 type VisibilityObserverCallback = (ratio: number) => void;
 /**
  * The visibility API.
  *
+ * @category Player
  * @public
  */
 interface Visibility {
@@ -5102,6 +5429,7 @@ interface Visibility {
 /**
  * Represents a visibility observer.
  *
+ * @category Player
  * @public
  */
 interface VisibilityObserver {
@@ -5147,6 +5475,7 @@ interface VisibilityObserver {
  *
  * Available since v2.19.4.
  *
+ * @category Player
  * @public
  */
 interface WebAudio {
@@ -5165,12 +5494,15 @@ interface WebAudio {
  * <br/> - `'fullscreen'`: The player fills the entire screen.
  * <br/> - `'picture-in-picture'`: The player is shown on top of the page (see {@link PiPConfiguration} for more options).
  *
+ * @category Player
  * @public
  */
 type PresentationMode = 'inline' | 'fullscreen' | 'picture-in-picture';
 /**
  * Fired when the presentation mode changes.
  *
+ * @category Player
+ * @category Events
  * @public
  */
 interface PresentationModeChangeEvent extends Event<'presentationmodechange'> {
@@ -5182,6 +5514,7 @@ interface PresentationModeChangeEvent extends Event<'presentationmodechange'> {
 /**
  * The events fired by the {@link Presentation | presentation API}.
  *
+ * @category Player
  * @public
  */
 interface PresentationEventMap {
@@ -5197,6 +5530,7 @@ interface PresentationEventMap {
 /**
  * The presentation API.
  *
+ * @category Player
  * @public
  */
 interface Presentation extends EventDispatcher<PresentationEventMap> {
@@ -5224,6 +5558,7 @@ interface Presentation extends EventDispatcher<PresentationEventMap> {
 /**
  * Provides estimates on the current network state.
  *
+ * @category Network
  * @public
  */
 interface NetworkEstimator {
@@ -5240,6 +5575,7 @@ interface NetworkEstimator {
 /**
  * Measures network metrics of an HTTP request and the associated HTTP response.
  *
+ * @category Network
  * @public
  */
 interface RequestMeasurer {
@@ -5278,6 +5614,7 @@ interface RequestMeasurer {
 /**
  * A {@link NetworkEstimator} that allows measuring the current network state.
  *
+ * @category Network
  * @public
  */
 interface MeasurableNetworkEstimator extends NetworkEstimator {
@@ -5291,12 +5628,14 @@ interface MeasurableNetworkEstimator extends NetworkEstimator {
 /**
  * The RequestInterceptor is a function that accepts a Request object as its argument and can return a promise. If it returns a promise then the request waits until the promise is resolved.
  *
+ * @category Network
  * @public
  */
 type RequestInterceptor = (request: InterceptableRequest) => void | PromiseLike<void>;
 /**
  * The ResponseInterceptor is a function that accepts a Response object as its argument and can return a promise. If it returns a promise then the response waits until the promise is resolved.
  *
+ * @category Network
  * @public
  */
 type ResponseInterceptor = (response: InterceptableResponse) => void | PromiseLike<void>;
@@ -5304,6 +5643,7 @@ type ResponseInterceptor = (response: InterceptableResponse) => void | PromiseLi
  * Record of HTTP headers.
  * Each entry contains the header name and its associated value.
  *
+ * @category Network
  * @public
  */
 interface HTTPHeaders {
@@ -5312,12 +5652,14 @@ interface HTTPHeaders {
 /**
  * The possible types of an HTTP request body.
  *
+ * @category Network
  * @public
  */
 type RequestBody = ArrayBuffer | ArrayBufferView | string | null;
 /**
  * The possible types of an HTTP response body.
  *
+ * @category Network
  * @public
  */
 type ResponseBody = ArrayBuffer | object | string | null;
@@ -5328,6 +5670,7 @@ type ResponseBody = ArrayBuffer | object | string | null;
  * <br/> - `'preload-hint'`
  * <br/> - `'content-protection'`
  *
+ * @category Network
  * @public
  */
 type RequestType = '' | 'manifest' | 'segment' | 'preload-hint' | 'content-protection';
@@ -5341,6 +5684,7 @@ type RequestType = '' | 'manifest' | 'segment' | 'preload-hint' | 'content-prote
  * <br/> - `'clearkey-license'`
  * <br/> - `'aes128-key'`
  *
+ * @category Network
  * @public
  */
 type ContentProtectionRequestSubType = 'fairplay-license' | 'fairplay-certificate' | 'widevine-license' | 'widevine-certificate' | 'playready-license' | 'clearkey-license' | 'aes128-key';
@@ -5350,6 +5694,7 @@ type ContentProtectionRequestSubType = 'fairplay-license' | 'fairplay-certificat
  * <br/> - Any value of {@link ContentProtectionRequestSubType}
  * <br/> - Empty string (`''`) when the subtype is unknown
  *
+ * @category Network
  * @public
  */
 type RequestSubType = '' | 'initialization-segment' | ContentProtectionRequestSubType;
@@ -5361,6 +5706,7 @@ type RequestSubType = '' | 'initialization-segment' | ContentProtectionRequestSu
  * <br/> - `'image'`
  * <br/> - Empty string (`''`) when the media type is unknown
  *
+ * @category Network
  * @public
  */
 type MediaType = '' | 'audio' | 'video' | 'text' | 'image';
@@ -5371,6 +5717,7 @@ type MediaType = '' | 'audio' | 'video' | 'text' | 'image';
  * <br/> - `'stream'`
  * <br/> - `'text'`
  *
+ * @category Network
  * @public
  */
 type ResponseType = 'arraybuffer' | 'json' | 'stream' | 'text';
@@ -5383,18 +5730,21 @@ type ResponseType = 'arraybuffer' | 'json' | 'stream' | 'text';
  * <br/> - `'DELETE'`
  * <br/> - `'OPTIONS'`
  *
+ * @category Network
  * @public
  */
 type RequestMethod = 'DELETE' | 'GET' | 'HEAD' | 'OPTIONS' | 'POST' | 'PUT';
 /**
  * The possible types representing an HTTP request.
  *
+ * @category Network
  * @public
  */
 type RequestLike = string | RequestInit;
 /**
  * The possible types representing an HTTP response.
  *
+ * @category Network
  * @public
  */
 type ResponseLike = ResponseInit;
@@ -5403,6 +5753,7 @@ type ResponseLike = ResponseInit;
  *
  * After all asynchronous work is done, the callback *must* call `done`, optionally passing an error argument.
  *
+ * @category Network
  * @public
  */
 type NodeStyleVoidCallback = (done: (error?: any) => void) => void;
@@ -5411,12 +5762,14 @@ type NodeStyleVoidCallback = (done: (error?: any) => void) => void;
  *
  * The callback *must* return a promise that resolves (or rejects) after all asynchronous work is done.
  *
+ * @category Network
  * @public
  */
 type VoidPromiseCallback = () => PromiseLike<void>;
 /**
  * An asynchronous callback to delay a request or response.
  *
+ * @category Network
  * @public
  */
 type WaitUntilCallback = NodeStyleVoidCallback | VoidPromiseCallback;
@@ -5427,6 +5780,7 @@ type WaitUntilCallback = NodeStyleVoidCallback | VoidPromiseCallback;
  * <br/> - Request interceptors will be executed in the order they were added.
  * <br/> - {@link InterceptableRequest.respondWith} can be called at most once, otherwise an error will be thrown.
  *
+ * @category Network
  * @public
  */
 interface NetworkInterceptorController {
@@ -5462,6 +5816,7 @@ interface NetworkInterceptorController {
  * @remarks
  * <br/> - EXPERIMENTAL: Setting an external `MeasurableNetworkEstimator` implementation will only affect playback of HLS streams.
  *
+ * @category Network
  * @public
  */
 interface NetworkEstimatorController {
@@ -5477,6 +5832,7 @@ interface NetworkEstimatorController {
 /**
  * The events fired by the {@link Network | network API}.
  *
+ * @category Network
  * @public
  */
 interface NetworkEventMap {
@@ -5495,6 +5851,7 @@ interface NetworkEventMap {
  * @remarks
  * <br/> - Available since v2.21.0.
  *
+ * @category Network
  * @public
  */
 interface Network extends EventDispatcher<NetworkEventMap>, NetworkInterceptorController, NetworkEstimatorController {
@@ -5506,6 +5863,7 @@ interface Network extends EventDispatcher<NetworkEventMap>, NetworkInterceptorCo
 /**
  * Contains network request properties used to modify an HTTP request.
  *
+ * @category Network
  * @public
  */
 interface RequestInit {
@@ -5570,6 +5928,7 @@ interface RequestInit {
 /**
  * Contains network response properties used to modify an HTTP response.
  *
+ * @category Network
  * @public
  */
 interface ResponseInit {
@@ -5607,6 +5966,7 @@ interface ResponseInit {
 /**
  * Represents an HTTP request.
  *
+ * @category Network
  * @public
  */
 interface Request {
@@ -5650,6 +6010,7 @@ interface Request {
 /**
  * Represents an intercepted HTTP request which can be modified.
  *
+ * @category Network
  * @public
  */
 interface InterceptableRequest extends Request {
@@ -5717,6 +6078,7 @@ interface InterceptableRequest extends Request {
 /**
  * Represents an intercepted HTTP response which can be modified.
  *
+ * @category Network
  * @public
  */
 interface InterceptableResponse {
@@ -5800,6 +6162,7 @@ interface InterceptableResponse {
 /**
  * Events fired by the {@link TextTrackStyle | TextTrackStyle API}.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface TextTrackStyleEventMap {
@@ -5814,6 +6177,7 @@ interface TextTrackStyleEventMap {
  * @remarks
  * <br/> - Available since v2.27.4.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface TextTrackStyle extends EventDispatcher<TextTrackStyleEventMap> {
@@ -5915,6 +6279,7 @@ interface TextTrackStyle extends EventDispatcher<TextTrackStyleEventMap> {
  * <br/> - `'depressed'`
  * <br/> - `'uniform'`
  *
+ * @category Media and Text Tracks
  * @public
  */
 type EdgeStyle = 'none' | 'dropshadow' | 'raised' | 'depressed' | 'uniform';
@@ -5925,12 +6290,14 @@ type EdgeStyle = 'none' | 'dropshadow' | 'raised' | 'depressed' | 'uniform';
  * <br/> - `'quality'`: The player will optimize ABR behavior to focus displaying the best visual quality to the end-user. This strategy initiates playback with the highest bit rate suitable for the device.
  * <br/> - `'bandwidth'`: The player will optimize the ABR behavior to focus on displaying the most optimal quality based on historic data of available bandwidth and knowledge of the network conditions.
  *
+ * @category ABR
  * @public
  */
 type ABRStrategyType = 'performance' | 'quality' | 'bandwidth';
 /**
  * Describes the metadata of the adaptive bitrate strategy.
  *
+ * @category ABR
  * @public
  */
 interface ABRMetadata {
@@ -5944,6 +6311,7 @@ interface ABRMetadata {
 /**
  * Describes the configuration of the adaptive bitrate strategy.
  *
+ * @category ABR
  * @public
  */
 interface ABRStrategyConfiguration {
@@ -5961,6 +6329,7 @@ interface ABRStrategyConfiguration {
 /**
  * The adaptive bitrate stratey.
  *
+ * @category ABR
  * @public
  */
 type ABRStrategy = ABRStrategyConfiguration | ABRStrategyType;
@@ -5970,6 +6339,7 @@ type ABRStrategy = ABRStrategyConfiguration | ABRStrategyType;
  * @remarks
  * <br/> - Available since v2.30.0.
  *
+ * @category ABR
  * @public
  */
 interface ABRConfiguration {
@@ -6024,6 +6394,7 @@ interface ABRConfiguration {
 /**
  * The identifier of the Conviva integration.
  *
+ * @category Analytics
  * @public
  */
 type ConvivaAnalyticsIntegrationID = 'conviva';
@@ -6033,6 +6404,7 @@ type ConvivaAnalyticsIntegrationID = 'conviva';
  * @remarks
  * <br/> - Available since v2.14.4.
  *
+ * @category Analytics
  * @public
  */
 interface ConvivaConfiguration extends AnalyticsDescription {
@@ -6072,6 +6444,7 @@ interface ConvivaConfiguration extends AnalyticsDescription {
 /**
  * The Conviva API.
  *
+ * @category Analytics
  * @public
  */
 interface Conviva {
@@ -6114,6 +6487,7 @@ interface Conviva {
  * @remarks
  * <br/> - Available since v2.14.4.
  *
+ * @category Analytics
  * @public
  */
 interface ConvivaContentMetadata {
@@ -6178,6 +6552,7 @@ interface ConvivaContentMetadata {
 /**
  * The analytics API.
  *
+ * @category Analytics
  * @public
  */
 interface Analytics {
@@ -6193,6 +6568,7 @@ interface Analytics {
 /**
  * The events fired by the {@link Clip | clip API}.
  *
+ * @category Clipping
  * @public
  */
 interface ClipEventMap {
@@ -6204,6 +6580,7 @@ interface ClipEventMap {
 /**
  * The clip API which can be used to clip the playback window of a source.
  *
+ * @category Clipping
  * @public
  */
 interface Clip extends EventDispatcher<ClipEventMap> {
@@ -6220,6 +6597,7 @@ interface Clip extends EventDispatcher<ClipEventMap> {
 /**
  * The number of audio and video segments in the buffer.
  *
+ * @category Analytics
  * @public
  */
 interface BufferedSegments {
@@ -6232,6 +6610,7 @@ interface BufferedSegments {
  * @remarks
  * <br/> - Available since v2.46.0.
  *
+ * @category Analytics
  * @public
  */
 interface Metrics {
@@ -6276,6 +6655,7 @@ interface Metrics {
  * <br/> - `'metadata'` loads enough resources to be able to determine the {@link ChromelessPlayer.duration}.
  * <br/> - `'auto'` loads media up to {@link ABRConfiguration.targetBuffer}.
  *
+ * @category Player
  * @public
  */
 type PreloadType = 'none' | 'metadata' | 'auto' | '';
@@ -6283,6 +6663,8 @@ type PreloadType = 'none' | 'metadata' | 'auto' | '';
 /**
  * Fired when an event related to the Imagine integration occurs.
  *
+ * @category SSAI
+ * @category Events
  * @public
  */
 interface ImagineTrackingEvent extends Event<'start' | 'firstquartile' | 'midpoint' | 'thirdquartile' | 'complete' | 'pause' | 'resume'> {
@@ -6291,6 +6673,7 @@ interface ImagineTrackingEvent extends Event<'start' | 'firstquartile' | 'midpoi
 /**
  * The events fired by the {@link Imagine | Imagine API}.
  *
+ * @category SSAI
  * @public
  */
 interface ImagineEventMap {
@@ -6326,6 +6709,7 @@ interface ImagineEventMap {
 /**
  * The Imagine API.
  *
+ * @category SSAI
  * @public
  */
 interface Imagine extends EventDispatcher<ImagineEventMap> {
@@ -6338,6 +6722,8 @@ interface Imagine extends EventDispatcher<ImagineEventMap> {
 /**
  * Fired when the ad break begins.
  *
+ * @category Verizon Media
+ * @category Events
  * @public
  */
 interface VerizonMediaAdBreakBeginEvent extends Event<'adbreakbegin'> {
@@ -6350,6 +6736,8 @@ interface VerizonMediaAdBreakBeginEvent extends Event<'adbreakbegin'> {
 /**
  * Fired when the ad break ends.
  *
+ * @category Verizon Media
+ * @category Events
  * @public
  */
 interface VerizonMediaAdBreakEndEvent extends Event<'adbreakend'> {
@@ -6362,6 +6750,8 @@ interface VerizonMediaAdBreakEndEvent extends Event<'adbreakend'> {
 /**
  * Fired when the ad break is skipped.
  *
+ * @category Verizon Media
+ * @category Events
  * @public
  */
 interface VerizonMediaAdBreakSkipEvent extends Event<'adbreakskip'> {
@@ -6374,6 +6764,8 @@ interface VerizonMediaAdBreakSkipEvent extends Event<'adbreakskip'> {
 /**
  * Fired when the ad break is updated.
  *
+ * @category Verizon Media
+ * @category Events
  * @public
  */
 interface VerizonMediaUpdateAdBreakEvent extends Event<'updateadbreak'> {
@@ -6414,6 +6806,8 @@ interface EventedList<T, M extends EventMap<StringKeyOf<M>>> extends List<T>, Ev
 /**
  * Fired when an ad begins.
  *
+ * @category Verizon Media
+ * @category Events
  * @public
  */
 interface VerizonMediaAdBeginEvent extends Event<'adbegin'> {
@@ -6426,6 +6820,8 @@ interface VerizonMediaAdBeginEvent extends Event<'adbegin'> {
 /**
  * Fired when the ad ends.
  *
+ * @category Verizon Media
+ * @category Events
  * @public
  */
 interface VerizonMediaAdEndEvent extends Event<'adend'> {
@@ -6438,6 +6834,8 @@ interface VerizonMediaAdEndEvent extends Event<'adend'> {
 /**
  * Fired when the ad reaches the first quartile.
  *
+ * @category Verizon Media
+ * @category Events
  * @public
  */
 interface VerizonMediaAdFirstQuartileEvent extends Event<'adfirstquartile'> {
@@ -6449,6 +6847,8 @@ interface VerizonMediaAdFirstQuartileEvent extends Event<'adfirstquartile'> {
 /**
  * Fired when the ad reaches the mid point.
  *
+ * @category Verizon Media
+ * @category Events
  * @public
  */
 interface VerizonMediaAdMidpointEvent extends Event<'admidpoint'> {
@@ -6460,6 +6860,8 @@ interface VerizonMediaAdMidpointEvent extends Event<'admidpoint'> {
 /**
  * Fired when the ad reaches the third quartile.
  *
+ * @category Verizon Media
+ * @category Events
  * @public
  */
 interface VerizonMediaAdThirdQuartileEvent extends Event<'adthirdquartile'> {
@@ -6471,6 +6873,8 @@ interface VerizonMediaAdThirdQuartileEvent extends Event<'adthirdquartile'> {
 /**
  * Fired when the ad is completed.
  *
+ * @category Verizon Media
+ * @category Events
  * @public
  */
 interface VerizonMediaAdCompleteEvent extends Event<'adcomplete'> {
@@ -6483,6 +6887,7 @@ interface VerizonMediaAdCompleteEvent extends Event<'adcomplete'> {
 /**
  * The events fired by the {@link VerizonMediaAd}.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaAdEventMap {
@@ -6514,6 +6919,7 @@ interface VerizonMediaAdEventMap {
 /**
  * Represents a Verizon Media ad.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaAd extends EventDispatcher<VerizonMediaAdEventMap> {
@@ -6590,6 +6996,7 @@ interface VerizonMediaAd extends EventDispatcher<VerizonMediaAdEventMap> {
 /**
  * Fired when the ad is removed.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaRemoveAdEvent extends Event<'removead'> {
@@ -6599,6 +7006,7 @@ interface VerizonMediaRemoveAdEvent extends Event<'removead'> {
 /**
  * Events fired by the {@link VerizonMediaAdList}.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaAdListEventMap {
@@ -6610,6 +7018,7 @@ interface VerizonMediaAdListEventMap {
 /**
  * List of Verizon Media ads.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaAdList extends EventedList<VerizonMediaAd, VerizonMediaAdListEventMap> {
@@ -6618,6 +7027,7 @@ interface VerizonMediaAdList extends EventedList<VerizonMediaAd, VerizonMediaAdL
 /**
  * The events fired by the {@link VerizonMediaAdBreak}.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaAdBreakEventMap {
@@ -6641,6 +7051,7 @@ interface VerizonMediaAdBreakEventMap {
 /**
  * Represents a Verizon Media ad.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaAdBreak extends EventDispatcher<VerizonMediaAdBreakEventMap> {
@@ -6686,6 +7097,8 @@ interface VerizonMediaAdBreak extends EventDispatcher<VerizonMediaAdBreakEventMa
 /**
  * Fired when the ad break is added.
  *
+ * @category Verizon Media
+ * @category Events
  * @public
  */
 interface VerizonMediaAddAdBreakEvent extends Event<'addadbreak'> {
@@ -6698,6 +7111,8 @@ interface VerizonMediaAddAdBreakEvent extends Event<'addadbreak'> {
 /**
  * Fired when the ad break is removed.
  *
+ * @category Verizon Media
+ * @category Events
  * @public
  */
 interface VerizonMediaRemoveAdBreakEvent extends Event<'removeadbreak'> {
@@ -6710,6 +7125,7 @@ interface VerizonMediaRemoveAdBreakEvent extends Event<'removeadbreak'> {
 /**
  * The events fired by the {@link VerizonMediaAdBreakList}.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaAdBreakListEventMap {
@@ -6725,6 +7141,7 @@ interface VerizonMediaAdBreakListEventMap {
 /**
  * List with Verizon Media ad breaks.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaAdBreakList extends EventedList<VerizonMediaAdBreak, VerizonMediaAdBreakListEventMap> {
@@ -6733,6 +7150,7 @@ interface VerizonMediaAdBreakList extends EventedList<VerizonMediaAdBreak, Veriz
 /**
  * The Verizon Media ads API.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaAds {
@@ -6763,6 +7181,7 @@ interface VerizonMediaAds {
 /**
  * Represents a Verizon Media response with advertisement information for VOD assets.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaResponseVodAds {
@@ -6785,6 +7204,7 @@ interface VerizonMediaResponseVodAds {
 /**
  * Represents a Verizon Media response with ad break information for VOD assets.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaResponseVodAdBreak {
@@ -6823,6 +7243,7 @@ interface VerizonMediaResponseVodAdBreak {
 /**
  * The Verizon Media response with ad information for VOD assets.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaResponseVodAd {
@@ -6890,6 +7311,7 @@ interface VerizonMediaResponseVodAd {
 /**
  * Represents the offset of a Verizon Media ad break.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaResponseVodAdBreakOffset {
@@ -6910,6 +7332,7 @@ interface VerizonMediaResponseVodAdBreakOffset {
  * <br/> - is a short blank video for non-video ads (e.g. VPAID ads).
  * <br/> - is a system asset which is potentially subject to change.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaResponseVodAdPlaceholder {
@@ -6936,18 +7359,21 @@ interface VerizonMediaResponseVodAdPlaceholder {
  * <br/> - `'vod'`
  * <br/> - `'live'`
  *
+ * @category Verizon Media
  * @public
  */
 type VerizonMediaPreplayResponseType = 'vod' | 'live';
 /**
  * Type of a Verizon Media Preplay response.
  *
+ * @category Verizon Media
  * @public
  */
 type VerizonMediaPreplayResponse = VerizonMediaPreplayVodResponse | VerizonMediaPreplayLiveResponse;
 /**
  * Represents a Verizon Media Preplay base response.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaPreplayBaseResponse {
@@ -6986,6 +7412,7 @@ interface VerizonMediaPreplayBaseResponse {
 /**
  * Represents a Verizon Media DRM response.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaResponseDrm {
@@ -7005,6 +7432,7 @@ interface VerizonMediaResponseDrm {
 /**
  * Represents a Verizon Media Preplay response for VOD assets.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaPreplayVodResponse extends VerizonMediaPreplayBaseResponse {
@@ -7029,6 +7457,7 @@ interface VerizonMediaPreplayVodResponse extends VerizonMediaPreplayBaseResponse
 /**
  * Represents a Verizon Media Preplay response for live assets.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaPreplayLiveResponse extends VerizonMediaPreplayBaseResponse {
@@ -7041,6 +7470,7 @@ interface VerizonMediaPreplayLiveResponse extends VerizonMediaPreplayBaseRespons
 /**
  * Fired when a Preplay response is received.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaPreplayResponseEvent extends Event<'preplayresponse'> {
@@ -7056,6 +7486,7 @@ interface VerizonMediaPreplayResponseEvent extends Event<'preplayresponse'> {
  * @remarks
  * <br/> - See {@link https://docs.vdms.com/video/#Develop/AssetInfo.htm%3FTocPath%3DDevelop%7CClient%2520(Media%2520Player)%7C_____1 | Asset Info}.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaAssetInfoResponse {
@@ -7191,12 +7622,14 @@ interface VerizonMediaAssetInfoResponse {
  * @remarks
  * <br/> - See {@link https://docs.vdms.com/video/#Setup/Boundaries-Setup-Playback.htm | Boundaries }
  *
+ * @category Verizon Media
  * @public
  */
 type Boundary = BoundaryC3 | BoundaryC7 | BoundaryHalftime;
 /**
  * Represents the information of an ad boundary.
  *
+ * @category Verizon Media
  * @public
  */
 interface BoundaryInfo {
@@ -7212,6 +7645,7 @@ interface BoundaryInfo {
 /**
  * Represents the boundary of an ad that is relevant for up to three days after the original airing.
  *
+ * @category Verizon Media
  * @public
  */
 interface BoundaryC3 {
@@ -7220,6 +7654,7 @@ interface BoundaryC3 {
 /**
  * Represents the boundary of an ad that is relevant for up to seven days after the original airing.
  *
+ * @category Verizon Media
  * @public
  */
 interface BoundaryC7 {
@@ -7228,6 +7663,7 @@ interface BoundaryC7 {
 /**
  * Represents the boundary that identifies special content.
  *
+ * @category Verizon Media
  * @public
  */
 interface BoundaryHalftime {
@@ -7236,6 +7672,7 @@ interface BoundaryHalftime {
 /**
  * Represents the resolution of a Verizon Media thumbnail.
  *
+ * @category Verizon Media
  * @public
  */
 interface ThumbnailResolution {
@@ -7282,6 +7719,7 @@ interface ThumbnailResolution {
  * In the online documentation the value for 0 is also "NOT RATED". Since this is counter-intuitive, we have assumed
  * this to be erronous and have modeled this according to the Movie Ratings, with 0 being "NOT APPLICABLE".
  *
+ * @category Verizon Media
  * @public
  */
 type VerizonMediaAssetTvRating = -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
@@ -7297,6 +7735,7 @@ type VerizonMediaAssetTvRating = -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
  * <br/> - `6` (X)
  * <br/> - `7` (NOT_RATED)
  *
+ * @category Verizon Media
  * @public
  */
 type VerizonMediaAssetMovieRating = -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
@@ -7304,6 +7743,8 @@ type VerizonMediaAssetMovieRating = -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 /**
  * Fired when an asset info response is received.
  *
+ * @category Verizon Media
+ * @category Events
  * @public
  */
 interface VerizonMediaAssetInfoResponseEvent extends Event<'assetinforesponse'> {
@@ -7316,6 +7757,7 @@ interface VerizonMediaAssetInfoResponseEvent extends Event<'assetinforesponse'> 
 /**
  * Represents a Verizon Media response with advertisement information for live assets.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaResponseLiveAds {
@@ -7330,6 +7772,7 @@ interface VerizonMediaResponseLiveAds {
 /**
  * Represents a Verizon Media response for live ad breaks.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaResponseLiveAdBreak {
@@ -7386,6 +7829,7 @@ interface VerizonMediaResponseLiveAdBreak {
 /**
  * Represents a Verizon Media response with live ads.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaResponseLiveAd {
@@ -7456,6 +7900,7 @@ interface VerizonMediaResponseLiveAd {
  * @remarks
  * <br/> - See {@link https://docs.vdms.com/video/#Develop/Pingv2.htm%3FTocPath%3DDevelop%7CClient%2520(Media%2520Player)%7C_____3 | Ping API (Version 2)}.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaPingResponse {
@@ -7490,6 +7935,8 @@ interface VerizonMediaPingResponse {
 /**
  * Fired when a Ping response is received.
  *
+ * @category Verizon Media
+ * @category Events
  * @public
  */
 interface VerizonMediaPingResponseEvent extends Event<'pingresponse'> {
@@ -7502,6 +7949,8 @@ interface VerizonMediaPingResponseEvent extends Event<'pingresponse'> {
 /**
  * Fired when an error or invalid response is received from the Ping API.
  *
+ * @category Verizon Media
+ * @category Events
  * @public
  */
 interface VerizonMediaPingErrorEvent extends Event<'pingerror'> {
@@ -7514,6 +7963,7 @@ interface VerizonMediaPingErrorEvent extends Event<'pingerror'> {
 /**
  * Represents a Verizon Media asset.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaAsset {
@@ -7649,6 +8099,8 @@ interface VerizonMediaAsset {
 /**
  * Fired when an asset is added.
  *
+ * @category Verizon Media
+ * @category Events
  * @public
  */
 interface VerizonMediaAddAssetEvent extends Event<'addasset'> {
@@ -7661,6 +8113,8 @@ interface VerizonMediaAddAssetEvent extends Event<'addasset'> {
 /**
  * Fired when an asset is removed.
  *
+ * @category Verizon Media
+ * @category Events
  * @public
  */
 interface VerizonMediaRemoveAssetEvent extends Event<'removeasset'> {
@@ -7673,6 +8127,7 @@ interface VerizonMediaRemoveAssetEvent extends Event<'removeasset'> {
 /**
  * The events fired by the {@link VerizonMediaAssetList}.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaAssetEventMap {
@@ -7688,6 +8143,7 @@ interface VerizonMediaAssetEventMap {
 /**
  * List of Verizon Media assets.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaAssetList extends EventedList<VerizonMediaAsset, VerizonMediaAssetEventMap> {
@@ -7696,6 +8152,7 @@ interface VerizonMediaAssetList extends EventedList<VerizonMediaAsset, VerizonMe
 /**
  * The events fired by the {@link VerizonMedia | Verizon Media API}.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMediaEventMap {
@@ -7722,6 +8179,7 @@ interface VerizonMediaEventMap {
  * @remarks
  * <br/> - Only available with the feature 'verizonmedia'.
  *
+ * @category Verizon Media
  * @public
  */
 interface VerizonMedia extends EventDispatcher<VerizonMediaEventMap> {
@@ -7738,6 +8196,7 @@ interface VerizonMedia extends EventDispatcher<VerizonMediaEventMap> {
 /**
  * The events fired by the {@link Yospace | Yospace API}.
  *
+ * @category SSAI
  * @public
  */
 interface YospaceEventMap {
@@ -7752,6 +8211,7 @@ interface YospaceEventMap {
  * @remarks
  * <br/> - These callbacks will be used by the Yospace SDK to provide feedback to the player.
  *
+ * @category SSAI
  * @public
  */
 interface YospaceCallbackObject {
@@ -7768,6 +8228,7 @@ interface YospaceCallbackObject {
  * @remarks
  * <br/> - Available since v2.14.7.
  *
+ * @category SSAI
  * @public
  */
 interface Yospace extends EventDispatcher<YospaceEventMap> {
@@ -7790,12 +8251,16 @@ interface Yospace extends EventDispatcher<YospaceEventMap> {
 /**
  * An error code whose category is `ErrorCategory.CONTENT_PROTECTION`.
  *
+ * @category Content Protection
+ * @category Errors
  * @public
  */
 type ContentProtectionErrorCode = ErrorCode.CONTENT_PROTECTION_ERROR | ErrorCode.CONTENT_PROTECTION_NOT_SUPPORTED | ErrorCode.CONTENT_PROTECTION_CONFIGURATION_MISSING | ErrorCode.CONTENT_PROTECTION_CONFIGURATION_INVALID | ErrorCode.CONTENT_PROTECTION_INITIALIZATION_INVALID | ErrorCode.CONTENT_PROTECTION_CERTIFICATE_ERROR | ErrorCode.CONTENT_PROTECTION_CERTIFICATE_INVALID | ErrorCode.CONTENT_PROTECTION_LICENSE_ERROR | ErrorCode.CONTENT_PROTECTION_LICENSE_INVALID | ErrorCode.CONTENT_PROTECTION_KEY_EXPIRED | ErrorCode.CONTENT_PROTECTION_KEY_MISSING | ErrorCode.CONTENT_PROTECTION_OUTPUT_RESTRICTED | ErrorCode.CONTENT_PROTECTION_INTERNAL_ERROR;
 /**
  * An error related to content protection.
  *
+ * @category Content Protection
+ * @category Errors
  * @public
  */
 interface ContentProtectionError extends THEOplayerError {
@@ -7843,6 +8308,9 @@ interface ContentProtectionError extends THEOplayerError {
 /**
  * Fired when an error related to content protection occurs.
  *
+ * @category Content Protection
+ * @category Errors
+ * @category Events
  * @public
  */
 interface ContentProtectionErrorEvent extends Event<'contentprotectionerror'> {
@@ -7886,6 +8354,7 @@ interface ContentProtectionErrorEvent extends Event<'contentprotectionerror'> {
  * <br/> - Only available with the feature `'hesp'`.
  * <br/> - Only applies to HESP streams.
  *
+ * @category HESP
  * @public
  */
 interface HespLatencyConfiguration {
@@ -7916,6 +8385,7 @@ interface HespLatencyConfiguration {
  * <br/> - Only available with the feature `'hesp'`.
  * <br/> - Only available when an HESP source is playing.
  *
+ * @category HESP
  * @public
  */
 interface HespApiEventMap {
@@ -7934,6 +8404,7 @@ interface HespApiEventMap {
  * <br/> - Note: This API is in an experimental stage and may be subject to breaking changes.
  * <br/> - Only available with the feature `'hesp'`.
  *
+ * @category HESP
  * @public
  */
 interface HespApi extends EventDispatcher<HespApiEventMap> {
@@ -7986,6 +8457,8 @@ interface HespApi extends EventDispatcher<HespApiEventMap> {
  * <br/> - Only available with the feature `'hesp'`.
  * <br/> - Only applicable when configuring an HESP source.
  *
+ * @category HESP
+ * @category Source
  * @public
  */
 interface HespSourceConfiguration {
@@ -7997,6 +8470,8 @@ interface HespSourceConfiguration {
  * <br/> - Only available with the feature `'hesp'`.
  * <br/> - Only applicable when configuring an HESP source.
  *
+ * @category HESP
+ * @category Source
  * @public
  */
 interface HespTypedSource extends TypedSource {
@@ -8037,6 +8512,7 @@ interface Latencies {
 /**
  * Represents a DASH representation.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface Representation {
@@ -8081,6 +8557,7 @@ interface Representation {
 /**
  * Fired when `ChromelessPlayer.source` changes.
  *
+ * @category Events
  * @public
  */
 interface SourceChangeEvent extends Event<'sourcechange'> {
@@ -8092,6 +8569,7 @@ interface SourceChangeEvent extends Event<'sourcechange'> {
 /**
  * Fired when the current source, which is chosen from {@link SourceDescription.sources | ChromelessPlayer.source.sources}, changes.
  *
+ * @category Events
  * @public
  */
 interface CurrentSourceChangeEvent extends Event<'currentsourcechange'> {
@@ -8103,6 +8581,7 @@ interface CurrentSourceChangeEvent extends Event<'currentsourcechange'> {
 /**
  * Fired when `ChromelessPlayer.paused` changes to `false`.
  *
+ * @category Events
  * @public
  */
 interface PlayEvent extends Event<'play'> {
@@ -8114,6 +8593,7 @@ interface PlayEvent extends Event<'play'> {
 /**
  * Fired when `ChromelessPlayer.paused` changes to `true`.
  *
+ * @category Events
  * @public
  */
 interface PauseEvent extends Event<'pause'> {
@@ -8125,6 +8605,7 @@ interface PauseEvent extends Event<'pause'> {
 /**
  * Fired when `ChromelessPlayer.seeking` changes to `true`, and the player has started seeking to a new position.
  *
+ * @category Events
  * @public
  */
 interface SeekingEvent extends Event<'seeking'> {
@@ -8136,6 +8617,7 @@ interface SeekingEvent extends Event<'seeking'> {
 /**
  * Fired when `ChromelessPlayer.seeking` changes to `false` after the current playback position was changed.
  *
+ * @category Events
  * @public
  */
 interface SeekedEvent extends Event<'seeked'> {
@@ -8147,6 +8629,7 @@ interface SeekedEvent extends Event<'seeked'> {
 /**
  * Fired when the current playback position changed as part of normal playback or in an especially interesting way, for example discontinuously.
  *
+ * @category Events
  * @public
  */
 interface TimeUpdateEvent extends Event<'timeupdate'> {
@@ -8162,6 +8645,7 @@ interface TimeUpdateEvent extends Event<'timeupdate'> {
 /**
  * Fired when playback has stopped because the end of the media resource was reached.
  *
+ * @category Events
  * @public
  */
 interface EndedEvent extends Event<'ended'> {
@@ -8173,6 +8657,7 @@ interface EndedEvent extends Event<'ended'> {
 /**
  * Fired when playback is ready to start after having been paused or delayed due to lack of media data.
  *
+ * @category Events
  * @public
  */
 interface PlayingEvent extends Event<'playing'> {
@@ -8184,6 +8669,7 @@ interface PlayingEvent extends Event<'playing'> {
 /**
  * Fired when playback has stopped because the next frame is not available, but the player expects that frame to become available in due course.
  *
+ * @category Events
  * @public
  */
 interface WaitingEvent extends Event<'waiting'> {
@@ -8195,6 +8681,7 @@ interface WaitingEvent extends Event<'waiting'> {
 /**
  * Fired when `ChromelessPlayer.readyState` changes.
  *
+ * @category Events
  * @public
  */
 interface ReadyStateChangeEvent extends Event<'readystatechange'> {
@@ -8210,6 +8697,7 @@ interface ReadyStateChangeEvent extends Event<'readystatechange'> {
 /**
  * Fired when the player determines the duration and dimensions of the media resource.
  *
+ * @category Events
  * @public
  */
 interface LoadedMetadataEvent extends Event<'loadedmetadata'> {
@@ -8225,6 +8713,7 @@ interface LoadedMetadataEvent extends Event<'loadedmetadata'> {
 /**
  * Fired when the player can render the media data at the current playback position for the first time.
  *
+ * @category Events
  * @public
  */
 interface LoadedDataEvent extends Event<'loadeddata'> {
@@ -8240,6 +8729,7 @@ interface LoadedDataEvent extends Event<'loadeddata'> {
 /**
  * Fired when the player can resume playback of the media data.
  *
+ * @category Events
  * @public
  */
 interface CanPlayEvent extends Event<'canplay'> {
@@ -8255,6 +8745,7 @@ interface CanPlayEvent extends Event<'canplay'> {
 /**
  * Fired when the player can resume playback of the media data and buffering is unlikely.
  *
+ * @category Events
  * @public
  */
 interface CanPlayThroughEvent extends Event<'canplaythrough'> {
@@ -8270,6 +8761,7 @@ interface CanPlayThroughEvent extends Event<'canplaythrough'> {
 /**
  * Fired when the player's source is cleared.
  *
+ * @category Events
  * @public
  */
 interface EmptiedEvent extends Event<'emptied'> {
@@ -8285,6 +8777,7 @@ interface EmptiedEvent extends Event<'emptied'> {
 /**
  * Fired when the player loaded media data.
  *
+ * @category Events
  * @public
  */
 interface ProgressEvent extends Event<'progress'> {
@@ -8296,6 +8789,7 @@ interface ProgressEvent extends Event<'progress'> {
 /**
  * Fired when `ChromelessPlayer.duration` changes.
  *
+ * @category Events
  * @public
  */
 interface DurationChangeEvent extends Event<'durationchange'> {
@@ -8307,6 +8801,7 @@ interface DurationChangeEvent extends Event<'durationchange'> {
 /**
  * Fired when `ChromelessPlayer.volume` changes.
  *
+ * @category Events
  * @public
  */
 interface VolumeChangeEvent extends Event<'volumechange'> {
@@ -8318,6 +8813,7 @@ interface VolumeChangeEvent extends Event<'volumechange'> {
 /**
  * Fired when the current representation changes.
  *
+ * @category Events
  * @public
  */
 interface RepresentationChangeEvent extends Event<'representationchange'> {
@@ -8333,6 +8829,7 @@ interface RepresentationChangeEvent extends Event<'representationchange'> {
 /**
  * Fired when `ChromelessPlayer.playbackRate` changes.
  *
+ * @category Events
  * @public
  */
 interface RateChangeEvent extends Event<'ratechange'> {
@@ -8344,6 +8841,7 @@ interface RateChangeEvent extends Event<'ratechange'> {
 /**
  * Fired when the dimensions of the HTML element changes.
  *
+ * @category Events
  * @public
  */
 interface DimensionChangeEvent extends Event<'dimensionchange'> {
@@ -8359,6 +8857,7 @@ interface DimensionChangeEvent extends Event<'dimensionchange'> {
 /**
  * Fired when the player encounters key system initialization data in the media data.
  *
+ * @category Events
  * @public
  */
 interface EncryptedEvent extends Event<'encrypted'> {
@@ -8379,6 +8878,7 @@ interface EncryptedEvent extends Event<'encrypted'> {
 /**
  * The latency manager, used to control low-latency live playback.
  *
+ * @category Player
  * @public
  */
 interface LatencyManager {
@@ -8416,6 +8916,7 @@ interface LatencyManager {
 /**
  * The latency configuration for managing the live offset of the player.
  *
+ * @category Player
  * @public
  */
 interface LatencyConfiguration {
@@ -8479,8 +8980,87 @@ interface TimeRanges {
 }
 
 /**
+ * Fired when the loading of a THEOlive publication starts.
+ *
+ * @public
+ */
+interface PublicationLoadStartEvent extends Event<'publicationloadstart'> {
+    readonly publicationId: string;
+}
+/**
+ * Fired when the loading of a THEOlive publication is complete and playback can start. This event is dispatched on publication reloads as well, which
+ * can happen when an error is encountered or the player fallbacks.
+ *
+ * @public
+ */
+interface PublicationLoadedEvent extends Event<'publicationloaded'> {
+    readonly publicationId: string;
+}
+/**
+ * Fired when loading a THEOlive publication that cannot be played, for example because the publication is stopped.
+ *
+ * @public
+ */
+interface PublicationOfflineEvent extends Event<'publicationoffline'> {
+    readonly publicationId: string;
+}
+/**
+ * Fired when the player cannot play the current primary publication and would like to fallback. If a fallback has been configured it will fallback,
+ * otherwise only the event is fired.
+ *
+ * @public
+ */
+interface IntentToFallbackEvent extends Event<'intenttofallback'> {
+}
+/**
+ * Fired when the player enters bad network mode.
+ *
+ * @public
+ */
+interface EnterBadNetworkModeEvent extends Event<'enterbadnetworkmode'> {
+}
+/**
+ * Fired when the player exits bad network mode.
+ *
+ * @public
+ */
+interface ExitBadNetworkModeEvent extends Event<'exitbadnetworkmode'> {
+}
+/**
+ * A collection of events dispatched by the THEOlive api.
+ *
+ * @public
+ */
+interface TheoLiveApiEventMap {
+    readonly publicationloadstart: PublicationLoadStartEvent;
+    readonly publicationloaded: PublicationLoadedEvent;
+    readonly publicationoffline: PublicationOfflineEvent;
+    readonly intenttofallback: IntentToFallbackEvent;
+    readonly enterbadnetworkmode: EnterBadNetworkModeEvent;
+    readonly exitbadnetworkmode: ExitBadNetworkModeEvent;
+}
+/**
+ * A THEOlive publication.
+ *
+ * @public
+ */
+interface TheoLivePublication {
+    readonly name: string;
+}
+/**
+ * The THEOlive api.
+ *
+ * @public
+ */
+interface TheoLiveApi extends EventDispatcher<TheoLiveApiEventMap> {
+    badNetworkMode: boolean;
+    preloadPublications(publicationIds: string[]): Promise<TheoLivePublication[]>;
+}
+
+/**
  * The events fired by the {@link ChromelessPlayer}.
  *
+ * @category Player
  * @public
  */
 interface PlayerEventMap {
@@ -8682,6 +9262,8 @@ interface PlayerEventMap {
 /**
  * The player API.
  *
+ * @category API
+ * @category Player
  * @public
  */
 declare class ChromelessPlayer implements EventDispatcher<PlayerEventMap> {
@@ -8855,6 +9437,7 @@ declare class ChromelessPlayer implements EventDispatcher<PlayerEventMap> {
      *
      */
     readonly textTrackStyle: TextTrackStyle;
+    readonly theoLive?: TheoLiveApi;
     /**
      * Unique ID of the player.
      */
@@ -9024,12 +9607,14 @@ declare class ChromelessPlayer implements EventDispatcher<PlayerEventMap> {
  * <br/> - `'bottom-left'`
  * <br/> - `'bottom-right'`
  *
+ * @category UI
  * @public
  */
 type PiPPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
 /**
  * Describes the configuration of the picture-in-picture feature.
  *
+ * @category UI
  * @public
  */
 interface PiPConfiguration {
@@ -9059,6 +9644,7 @@ interface PiPConfiguration {
 /**
  * Describes the UI related configuration of the player.
  *
+ * @category UI
  * @public
  */
 interface UIPlayerConfiguration extends PlayerConfiguration {
@@ -9086,6 +9672,7 @@ interface UIPlayerConfiguration extends PlayerConfiguration {
 /**
  * Describes the UI configuration of the player.
  *
+ * @category UI
  * @public
  */
 interface UIConfiguration {
@@ -9166,7 +9753,7 @@ interface UIConfiguration {
      */
     fullscreenOptions?: FullscreenOptions$1;
     /**
-     * Actions that define the behavior of the player
+     * Actions that define the behavior of the player.
      *
      * @remarks
      * <br/> - Available since v4.3.0
@@ -9174,18 +9761,25 @@ interface UIConfiguration {
     userActions?: UserActions;
 }
 /**
- *  A record used to map localization.
- *  Each entry contains a translation of an English string.
+ * A record used to map localization.
+ * Each entry contains a translation of an English string.
  *
+ * @category UI
  * @public
  */
 type UILanguage = Record<string, string>;
 /**
+ * Options to control transitions to fullscreen mode.
+ *
+ * @remarks
+ * <br/> - Available since v2.90.0.
+ *
+ * @category UI
  * @public
  */
 interface FullscreenOptions$1 {
     /**
-     * Whether or not to show navigation UI while in fullscreen.
+     * Whether to show navigation UI while in fullscreen.
      *
      * @remarks
      * <p>On mobile devices, the platform may want to show a native on-screen navigation UI (such as a back button or home button)
@@ -9202,6 +9796,12 @@ interface FullscreenOptions$1 {
     navigationUI?: 'auto' | 'show' | 'hide';
 }
 /**
+ * Actions that define the behavior of the player.
+ *
+ * @remarks
+ * <br/> - Available since v4.3.0
+ *
+ * @category UI
  * @public
  */
 interface UserActions {
@@ -9217,6 +9817,7 @@ interface UserActions {
 /**
  * List of players.
  *
+ * @category Player
  * @public
  */
 interface PlayerList extends Array<ChromelessPlayer> {
@@ -9237,6 +9838,7 @@ interface PlayerList extends Array<ChromelessPlayer> {
 /**
  * The {@link CachingTask}'s license API.
  *
+ * @category Caching
  * @public
  */
 interface CachingTaskLicense {
@@ -9251,6 +9853,7 @@ interface CachingTaskLicense {
 /**
  * Describes the configuration of a caching task.
  *
+ * @category Caching
  * @public
  */
 interface CachingTaskParameters {
@@ -9293,12 +9896,14 @@ interface CachingTaskParameters {
  * <br/> - `'error'`: The task has encountered an error while downloading or evicting content.
  * <br/> - `'evicted'`: All data associated with the task has been removed because the task expired or the user invoked the {@link CachingTask.remove|remove} method.
  *
+ * @category Caching
  * @public
  */
 type CacheTaskStatus = 'idle' | 'loading' | 'done' | 'error' | 'evicted';
 /**
  * The events fired by the {@link CachingTask}.
  *
+ * @category Caching
  * @public
  */
 interface CachingTaskEventMap {
@@ -9314,6 +9919,7 @@ interface CachingTaskEventMap {
 /**
  * Represents a caching task.
  *
+ * @category Caching
  * @public
  */
 interface CachingTask extends EventDispatcher<CachingTaskEventMap> {
@@ -9384,6 +9990,8 @@ interface CachingTask extends EventDispatcher<CachingTaskEventMap> {
 /**
  * Fired when a caching task is added.
  *
+ * @category Caching
+ * @category Events
  * @public
  */
 interface AddCachingTaskEvent extends Event<'addtask'> {
@@ -9396,6 +10004,8 @@ interface AddCachingTaskEvent extends Event<'addtask'> {
 /**
  * Fired when a caching task is removed.
  *
+ * @category Caching
+ * @category Events
  * @public
  */
 interface RemoveCachingTaskEvent extends Event<'removetask'> {
@@ -9408,6 +10018,7 @@ interface RemoveCachingTaskEvent extends Event<'removetask'> {
 /**
  * The events fired by the {@link CachingTaskList}.
  *
+ * @category Caching
  * @public
  */
 interface CachingTaskListEventMap {
@@ -9423,6 +10034,7 @@ interface CachingTaskListEventMap {
 /**
  * List of caching tasks.
  *
+ * @category Caching
  * @public
  */
 interface CachingTaskList extends EventedList<CachingTask, CachingTaskListEventMap> {
@@ -9433,12 +10045,14 @@ interface CachingTaskList extends EventedList<CachingTask, CachingTaskListEventM
  * <br/> - `'uninitialised'`: Previously stored caching tasks are unavailable.
  * <br/> - `'initialised'`: Previously stored caching tasks are now available.
  *
+ * @category Caching
  * @public
  */
 type CacheStatus = 'uninitialised' | 'initialised';
 /**
  * The events fired by the {@link Cache | cache API}.
  *
+ * @category Caching
  * @public
  */
 interface CacheEventMap {
@@ -9453,6 +10067,7 @@ interface CacheEventMap {
  * @remarks
  * <br/> - Available since v2.26.
  *
+ * @category Caching
  * @public
  */
 interface Cache extends EventDispatcher<CacheEventMap> {
@@ -9497,6 +10112,7 @@ interface CommonUtils {
 
 /**
  * A request, either for a certificate or a license.
+ * @category Content Protection
  * @public
  */
 interface ContentProtectionRequest {
@@ -9535,11 +10151,13 @@ interface ContentProtectionRequest {
 /**
  * A request for a certificate.
  *
+ * @category Content Protection
  * @public
  */
 type CertificateRequest = ContentProtectionRequest;
 /**
  * A request for a license.
+ * @category Content Protection
  * @public
  */
 interface LicenseRequest extends ContentProtectionRequest {
@@ -9554,6 +10172,7 @@ interface LicenseRequest extends ContentProtectionRequest {
 
 /**
  * The response, either of a license or for a certificate request.
+ * @category Content Protection
  * @public
  */
 interface ContentProtectionResponse {
@@ -9589,6 +10208,7 @@ interface ContentProtectionResponse {
 }
 /**
  * The response of a certificate request.
+ * @category Content Protection
  * @public
  */
 interface CertificateResponse extends ContentProtectionResponse {
@@ -9599,6 +10219,7 @@ interface CertificateResponse extends ContentProtectionResponse {
 }
 /**
  * The response of a license request.
+ * @category Content Protection
  * @public
  */
 interface LicenseResponse extends ContentProtectionResponse {
@@ -9611,12 +10232,14 @@ interface LicenseResponse extends ContentProtectionResponse {
 /**
  * A synchronous or asynchronous return type
  *
+ * @category Content Protection
  * @public
  */
 type MaybeAsync<T> = T | PromiseLike<T>;
 /**
  * This ContentProtectionIntegration defines some methods to alter license and certificate requests and responses.
  *
+ * @category Content Protection
  * @public
  */
 interface ContentProtectionIntegration {
@@ -9695,6 +10318,7 @@ interface ContentProtectionIntegration {
 /**
  * Factory pattern to create {@link ContentProtectionIntegration}s.
  *
+ * @category Content Protection
  * @public
  */
 interface ContentProtectionIntegrationFactory {
@@ -9709,6 +10333,8 @@ interface ContentProtectionIntegrationFactory {
 /**
  * The identifier of the Axinom integration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 type AxinomIntegrationID = 'axinom';
@@ -9727,6 +10353,8 @@ type AxinomIntegrationID = 'axinom';
  * }
  * ```
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface AxinomDRMConfiguration extends DRMConfiguration {
@@ -9746,12 +10374,16 @@ interface AxinomDRMConfiguration extends DRMConfiguration {
 /**
  * The identifier of the Azure Media Services integration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 type AzureIntegrationID = 'azure';
 /**
  * Describes the configuration of the Azure Media Services DRM integration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface AzureDRMConfiguration extends DRMConfiguration {
@@ -9771,6 +10403,8 @@ interface AzureDRMConfiguration extends DRMConfiguration {
 /**
  * The identifier of the Comcast integration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 type ComcastIntegrationID = 'comcast';
@@ -9788,6 +10422,8 @@ type ComcastIntegrationID = 'comcast';
  * }
  * ```
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface ComcastDRMConfiguration extends DRMConfiguration {
@@ -9816,6 +10452,8 @@ interface ComcastDRMConfiguration extends DRMConfiguration {
 /**
  * The identifier of the Conax integration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 type ConaxIntegrationID = 'conax';
@@ -9845,6 +10483,8 @@ type ConaxIntegrationID = 'conax';
  * }
  * ```
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface ConaxDRMConfiguration extends DRMConfiguration {
@@ -9874,12 +10514,16 @@ interface ConaxDRMConfiguration extends DRMConfiguration {
 /**
  * The identifier of the DRM Today integration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 type DRMTodayIntegrationID = 'drmtoday';
 /**
  * Describes the configuration of the DRM Today DRM integration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface DRMTodayDRMConfiguration extends DRMConfiguration {
@@ -9920,12 +10564,16 @@ interface DRMTodayDRMConfiguration extends DRMConfiguration {
 /**
  * The identifier of the ExpressPlay integration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 type ExpressPlayIntegrationID = 'expressplay';
 /**
  * Describes the configuration of the ExpressPlay DRM integration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface ExpressPlayDRMConfiguration extends DRMConfiguration {
@@ -9938,6 +10586,8 @@ interface ExpressPlayDRMConfiguration extends DRMConfiguration {
 /**
  * The identifier of the Ezdrm integration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 type EzdrmIntegrationID = 'ezdrm';
@@ -9955,6 +10605,8 @@ type EzdrmIntegrationID = 'ezdrm';
  * }
  * ```
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface EzdrmDRMConfiguration extends DRMConfiguration {
@@ -9967,6 +10619,8 @@ interface EzdrmDRMConfiguration extends DRMConfiguration {
 /**
  * The identifier of the Irdeto integration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 type IrdetoIntegrationID = 'irdeto';
@@ -9989,6 +10643,8 @@ type IrdetoIntegrationID = 'irdeto';
  * }
  * ```
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface IrdetoDRMConfiguration extends DRMConfiguration {
@@ -10046,6 +10702,8 @@ interface IrdetoDRMConfiguration extends DRMConfiguration {
 /**
  * The identifier of the KeyOS integration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 type KeyOSIntegrationID = 'keyos';
@@ -10074,6 +10732,8 @@ type KeyOSIntegrationID = 'keyos';
  * }
  * ```
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface KeyOSDRMConfiguration extends DRMConfiguration {
@@ -10106,6 +10766,8 @@ interface KeyOSDRMConfiguration extends DRMConfiguration {
 /**
  * Describes the KeyOS key system configuration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface KeyOSKeySystemConfiguration extends KeySystemConfiguration {
@@ -10117,6 +10779,8 @@ interface KeyOSKeySystemConfiguration extends KeySystemConfiguration {
 /**
  * Describes the KeyOS FairPlay key system configuration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface KeyOSFairplayKeySystemConfiguration extends FairPlayKeySystemConfiguration {
@@ -10129,6 +10793,8 @@ interface KeyOSFairplayKeySystemConfiguration extends FairPlayKeySystemConfigura
 /**
  * The identifier of the Titanium integration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 type TitaniumIntegrationID = 'titanium';
@@ -10152,6 +10818,8 @@ type TitaniumIntegrationID = 'titanium';
  * }
  * ```
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface TitaniumDRMConfiguration extends DRMConfiguration {
@@ -10210,6 +10878,8 @@ interface TitaniumDRMConfiguration extends DRMConfiguration {
 /**
  * Describes the configuration of the Titanium DRM integration with device-based authentication.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface DeviceBasedTitaniumDRMConfiguration extends TitaniumDRMConfiguration {
@@ -10240,6 +10910,8 @@ interface DeviceBasedTitaniumDRMConfiguration extends TitaniumDRMConfiguration {
 /**
  * Describes the configuration of the Titanium DRM integration with token-based authentication.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface TokenBasedTitaniumDRMConfiguration extends TitaniumDRMConfiguration {
@@ -10271,6 +10943,8 @@ interface TokenBasedTitaniumDRMConfiguration extends TitaniumDRMConfiguration {
 /**
  * The identifier of the Uplynk integration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 type UplynkIntegrationID = 'uplynk';
@@ -10287,6 +10961,8 @@ type UplynkIntegrationID = 'uplynk';
  * }
  * ```
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface UplynkDRMConfiguration extends DRMConfiguration {
@@ -10299,6 +10975,8 @@ interface UplynkDRMConfiguration extends DRMConfiguration {
 /**
  * The identifier of the Verimatrix integration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 type VerimatrixIntegrationID = 'verimatrix';
@@ -10316,6 +10994,8 @@ type VerimatrixIntegrationID = 'verimatrix';
  * }
  * ```
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface VerimatrixDRMConfiguration extends DRMConfiguration {
@@ -10328,12 +11008,16 @@ interface VerimatrixDRMConfiguration extends DRMConfiguration {
 /**
  * The identifier of the Vimond integration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 type VimondIntegrationID = 'vimond';
 /**
  * Describes the configuration of the Vimond DRM integration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface VimondDRMConfiguration extends DRMConfiguration {
@@ -10346,6 +11030,8 @@ interface VimondDRMConfiguration extends DRMConfiguration {
 /**
  * The identifier of the Vudrm integration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 type VudrmIntegrationID = 'vudrm';
@@ -10366,6 +11052,8 @@ type VudrmIntegrationID = 'vudrm';
  * }
  * ```
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface VudrmDRMConfiguration extends DRMConfiguration {
@@ -10389,6 +11077,8 @@ interface VudrmDRMConfiguration extends DRMConfiguration {
 /**
  * The identifier of the Xstream integration.
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 type XstreamIntegrationID = 'xstream';
@@ -10408,6 +11098,8 @@ type XstreamIntegrationID = 'xstream';
  * }
  * ```
  *
+ * @category Source
+ * @category Content Protection
  * @public
  */
 interface XstreamDRMConfiguration extends DRMConfiguration {
@@ -10432,6 +11124,8 @@ interface XstreamDRMConfiguration extends DRMConfiguration {
 /**
  * Represents a source for the MediaTailor integration.
  *
+ * @category Source
+ * @category Analytics
  * @public
  */
 interface MediaTailorSource extends TypedSource {
@@ -10449,6 +11143,7 @@ interface MediaTailorSource extends TypedSource {
 /**
  * Represents a cue of a HLS date range metadata text track.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface DateRangeCue extends TextTrackCue {
@@ -10509,6 +11204,7 @@ interface DateRangeCue extends TextTrackCue {
 /**
  * Represents a cue of an emsg metadata text track.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface EmsgCue extends TextTrackCue {
@@ -10532,6 +11228,7 @@ interface EmsgCue extends TextTrackCue {
 /**
  * Represents a cue of an Event Stream metadata text track.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface EventStreamCue extends TextTrackCue {
@@ -10553,6 +11250,7 @@ interface EventStreamCue extends TextTrackCue {
 /**
  * Represents a generic ID3 frame.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface ID3BaseFrame {
@@ -10567,6 +11265,7 @@ interface ID3BaseFrame {
 /**
  * Represents an unknown ID3 frame.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface ID3Unknown extends ID3BaseFrame {
@@ -10578,6 +11277,7 @@ interface ID3Unknown extends ID3BaseFrame {
 /**
  * Represents an attached picture ID3 frame.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface ID3AttachedPicture extends ID3BaseFrame {
@@ -10611,6 +11311,7 @@ interface ID3AttachedPicture extends ID3BaseFrame {
 /**
  * Represents a comments ID3 frame.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface ID3Comments extends ID3BaseFrame {
@@ -10634,6 +11335,7 @@ interface ID3Comments extends ID3BaseFrame {
 /**
  * Represents a commercial ID3 frame.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface ID3CommercialFrame extends ID3BaseFrame {
@@ -10693,6 +11395,7 @@ interface ID3CommercialFrame extends ID3BaseFrame {
 /**
  * Represents a general encapsulated object ID3 frame.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface ID3GenericEncapsulatedObject extends ID3BaseFrame {
@@ -10720,6 +11423,7 @@ interface ID3GenericEncapsulatedObject extends ID3BaseFrame {
 /**
  * Represents an involved people list ID3 frame.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface ID3InvolvedPeopleList extends ID3BaseFrame {
@@ -10738,6 +11442,7 @@ interface ID3InvolvedPeopleList extends ID3BaseFrame {
 /**
  * Represents a private ID3 frame.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface ID3PrivateFrame extends ID3BaseFrame {
@@ -10757,6 +11462,7 @@ interface ID3PrivateFrame extends ID3BaseFrame {
 /**
  * Represents an position synchronisation ID3 frame.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface ID3PositionSynchronisationFrame extends ID3BaseFrame {
@@ -10778,6 +11484,7 @@ interface ID3PositionSynchronisationFrame extends ID3BaseFrame {
 /**
  * Represents a synchronised lyrics/text ID3 frame.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface ID3SynchronizedLyricsText extends ID3BaseFrame {
@@ -10823,6 +11530,7 @@ interface ID3SynchronizedLyricsText extends ID3BaseFrame {
 /**
  * Represents a text information ID3 frame.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface ID3Text extends ID3BaseFrame {
@@ -10841,6 +11549,7 @@ interface ID3Text extends ID3BaseFrame {
 /**
  * Represents a used defined text ID3 frame.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface ID3UserDefinedText extends ID3BaseFrame {
@@ -10860,6 +11569,7 @@ interface ID3UserDefinedText extends ID3BaseFrame {
 /**
  * Represents a unique file identifier ID3 frame.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface ID3UniqueFileIdentifier extends ID3BaseFrame {
@@ -10879,6 +11589,7 @@ interface ID3UniqueFileIdentifier extends ID3BaseFrame {
 /**
  * Represents a terms of use ID3 frame.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface ID3TermsOfUse extends ID3BaseFrame {
@@ -10898,6 +11609,7 @@ interface ID3TermsOfUse extends ID3BaseFrame {
 /**
  * Represents a unsynchronised lyrics/text transcription ID3 frame.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface ID3UnsynchronisedLyricsTextTranscription extends ID3BaseFrame {
@@ -10921,6 +11633,7 @@ interface ID3UnsynchronisedLyricsTextTranscription extends ID3BaseFrame {
 /**
  * Represents a URL link ID3 frame.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface ID3UrlLink extends ID3BaseFrame {
@@ -10939,6 +11652,7 @@ interface ID3UrlLink extends ID3BaseFrame {
 /**
  * Represents a user defined URL link ID3 frame.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface ID3UserDefinedUrlLink extends ID3BaseFrame {
@@ -10976,12 +11690,16 @@ interface ID3UserDefinedUrlLink extends ID3BaseFrame {
  * };
  * ```
  *
+ * @category Media and Text Tracks
+ * @category SSAI
  * @public
  */
 type YospaceId = 'YMID' | 'YTYP' | 'YSEQ' | 'YDUR' | 'YCSP';
 /**
  * Represents a Yospace ID3 frame.
  *
+ * @category Media and Text Tracks
+ * @category SSAI
  * @public
  */
 interface ID3Yospace extends ID3BaseFrame {
@@ -10997,6 +11715,7 @@ interface ID3Yospace extends ID3BaseFrame {
 /**
  * The possible types of an ID3 frame.
  *
+ * @category Media and Text Tracks
  * @public
  */
 type ID3Frame = ID3Unknown | ID3AttachedPicture | ID3GenericEncapsulatedObject | ID3Comments | ID3CommercialFrame | ID3InvolvedPeopleList | ID3PositionSynchronisationFrame | ID3PrivateFrame | ID3SynchronizedLyricsText | ID3Text | ID3UserDefinedText | ID3UniqueFileIdentifier | ID3TermsOfUse | ID3UnsynchronisedLyricsTextTranscription | ID3UrlLink | ID3UserDefinedUrlLink | ID3Yospace;
@@ -11004,6 +11723,7 @@ type ID3Frame = ID3Unknown | ID3AttachedPicture | ID3GenericEncapsulatedObject |
 /**
  * Represents a cue of an ID3 metadata text track.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface ID3Cue extends TextTrackCue {
@@ -11018,12 +11738,14 @@ interface ID3Cue extends TextTrackCue {
  * <br/> - `''`: None. Cues in the region stay fixed at the location they were first painted in.
  * <br/> - `'up'`: Up. Cues in the region will be added at the bottom of the region and push any already displayed cues in the region up until all lines of the new cue are visible in the region.
  *
+ * @category Media and Text Tracks
  * @public
  */
 type VTTScrollSetting = '' | /* none */ 'up';
 /**
  * Represents a WebVTT region.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface WebVTTRegion {
@@ -11073,6 +11795,7 @@ interface WebVTTRegion {
  * <br/> - `'rl'`: Vertical right-to-left. A line extends vertically and is offset horizontally from the video viewport’s right edge, with consecutive lines displayed to the left of each other.
  * <br/> - `'lr'`: vertical left-to-right. A line extends vertically and is offset horizontally from the video viewport’s left edge, with consecutive lines displayed to the right of each other.
  *
+ * @category Media and Text Tracks
  * @public
  */
 type VTTDirectionSetting = '' | 'rl' | 'lr';
@@ -11082,6 +11805,7 @@ type VTTDirectionSetting = '' | 'rl' | 'lr';
  * <br/> - `'center'`: The cue box's center is aligned at a specified line.
  * <br/> - `'end'`: The cue box's end is aligned at a specified line.
  *
+ * @category Media and Text Tracks
  * @public
  */
 type VTTLineAlignSetting = 'start' | 'center' | 'end';
@@ -11093,6 +11817,7 @@ type VTTLineAlignSetting = 'start' | 'center' | 'end';
  * <br/> - `'left'`: The text of each line is aligned to the box’s left side for horizontal cues, or top side otherwise.
  * <br/> - `'right'`: The text of each line is aligned to the box’s right side for horizontal cues, or bottom side otherwise.
  *
+ * @category Media and Text Tracks
  * @public
  */
 type VTTAlignSetting = 'start' | 'center' | 'end' | 'left' | 'right';
@@ -11103,6 +11828,7 @@ type VTTAlignSetting = 'start' | 'center' | 'end' | 'left' | 'right';
  * <br/> - `'line-right'`: The cue box's end is aligned at a specified position.
  * <br/> - `'auto'`: The cue box's alignment is dependent on its text alignment setting.
  *
+ * @category Media and Text Tracks
  * @public
  */
 type VTTPositionAlignSetting = 'line-left' | 'center' | 'line-right' | 'auto';
@@ -11114,6 +11840,7 @@ type VTTPositionAlignSetting = 'line-left' | 'center' | 'line-right' | 'auto';
  * @remarks
  * <br/> - The semantics of the `number` variant are dependent on {@link WebVTTCue.snapToLines}.
  *
+ * @category Media and Text Tracks
  * @public
  */
 type VTTLine = number | 'auto';
@@ -11122,12 +11849,14 @@ type VTTLine = number | 'auto';
  * <br/> - a number: The position is expressed as a percentage value.
  * <br/> - `'auto'`: The position depends on the text alignment of the cue.
  *
+ * @category Media and Text Tracks
  * @public
  */
 type VTTPosition = number | 'auto';
 /**
  * Represents a cue of a {@link https://www.w3.org/TR/webvtt1/ | WebVTT} text track.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface WebVTTCue extends TextTrackCue {
@@ -11187,12 +11916,14 @@ interface WebVTTCue extends TextTrackCue {
  * Record of style properties.
  * Each entry contains the style property name with associated value.
  *
+ * @category Media and Text Tracks
  * @public
  */
 type StylePropertyRecord = Record<string, string>;
 /**
  * Represents a cue of a TTML text track.
  *
+ * @category Media and Text Tracks
  * @public
  */
 interface TTMLCue extends TextTrackCue {
@@ -11220,6 +11951,7 @@ interface TTMLCue extends TextTrackCue {
 }
 
 /**
+ * @category HESP
  * @public
  */
 type HespMediaType = 'audio' | 'video' | 'metadata';
@@ -11227,6 +11959,7 @@ type HespMediaType = 'audio' | 'video' | 'metadata';
 /**
  * The identifier of the Agama integration.
  *
+ * @category Analytics
  * @public
  */
 type AgamaAnalyticsIntegrationID = 'agama';
@@ -11238,12 +11971,14 @@ type AgamaAnalyticsIntegrationID = 'agama';
  * <br/> - `'error'`
  * <br/> - `'fatal'`
  *
+ * @category Analytics
  * @public
  */
 type AgamaLogLevelType = 'info' | 'debug' | 'warning' | 'error' | 'fatal';
 /**
  * Describes the configuration of Agama.
  *
+ * @category Analytics
  * @public
  */
 interface AgamaConfiguration extends AnalyticsDescription {
@@ -11258,6 +11993,7 @@ interface AgamaConfiguration extends AnalyticsDescription {
  * @remarks
  * <br/> - Available since v2.45.6.
  *
+ * @category Analytics
  * @public
  */
 interface AgamaPlayerConfiguration extends AgamaConfiguration {
@@ -11367,6 +12103,7 @@ interface AgamaPlayerConfiguration extends AgamaConfiguration {
  * <br/> - `'live'`
  * <br/> - `'vod'`
  *
+ * @category Analytics
  * @public
  */
 type AgamaStreamType = 'live' | 'vod';
@@ -11379,6 +12116,7 @@ type AgamaStreamType = 'live' | 'vod';
  * <br/> - `'avod'`
  * <br/> - `'catchuptv'`
  *
+ * @category Analytics
  * @public
  */
 type AgamaServiceName = 'live' | 'svod' | 'nvod' | 'tvod' | 'avod' | 'catchuptv';
@@ -11389,6 +12127,7 @@ type AgamaServiceName = 'live' | 'svod' | 'nvod' | 'tvod' | 'avod' | 'catchuptv'
  * <br/> - Available since v2.45.6.
  * <br/> - Overrides the {@link AgamaPlayerConfiguration}.
  *
+ * @category Analytics
  * @public
  */
 interface AgamaSourceConfiguration extends AgamaConfiguration {
@@ -11447,6 +12186,7 @@ interface AgamaSourceConfiguration extends AgamaConfiguration {
 /**
  * The identifier of the Moat integration.
  *
+ * @category Analytics
  * @public
  */
 type MoatAnalyticsIntegrationID = 'moat';
@@ -11456,6 +12196,7 @@ type MoatAnalyticsIntegrationID = 'moat';
  * @remarks
  * <br/> - Available since v2.27.0.
  *
+ * @category Analytics
  * @public
  */
 interface MoatConfiguration extends AnalyticsDescription {
@@ -11472,6 +12213,7 @@ interface MoatConfiguration extends AnalyticsDescription {
 /**
  * Describes the configuration of the Media Melon integration.
  *
+ * @category Analytics
  * @public
  */
 interface MediaMelonConfiguration {
@@ -11509,6 +12251,7 @@ interface MediaMelonConfiguration {
 /**
  * The identifier of the Media Melon SmartSight integration.
  *
+ * @category Analytics
  * @public
  */
 type SmartSightIntegrationID = 'smartsight';
@@ -11518,6 +12261,7 @@ type SmartSightIntegrationID = 'smartsight';
  * @remarks
  * <br/> - Available since v2.33.2.
  *
+ * @category Analytics
  * @public
  */
 interface SmartSightConfiguration extends AnalyticsDescription, MediaMelonConfiguration {
@@ -11530,6 +12274,7 @@ interface SmartSightConfiguration extends AnalyticsDescription, MediaMelonConfig
 /**
  * The identifier of the Stream One integration.
  *
+ * @category Analytics
  * @public
  */
 type StreamOneAnalyticsIntegrationID = 'streamone';
@@ -11539,6 +12284,7 @@ type StreamOneAnalyticsIntegrationID = 'streamone';
  * @remarks
  * <br/> - Available since v2.32.0.
  *
+ * @category Analytics
  * @public
  */
 interface StreamOneConfiguration extends AnalyticsDescription {
@@ -11563,6 +12309,7 @@ interface StreamOneConfiguration extends AnalyticsDescription {
 /**
  * The identifier of the Youbora integration.
  *
+ * @category Analytics
  * @public
  */
 type YouboraAnalyticsIntegrationID = 'youbora';
@@ -11585,6 +12332,7 @@ type YouboraAnalyticsIntegrationID = 'youbora';
  *
  * Available since v2.21.2.
  *
+ * @category Analytics
  * @public
  */
 interface YouboraOptions extends AnalyticsDescription {
@@ -11601,6 +12349,7 @@ interface YouboraOptions extends AnalyticsDescription {
 }
 
 /**
+ * @category Multi-view
  * @public
  */
 declare enum MultiViewPlayerLayout {
@@ -11611,6 +12360,7 @@ declare enum MultiViewPlayerLayout {
 /**
  * The View API
  *
+ * @category Multi-view
  * @public
  */
 interface View {
@@ -11692,6 +12442,7 @@ interface View {
 /**
  * The MultiViewPlayer API
  *
+ * @category Multi-view
  * @public
  */
 interface MultiViewPlayerEventMap {
@@ -11836,9 +12587,11 @@ interface MultiViewPlayerEventMap {
  *
  * @remarks
  * <br/> - Available since v4.3.0
- * <br/> - Only available with the feature `'multiviewplayer'`.
+ * <br/> - Only available with the feature `'multiview'`.
  * <br/> - Only supported on modern browsers such as evergreen Chrome, Firefox and Safari. Not supported on Internet Explorer.
  *
+ * @category API
+ * @category Multi-view
  * @public
  */
 declare class MultiViewPlayer implements EventDispatcher<MultiViewPlayerEventMap> {
@@ -11979,6 +12732,8 @@ declare class MultiViewPlayer implements EventDispatcher<MultiViewPlayerEventMap
 /**
  * Fired when a new {@link View} has been added to the {@link MultiViewPlayer}.
  *
+ * @category Multi-view
+ * @category Events
  * @public
  */
 interface AddViewEvent extends Event<'addview'> {
@@ -11990,6 +12745,8 @@ interface AddViewEvent extends Event<'addview'> {
 /**
  * Fired when a {@link View} has been removed from the {@link MultiViewPlayer}.
  *
+ * @category Multi-view
+ * @category Events
  * @public
  */
 interface RemoveViewEvent extends Event<'removeview'> {
@@ -12001,6 +12758,8 @@ interface RemoveViewEvent extends Event<'removeview'> {
 /**
  * Fired when a view's {@link View.enabled | enabled} changes.
  *
+ * @category Multi-view
+ * @category Events
  * @public
  */
 interface ViewChangeEvent extends Event<'viewchange'> {
@@ -12012,6 +12771,8 @@ interface ViewChangeEvent extends Event<'viewchange'> {
 /**
  * Fired when a {@link View} has swapped positions in the list.
  *
+ * @category Multi-view
+ * @category Events
  * @public
  */
 interface ViewPositionChangeEvent extends Event<'viewpositionchange'> {
@@ -12027,6 +12788,8 @@ interface ViewPositionChangeEvent extends Event<'viewpositionchange'> {
 /**
  * Fired when {@link MultiViewPlayer.layout} changes.
  *
+ * @category Multi-view
+ * @category Events
  * @public
  */
 interface LayoutChangeEvent extends Event<'layoutchange'> {
@@ -12039,12 +12802,14 @@ interface LayoutChangeEvent extends Event<'layoutchange'> {
 /**
  * The version of the THEOplayer SDK.
  *
+ * @category API
  * @public
  */
 declare const version: string;
 /**
  * The player suite version of the THEOplayer SDK.
  *
+ * @category API
  * @public
  * @deprecated Use {@link version | THEOplayer.version} instead.
  */
@@ -12052,24 +12817,30 @@ declare const playerSuiteVersion: string;
 /**
  * The features included in the THEOplayer SDK.
  *
+ * @category API
  * @public
  */
-declare const features: string;
+declare const features: readonly string[];
 /**
  * List of players.
  *
+ * @category API
  * @public
  */
 declare const players: PlayerList;
 /**
  * The global cast API.
  *
+ * @category API
+ * @category Casting
  * @public
  */
 declare const cast: GlobalCast;
 /**
  * The global cache API.
  *
+ * @category API
+ * @category Caching
  * @public
  */
 declare const cache: Cache;
@@ -12088,13 +12859,17 @@ declare const cache: Cache;
  * {@link ContentProtectionIntegration} based on the {@link DRMConfiguration}. This {@link ContentProtectionIntegration} allows for altering license
  * and certificate requests and responses.
  *
+ * @category API
+ * @category Content Protection
  * @public
  */
 declare function registerContentProtectionIntegration(integrationId: string, keySystem: KeySystemId, integrationFactory: ContentProtectionIntegrationFactory): void;
 /**
  * Utils that serve common use cases. For example encoding and decoding a base64 string to Uint8Array and vice versa.
+ *
+ * @category API
  * @public
  */
 declare const utils: CommonUtils;
 
-export { ABRConfiguration, ABRMetadata, ABRStrategy, ABRStrategyConfiguration, ABRStrategyType, AES128KeySystemConfiguration, AccessibilityRole, Ad, AdBreak, AdBreakEvent, AdBufferingEvent, AdDescription, AdEvent, AdIntegrationKind, AdMetadataEvent, AdPreloadType, AdReadyState, AdSkipEvent, AdSource, AdSourceType, AddCachingTaskEvent, AddTrackEvent, AddViewEvent, Ads, AdsConfiguration, AdsEventMap, AgamaAnalyticsIntegrationID, AgamaConfiguration, AgamaLogLevelType, AgamaPlayerConfiguration, AgamaServiceName, AgamaSourceConfiguration, AgamaStreamType, AirPlay, Analytics, AnalyticsDescription, AnalyticsIntegrationID, AudioQuality, AxinomDRMConfiguration, AxinomIntegrationID, AzureDRMConfiguration, AzureIntegrationID, Base64Util, BaseSource, Boundary, BoundaryC3, BoundaryC7, BoundaryHalftime, BoundaryInfo, BufferSource, BufferedSegments, Cache, CacheEventMap, CacheStatus, CacheTaskStatus, CachingTask, CachingTaskEventMap, CachingTaskLicense, CachingTaskList, CachingTaskListEventMap, CachingTaskParameters, CanPlayEvent, CanPlayThroughEvent, Canvas, Cast, CastConfiguration, CastEventMap, CastState, CastStateChangeEvent, CertificateRequest, CertificateResponse, Chromecast, ChromecastConfiguration, ChromecastConnectionCallback, ChromecastError, ChromecastErrorCode, ChromecastErrorEvent, ChromecastEventMap, ChromecastMetadataDescription, ChromecastMetadataImage, ChromecastMetadataType, ChromelessPlayer, ClearkeyDecryptionKey, ClearkeyKeySystemConfiguration, Clip, ClipEventMap, ComcastDRMConfiguration, ComcastIntegrationID, CommonUtils, CompanionAd, ConaxDRMConfiguration, ConaxIntegrationID, ContentProtectionError, ContentProtectionErrorCode, ContentProtectionErrorEvent, ContentProtectionIntegration, ContentProtectionIntegrationFactory, ContentProtectionRequest, ContentProtectionRequestSubType, ContentProtectionResponse, Conviva, ConvivaAnalyticsIntegrationID, ConvivaConfiguration, ConvivaContentMetadata, CrossOriginSetting, CurrentSourceChangeEvent, DAIAvailabilityType, DRMConfiguration, DRMTodayDRMConfiguration, DRMTodayIntegrationID, DashPlaybackConfiguration, DateRangeCue, DeliveryType, DeviceBasedTitaniumDRMConfiguration, DimensionChangeEvent, DirectionChangeEvent, DurationChangeEvent, EdgeStyle, EmptiedEvent, EmsgCue, EncryptedEvent, EndedEvent, ErrorCategory, ErrorCode, ErrorEvent, Event, EventDispatcher, EventListener, EventMap, EventStreamCue, EventedList, ExpressPlayDRMConfiguration, ExpressPlayIntegrationID, EzdrmDRMConfiguration, EzdrmIntegrationID, FairPlayKeySystemConfiguration, FreeWheelAdDescription, FreeWheelAdUnitType, FreeWheelCue, FullscreenOptions$1 as FullscreenOptions, Geo, GlobalCast, GlobalChromecast, GoogleDAI, GoogleDAIConfiguration, GoogleDAILiveConfiguration, GoogleDAISSAIIntegrationID, GoogleDAITypedSource, GoogleDAIVodConfiguration, GoogleImaAd, GoogleImaConfiguration, HTTPHeaders, HespApi, HespApiEventMap, HespLatencyConfiguration, HespMediaType, HespSourceConfiguration, HespTypedSource, HlsDiscontinuityAlignment, HlsPlaybackConfiguration, ID3AttachedPicture, ID3BaseFrame, ID3Comments, ID3CommercialFrame, ID3Cue, ID3Frame, ID3GenericEncapsulatedObject, ID3InvolvedPeopleList, ID3PositionSynchronisationFrame, ID3PrivateFrame, ID3SynchronizedLyricsText, ID3TermsOfUse, ID3Text, ID3UniqueFileIdentifier, ID3Unknown, ID3UnsynchronisedLyricsTextTranscription, ID3UrlLink, ID3UserDefinedText, ID3UserDefinedUrlLink, ID3Yospace, IMAAdDescription, Imagine, ImagineEventMap, ImagineSSAIIntegrationID, ImagineServerSideAdInsertionConfiguration, ImagineTrackingEvent, ImagineTypedSource, InterceptableRequest, InterceptableResponse, IrdetoDRMConfiguration, IrdetoIntegrationID, JoinStrategy, KeyOSDRMConfiguration, KeyOSFairplayKeySystemConfiguration, KeyOSIntegrationID, KeyOSKeySystemConfiguration, KeySystemConfiguration, KeySystemId, Latencies, LatencyConfiguration, LatencyManager, LayoutChangeEvent, LicenseRequest, LicenseResponse, LicenseType, LinearAd, List, LoadedDataEvent, LoadedMetadataEvent, MaybeAsync, MeasurableNetworkEstimator, MediaError, MediaErrorCode, MediaFile, MediaMelonConfiguration, MediaTailorSource, MediaTrack, MediaTrackEventMap, MediaTrackList, MediaType, MetadataDescription, Metrics, MoatAnalyticsIntegrationID, MoatConfiguration, MultiViewPlayer, MultiViewPlayerEventMap, MultiViewPlayerLayout, MutedAutoplayConfiguration, Network, NetworkEstimator, NetworkEstimatorController, NetworkEventMap, NetworkInterceptorController, NodeStyleVoidCallback, NonLinearAd, PauseEvent, PiPConfiguration, PiPPosition, PlayEvent, PlayReadyKeySystemConfiguration, PlayerConfiguration, PlayerEventMap, PlayerList, PlayingEvent, PreloadType, Presentation, PresentationEventMap, PresentationMode, PresentationModeChangeEvent, ProgressEvent, Quality, QualityEvent, QualityEventMap, QualityList, RateChangeEvent, ReadyStateChangeEvent, RelatedChangeEvent, RelatedContent, RelatedContentEventMap, RelatedContentSource, RelatedHideEvent, RelatedShowEvent, RemoveCachingTaskEvent, RemoveTrackEvent, RemoveViewEvent, Representation, RepresentationChangeEvent, Request, RequestBody, RequestInit, RequestInterceptor, RequestLike, RequestMeasurer, RequestMethod, RequestSubType, RequestType, ResponseBody, ResponseInit, ResponseInterceptor, ResponseLike, ResponseType, RetryConfiguration, SSAIIntegrationId, SeamlessPeriodSwitchStrategy, SeamlessSwitchStrategy, SeekedEvent, SeekingEvent, ServerSideAdInsertionConfiguration, SkippedAdStrategy, SmartSightConfiguration, SmartSightIntegrationID, Source, SourceAbrConfiguration, SourceChangeEvent, SourceConfiguration, SourceDescription, SourceIntegrationId, Sources, SpotXAdDescription, SpotxData, SpotxQueryParameter, StateChangeEvent, StereoChangeEvent, StreamOneAnalyticsIntegrationID, StreamOneConfiguration, StreamType, StringKeyOf, StylePropertyRecord, THEOplayerAdDescription, THEOplayerError, TTMLCue, TargetQualityChangedEvent, TextTrack, TextTrackAddCueEvent, TextTrackCue, TextTrackCueChangeEvent, TextTrackCueEnterEvent, TextTrackCueEventMap, TextTrackCueExitEvent, TextTrackCueList, TextTrackCueUpdateEvent, TextTrackDescription, TextTrackEnterCueEvent, TextTrackError, TextTrackErrorCode, TextTrackErrorEvent, TextTrackEventMap, TextTrackExitCueEvent, TextTrackReadyState, TextTrackReadyStateChangeEvent, TextTrackRemoveCueEvent, TextTrackStyle, TextTrackStyleEventMap, TextTrackType, TextTrackTypeChangeEvent, TextTrackUpdateCueEvent, TextTracksList, ThumbnailResolution, TimeRanges, TimeUpdateEvent, TitaniumDRMConfiguration, TitaniumIntegrationID, TokenBasedTitaniumDRMConfiguration, Track, TrackChangeEvent, TrackEventMap, TrackList, TrackListEventMap, TrackUpdateEvent, TypedSource, UIConfiguration, UILanguage, UIPlayerConfiguration, UIRelatedContent, UIRelatedContentEventMap, UniversalAdId, UpdateQualityEvent, UplynkDRMConfiguration, UplynkIntegrationID, UserActions, VPAIDMode, VR, VRConfiguration, VRDirection, VREventMap, VRPanoramaMode, VRPlayerConfiguration, VRState, VRStereoMode, VTTAlignSetting, VTTDirectionSetting, VTTLine, VTTLineAlignSetting, VTTPosition, VTTPositionAlignSetting, VTTScrollSetting, VendorCast, VendorCastEventMap, VerimatrixDRMConfiguration, VerimatrixIntegrationID, VerizonMedia, VerizonMediaAd, VerizonMediaAdBeginEvent, VerizonMediaAdBreak, VerizonMediaAdBreakBeginEvent, VerizonMediaAdBreakEndEvent, VerizonMediaAdBreakEventMap, VerizonMediaAdBreakList, VerizonMediaAdBreakListEventMap, VerizonMediaAdBreakSkipEvent, VerizonMediaAdCompleteEvent, VerizonMediaAdEndEvent, VerizonMediaAdEventMap, VerizonMediaAdFirstQuartileEvent, VerizonMediaAdList, VerizonMediaAdListEventMap, VerizonMediaAdMidpointEvent, VerizonMediaAdThirdQuartileEvent, VerizonMediaAddAdBreakEvent, VerizonMediaAddAssetEvent, VerizonMediaAds, VerizonMediaAsset, VerizonMediaAssetEventMap, VerizonMediaAssetId, VerizonMediaAssetInfoResponse, VerizonMediaAssetInfoResponseEvent, VerizonMediaAssetList, VerizonMediaAssetMovieRating, VerizonMediaAssetTvRating, VerizonMediaAssetType, VerizonMediaConfiguration, VerizonMediaEventMap, VerizonMediaExternalId, VerizonMediaPingConfiguration, VerizonMediaPingErrorEvent, VerizonMediaPingResponse, VerizonMediaPingResponseEvent, VerizonMediaPreplayBaseResponse, VerizonMediaPreplayLiveResponse, VerizonMediaPreplayResponse, VerizonMediaPreplayResponseEvent, VerizonMediaPreplayResponseType, VerizonMediaPreplayVodResponse, VerizonMediaRemoveAdBreakEvent, VerizonMediaRemoveAdEvent, VerizonMediaRemoveAssetEvent, VerizonMediaResponseDrm, VerizonMediaResponseLiveAd, VerizonMediaResponseLiveAdBreak, VerizonMediaResponseLiveAds, VerizonMediaResponseVodAd, VerizonMediaResponseVodAdBreak, VerizonMediaResponseVodAdBreakOffset, VerizonMediaResponseVodAdPlaceholder, VerizonMediaResponseVodAds, VerizonMediaSource, VerizonMediaUiConfiguration, VerizonMediaUpdateAdBreakEvent, VideoFrameCallbackMetadata, VideoFrameRequestCallback, VideoQuality, View, ViewChangeEvent, ViewPositionChangeEvent, VimondDRMConfiguration, VimondIntegrationID, Visibility, VisibilityObserver, VisibilityObserverCallback, VoidPromiseCallback, VolumeChangeEvent, VudrmDRMConfiguration, VudrmIntegrationID, WaitUntilCallback, WaitingEvent, WebAudio, WebVTTCue, WebVTTRegion, WidevineKeySystemConfiguration, XstreamDRMConfiguration, XstreamIntegrationID, Yospace, YospaceCallbackObject, YospaceEventMap, YospaceId, YospaceSSAIIntegrationID, YospaceServerSideAdInsertionConfiguration, YospaceStreamType, YospaceTypedSource, YouboraAnalyticsIntegrationID, YouboraOptions, cache, cast, features, playerSuiteVersion, players, registerContentProtectionIntegration, utils, version };
+export { ABRConfiguration, ABRMetadata, ABRStrategy, ABRStrategyConfiguration, ABRStrategyType, AES128KeySystemConfiguration, AccessibilityRole, Ad, AdBreak, AdBreakEvent, AdBufferingEvent, AdDescription, AdEvent, AdIntegrationKind, AdMetadataEvent, AdPreloadType, AdReadyState, AdSkipEvent, AdSource, AdSourceType, AddCachingTaskEvent, AddTrackEvent, AddViewEvent, Ads, AdsConfiguration, AdsEventMap, AgamaAnalyticsIntegrationID, AgamaConfiguration, AgamaLogLevelType, AgamaPlayerConfiguration, AgamaServiceName, AgamaSourceConfiguration, AgamaStreamType, AirPlay, Analytics, AnalyticsDescription, AnalyticsIntegrationID, AudioQuality, AxinomDRMConfiguration, AxinomIntegrationID, AzureDRMConfiguration, AzureIntegrationID, Base64Util, BaseSource, Boundary, BoundaryC3, BoundaryC7, BoundaryHalftime, BoundaryInfo, BufferSource, BufferedSegments, Cache, CacheEventMap, CacheStatus, CacheTaskStatus, CachingTask, CachingTaskEventMap, CachingTaskLicense, CachingTaskList, CachingTaskListEventMap, CachingTaskParameters, CanPlayEvent, CanPlayThroughEvent, Canvas, Cast, CastConfiguration, CastEventMap, CastState, CastStateChangeEvent, CertificateRequest, CertificateResponse, Chromecast, ChromecastConfiguration, ChromecastConnectionCallback, ChromecastError, ChromecastErrorCode, ChromecastErrorEvent, ChromecastEventMap, ChromecastMetadataDescription, ChromecastMetadataImage, ChromecastMetadataType, ChromelessPlayer, ClearkeyDecryptionKey, ClearkeyKeySystemConfiguration, Clip, ClipEventMap, ComcastDRMConfiguration, ComcastIntegrationID, CommonUtils, CompanionAd, ConaxDRMConfiguration, ConaxIntegrationID, ContentProtectionError, ContentProtectionErrorCode, ContentProtectionErrorEvent, ContentProtectionIntegration, ContentProtectionIntegrationFactory, ContentProtectionRequest, ContentProtectionRequestSubType, ContentProtectionResponse, Conviva, ConvivaAnalyticsIntegrationID, ConvivaConfiguration, ConvivaContentMetadata, CrossOriginSetting, CurrentSourceChangeEvent, DAIAvailabilityType, DRMConfiguration, DRMTodayDRMConfiguration, DRMTodayIntegrationID, DashPlaybackConfiguration, DateRangeCue, DeliveryType, DeviceBasedTitaniumDRMConfiguration, DimensionChangeEvent, DirectionChangeEvent, DurationChangeEvent, EdgeStyle, EmptiedEvent, EmsgCue, EncryptedEvent, EndedEvent, EnterBadNetworkModeEvent, ErrorCategory, ErrorCode, ErrorEvent, Event, EventDispatcher, EventListener, EventMap, EventStreamCue, EventedList, ExitBadNetworkModeEvent, ExpressPlayDRMConfiguration, ExpressPlayIntegrationID, EzdrmDRMConfiguration, EzdrmIntegrationID, FairPlayKeySystemConfiguration, FreeWheelAdDescription, FreeWheelAdUnitType, FreeWheelCue, FullscreenOptions$1 as FullscreenOptions, Geo, GlobalCast, GlobalChromecast, GoogleDAI, GoogleDAIConfiguration, GoogleDAILiveConfiguration, GoogleDAISSAIIntegrationID, GoogleDAITypedSource, GoogleDAIVodConfiguration, GoogleImaAd, GoogleImaConfiguration, HTTPHeaders, HespApi, HespApiEventMap, HespLatencyConfiguration, HespMediaType, HespSourceConfiguration, HespTypedSource, HlsDiscontinuityAlignment, HlsPlaybackConfiguration, ID3AttachedPicture, ID3BaseFrame, ID3Comments, ID3CommercialFrame, ID3Cue, ID3Frame, ID3GenericEncapsulatedObject, ID3InvolvedPeopleList, ID3PositionSynchronisationFrame, ID3PrivateFrame, ID3SynchronizedLyricsText, ID3TermsOfUse, ID3Text, ID3UniqueFileIdentifier, ID3Unknown, ID3UnsynchronisedLyricsTextTranscription, ID3UrlLink, ID3UserDefinedText, ID3UserDefinedUrlLink, ID3Yospace, IMAAdDescription, Imagine, ImagineEventMap, ImagineSSAIIntegrationID, ImagineServerSideAdInsertionConfiguration, ImagineTrackingEvent, ImagineTypedSource, IntentToFallbackEvent, InterceptableRequest, InterceptableResponse, IrdetoDRMConfiguration, IrdetoIntegrationID, JoinStrategy, KeyOSDRMConfiguration, KeyOSFairplayKeySystemConfiguration, KeyOSIntegrationID, KeyOSKeySystemConfiguration, KeySystemConfiguration, KeySystemId, Latencies, LatencyConfiguration, LatencyManager, LayoutChangeEvent, LicenseRequest, LicenseResponse, LicenseType, LinearAd, List, LoadedDataEvent, LoadedMetadataEvent, MaybeAsync, MeasurableNetworkEstimator, MediaError, MediaErrorCode, MediaFile, MediaMelonConfiguration, MediaTailorSource, MediaTrack, MediaTrackEventMap, MediaTrackList, MediaType, MetadataDescription, Metrics, MoatAnalyticsIntegrationID, MoatConfiguration, MultiViewPlayer, MultiViewPlayerEventMap, MultiViewPlayerLayout, MutedAutoplayConfiguration, Network, NetworkEstimator, NetworkEstimatorController, NetworkEventMap, NetworkInterceptorController, NodeStyleVoidCallback, NonLinearAd, PauseEvent, PiPConfiguration, PiPPosition, PlayEvent, PlayReadyKeySystemConfiguration, PlayerConfiguration, PlayerEventMap, PlayerList, PlayingEvent, PreloadType, Presentation, PresentationEventMap, PresentationMode, PresentationModeChangeEvent, ProgressEvent, PublicationLoadStartEvent, PublicationLoadedEvent, PublicationOfflineEvent, Quality, QualityEvent, QualityEventMap, QualityList, RateChangeEvent, ReadyStateChangeEvent, RelatedChangeEvent, RelatedContent, RelatedContentEventMap, RelatedContentSource, RelatedHideEvent, RelatedShowEvent, RemoveCachingTaskEvent, RemoveTrackEvent, RemoveViewEvent, Representation, RepresentationChangeEvent, Request, RequestBody, RequestInit, RequestInterceptor, RequestLike, RequestMeasurer, RequestMethod, RequestSubType, RequestType, ResponseBody, ResponseInit, ResponseInterceptor, ResponseLike, ResponseType, RetryConfiguration, SSAIIntegrationId, SeamlessPeriodSwitchStrategy, SeamlessSwitchStrategy, SeekedEvent, SeekingEvent, ServerSideAdInsertionConfiguration, SkippedAdStrategy, SmartSightConfiguration, SmartSightIntegrationID, Source, SourceAbrConfiguration, SourceChangeEvent, SourceConfiguration, SourceDescription, SourceIntegrationId, Sources, SpotXAdDescription, SpotxData, SpotxQueryParameter, StateChangeEvent, StereoChangeEvent, StreamOneAnalyticsIntegrationID, StreamOneConfiguration, StreamType, StringKeyOf, StylePropertyRecord, THEOplayerAdDescription, THEOplayerError, TTMLCue, TargetQualityChangedEvent, TextTrack, TextTrackAddCueEvent, TextTrackCue, TextTrackCueChangeEvent, TextTrackCueEnterEvent, TextTrackCueEventMap, TextTrackCueExitEvent, TextTrackCueList, TextTrackCueUpdateEvent, TextTrackDescription, TextTrackEnterCueEvent, TextTrackError, TextTrackErrorCode, TextTrackErrorEvent, TextTrackEventMap, TextTrackExitCueEvent, TextTrackReadyState, TextTrackReadyStateChangeEvent, TextTrackRemoveCueEvent, TextTrackStyle, TextTrackStyleEventMap, TextTrackType, TextTrackTypeChangeEvent, TextTrackUpdateCueEvent, TextTracksList, TheoLiveApi, TheoLiveApiEventMap, TheoLiveConfiguration, TheoLivePublication, TheoLiveSource, ThumbnailResolution, TimeRanges, TimeUpdateEvent, TitaniumDRMConfiguration, TitaniumIntegrationID, TokenBasedTitaniumDRMConfiguration, Track, TrackChangeEvent, TrackEventMap, TrackList, TrackListEventMap, TrackUpdateEvent, TypedSource, UIConfiguration, UILanguage, UIPlayerConfiguration, UIRelatedContent, UIRelatedContentEventMap, UniversalAdId, UpdateQualityEvent, UplynkDRMConfiguration, UplynkIntegrationID, UserActions, VPAIDMode, VR, VRConfiguration, VRDirection, VREventMap, VRPanoramaMode, VRPlayerConfiguration, VRState, VRStereoMode, VTTAlignSetting, VTTDirectionSetting, VTTLine, VTTLineAlignSetting, VTTPosition, VTTPositionAlignSetting, VTTScrollSetting, VendorCast, VendorCastEventMap, VerimatrixDRMConfiguration, VerimatrixIntegrationID, VerizonMedia, VerizonMediaAd, VerizonMediaAdBeginEvent, VerizonMediaAdBreak, VerizonMediaAdBreakBeginEvent, VerizonMediaAdBreakEndEvent, VerizonMediaAdBreakEventMap, VerizonMediaAdBreakList, VerizonMediaAdBreakListEventMap, VerizonMediaAdBreakSkipEvent, VerizonMediaAdCompleteEvent, VerizonMediaAdEndEvent, VerizonMediaAdEventMap, VerizonMediaAdFirstQuartileEvent, VerizonMediaAdList, VerizonMediaAdListEventMap, VerizonMediaAdMidpointEvent, VerizonMediaAdThirdQuartileEvent, VerizonMediaAddAdBreakEvent, VerizonMediaAddAssetEvent, VerizonMediaAds, VerizonMediaAsset, VerizonMediaAssetEventMap, VerizonMediaAssetId, VerizonMediaAssetInfoResponse, VerizonMediaAssetInfoResponseEvent, VerizonMediaAssetList, VerizonMediaAssetMovieRating, VerizonMediaAssetTvRating, VerizonMediaAssetType, VerizonMediaConfiguration, VerizonMediaEventMap, VerizonMediaExternalId, VerizonMediaPingConfiguration, VerizonMediaPingErrorEvent, VerizonMediaPingResponse, VerizonMediaPingResponseEvent, VerizonMediaPreplayBaseResponse, VerizonMediaPreplayLiveResponse, VerizonMediaPreplayResponse, VerizonMediaPreplayResponseEvent, VerizonMediaPreplayResponseType, VerizonMediaPreplayVodResponse, VerizonMediaRemoveAdBreakEvent, VerizonMediaRemoveAdEvent, VerizonMediaRemoveAssetEvent, VerizonMediaResponseDrm, VerizonMediaResponseLiveAd, VerizonMediaResponseLiveAdBreak, VerizonMediaResponseLiveAds, VerizonMediaResponseVodAd, VerizonMediaResponseVodAdBreak, VerizonMediaResponseVodAdBreakOffset, VerizonMediaResponseVodAdPlaceholder, VerizonMediaResponseVodAds, VerizonMediaSource, VerizonMediaUiConfiguration, VerizonMediaUpdateAdBreakEvent, VideoFrameCallbackMetadata, VideoFrameRequestCallback, VideoQuality, View, ViewChangeEvent, ViewPositionChangeEvent, VimondDRMConfiguration, VimondIntegrationID, Visibility, VisibilityObserver, VisibilityObserverCallback, VoidPromiseCallback, VolumeChangeEvent, VudrmDRMConfiguration, VudrmIntegrationID, WaitUntilCallback, WaitingEvent, WebAudio, WebVTTCue, WebVTTRegion, WidevineKeySystemConfiguration, XstreamDRMConfiguration, XstreamIntegrationID, Yospace, YospaceCallbackObject, YospaceEventMap, YospaceId, YospaceSSAIIntegrationID, YospaceServerSideAdInsertionConfiguration, YospaceStreamType, YospaceTypedSource, YouboraAnalyticsIntegrationID, YouboraOptions, cache, cast, features, playerSuiteVersion, players, registerContentProtectionIntegration, utils, version };
