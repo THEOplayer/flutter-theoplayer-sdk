@@ -13,11 +13,9 @@ command:
     environment:
       sdk: ^3.3.0
       flutter: ">=3.19.0"
-    dependencies:
-      theoplayer_platform_interface: 1.0.3
-      theoplayer_android: 1.0.3
-      theoplayer_ios: 1.0.3
-      theoplayer_web: 1.0.3
+  version:
+    includeScopes: false
+    workspaceChangelog: false
 
 scripts:
   analyze:
@@ -29,3 +27,25 @@ scripts:
     description: |
       Run `dart analyze` in all packages.
        - Note: you can also rely on your IDEs Dart Analysis / Issues window.
+  update:theoplayer:flutter:
+    description: |
+      Updates the versions of all the THEOplayer packages to the passed `VERSION` env, also committing the changes to the branch. 
+      To run the script set the version env before the command. Example:
+      `VERSION=1.0.4 melos run update:theoplayer:flutter`
+    run:
+      melos version
+      --yes
+      --no-git-tag-version
+      --no-changelog
+      --message="version bump to $VERSION"
+      -V theoplayer_platform_interface:$VERSION
+      -V theoplayer_android:$VERSION
+      -V theoplayer_ios:$VERSION
+      -V theoplayer_web:$VERSION
+      -V theoplayer:$VERSION
+  update:theoplayer:native:
+    description: |
+      Updates the versions of all the THEOplayer packages to the passed `VERSION` env, also committing the changes to the branch. 
+      To run the script set the version env before the command. Example:
+      `melos update:theoplayer:native -- --all 6.10.1`
+    run: ./scripts/update_theoplayer_native.sh

@@ -25,6 +25,8 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
+def theoplayerVersion ='7.0.0'
+
 android {
     if (project.android.hasProperty("namespace")) {
         namespace 'com.theoplayer.flutter'
@@ -52,7 +54,7 @@ android {
 
     dependencies {
         // Dependency on THEOplayer
-        implementation 'com.theoplayer.theoplayer-sdk-android:core:6.10.1'
+        implementation "com.theoplayer.theoplayer-sdk-android:core:$theoplayerVersion"
         implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
         implementation "androidx.appcompat:appcompat:1.6.1"
 

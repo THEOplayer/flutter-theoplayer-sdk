@@ -22,6 +22,8 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+def theoplayerVersion ='7.0.0'
+
 android {
     namespace "com.theoplayer.theoplayer_example"
     compileSdkVersion flutter.compileSdkVersion
@@ -65,5 +67,5 @@ flutter {
 }
 
 dependencies {
-    api 'com.theoplayer.theoplayer-sdk-android:core:6.10.1'
+    api "com.theoplayer.theoplayer-sdk-android:core:$theoplayerVersion"
 }

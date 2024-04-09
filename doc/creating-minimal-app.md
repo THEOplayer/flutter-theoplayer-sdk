@@ -87,10 +87,10 @@ meaning `flutter` found and added the SDK as a dependency, and fetched the neces
 Resolving dependencies... 
   collection 1.17.2 (1.18.0 available)
   flutter_lints 2.0.3 (3.0.1 available)
-+ flutter_theoplayer_sdk_android 0.0.1 from path ../flutter-theoplayer-sdk/flutter_theoplayer_sdk_android
-+ flutter_theoplayer_sdk_ios 0.0.1 from path ../flutter-theoplayer-sdk/flutter_theoplayer_sdk_ios
-+ flutter_theoplayer_sdk_platform_interface 0.0.1 from path ../flutter-theoplayer-sdk/flutter_theoplayer_sdk_platform_interface
-+ flutter_theoplayer_sdk_web 0.0.1 from path ../flutter-theoplayer-sdk/flutter_theoplayer_sdk_web
++ theoplayer_sdk_android 1.0.0 from path ../flutter-theoplayer-sdk/flutter_theoplayer_sdk_android
++ theoplayer_sdk_ios 1.0.0 from path ../flutter-theoplayer-sdk/flutter_theoplayer_sdk_ios
++ theoplayer_sdk_platform_interface 1.0.0 from path ../flutter-theoplayer-sdk/flutter_theoplayer_sdk_platform_interface
++ theoplayer_sdk_web 1.0.0 from path ../flutter-theoplayer-sdk/flutter_theoplayer_sdk_web
 + flutter_web_plugins 0.0.0 from sdk flutter
 + js 0.6.7
   lints 2.1.1 (3.0.0 available)
@@ -100,7 +100,7 @@ Resolving dependencies...
   stack_trace 1.11.0 (1.11.1 available)
   stream_channel 2.1.1 (2.1.2 available)
   test_api 0.6.0 (0.6.1 available)
-+ theoplayer 0.0.1 from path ../flutter-theoplayer-sdk/flutter_theoplayer_sdk
++ theoplayer 1.0.0 from path ../flutter-theoplayer-sdk/flutter_theoplayer_sdk
   web 0.1.4-beta (0.4.0 available)
 Changed 8 dependencies!
 ```
