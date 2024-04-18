@@ -207,6 +207,14 @@ internal class THEOplayerViewNative(
         return PlayerEnumTransformer.toFlutterPreloadType(tpv.player.preload)
     }
 
+    override fun setAllowBackgroundPlayback(allowBackgroundPlayback: Boolean) {
+        tpv.settings.setAllowBackgroundPlayback(allowBackgroundPlayback)
+    }
+
+    override fun allowBackgroundPlayback(): Boolean {
+        return tpv.settings.allowBackgroundPlayback()
+    }
+
     override fun getReadyState(): FlutterReadyState {
         return PlayerEnumTransformer.toFlutterReadyState(tpv.player.readyState)
     }

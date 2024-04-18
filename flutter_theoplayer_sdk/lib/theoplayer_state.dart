@@ -29,6 +29,7 @@ class PlayerState {
   List<TimeRange?> buffered = [];
   List<TimeRange?> seekable = [];
   List<TimeRange?> played = [];
+  bool allowBackgroundPlayback = false;
   String? error;
 
   bool isInitialized = false;

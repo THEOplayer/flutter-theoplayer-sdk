@@ -64,6 +64,10 @@ abstract class THEOplayerNativeAPI {
 
   List<TimeRange> getPlayed();
 
+  void setAllowBackgroundPlayback(bool allowBackgroundPlayback);
+
+  bool allowBackgroundPlayback();
+
   String? getError();
 
   void stop();
