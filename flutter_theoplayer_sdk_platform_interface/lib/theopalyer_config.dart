@@ -4,15 +4,16 @@ class THEOplayerConfig {
   String? _license;
   String? _licenseUrl;
   AndroidConfig androidConfig = AndroidConfig();
-  List<DeviceOrientation> preferredFullscreenOrientations = [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight];
-  List<DeviceOrientation> preferredRestoredOrientations = [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight, DeviceOrientation.portraitUp, DeviceOrientation.portraitDown];
-  SystemUiMode fullscreenSystemUiMode = SystemUiMode.immersive;
+  FullscreenConfig fullscreenConfig = FullscreenConfig();
 
-  THEOplayerConfig({String? license, String? licenseUrl, AndroidConfig? androidConfiguration}) {
+  THEOplayerConfig({String? license, String? licenseUrl, AndroidConfig? androidConfiguration, FullscreenConfig? fullscreenConfiguration}) {
     _license = license;
     _licenseUrl = licenseUrl;
     if (androidConfiguration != null) {
       androidConfig = androidConfiguration;
+    }
+    if (fullscreenConfiguration != null) {
+      fullscreenConfig = fullscreenConfiguration;
     }
   }
   String? getLicense() {
@@ -41,4 +42,18 @@ class AndroidConfig {
   Map<String, dynamic> toJson() => {
         'useHybridComposition': useHybridComposition,
       };
+}
+
+
+class FullscreenConfig {
+
+  final List<DeviceOrientation> preferredFullscreenOrientations;
+  final List<DeviceOrientation> preferredRestoredOrientations;
+  final SystemUiMode fullscreenSystemUiMode;
+
+  FullscreenConfig({
+    this.preferredFullscreenOrientations = const [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight],
+    this.preferredRestoredOrientations = const [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
+    this.fullscreenSystemUiMode = SystemUiMode.immersive
+  });
 }

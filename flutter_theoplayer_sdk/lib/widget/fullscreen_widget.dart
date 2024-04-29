@@ -10,10 +10,9 @@ import 'package:theoplayer/theoplayer.dart';
 class FullscreenStatelessWidget extends StatefulWidget {
   final THEOplayer theoplayer;
 
-  List<DeviceOrientation> preferredFullscreenOrientations = [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight];
-  SystemUiMode fullscreenSystemUiMode = SystemUiMode.immersive;
+  final FullscreenConfig fullscreenConfig;
 
-  FullscreenStatelessWidget({super.key, required this.theoplayer});
+  const FullscreenStatelessWidget({super.key, required this.theoplayer, required this.fullscreenConfig});
 
   @override
   State<FullscreenStatelessWidget> createState() => _FullscreenStatelessWidgetState();
@@ -27,8 +26,8 @@ class _FullscreenStatelessWidgetState extends State<FullscreenStatelessWidget> {
   void initState() {
     super.initState();
 
-    SystemChrome.setPreferredOrientations(widget.preferredFullscreenOrientations).then((value) => {
-      SystemChrome.setEnabledSystemUIMode(widget.fullscreenSystemUiMode)
+    SystemChrome.setPreferredOrientations(widget.fullscreenConfig.preferredFullscreenOrientations).then((value) => {
+      SystemChrome.setEnabledSystemUIMode(widget.fullscreenConfig.fullscreenSystemUiMode)
     });
   }
 
