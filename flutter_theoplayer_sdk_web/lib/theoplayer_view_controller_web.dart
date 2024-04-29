@@ -255,4 +255,9 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   void onLifecycleResume() {
     // do nothing
   }
+
+  @override
+  void setPresentationMode(PresentationMode presenationMode) {
+    // TODO: implement setPresentationMode
+  }
 }

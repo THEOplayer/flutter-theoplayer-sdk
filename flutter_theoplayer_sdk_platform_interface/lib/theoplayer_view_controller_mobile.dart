@@ -199,4 +199,9 @@ class THEOplayerViewControllerMobile extends THEOplayerViewController {
   void onLifecycleResume() {
     _nativeAPI.onLifecycleResume();
   }
+  
+  @override
+  void setPresentationMode(PresentationMode presenationMode) {
+    // TODO: implement setPresentationMode
+  }
 }

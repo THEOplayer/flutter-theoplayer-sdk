@@ -62,7 +62,7 @@ class THEOplayerAndroid extends TheoplayerPlatform {
         return androidViewController
           ..addOnPlatformViewCreatedListener((id) {
             params.onPlatformViewCreated(id);
-            createdCallback(THEOplayerViewControllerAndroid(id));
+            createdCallback(THEOplayerViewControllerAndroid(id), context);
           })
           ..create();
       },

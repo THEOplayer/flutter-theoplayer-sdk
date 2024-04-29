@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:theoplayer/theoplayer.dart';
+import 'package:theoplayer/widget/chromeless_widget.dart';
 import 'package:theoplayer_example/player_widgets/current_time_widget.dart';
-import 'package:theoplayer_example/player_widgets/fullscreen_widget.dart';
 import 'package:theoplayer_example/player_widgets/player_ui_widget.dart';
 
 // use your THEOplayer Flutter license here from https://portal.theoplayer.com
@@ -44,8 +44,6 @@ class _MyAppState extends State<MyApp> {
     super.dispose();
   }
 
-  bool inFullscreen = false;
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -64,7 +62,7 @@ class _MyAppState extends State<MyApp> {
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
-                        !inFullscreen ? ChromelessPlayer(key: ChromelessPlayer.globalKey, player: player) : Container(),
+                        ChromelessPlayerView(player: player),
                         PlayerUI(player: player),
                       ],
 
@@ -98,23 +96,13 @@ class _MyAppState extends State<MyApp> {
                                   child: const Text("API LOGGER"),
                                 ),
                                 FilledButton(onPressed: () {
-                                  setState(() {
-                                    inFullscreen = true;
-                                  });
-                                  Navigator.push(context, MaterialPageRoute(builder: (context){
-                                    return FullscreenStatelessWidget(theoplayer: player,);
-                                  }, settings: null)).then((value){
-                                    print("Return from fullscreen ");
-                                    setState(() {
-                                      inFullscreen = false;
-                                    });
-                                  });
-                  
+                                  player.setPresentationMode(PresentationMode.FULLSCREEN);
+
                                 }, child: const Text("Open Fullscreen")),
                                 FilledButton(
                                   onPressed: (){
                                     player.getVideoTracks().first.targetQuality = player.getVideoTracks().first.qualities.first;
-                                  }, 
+                                  },
                                   child: const Text("set video target quality")),
                                   
                             Column(
@@ -218,6 +206,7 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
+/*
 class ChromelessPlayer extends StatelessWidget {
   static GlobalKey globalKey = GlobalKey();
 
@@ -233,3 +222,4 @@ class ChromelessPlayer extends StatelessWidget {
     return player.getView();
   }
 }
+*/
