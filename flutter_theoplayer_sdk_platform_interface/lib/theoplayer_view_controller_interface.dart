@@ -86,9 +86,11 @@ abstract class THEOplayerViewController implements EventDispatcher {
 
   //PresentationMode getPresentationMode();
 
-  void setPresentationMode(PresentationMode presenationMode);
+  void setPresentationMode(PresentationMode presentationMode, AutomaticFullscreenExitListener? automaticFullscreenExitListener);
 
 }
+
+typedef AutomaticFullscreenExitListener = void Function();
 
 enum PresentationMode {
   INLINE, FULLSCREEN, PIP,
