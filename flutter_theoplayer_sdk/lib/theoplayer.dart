@@ -76,9 +76,7 @@ class THEOplayer implements EventDispatcher {
           _playerState.initialized();
         });
     _fullscreenBuilder = fullscreenBuilder ?? (BuildContext context, THEOplayer theoplayer) {
-      return FullscreenStatelessWidget(theoplayer: theoplayer)
-          ..preferredFullscreenOrientations = theoPlayerConfig.preferredFullscreenOrientations
-          ..fullscreenSystemUiMode = theoPlayerConfig.fullscreenSystemUiMode;
+      return FullscreenStatelessWidget(theoplayer: theoplayer, fullscreenConfig: theoPlayerConfig.fullscreenConfig,);
     };
   }
 
@@ -345,7 +343,7 @@ class THEOplayer implements EventDispatcher {
         return _fullscreenBuilder(context, this);
       }, settings: null)).then((value){
         _playerState.presentationMode = PresentationMode.INLINE;
-        SystemChrome.setPreferredOrientations(theoPlayerConfig.preferredRestoredOrientations).then((value) => {
+        SystemChrome.setPreferredOrientations(theoPlayerConfig.fullscreenConfig.preferredRestoredOrientations).then((value) => {
           SystemChrome.restoreSystemUIOverlays()
         });
       });

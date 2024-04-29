@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:theoplayer/theoplayer.dart';
 import 'package:theoplayer/widget/chromeless_widget.dart';
+import 'package:theoplayer/widget/fullscreen_widget.dart';
 import 'package:theoplayer_example/player_widgets/current_time_widget.dart';
 import 'package:theoplayer_example/player_widgets/player_ui_widget.dart';
 
@@ -29,6 +31,9 @@ class _MyAppState extends State<MyApp> {
     super.initState();
 
     player = THEOplayer(
+      fullscreenBuilder: (BuildContext context, THEOplayer player ) {
+        return FullscreenStatelessWidget(theoplayer: player, fullscreenConfig: player.theoPlayerConfig.fullscreenConfig);
+      },
         theoPlayerConfig: THEOplayerConfig(
           license: PLAYER_LICENSE,
         ),
@@ -203,21 +208,3 @@ class _MyAppState extends State<MyApp> {
     print("audio active quality: ${player.getAudioTracks().first.activeQuality?.uid}");
   }
 }
-
-/*
-class ChromelessPlayer extends StatelessWidget {
-  static GlobalKey globalKey = GlobalKey();
-
-  const ChromelessPlayer({
-    super.key,
-    required this.player,
-  });
-
-  final THEOplayer player;
-
-  @override
-  Widget build(BuildContext context) {
-    return player.getView();
-  }
-}
-*/
