@@ -1,3 +1,5 @@
+import 'dart:js';
+
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart' as PlatformInterface;
 import 'package:theoplayer_platform_interface/theopalyer_config.dart';
 import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart' as PlatformInterfaceEventDispatcher;
@@ -11,6 +13,7 @@ import 'package:theoplayer_web/theoplayer_api_web.dart';
 import 'package:theoplayer_web/track/theoplayer_track_controller_web.dart';
 import 'package:theoplayer_web/transformers_web.dart';
 import 'package:web/web.dart';
+import 'dart:js_interop';
 
 class THEOplayerViewControllerWeb extends THEOplayerViewController {
   final HTMLElement _playerWrapperDiv;
@@ -257,7 +260,44 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   }
 
   @override
-  void setPresentationMode(PresentationMode presenationMode) {
-    // TODO: implement setPresentationMode
+  void setPresentationMode(PresentationMode presenationMode, AutomaticFullscreenExitListener? automaticFullscreenExitListener) {
+
+    JSExportedDartFunction? listener;
+
+    // _playerWrapperDiv only contains the video view, but we need the whole document to go into fullscreen
+    // so we first present the fullscreen widget (with or without UI) then we trigger fullscreen.
+    var elementToFullscreen = document.documentElement as HTMLElement;
+
+    if (presenationMode == PresentationMode.FULLSCREEN) {
+      elementToFullscreen?.requestFullscreen();
+
+      listener = ((JSAny event){
+        if (document.fullscreenElement != null) {
+          print('Element: ${document.fullscreenElement!.id} entered fullscreen mode.',);
+        } else {
+          print('Leaving fullscreen mode.');
+          if (listener != null) {
+            elementToFullscreen.removeEventListener("fullscreenchange", listener,);
+          }
+          automaticFullscreenExitListener?.call();
+        }
+      }).toJS;
+
+      elementToFullscreen.addEventListener("fullscreenchange", listener,);
+    } else if (presenationMode == PresentationMode.INLINE) {
+      if (listener != null) {
+        elementToFullscreen.removeEventListener("fullscreenchange", listener,);
+      }
+      document.exitFullscreen();
+    }
   }
+}
+
+extension on HTMLElement {
+  external JSPromise<JSAny?> requestFullscreen();
+}
+
+extension on Document {
+  external HTMLElement? fullscreenElement;
+  external JSPromise<JSAny?> exitFullscreen();
 }

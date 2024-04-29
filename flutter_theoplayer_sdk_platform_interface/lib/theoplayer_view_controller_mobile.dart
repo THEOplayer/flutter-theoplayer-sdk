@@ -201,7 +201,7 @@ class THEOplayerViewControllerMobile extends THEOplayerViewController {
   }
   
   @override
-  void setPresentationMode(PresentationMode presenationMode) {
+  void setPresentationMode(PresentationMode presentationMode, AutomaticFullscreenExitListener? automaticFullscreenExitListener) {
     // TODO: implement setPresentationMode
   }
 }
