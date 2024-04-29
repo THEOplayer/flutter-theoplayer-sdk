@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:theoplayer/widget/fullscreen_widget.dart';
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
 import 'package:theoplayer_platform_interface/theopalyer_config.dart';
 import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
@@ -31,14 +32,24 @@ typedef PlayerCreatedCallback = void Function();
 /// Callback that's triggered every time the internal player state is changing. See [THEOplayer.setStateListener].
 typedef StateChangeListener = void Function();
 
+/// Signature for a function that builds a fullscreen widget given an [THEOplayer].
+///
+/// Used by [THEOplayer.fullscreenBuilder].
+typedef FullscreenWidgetBuilder = Widget Function(BuildContext context, THEOplayer theoplayer);
+
+
 /// Class to initialize and interact with THEOplayer
 class THEOplayer implements EventDispatcher {
   final THEOplayerConfig theoPlayerConfig;
   final PlayerCreatedCallback? onCreate;
+  late final FullscreenWidgetBuilder _fullscreenBuilder;
   late final PlayerState _playerState;
   late final THEOplayerView _tpv;
   late THEOplayerViewController? _theoPlayerViewController;
   AppLifecycleListener? _lifecycleListener;
+  late BuildContext _currentContext;
+
+  final globalKey = GlobalKey();
 
   final TextTracksHolder _textTrackListHolder = TextTracksHolder();
   final AudioTracksHolder _audioTrackListHolder = AudioTracksHolder();
@@ -47,12 +58,13 @@ class THEOplayer implements EventDispatcher {
   /// Initialize THEOplayer with a [THEOplayerConfig].
   /// [onCreate] is called once the underlying native THEOplayerView is fully created and available to use.
 
-  THEOplayer({required this.theoPlayerConfig, this.onCreate}) {
+  THEOplayer({required this.theoPlayerConfig, this.onCreate, FullscreenWidgetBuilder? fullscreenBuilder}) {
     _playerState = PlayerState();
     _tpv = THEOplayerView(
-        key: UniqueKey(),
+        key: globalKey,
         theoPlayerConfig: theoPlayerConfig,
-        onCreated: (THEOplayerViewController viewController) {
+        onCreated: (THEOplayerViewController viewController, BuildContext context) {
+          _currentContext = context;
           _theoPlayerViewController = viewController;
           _playerState.setViewController(_theoPlayerViewController!);
           _textTrackListHolder.setup(viewController.getTextTracks());
@@ -62,6 +74,7 @@ class THEOplayer implements EventDispatcher {
           onCreate?.call();
           _playerState.initialized();
         });
+    _fullscreenBuilder = fullscreenBuilder ?? (BuildContext context, THEOplayer theoplayer) {return FullscreenStatelessWidget(theoplayer: theoplayer);} ;
   }
 
   void _setupLifeCycleListeners() {
@@ -309,6 +322,26 @@ class THEOplayer implements EventDispatcher {
   void stop() {
     _theoPlayerViewController?.stop();
     _playerState.resetState();
+  }
+
+  PresentationMode getPresentationMode() {
+    return _playerState.presentationMode;
+  }
+
+  void setPresentationMode(PresentationMode presentationMode) {
+    if (_playerState.presentationMode == presentationMode) {
+      return;
+    }
+
+    _playerState.presentationMode = presentationMode;
+    //_theoPlayerViewController?.setPresentationMode(presentationMode);
+    if (presentationMode == PresentationMode.FULLSCREEN) {
+      Navigator.of(_currentContext, rootNavigator: true).push(MaterialPageRoute(builder: (context){
+        return _fullscreenBuilder(context, this);
+      }, settings: null)).then((value){
+        _playerState.presentationMode = PresentationMode.INLINE;
+      });
+    }
   }
 
   /// Releases and destroys all resources

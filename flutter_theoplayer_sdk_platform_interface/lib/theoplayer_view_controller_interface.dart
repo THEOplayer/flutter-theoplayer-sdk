@@ -83,4 +83,13 @@ abstract class THEOplayerViewController implements EventDispatcher {
   void onLifecycleResume();
   
   void onLifecyclePause();
+
+  //PresentationMode getPresentationMode();
+
+  void setPresentationMode(PresentationMode presenationMode);
+
+}
+
+enum PresentationMode {
+  INLINE, FULLSCREEN, PIP,
 }

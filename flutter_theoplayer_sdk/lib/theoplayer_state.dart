@@ -33,6 +33,18 @@ class PlayerState {
 
   bool isInitialized = false;
 
+  PresentationMode _presenationMode = PresentationMode.INLINE;
+
+  PresentationMode get presentationMode {
+    return _presenationMode;
+  }
+
+  set presentationMode(PresentationMode presentationMode) {
+    _presenationMode = presentationMode;
+    eventManager.dispatchEvent(PresentationModeChangeEvent(currentTime: currentTime, presentationMode: presentationMode));
+    _stateChangeListener?.call();
+  }
+
   PlayerState() {
     resetState();
   }
@@ -224,6 +236,7 @@ class PlayerState {
     seekable = [];
     played = [];
     error = null;
+    _presenationMode = PresentationMode.INLINE;
   }
 
   /// Method to clean the internal state on player dispose.

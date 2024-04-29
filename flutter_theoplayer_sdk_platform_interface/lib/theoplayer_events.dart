@@ -1,4 +1,5 @@
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
+import 'package:theoplayer_platform_interface/theoplayer_view_controller_interface.dart';
 
 class Event {
   final String type;
@@ -30,6 +31,7 @@ class PlayerEventTypes {
   static const LOADEDDATA = "LOADEDDATA";
   static const CANPLAY = "CANPLAY";
   static const CANPLAYTHROUGH = "CANPLAYTHROUGH";
+  static const PRESENTATIONMODECHANGE = "PRESENTATIONMODECHANGE";
 }
 
 class SourceChangeEvent extends Event {
@@ -164,4 +166,11 @@ class CanPlayThroughEvent extends Event {
   final double currentTime;
 
   CanPlayThroughEvent({required this.currentTime}) : super(type: PlayerEventTypes.CANPLAYTHROUGH);
+}
+
+class PresentationModeChangeEvent extends Event {
+  final double currentTime;
+  final PresentationMode presentationMode;
+
+  PresentationModeChangeEvent({required this.currentTime, required this.presentationMode,}) : super(type: PlayerEventTypes.PRESENTATIONMODECHANGE);
 }

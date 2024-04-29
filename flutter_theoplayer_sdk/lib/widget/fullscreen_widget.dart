@@ -2,8 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
 import 'package:theoplayer/theoplayer.dart';
-import 'package:theoplayer_example/main.dart';
+
 
 class FullscreenStatelessWidget extends StatefulWidget {
   final THEOplayer theoplayer;
@@ -38,7 +39,7 @@ class _FullscreenStatelessWidgetState extends State<FullscreenStatelessWidget> {
             return Center(
                 // Center is a layout widget. It takes a single child and positions it
                 // in the middle of the parent.
-                child: !willPop ? ChromelessPlayer(key: ChromelessPlayer.globalKey, player: widget.theoplayer) : Container()
+                child: !willPop ? widget.theoplayer.getView() : Container()
             );
           },
         ),// This trailing comma makes auto-formatting nicer for build methods.
