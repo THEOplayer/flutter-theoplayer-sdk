@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:theoplayer/widget/fullscreen_widget.dart';
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
 import 'package:theoplayer_platform_interface/theopalyer_config.dart';
@@ -74,7 +75,11 @@ class THEOplayer implements EventDispatcher {
           onCreate?.call();
           _playerState.initialized();
         });
-    _fullscreenBuilder = fullscreenBuilder ?? (BuildContext context, THEOplayer theoplayer) {return FullscreenStatelessWidget(theoplayer: theoplayer);} ;
+    _fullscreenBuilder = fullscreenBuilder ?? (BuildContext context, THEOplayer theoplayer) {
+      return FullscreenStatelessWidget(theoplayer: theoplayer)
+          ..preferredFullscreenOrientations = theoPlayerConfig.preferredFullscreenOrientations
+          ..fullscreenSystemUiMode = theoPlayerConfig.fullscreenSystemUiMode;
+    };
   }
 
   void _setupLifeCycleListeners() {
@@ -354,6 +359,9 @@ class THEOplayer implements EventDispatcher {
         return _fullscreenBuilder(context, this);
       }, settings: null)).then((value){
         _playerState.presentationMode = PresentationMode.INLINE;
+        SystemChrome.setPreferredOrientations(theoPlayerConfig.preferredRestoredOrientations).then((value) => {
+          SystemChrome.restoreSystemUIOverlays()
+        });
       });
     }
   }

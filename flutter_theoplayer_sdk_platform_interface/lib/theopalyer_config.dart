@@ -1,7 +1,12 @@
+import 'package:flutter/services.dart';
+
 class THEOplayerConfig {
   String? _license;
   String? _licenseUrl;
   AndroidConfig androidConfig = AndroidConfig();
+  List<DeviceOrientation> preferredFullscreenOrientations = [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight];
+  List<DeviceOrientation> preferredRestoredOrientations = [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight, DeviceOrientation.portraitUp, DeviceOrientation.portraitDown];
+  SystemUiMode fullscreenSystemUiMode = SystemUiMode.immersive;
 
   THEOplayerConfig({String? license, String? licenseUrl, AndroidConfig? androidConfiguration}) {
     _license = license;
