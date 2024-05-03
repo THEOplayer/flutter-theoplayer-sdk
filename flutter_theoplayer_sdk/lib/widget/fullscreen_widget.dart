@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:theoplayer/theoplayer.dart';
+import 'package:theoplayer/widget/presentationmode_aware_widget.dart';
 
 
 class FullscreenStatelessWidget extends StatefulWidget {
@@ -29,6 +30,7 @@ class _FullscreenStatelessWidgetState extends State<FullscreenStatelessWidget> {
     SystemChrome.setPreferredOrientations(widget.fullscreenConfig.preferredFullscreenOrientations).then((value) => {
       SystemChrome.setEnabledSystemUIMode(widget.fullscreenConfig.fullscreenSystemUiMode)
     });
+
   }
 
   @override
@@ -51,7 +53,8 @@ class _FullscreenStatelessWidgetState extends State<FullscreenStatelessWidget> {
             return Center(
                 // Center is a layout widget. It takes a single child and positions it
                 // in the middle of the parent.
-                child: !willPop ? Container(color: Colors.black, child: widget.theoplayer.getView()) : Container()
+                child:
+                  !willPop ? Container(color: Colors.black, child: PresentationModeAwareWidget(player: widget.theoplayer, presentationModeToCheck: const [PresentationMode.FULLSCREEN],)) : Container(),
             );
           },
         ),// This trailing comma makes auto-formatting nicer for build methods.

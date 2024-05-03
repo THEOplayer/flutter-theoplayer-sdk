@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:theoplayer/theoplayer.dart';
+import 'package:theoplayer/widget/presentationmode_aware_widget.dart';
 
 class ChromelessPlayerView extends StatefulWidget {
   
@@ -18,32 +19,21 @@ class ChromelessPlayerView extends StatefulWidget {
 }
 
 class _ChromelessPlayerViewState extends State<ChromelessPlayerView> {
-  
-  late PresentationMode presentationMode;
-
-  void _presentationModeChangeEventListener(event) {
-    setState(() {
-      presentationMode = (event as PresentationModeChangeEvent).presentationMode;
-    });
-  }
 
   @override
   void initState() {
     super.initState();
-    presentationMode = widget.player.getPresentationMode();
-    widget.player.addEventListener(PlayerEventTypes.PRESENTATIONMODECHANGE, _presentationModeChangeEventListener);
   }
 
 
   @override
   void dispose() {
-    widget.player.removeEventListener(PlayerEventTypes.PRESENTATIONMODECHANGE, _presentationModeChangeEventListener);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    return presentationMode == PresentationMode.INLINE ? widget.player.getView() : Container(color: Colors.black,);
+    return PresentationModeAwareWidget(player: widget.player, presentationModeToCheck: const [PresentationMode.INLINE]);
   }
 
 }

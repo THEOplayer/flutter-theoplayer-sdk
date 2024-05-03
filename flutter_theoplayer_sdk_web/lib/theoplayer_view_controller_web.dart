@@ -261,40 +261,52 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   }
 
   JSExportedDartFunction? jsFullscreenChangeListener;
+  PresentationMode? currentPresentationMode = PresentationMode.INLINE;
 
   @override
-  void setPresentationMode(PresentationMode presenationMode, AutomaticFullscreenExitListener? automaticFullscreenExitListener) {
+  void setPresentationMode(PresentationMode presentationMode, AutomaticFullscreenExitListener? automaticFullscreenExitListener) {
 
 
     // _playerWrapperDiv only contains the video view, but we need the whole document to go into fullscreen
     // so we first present the fullscreen widget (with or without UI) then we trigger fullscreen.
     var elementToFullscreen = document.documentElement as HTMLElement;
 
-    if (presenationMode == PresentationMode.FULLSCREEN) {
-      elementToFullscreen?.requestFullscreen();
+    var previousPresentationMode = currentPresentationMode;
+    currentPresentationMode = presentationMode;
 
-      jsFullscreenChangeListener = ((JSAny event){
-        if (document.fullscreenElement != null) {
-          if (kDebugMode) {
-            print('Element: ${document.fullscreenElement} entered fullscreen mode.',);
+    switch(presentationMode) {
+      case PresentationMode.FULLSCREEN:
+        elementToFullscreen?.requestFullscreen();
+
+        jsFullscreenChangeListener = ((JSAny event){
+          if (document.fullscreenElement != null) {
+            if (kDebugMode) {
+              print('Element: ${document.fullscreenElement} entered fullscreen mode.',);
+            }
+          } else {
+            if (kDebugMode) {
+              print('Leaving fullscreen mode.');
+            }
+            if (jsFullscreenChangeListener != null) {
+              elementToFullscreen.removeEventListener(WebEventTypes.FULLSCREEN_CHANGE, jsFullscreenChangeListener,);
+            }
+            automaticFullscreenExitListener?.call();
           }
-        } else {
-          if (kDebugMode) {
-            print('Leaving fullscreen mode.');
-          }
+        }).toJS;
+
+        elementToFullscreen.addEventListener(WebEventTypes.FULLSCREEN_CHANGE, jsFullscreenChangeListener,);
+      case PresentationMode.INLINE:
+        if (previousPresentationMode == PresentationMode.FULLSCREEN) {
           if (jsFullscreenChangeListener != null) {
             elementToFullscreen.removeEventListener(WebEventTypes.FULLSCREEN_CHANGE, jsFullscreenChangeListener,);
           }
-          automaticFullscreenExitListener?.call();
+          //TOOD: check previous presentation mode
+          if (document.fullscreenElement != null) {
+            document.exitFullscreen();
+          }
         }
-      }).toJS;
-
-      elementToFullscreen.addEventListener(WebEventTypes.FULLSCREEN_CHANGE, jsFullscreenChangeListener,);
-    } else if (presenationMode == PresentationMode.INLINE) {
-      if (jsFullscreenChangeListener != null) {
-        elementToFullscreen.removeEventListener(WebEventTypes.FULLSCREEN_CHANGE, jsFullscreenChangeListener,);
-      }
-      document.exitFullscreen();
+      default:
+        print("Unsupported presentationMode $presentationMode");
     }
   }
 }
