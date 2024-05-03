@@ -336,30 +336,51 @@ class THEOplayer implements EventDispatcher {
       return;
     }
 
+    PresentationMode previousPresentationMode = _playerState.presentationMode;
     _playerState.presentationMode = presentationMode;
 
     Future? fullscreenPresentingFuture;
-    if (presentationMode == PresentationMode.FULLSCREEN) {
-      fullscreenPresentingFuture = Navigator.of(_currentContext, rootNavigator: true).push(MaterialPageRoute(builder: (context){
-        return _fullscreenBuilder(context, this);
-      }, settings: null));
 
-      fullscreenPresentingFuture.then((value){
-        if (kDebugMode) {
-          print("THEOplayer: Exit fullscreen");
-        }
-        _playerState.presentationMode = PresentationMode.INLINE;
-        SystemChrome.setPreferredOrientations(theoPlayerConfig.fullscreenConfig.preferredRestoredOrientations).then((value) => {
-          SystemChrome.restoreSystemUIOverlays()
+    switch (presentationMode) {
+      case PresentationMode.FULLSCREEN:
+        fullscreenPresentingFuture = Navigator.of(_currentContext, rootNavigator: true).push(MaterialPageRoute(builder: (context){
+          return _fullscreenBuilder(context, this);
+        }, settings: null));
+
+        fullscreenPresentingFuture.then((value){
+          if (kDebugMode) {
+            print("THEOplayer: Exit fullscreen");
+          }
+          _playerState.presentationMode = PresentationMode.INLINE;
+          SystemChrome.setPreferredOrientations(theoPlayerConfig.fullscreenConfig.preferredRestoredOrientations).then((value) => {
+            SystemChrome.restoreSystemUIOverlays()
+          });
+
+          //only used on web for now:
+          _theoPlayerViewController?.setPresentationMode(PresentationMode.INLINE, null);
         });
-      });
+
+        //only used on web for now:
+        _theoPlayerViewController?.setPresentationMode(presentationMode, (){
+          if (fullscreenPresentingFuture != null) {
+            Navigator.of(_currentContext, rootNavigator: true).maybePop();
+          }
+        });
+      case PresentationMode.INLINE:
+        if (previousPresentationMode == PresentationMode.FULLSCREEN) {
+          if (kIsWeb) {
+            // web is smoother with maybePop()
+            // TODO: check later
+            Navigator.of(_currentContext, rootNavigator: true).maybePop();
+          } else {
+            Navigator.of(_currentContext, rootNavigator: true).pop();
+          }
+          //NOTE: fullscreenPresentingFuture still will be called, if any
+        }
+      default:
+        print("Unsupported presentationMode $presentationMode");
     }
-    //only used on web for now:
-    _theoPlayerViewController?.setPresentationMode(presentationMode, (){
-      if (fullscreenPresentingFuture != null) {
-        Navigator.of(_currentContext, rootNavigator: true).maybePop();
-      }
-    });
+
   }
 
   /// Releases and destroys all resources
