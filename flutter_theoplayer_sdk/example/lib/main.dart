@@ -34,6 +34,7 @@ class _MyAppState extends State<MyApp> {
         ),
         onCreate: () {
           print("main - THEOplayer - onCreate");
+          player.setAllowBackgroundPlayback(true);
         });
   }
 
@@ -213,6 +214,7 @@ class _MyAppState extends State<MyApp> {
     print("error: ${player.getError()}");
     print("audio target quality: ${player.getAudioTracks().first.targetQuality?.uid}");
     print("audio active quality: ${player.getAudioTracks().first.activeQuality?.uid}");
+    print("allowBackgroundPlayback: ${player.allowBackgroundPlayback()}");
   }
 }
 

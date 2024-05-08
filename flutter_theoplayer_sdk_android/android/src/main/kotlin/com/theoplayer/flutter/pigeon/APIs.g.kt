@@ -566,6 +566,8 @@ interface THEOplayerNativeAPI {
   fun getBuffered(): List<TimeRange>
   fun getSeekable(): List<TimeRange>
   fun getPlayed(): List<TimeRange>
+  fun setAllowBackgroundPlayback(allowBackgroundPlayback: Boolean)
+  fun allowBackgroundPlayback(): Boolean
   fun getError(): String?
   fun stop()
   fun dispose()
@@ -1045,6 +1047,41 @@ interface THEOplayerNativeAPI {
             var wrapped: List<Any?>
             try {
               wrapped = listOf<Any?>(api.getPlayed())
+            } catch (exception: Throwable) {
+              wrapped = wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setAllowBackgroundPlayback", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val allowBackgroundPlaybackArg = args[0] as Boolean
+            var wrapped: List<Any?>
+            try {
+              api.setAllowBackgroundPlayback(allowBackgroundPlaybackArg)
+              wrapped = listOf<Any?>(null)
+            } catch (exception: Throwable) {
+              wrapped = wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.allowBackgroundPlayback", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            var wrapped: List<Any?>
+            try {
+              wrapped = listOf<Any?>(api.allowBackgroundPlayback())
             } catch (exception: Throwable) {
               wrapped = wrapError(exception)
             }

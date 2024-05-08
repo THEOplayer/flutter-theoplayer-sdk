@@ -222,6 +222,16 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   }
 
   @override
+  Future<bool> allowBackgroundPlayback() {
+    return Future.value(true);
+  }
+
+  @override
+  void setAllowBackgroundPlayback(bool allowBackgroundPlayback) {
+    // do nothing
+  }
+
+  @override
   TextTracks getTextTracks() {
     return _tracksController.getTextTracks();
   }

@@ -437,6 +437,8 @@ protocol THEOplayerNativeAPI {
   func getBuffered() throws -> [TimeRange]
   func getSeekable() throws -> [TimeRange]
   func getPlayed() throws -> [TimeRange]
+  func setAllowBackgroundPlayback(allowBackgroundPlayback: Bool) throws
+  func allowBackgroundPlayback() throws -> Bool
   func getError() throws -> String?
   func stop() throws
   func dispose() throws
@@ -829,6 +831,34 @@ class THEOplayerNativeAPISetup {
       }
     } else {
       getPlayedChannel.setMessageHandler(nil)
+    }
+    let setAllowBackgroundPlaybackChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setAllowBackgroundPlayback", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      setAllowBackgroundPlaybackChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let allowBackgroundPlaybackArg = args[0] as! Bool
+        do {
+          try api.setAllowBackgroundPlayback(allowBackgroundPlayback: allowBackgroundPlaybackArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      setAllowBackgroundPlaybackChannel.setMessageHandler(nil)
+    }
+    let allowBackgroundPlaybackChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.allowBackgroundPlayback", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      allowBackgroundPlaybackChannel.setMessageHandler { _, reply in
+        do {
+          let result = try api.allowBackgroundPlayback()
+          reply(wrapResult(result))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      allowBackgroundPlaybackChannel.setMessageHandler(nil)
     }
     let getErrorChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getError", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
