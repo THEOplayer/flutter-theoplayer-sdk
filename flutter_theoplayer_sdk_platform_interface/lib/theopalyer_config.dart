@@ -1,15 +1,22 @@
+import 'package:flutter/services.dart';
+
 class THEOplayerConfig {
   String? _license;
   String? _licenseUrl;
   AndroidConfig androidConfig = AndroidConfig();
+  FullscreenConfig fullscreenConfig = FullscreenConfig();
 
-  THEOplayerConfig({String? license, String? licenseUrl, AndroidConfig? androidConfiguration}) {
+  THEOplayerConfig({String? license, String? licenseUrl, AndroidConfig? androidConfiguration, FullscreenConfig? fullscreenConfiguration}) {
     _license = license;
     _licenseUrl = licenseUrl;
     if (androidConfiguration != null) {
       androidConfig = androidConfiguration;
     }
+    if (fullscreenConfiguration != null) {
+      fullscreenConfig = fullscreenConfiguration;
+    }
   }
+
   String? getLicense() {
     return _license;
   }
@@ -28,7 +35,7 @@ class THEOplayerConfig {
 
 class AndroidConfig {
   final bool useHybridComposition;
-  
+
   // TODO: revisit this change after THEOplayer Android refactor with Surface.
   // with Flutter 3.19 useHybridComposition is the best way to render video with THEOplayer.
   AndroidConfig({this.useHybridComposition = true});
@@ -36,4 +43,16 @@ class AndroidConfig {
   Map<String, dynamic> toJson() => {
         'useHybridComposition': useHybridComposition,
       };
+}
+
+class FullscreenConfig {
+  final List<DeviceOrientation> preferredFullscreenOrientations;
+  final List<DeviceOrientation> preferredRestoredOrientations;
+  final SystemUiMode fullscreenSystemUiMode;
+
+  FullscreenConfig({
+    this.preferredFullscreenOrientations = const [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight],
+    this.preferredRestoredOrientations = const [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
+    this.fullscreenSystemUiMode = SystemUiMode.immersive
+  });
 }

@@ -3,7 +3,7 @@ import 'package:theoplayer_platform_interface/theopalyer_config.dart';
 import 'package:theoplayer_platform_interface/theoplayer_view_controller_interface.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
-typedef THEOplayerViewCreatedCallback = void Function(THEOplayerViewController controller);
+typedef THEOplayerViewCreatedCallback = void Function(THEOplayerViewController controller, BuildContext context);
 
 abstract class TheoplayerPlatform extends PlatformInterface {
   /// Constructs a TheoplayerPlatform.

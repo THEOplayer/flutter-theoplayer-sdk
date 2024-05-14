@@ -30,7 +30,7 @@ class THEOplayerIOS extends TheoplayerPlatform {
         creationParams: creationParams,
         creationParamsCodec: const StandardMessageCodec(),
         onPlatformViewCreated: (id) {
-          createdCallback(THEOplayerViewControllerIOS(id));
+          createdCallback(THEOplayerViewControllerIOS(id), context);
         });
   }
 }

@@ -51,7 +51,7 @@ class TheoplayerWeb extends TheoplayerPlatform {
       viewType: viewType,
       creationParams: creationParams,
       onPlatformViewCreated: (id) {
-        createdCallback(THEOplayerViewControllerWeb(id, ui.platformViewRegistry.getViewById(id) as HTMLElement, theoPlayerConfig));
+        createdCallback(THEOplayerViewControllerWeb(id, ui.platformViewRegistry.getViewById(id) as HTMLElement, theoPlayerConfig), context);
       },
     );
   }
