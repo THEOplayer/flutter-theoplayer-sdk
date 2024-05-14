@@ -10,6 +10,7 @@ jobs:
     strategy:
       matrix:
         renderer: [html, canvaskit]
+        flutter_version: ['stable', 'beta']
 
     runs-on: ubuntu-latest
 
@@ -17,10 +18,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    - name: Setup flutter
+    - name: Setup Flutter (${{ matrix.flutter_version }} channel)
       uses: subosito/flutter-action@v2
       with:
-        channel: 'stable'
+        channel: ${{ matrix.flutter_version }}
         cache: true
         cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:' # optional, change this to force refresh cache
         cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:' # optional, change this to specify the cache path
@@ -105,6 +106,6 @@ jobs:
     - name: Save WEB to artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: web-${{ matrix.renderer }}
+        name: web-${{ matrix.renderer }}-${{ matrix.flutter_version }}
         path: flutter_theoplayer_sdk/example/build/web/
         retention-days: 5
