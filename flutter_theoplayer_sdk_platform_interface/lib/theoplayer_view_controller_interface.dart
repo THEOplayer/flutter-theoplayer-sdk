@@ -67,6 +67,10 @@ abstract class THEOplayerViewController implements EventDispatcher {
 
   Future<List<TimeRange?>> getPlayed();
 
+  void setAllowBackgroundPlayback(bool allowBackgroundPlayback);
+
+  Future<bool> allowBackgroundPlayback();
+
   Future<String?> getError();
 
   TextTracks getTextTracks();

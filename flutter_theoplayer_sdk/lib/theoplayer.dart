@@ -312,6 +312,20 @@ class THEOplayer implements EventDispatcher {
     return _playerState.played;
   }
 
+  /// Set whether playback continues when the app goes to background.
+  ///
+  /// Remarks:
+  /// * on Web this flag has no impact.
+  void setAllowBackgroundPlayback(bool allowBackgroundPlayback) {
+    _playerState.allowBackgroundPlayback = allowBackgroundPlayback;
+    _theoPlayerViewController?.setAllowBackgroundPlayback(allowBackgroundPlayback);
+  }
+
+  /// Whether playback continues when the app goes to background.
+  bool allowBackgroundPlayback() {
+    return _playerState.allowBackgroundPlayback;
+  }
+
   /// The last error that occurred for the current source, if any.
   String? getError() {
     return _playerState.error;

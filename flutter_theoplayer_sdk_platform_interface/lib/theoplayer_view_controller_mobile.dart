@@ -154,6 +154,14 @@ class THEOplayerViewControllerMobile extends THEOplayerViewController {
     return _nativeAPI.getPlayed();
   }
 
+  void setAllowBackgroundPlayback(bool allowBackgroundPlayback) {
+    _nativeAPI.setAllowBackgroundPlayback(allowBackgroundPlayback);
+  }
+
+  Future<bool> allowBackgroundPlayback() {
+    return _nativeAPI.allowBackgroundPlayback();
+  }
+
   Future<String?> getError() {
     return _nativeAPI.getError();
   }
