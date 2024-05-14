@@ -16,6 +16,7 @@ class THEOplayerConfig {
       fullscreenConfig = fullscreenConfiguration;
     }
   }
+
   String? getLicense() {
     return _license;
   }
@@ -34,7 +35,7 @@ class THEOplayerConfig {
 
 class AndroidConfig {
   final bool useHybridComposition;
-  
+
   // TODO: revisit this change after THEOplayer Android refactor with Surface.
   // with Flutter 3.19 useHybridComposition is the best way to render video with THEOplayer.
   AndroidConfig({this.useHybridComposition = true});
@@ -44,9 +45,7 @@ class AndroidConfig {
       };
 }
 
-
 class FullscreenConfig {
-
   final List<DeviceOrientation> preferredFullscreenOrientations;
   final List<DeviceOrientation> preferredRestoredOrientations;
   final SystemUiMode fullscreenSystemUiMode;

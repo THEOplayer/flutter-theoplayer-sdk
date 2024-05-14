@@ -4,7 +4,6 @@ import 'package:theoplayer/theoplayer.dart';
 import 'package:theoplayer/widget/presentationmode_aware_widget.dart';
 
 class ChromelessPlayerView extends StatefulWidget {
-  
   const ChromelessPlayerView({
     super.key,
     required this.player,
@@ -19,12 +18,10 @@ class ChromelessPlayerView extends StatefulWidget {
 }
 
 class _ChromelessPlayerViewState extends State<ChromelessPlayerView> {
-
   @override
   void initState() {
     super.initState();
   }
-
 
   @override
   void dispose() {
@@ -35,5 +32,4 @@ class _ChromelessPlayerViewState extends State<ChromelessPlayerView> {
   Widget build(BuildContext context) {
     return PresentationModeAwareWidget(player: widget.player, presentationModeToCheck: const [PresentationMode.INLINE]);
   }
-
 }

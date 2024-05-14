@@ -7,7 +7,6 @@ import 'package:flutter/services.dart';
 import 'package:theoplayer/theoplayer.dart';
 import 'package:theoplayer/widget/presentationmode_aware_widget.dart';
 
-
 class FullscreenStatefulWidget extends StatefulWidget {
   final THEOplayer theoplayer;
 
@@ -20,7 +19,6 @@ class FullscreenStatefulWidget extends StatefulWidget {
 }
 
 class _FullscreenStatefulWidgetState extends State<FullscreenStatefulWidget> {
-
   bool willPop = false;
 
   @override
@@ -35,40 +33,40 @@ class _FullscreenStatefulWidgetState extends State<FullscreenStatefulWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return CustomWillPopScope(
-      onWillPop: () async {
-        setState(() {
-          willPop = true;
-        });
-        return true;
-      },
-      child: Scaffold(
-        body: OrientationBuilder(
-          builder: (BuildContext context, Orientation orientation) {
-            //check orientation variable to identify the current mode
-            //double w = MediaQuery.of(context).size.width;
-            //double h = MediaQuery.of(context).size.height;
-            //bool landscape = false;
+    return CustomWillPopScope(onWillPop: () async {
+      setState(() {
+        willPop = true;
+      });
+      return true;
+    }, child: Scaffold(
+      body: OrientationBuilder(
+        builder: (BuildContext context, Orientation orientation) {
+          //check orientation variable to identify the current mode
+          //double w = MediaQuery.of(context).size.width;
+          //double h = MediaQuery.of(context).size.height;
+          //bool landscape = false;
 
-            return Center(
-                // Center is a layout widget. It takes a single child and positions it
-                // in the middle of the parent.
-                child:
-                  !willPop ? Container(color: Colors.black, child: PresentationModeAwareWidget(player: widget.theoplayer, presentationModeToCheck: const [PresentationMode.FULLSCREEN],)) : Container(),
-            );
-          },
-        ),// This trailing comma makes auto-formatting nicer for build methods.
-      )
-    );
+          return Center(
+            // Center is a layout widget. It takes a single child and positions it
+            // in the middle of the parent.
+            child: !willPop
+                ? Container(
+                    color: Colors.black,
+                    child: PresentationModeAwareWidget(
+                      player: widget.theoplayer,
+                      presentationModeToCheck: const [PresentationMode.FULLSCREEN],
+                    ))
+                : Container(),
+          );
+        },
+      ), // This trailing comma makes auto-formatting nicer for build methods.
+    ));
   }
 }
 
-
-
 // Custom WillPopScope, because the original WillPopScope breaks the back navigation on iOS
 class CustomWillPopScope extends StatelessWidget {
-  const CustomWillPopScope({required this.child, required this.onWillPop, Key? key})
-      : super(key: key);
+  const CustomWillPopScope({required this.child, required this.onWillPop, Key? key}) : super(key: key);
 
   final Widget child;
   final WillPopCallback onWillPop;
@@ -77,20 +75,20 @@ class CustomWillPopScope extends StatelessWidget {
   Widget build(BuildContext context) {
     if (!kIsWeb) {
       if (Platform.isIOS) {
-            return GestureDetector(
-              onPanUpdate: (details) async {
-                if (details.delta.dx > 0) {
-                  if (await onWillPop()) {
-                    Navigator.of(context).pop();
-                  }
+        return GestureDetector(
+            onPanUpdate: (details) async {
+              if (details.delta.dx > 0) {
+                if (await onWillPop()) {
+                  Navigator.of(context).pop();
                 }
+              }
+            },
+            child: WillPopScope(
+              onWillPop: () async {
+                return false;
               },
-              child: WillPopScope(
-                onWillPop: () async {
-                  return false;
-                },
-                child: child,
-              ));
+              child: child,
+            ));
       }
     }
     return WillPopScope(onWillPop: onWillPop, child: child);

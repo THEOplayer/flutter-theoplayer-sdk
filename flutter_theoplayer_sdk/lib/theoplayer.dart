@@ -38,7 +38,6 @@ typedef StateChangeListener = void Function();
 /// Used by [THEOplayer.fullscreenBuilder].
 typedef FullscreenWidgetBuilder = Widget Function(BuildContext context, THEOplayer theoplayer);
 
-
 /// Class to initialize and interact with THEOplayer
 class THEOplayer implements EventDispatcher {
   final THEOplayerConfig theoPlayerConfig;
@@ -75,25 +74,25 @@ class THEOplayer implements EventDispatcher {
           onCreate?.call();
           _playerState.initialized();
         });
-    _fullscreenBuilder = fullscreenBuilder ?? (BuildContext context, THEOplayer theoplayer) {
-      return FullscreenStatefulWidget(theoplayer: theoplayer, fullscreenConfig: theoPlayerConfig.fullscreenConfig,);
-    };
+    _fullscreenBuilder = fullscreenBuilder ??
+        (BuildContext context, THEOplayer theoplayer) {
+          return FullscreenStatefulWidget(
+            theoplayer: theoplayer,
+            fullscreenConfig: theoPlayerConfig.fullscreenConfig,
+          );
+        };
   }
 
   void _setupLifeCycleListeners() {
-    _lifecycleListener = AppLifecycleListener(
-      onResume: (){
-        _theoPlayerViewController?.onLifecycleResume();
-      },
-      onPause: () {
-        _theoPlayerViewController?.onLifecyclePause();
-      },
-      onStateChange: (state) {
-        if (kDebugMode) {
-          print("THEOplayer: Detected lifecycle change: $state");
-        }
+    _lifecycleListener = AppLifecycleListener(onResume: () {
+      _theoPlayerViewController?.onLifecycleResume();
+    }, onPause: () {
+      _theoPlayerViewController?.onLifecyclePause();
+    }, onStateChange: (state) {
+      if (kDebugMode) {
+        print("THEOplayer: Detected lifecycle change: $state");
       }
-    );
+    });
   }
 
   /// Returns the player widget that can be added to the view hierarchy to show videos
@@ -248,7 +247,7 @@ class THEOplayer implements EventDispatcher {
   /// Remarks:
   /// * 'metadata' loads enough resources to be able to determine the [THEOplayer.getDuration].
   /// * 'auto' loads media up to ABRConfiguration.targetBuffer.
-  /// 
+  ///
   /// * ABRConfiguration is not exposed yet in Flutter.
   void setPreload(PreloadType preload) {
     _playerState.preload = preload;
@@ -357,14 +356,16 @@ class THEOplayer implements EventDispatcher {
 
     switch (presentationMode) {
       case PresentationMode.FULLSCREEN:
-        fullscreenPresentingFuture = Navigator.of(_currentContext, rootNavigator: true).push(MaterialPageRoute(builder: (context){
-          return _fullscreenBuilder(context, this);
-        }, settings: null));
+        fullscreenPresentingFuture = Navigator.of(_currentContext, rootNavigator: true).push(MaterialPageRoute(
+            builder: (context) {
+              return _fullscreenBuilder(context, this);
+            },
+            settings: null));
 
         fullscreenPresentingFuture.then((value) => restorePlayerStateAfterLeavingFullscreen());
 
         //only used on web for now:
-        _theoPlayerViewController?.setPresentationMode(presentationMode, (){
+        _theoPlayerViewController?.setPresentationMode(presentationMode, () {
           if (fullscreenPresentingFuture != null) {
             Navigator.of(_currentContext, rootNavigator: true).maybePop();
           }
@@ -383,7 +384,6 @@ class THEOplayer implements EventDispatcher {
       default:
         print("Unsupported presentationMode $presentationMode");
     }
-
   }
 
   void restorePlayerStateAfterLeavingFullscreen() {

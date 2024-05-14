@@ -249,12 +249,12 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   VideoTracks getVideoTracks() {
     return _tracksController.getVideoTracks();
   }
-  
+
   @override
   void onLifecyclePause() {
     // do nothing
   }
-  
+
   @override
   void onLifecycleResume() {
     // do nothing
@@ -265,8 +265,6 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
 
   @override
   void setPresentationMode(PresentationMode presentationMode, AutomaticFullscreenExitListener? automaticFullscreenExitListener) {
-
-
     // _playerWrapperDiv only contains the video view, but we need the whole document to go into fullscreen
     // so we first present the fullscreen widget (with or without UI) then we trigger fullscreen.
     var elementToFullscreen = document.documentElement as HTMLElement;
@@ -274,31 +272,42 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
     var previousPresentationMode = currentPresentationMode;
     currentPresentationMode = presentationMode;
 
-    switch(presentationMode) {
+    switch (presentationMode) {
       case PresentationMode.FULLSCREEN:
         elementToFullscreen?.requestFullscreen();
 
-        jsFullscreenChangeListener = ((JSAny event){
+        jsFullscreenChangeListener = ((JSAny event) {
           if (document.fullscreenElement != null) {
             if (kDebugMode) {
-              print('Element: ${document.fullscreenElement} entered fullscreen mode.',);
+              print(
+                'Element: ${document.fullscreenElement} entered fullscreen mode.',
+              );
             }
           } else {
             if (kDebugMode) {
               print('Leaving fullscreen mode.');
             }
             if (jsFullscreenChangeListener != null) {
-              elementToFullscreen.removeEventListener(WebEventTypes.FULLSCREEN_CHANGE, jsFullscreenChangeListener,);
+              elementToFullscreen.removeEventListener(
+                WebEventTypes.FULLSCREEN_CHANGE,
+                jsFullscreenChangeListener,
+              );
             }
             automaticFullscreenExitListener?.call();
           }
         }).toJS;
 
-        elementToFullscreen.addEventListener(WebEventTypes.FULLSCREEN_CHANGE, jsFullscreenChangeListener,);
+        elementToFullscreen.addEventListener(
+          WebEventTypes.FULLSCREEN_CHANGE,
+          jsFullscreenChangeListener,
+        );
       case PresentationMode.INLINE:
         if (previousPresentationMode == PresentationMode.FULLSCREEN) {
           if (jsFullscreenChangeListener != null) {
-            elementToFullscreen.removeEventListener(WebEventTypes.FULLSCREEN_CHANGE, jsFullscreenChangeListener,);
+            elementToFullscreen.removeEventListener(
+              WebEventTypes.FULLSCREEN_CHANGE,
+              jsFullscreenChangeListener,
+            );
           }
           //TOOD: check previous presentation mode
           if (document.fullscreenElement != null) {
@@ -317,6 +326,7 @@ extension on HTMLElement {
 
 extension on Document {
   external HTMLElement? fullscreenElement;
+
   external JSPromise<JSAny?> exitFullscreen();
 }
 
