@@ -361,18 +361,7 @@ class THEOplayer implements EventDispatcher {
           return _fullscreenBuilder(context, this);
         }, settings: null));
 
-        fullscreenPresentingFuture.then((value){
-          if (kDebugMode) {
-            print("THEOplayer: Exit fullscreen");
-          }
-          _playerState.presentationMode = PresentationMode.INLINE;
-          SystemChrome.setPreferredOrientations(theoPlayerConfig.fullscreenConfig.preferredRestoredOrientations).then((value) => {
-            SystemChrome.restoreSystemUIOverlays()
-          });
-
-          //only used on web for now:
-          _theoPlayerViewController?.setPresentationMode(PresentationMode.INLINE, null);
-        });
+        fullscreenPresentingFuture.then((value) => restorePlayerStateAfterLeavingFullscreen());
 
         //only used on web for now:
         _theoPlayerViewController?.setPresentationMode(presentationMode, (){
@@ -395,6 +384,19 @@ class THEOplayer implements EventDispatcher {
         print("Unsupported presentationMode $presentationMode");
     }
 
+  }
+
+  void restorePlayerStateAfterLeavingFullscreen() {
+    if (kDebugMode) {
+      print("THEOplayer: Exit fullscreen");
+    }
+    _playerState.presentationMode = PresentationMode.INLINE;
+    SystemChrome.setPreferredOrientations(theoPlayerConfig.fullscreenConfig.preferredRestoredOrientations).then((value) => {
+      SystemChrome.restoreSystemUIOverlays()
+    });
+
+    //only used on web for now:
+    _theoPlayerViewController?.setPresentationMode(PresentationMode.INLINE, null);
   }
 
   /// Releases and destroys all resources
