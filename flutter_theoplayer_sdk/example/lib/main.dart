@@ -32,7 +32,7 @@ class _MyAppState extends State<MyApp> {
 
     player = THEOplayer(
       fullscreenBuilder: (BuildContext context, THEOplayer player ) {
-        return FullscreenStatelessWidget(theoplayer: player, fullscreenConfig: player.theoPlayerConfig.fullscreenConfig);
+        return FullscreenStatefulWidget(theoplayer: player, fullscreenConfig: player.theoPlayerConfig.fullscreenConfig);
       },
         theoPlayerConfig: THEOplayerConfig(
           license: PLAYER_LICENSE,

@@ -8,18 +8,18 @@ import 'package:theoplayer/theoplayer.dart';
 import 'package:theoplayer/widget/presentationmode_aware_widget.dart';
 
 
-class FullscreenStatelessWidget extends StatefulWidget {
+class FullscreenStatefulWidget extends StatefulWidget {
   final THEOplayer theoplayer;
 
   final FullscreenConfig fullscreenConfig;
 
-  const FullscreenStatelessWidget({super.key, required this.theoplayer, required this.fullscreenConfig});
+  const FullscreenStatefulWidget({super.key, required this.theoplayer, required this.fullscreenConfig});
 
   @override
-  State<FullscreenStatelessWidget> createState() => _FullscreenStatelessWidgetState();
+  State<FullscreenStatefulWidget> createState() => _FullscreenStatefulWidgetState();
 }
 
-class _FullscreenStatelessWidgetState extends State<FullscreenStatelessWidget> {
+class _FullscreenStatefulWidgetState extends State<FullscreenStatefulWidget> {
 
   bool willPop = false;
 

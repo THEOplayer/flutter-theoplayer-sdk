@@ -76,7 +76,7 @@ class THEOplayer implements EventDispatcher {
           _playerState.initialized();
         });
     _fullscreenBuilder = fullscreenBuilder ?? (BuildContext context, THEOplayer theoplayer) {
-      return FullscreenStatelessWidget(theoplayer: theoplayer, fullscreenConfig: theoPlayerConfig.fullscreenConfig,);
+      return FullscreenStatefulWidget(theoplayer: theoplayer, fullscreenConfig: theoPlayerConfig.fullscreenConfig,);
     };
   }
 
