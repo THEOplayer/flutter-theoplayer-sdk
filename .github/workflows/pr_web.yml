@@ -106,6 +106,6 @@ jobs:
     - name: Save WEB to artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: web-${{ matrix.renderer }}
+        name: web-${{ matrix.renderer }}-${{ matrix.flutter_version }}
         path: flutter_theoplayer_sdk/example/build/web/
         retention-days: 5

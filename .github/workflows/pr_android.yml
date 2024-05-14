@@ -104,7 +104,7 @@ jobs:
     - name: Save APK to artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: example_app.apk
+        name: example_app-${{ matrix.flutter_version }}.apk
         path: flutter_theoplayer_sdk/example/build/app/outputs/flutter-apk/app-release.apk
         retention-days: 5
 
