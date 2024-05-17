@@ -57,8 +57,53 @@ Depending on the platform on which the application is deployed, a different set 
 If a feature is missing, additional help is needed, or you need to extend the package,
 please reach out to us for support.
 
-<img src="https://raw.githubusercontent.com/THEOplayer/flutter-theoplayer-sdk/main/doc/features.svg">
-
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Android, Android TV, Fire TV</th>
+<th>Web</th>
+<th>iOS, tvOS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Streaming</strong></td>
+<td colspan="2">MPEG-DASH (fmp4, CMAF), HLS (TS, CMAF), Progressive MP4, MP3</td>
+<td>HLS (TS, CMAF), Progressive MP4, MP3</td>
+</tr>
+<tr>
+<td><strong>Content Protection</strong></td>
+<td>Widevine</td>
+<td>Widevine, Fairplay</td>
+<td>Fairplay</td>
+</tr>
+<tr>
+<td><strong>DRM Connectors</strong></td>
+<td colspan="3">Through hooking into native implementation… check guides!</td>
+</tr>
+<tr>
+<td><strong>Subtitles &amp; Closed Captions</strong></td>
+<td colspan="3">In-stream subtitles supported by the platform</td>
+</tr>
+<tr>
+<td><strong>Metadata</strong></td>
+<td colspan="3">Event stream, emsg, ID3, EXT-X-DATERANGE</td>
+</tr>
+<tr>
+<td><strong>Advertising Integration</strong></td>
+<td colspan="3">Coming soon…</td>
+</tr>
+<tr>
+<td><strong>Analytics Connectors</strong></td>
+<td colspan="3">Coming soon…</td>
+</tr>
+<tr>
+<td><strong>Cast Integration</strong></td>
+<td colspan="3">Coming soon…</td>
+</tr>
+</tbody>
+</table>
 
 ## Getting Started
 
