@@ -22,7 +22,7 @@ In a later phase, we will optimize the SDKs for lower operating system versions 
 The underlying native platform SDKs have different feature set.
 First check the Dart documentation if you see behaviour differences on certain platforms.
 We try to keep the documentation in sync as much as possible.
-If you see no difference mentioned in behaviour, please consult with the [native SDK documentations](https://docs.theoplayer.com/).
+If you see no difference mentioned in behaviour, please consult with the [native SDK documentations](https://www.theoplayer.com/docs/theoplayer/).
 
 ## Version limitations
 
