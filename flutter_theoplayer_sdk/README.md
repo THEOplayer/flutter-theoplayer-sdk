@@ -37,8 +37,7 @@ For each platform, a dependency to the corresponding THEOplayer SDK is included 
 *_the initial version of the SDK relies on a local copy of `THEOplayer.chromeless.js` (and additional modules), so adding it manually is required!_
 
 In order to use one of these THEOplayer SDKs, it is necessary to obtain a valid THEOplayer license for that specific platform,
-i.e. HTML5, Android, and/or iOS. You can use your existing THEOplayer SDK license or request a
-[free trial account](https://www.theoplayer.com/free-trial-theoplayer?hsLang=en-us).
+i.e. HTML5, Android, and/or iOS. You can sign up for a THEOplayer SDK license through [our portal](https://portal.theoplayer.com/).
 
 If you have no previous experience in Flutter, we encourage you to first explore the
 [Flutter Documentation](https://docs.flutter.dev/),
