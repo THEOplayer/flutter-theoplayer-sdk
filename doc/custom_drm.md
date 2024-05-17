@@ -1,4 +1,4 @@
-## Using a custom DRM integration
+# Using a custom DRM integration
 
 The initial version of the THEOplayer Flutter SDK only support generic Widevine and Fairplay DRM playback.
 
@@ -8,7 +8,7 @@ In a later release the Flutter SDK will also add functionality to utilize the we
 The good news is that **the underlying platforms already support this functionality, so if you need to play a custom DRM stream, 
 you can leverage this knowledge, and you can implement a _(temporary)_ hybrid solution**.
 
-### Configuration in Flutter
+## Configuration in Flutter
 
 The current Flutter API is already taking into account the future custom extension of the DRM configurations.
 It already contains a `customIntegrationID` and an `integrationParameters` property to pass custom data:
@@ -37,7 +37,7 @@ SourceDescription(sources: [
 By specifying these values the underlying platform knows it has to use a custom DRM logic.
 Somehow we just have to make sure that the custom DRM logic is available on the native side.
 
-### Registering a custom DRM connector on Android
+## Registering a custom DRM connector on Android
 
 You can rely on any existing native Java/Kotlin implementation you have already, or take one from our 
 [samples repository](https://github.com/THEOplayer/samples-drm-integration/tree/master).
@@ -66,7 +66,7 @@ class MainActivity: FlutterActivity() {
 
 By using the exact same `customIntegrationId` on the native side, the underlying THEOplayer will know what to do when it sees a source with the same custom DRM ID.
 
-### Registering a custom DRM connector on iOS
+## Registering a custom DRM connector on iOS
 
 You can rely on any existing native Swift/ObjC implementation you have already, or take one from our 
 [samples repository](https://github.com/THEOplayer/samples-drm-integration/tree/master).
@@ -97,7 +97,7 @@ import THEOplayerSDK
 
 By using the exact same `customIntegrationId` on the native side, the underlying THEOplayer will know what to do when it sees a source with the same custom DRM ID.
 
-### Registering a custom DRM connector on Web
+## Registering a custom DRM connector on Web
 
 You can rely on any existing native Javascript/Typescript implementation you have already, or take one from our 
 [samples repository](https://github.com/THEOplayer/samples-drm-integration/tree/master).

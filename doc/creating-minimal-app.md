@@ -1,17 +1,17 @@
-## Creating a minimal demo app
+# Creating a minimal demo app
 
 In this section we start from an empty Flutter project, include a dependency to `flutter_theoplayer_sdk`, and deploy it on an Android or iOS device.
 
-### Table of Contents
+## Table of Contents
 - [Setting up a new project](#setting-up-a-new-project)
 - [Getting started on Android](#getting-started-on-android)
 - [Getting started on iOS](#getting-started-on-ios)
 - [Getting started on Web](#getting-started-on-web)
 
 
-### Setting up a new project
+## Setting up a new project
 
-#### Getting a new project ready
+### Getting a new project ready
 After [setting up your Flutter development environment](https://docs.flutter.dev/get-started/install)
 you can run the following command to create a new project from Terminal. (You can use Android Studio too)
 
@@ -48,15 +48,15 @@ $ cd flutter_theoplayer_sample_app
 $ flutter run
 ```
 
-#### Adding THEOplayer Flutter SDK
-##### Option 1: Adding THEOplayer Flutter SDK as dependency (Recommended)
+### Adding THEOplayer Flutter SDK
+#### Option 1: Adding THEOplayer Flutter SDK as dependency (Recommended)
 To add THEOplayer Flutter SDK as a dependency, you can simply fetch it from [pub.dev](https://pub.dev) using:
 
 ```bash
 $ flutter pub add theoplayer
 ```
 
-##### Option 2: Adding THEOplayer Flutter SDK as submodule
+#### Option 2: Adding THEOplayer Flutter SDK as submodule
 As an alternative, you can add the SDK as a submodule in your git project.
 This can be useful if you are trying to fork the project to [contribute](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/CONTRIBUTING.md) with us.
 
@@ -116,7 +116,7 @@ You can do it in 2 ways.
 
 Don't forget to run `melos bootstrap` again in the directory according to your choice from above.
 
-#### Adding THEOplayer to your view hierarchy
+### Adding THEOplayer to your view hierarchy
 
 1. Initialize THEOplayer (e.g. in your StatefulWidget)
 ```dart
@@ -171,7 +171,7 @@ Is there anything else to configure on the specific platforms?
 
 Check it below ⬇️
 
-### Getting started on Android
+## Getting started on Android
 
 The generated sample project doesn't have Internet permission by default (only in debug/profile mode).
 
@@ -197,13 +197,13 @@ defaultConfig {
 
 By using the `flutter run android` command, you can try out your application on an Android device.
 
-### Getting started on iOS
+## Getting started on iOS
 
 No changes are required.
 
 By using the `flutter run ios` command, you can try out your applicaiton on an iOS device.
 
-### Getting started on Web
+## Getting started on Web
 
 You need to acquire THEOplayer HTML5 SDK from [THEOportal](https://portal.theoplayer.com/) (or from an NPM package, e.g. from [6.9.0](https://registry.npmjs.org/theoplayer/-/theoplayer-6.9.0.tgz)).
 
