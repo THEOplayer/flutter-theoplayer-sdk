@@ -41,4 +41,4 @@ Currently, THEOplayer Flutter SDK is completely chromeless, the UI needs to be i
 ### Missing features
 THEOplayer Flutter SDK is not in feature parity yet with the native SDKs, new features will be added continuously.
 
-For the current feature list, please visit the [README](../README.md) page.
+For the current feature list, please visit the [README](../flutter_theoplayer_sdk/README.md) page.
