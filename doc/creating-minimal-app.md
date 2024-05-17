@@ -21,7 +21,7 @@ $ flutter create -a kotlin -i swift -t app --org com.theoplayer --description "N
 
 This will generate a basic project as a starting point for Android, iOS and Web development.
 
-```bash
+```
 Signing iOS app for device deployment using developer identity: "Apple Development: XXXXXXXXXXX"
 Creating project flutter_theoplayer_sample_app...
 Resolving dependencies in flutter_theoplayer_sample_app... 
