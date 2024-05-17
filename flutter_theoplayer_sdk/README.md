@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/THEOplayer/flutter-theoplayer-sdk/main/doc/theoplayer_flutter_sdk_logo.png">
+<img src="https://raw.githubusercontent.com/THEOplayer/flutter-theoplayer-sdk/main/doc/theoplayer_flutter_sdk_logo.png" />
 
 # THEOplayer Flutter SDK
 
