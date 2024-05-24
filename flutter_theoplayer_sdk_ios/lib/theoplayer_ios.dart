@@ -16,7 +16,7 @@ class THEOplayerIOS extends TheoplayerPlatform {
   }
 
   @override
-  Widget buildView(BuildContext context, THEOplayerConfig theoPlayerConfig, THEOplayerViewCreatedCallback createdCallback) {
+  Widget buildView(BuildContext context, THEOplayerConfig theoPlayerConfig, THEOplayerViewCreatedCallback createdCallback, int textureId) {
     // This is used in the platform side to register the view.
     const String viewType = 'com.theoplayer/theoplayer-view-native';
 

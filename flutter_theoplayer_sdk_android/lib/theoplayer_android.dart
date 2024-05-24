@@ -15,7 +15,7 @@ class THEOplayerAndroid extends TheoplayerPlatform {
   }
 
   @override
-  Widget buildView(BuildContext context, THEOplayerConfig theoPlayerConfig, THEOplayerViewCreatedCallback createdCallback) {
+  Widget buildView(BuildContext context, THEOplayerConfig theoPlayerConfig, THEOplayerViewCreatedCallback createdCallback, int textureId) {
     // This is used in the platform side to register the view.
     const String viewType = 'com.theoplayer/theoplayer-view-native';
 
@@ -23,49 +23,53 @@ class THEOplayerAndroid extends TheoplayerPlatform {
     Map<String, dynamic> creationParams = <String, dynamic>{};
     creationParams["playerConfig"] = theoPlayerConfig.toJson();
 
-    return PlatformViewLink(
-      viewType: viewType,
-      surfaceFactory: (context, controller) {
-        return AndroidViewSurface(
-          controller: controller as AndroidViewController,
-          gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
-          hitTestBehavior: PlatformViewHitTestBehavior.opaque,
-        );
-      },
-      onCreatePlatformView: (params) {
-        late AndroidViewController androidViewController;
-
-        if (theoPlayerConfig.androidConfig.useHybridComposition) {
-          androidViewController = PlatformViewsService.initExpensiveAndroidView(
-            id: params.id,
-            viewType: viewType,
-            layoutDirection: TextDirection.ltr,
-            creationParams: creationParams,
-            creationParamsCodec: const StandardMessageCodec(),
-            onFocus: () {
-              params.onFocusChanged(true);
-            },
+    if (theoPlayerConfig.androidConfig.viewComposition == AndroidViewComposition.TEXTURE) {
+      return Texture(textureId: textureId);
+    } else {
+      return PlatformViewLink(
+        viewType: viewType,
+        surfaceFactory: (context, controller) {
+          return AndroidViewSurface(
+            controller: controller as AndroidViewController,
+            gestureRecognizers: const <Factory<OneSequenceGestureRecognizer>>{},
+            hitTestBehavior: PlatformViewHitTestBehavior.opaque,
           );
-        } else {
-          androidViewController = PlatformViewsService.initAndroidView(
-            id: params.id,
-            viewType: viewType,
-            layoutDirection: TextDirection.ltr,
-            creationParams: creationParams,
-            creationParamsCodec: const StandardMessageCodec(),
-            onFocus: () {
-              params.onFocusChanged(true);
-            },
-          );
-        }
+        },
+        onCreatePlatformView: (params) {
+          late AndroidViewController androidViewController;
 
-        return androidViewController
-          ..addOnPlatformViewCreatedListener((id) {
-            params.onPlatformViewCreated(id);
-            createdCallback(THEOplayerViewControllerAndroid(id), context);
-          })
-          ..create();
-      },
-    );
+          if (theoPlayerConfig.androidConfig.viewComposition == AndroidViewComposition.HYBRID_COMPOSITION) {
+            androidViewController = PlatformViewsService.initExpensiveAndroidView(
+              id: params.id,
+              viewType: viewType,
+              layoutDirection: TextDirection.ltr,
+              creationParams: creationParams,
+              creationParamsCodec: const StandardMessageCodec(),
+              onFocus: () {
+                params.onFocusChanged(true);
+              },
+            );
+          } else {
+            androidViewController = PlatformViewsService.initAndroidView(
+              id: params.id,
+              viewType: viewType,
+              layoutDirection: TextDirection.ltr,
+              creationParams: creationParams,
+              creationParamsCodec: const StandardMessageCodec(),
+              onFocus: () {
+                params.onFocusChanged(true);
+              },
+            );
+          }
+
+          return androidViewController
+            ..addOnPlatformViewCreatedListener((id) {
+              params.onPlatformViewCreated(id);
+              createdCallback(THEOplayerViewControllerAndroid(id), context);
+            })
+            ..create();
+          },
+      );
+    }
   }
 }
