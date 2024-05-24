@@ -1,4 +1,4 @@
-<img src="https://raw.githubusercontent.com/THEOplayer/flutter-theoplayer-sdk/main/doc/theoplayer_flutter_sdk_logo.png">
+<img src="https://raw.githubusercontent.com/THEOplayer/flutter-theoplayer-sdk/main/doc/theoplayer_flutter_sdk_logo.png" />
 
 # THEOplayer Flutter SDK
 
@@ -37,8 +37,7 @@ For each platform, a dependency to the corresponding THEOplayer SDK is included 
 *_the initial version of the SDK relies on a local copy of `THEOplayer.chromeless.js` (and additional modules), so adding it manually is required!_
 
 In order to use one of these THEOplayer SDKs, it is necessary to obtain a valid THEOplayer license for that specific platform,
-i.e. HTML5, Android, and/or iOS. You can use your existing THEOplayer SDK license or request a
-[free trial account](https://www.theoplayer.com/free-trial-theoplayer?hsLang=en-us).
+i.e. HTML5, Android, and/or iOS. You can sign up for a THEOplayer SDK license through [our portal](https://portal.theoplayer.com/).
 
 If you have no previous experience in Flutter, we encourage you to first explore the
 [Flutter Documentation](https://docs.flutter.dev/),
@@ -57,14 +56,59 @@ Depending on the platform on which the application is deployed, a different set 
 If a feature is missing, additional help is needed, or you need to extend the package,
 please reach out to us for support.
 
-<img src="https://raw.githubusercontent.com/THEOplayer/flutter-theoplayer-sdk/main/doc/features.svg">
-
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Android, Android TV, Fire TV</th>
+<th>Web</th>
+<th>iOS, tvOS</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Streaming</strong></td>
+<td colspan="2">MPEG-DASH (fmp4, CMAF), HLS (TS, CMAF), Progressive MP4, MP3</td>
+<td>HLS (TS, CMAF), Progressive MP4, MP3</td>
+</tr>
+<tr>
+<td><strong>Content Protection</strong></td>
+<td>Widevine</td>
+<td>Widevine, Fairplay</td>
+<td>Fairplay</td>
+</tr>
+<tr>
+<td><strong>DRM Connectors</strong></td>
+<td colspan="3">Through hooking into native implementation… check guides!</td>
+</tr>
+<tr>
+<td><strong>Subtitles &amp; Closed Captions</strong></td>
+<td colspan="3">In-stream subtitles supported by the platform</td>
+</tr>
+<tr>
+<td><strong>Metadata</strong></td>
+<td colspan="3">Event stream, emsg, ID3, EXT-X-DATERANGE</td>
+</tr>
+<tr>
+<td><strong>Advertising Integration</strong></td>
+<td colspan="3">Coming soon…</td>
+</tr>
+<tr>
+<td><strong>Analytics Connectors</strong></td>
+<td colspan="3">Coming soon…</td>
+</tr>
+<tr>
+<td><strong>Cast Integration</strong></td>
+<td colspan="3">Coming soon…</td>
+</tr>
+</tbody>
+</table>
 
 ## Getting Started
 
 This section starts with creating a minimal demo app that integrates the `theoplayer` package,
 followed by an overview of the available properties and functionality of the THEOplayer component.
-A minimal example application including a basic user interface and demo sources is included in [this repository](./flutter_theoplayer_sdk/example),
+A minimal example application including a basic user interface and demo sources is included in [this repository](https://github.com/THEOplayer/flutter-theoplayer-sdk/tree/main/flutter_theoplayer_sdk/example),
 and discussed in the next section. Finally, an overview of features, limitations and known issues is listed.
 
 - [Creating a minimal demo app](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/creating-minimal-app.md)
