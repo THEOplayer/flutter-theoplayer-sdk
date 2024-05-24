@@ -26,7 +26,7 @@ abstract class TheoplayerPlatform extends PlatformInterface {
     _instance = instance;
   }
 
-  Widget buildView(BuildContext context, THEOplayerConfig theoPlayerConfig, THEOplayerViewCreatedCallback createdCallback) {
+  Widget buildView(BuildContext context, THEOplayerConfig theoPlayerConfig, THEOplayerViewCreatedCallback createdCallback, int textureId) {
     throw UnimplementedError('buildView(BuildContext) has not been implemented.');
   }
 }

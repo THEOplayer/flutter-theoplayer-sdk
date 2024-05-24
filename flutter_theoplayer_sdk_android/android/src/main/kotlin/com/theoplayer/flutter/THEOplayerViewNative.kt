@@ -68,7 +68,7 @@ internal class THEOplayerViewNative(
         val license = flutterPlayerConfig?.get("license") as? String
         val licenseUrl = flutterPlayerConfig?.get("licenseUrl") as? String
         useHybridComposition =
-            (flutterPlayerConfig?.get("androidConfig") as? Map<*, *>)?.get("useHybridComposition") as? Boolean == true
+            (flutterPlayerConfig?.get("androidConfig") as? Map<*, *>)?.get("viewComposition") as? String == "HYBRID_COMPOSITION"
 
         val playerConfigBuilder = THEOplayerConfig.Builder()
         license?.let { playerConfigBuilder.license(it) }

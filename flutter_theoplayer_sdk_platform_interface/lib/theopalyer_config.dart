@@ -34,15 +34,35 @@ class THEOplayerConfig {
 }
 
 class AndroidConfig {
-  final bool useHybridComposition;
+  @Deprecated("Use ")
+  late final bool useHybridComposition;
+  late final AndroidViewComposition viewComposition;
 
   // TODO: revisit this change after THEOplayer Android refactor with Surface.
   // with Flutter 3.19 useHybridComposition is the best way to render video with THEOplayer.
-  AndroidConfig({this.useHybridComposition = true});
+  @Deprecated("Use ")
+  AndroidConfig({this.useHybridComposition = true}) {
+    viewComposition = useHybridComposition ? AndroidViewComposition.HYBRID_COMPOSITION : AndroidViewComposition.TEXTURE_LAYER;
+  }
+
+  AndroidConfig.create({this.viewComposition = AndroidViewComposition.HYBRID_COMPOSITION}) {
+    useHybridComposition = false;
+  }
 
   Map<String, dynamic> toJson() => {
-        'useHybridComposition': useHybridComposition,
+        'viewComposition': viewComposition.name.toUpperCase(),
       };
+}
+/// https://github.com/flutter/flutter/wiki/Android-Platform-Views
+/// TODO: move to pigeons
+enum AndroidViewComposition {
+  /// initExpensiveAndroidView
+  HYBRID_COMPOSITION,
+  /// initAndroidView
+  TEXTURE_LAYER,
+  /// uses Texture
+  TEXTURE
+
 }
 
 class FullscreenConfig {
