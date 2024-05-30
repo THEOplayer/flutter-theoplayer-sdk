@@ -266,7 +266,7 @@ internal class THEOplayerViewNative(
     }
 
     override fun stopChromecast() {
-        tpv.cast?.chromecast?.start()
+        tpv.cast?.chromecast?.stop()
     }
 
     override fun setChromecastStartingSource(source: SourceDescription?) {
