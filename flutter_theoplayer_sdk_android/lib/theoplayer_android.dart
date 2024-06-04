@@ -4,6 +4,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:theoplayer_android/theoplayer_view_controller_android.dart';
+import 'package:theoplayer_platform_interface/platform/platform_players_service.dart';
 import 'package:theoplayer_platform_interface/theopalyer_config.dart';
 import 'package:theoplayer_platform_interface/theoplayer_platform_interface.dart';
 
@@ -15,6 +16,22 @@ class THEOplayerAndroid extends TheoplayerPlatform {
   }
 
   @override
+  void initalize(THEOplayerConfig theoPlayerConfig, InitializeNativeResultCallback callback) {
+    if (!theoPlayerConfig.androidConfig.viewComposition.isPlatformView) {
+      // Pass parameters to the platform side.
+      Map<String, dynamic> creationParams = <String, dynamic>{};
+      creationParams["playerConfig"] = theoPlayerConfig.toJson();
+
+      PlatformPlayersService.instance.createPlayer(creationParams).then((value) =>
+          callback(value)
+      );
+    } else {
+      // return -1 as default, as the [buildView] method doesn't care about this anymore for PlatformViews
+      callback(-1);
+    }
+  }
+
+  @override
   Widget buildView(BuildContext context, THEOplayerConfig theoPlayerConfig, THEOplayerViewCreatedCallback createdCallback, int textureId) {
     // This is used in the platform side to register the view.
     const String viewType = 'com.theoplayer/theoplayer-view-native';
@@ -23,8 +40,12 @@ class THEOplayerAndroid extends TheoplayerPlatform {
     Map<String, dynamic> creationParams = <String, dynamic>{};
     creationParams["playerConfig"] = theoPlayerConfig.toJson();
 
-    if (theoPlayerConfig.androidConfig.viewComposition == AndroidViewComposition.TEXTURE) {
-      return Texture(textureId: textureId);
+    if (!theoPlayerConfig.androidConfig.viewComposition.isPlatformView) {
+      var texture = Texture(textureId: textureId);
+      Future.delayed(Duration.zero, (){ // wait for the next tick, TODO: check microTasks
+        createdCallback(THEOplayerViewControllerAndroid(textureId), context);
+      });
+      return texture;
     } else {
       return PlatformViewLink(
         viewType: viewType,
