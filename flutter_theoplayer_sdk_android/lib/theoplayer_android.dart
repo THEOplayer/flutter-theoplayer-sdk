@@ -43,7 +43,10 @@ class THEOplayerAndroid extends TheoplayerPlatform {
     if (!theoPlayerConfig.androidConfig.viewComposition.isPlatformView) {
       var texture = Texture(textureId: textureId);
       Future.delayed(Duration.zero, (){ // wait for the next tick, TODO: check microTasks
-        createdCallback(THEOplayerViewControllerAndroid(textureId), context);
+        var controller = THEOplayerViewControllerAndroid(textureId);
+        // trigger the surface attachment
+        controller.configureSurface(textureId, 0, 0);
+        createdCallback(controller, context);
       });
       return texture;
     } else {
