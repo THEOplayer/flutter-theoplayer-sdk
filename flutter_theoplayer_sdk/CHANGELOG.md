@@ -1,3 +1,13 @@
+## [Unreleased]
+
+* Introduced `AndroidConfig.viewComposition` to support Texture-based rendering
+* Added `AndroidViewComposition.SURFACE_TEXTURE` to use SurfaceTexture on native Android (instead of PlatformViews)
+* Added `AndroidViewComposition.SURFACE_PRODUCER` to use SurfaceProducer on native Android (instead of Platorm Views)
+	- Only works from [Flutter 3.22.0](https://docs.flutter.dev/release/breaking-changes/android-surface-plugins#timeline)
+	- Supports [Texture-based rendering with Impeller](https://docs.flutter.dev/release/breaking-changes/android-surface-plugins#summary) rendering engine
+
+* Deprecated `AndroidConfig.useHybridComposition` in favor of `AndroidConfig.viewComposition` (use `AndroidViewComposition.HYBRID_COMPOSITION` for the previous behaviour)
+
 ## 7.0.0
 
 * Update THEOplayer to 7.0.0.
