@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:theoplayer_platform_interface/helpers/logger.dart';
 import 'package:theoplayer_platform_interface/platform/platform_helper_channels.dart';
 
 /// Provides access to the platform views service.
@@ -19,9 +20,8 @@ class PlatformPlayersService {
   }
 
   Future<int> createPlayer(Map<String, dynamic> creationParams) async {
-    //TODO: check callback and return the textureID
     var id = await PlatformHelperChannels.players.invokeMethod("createPlayer", creationParams);
-    print("YOLO: createID: $id");
+    debugLog("[PlatformPlayersService] createPlayer - created: $id");
     return Future.value(id);
   }
 
