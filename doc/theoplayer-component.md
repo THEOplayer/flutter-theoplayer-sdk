@@ -1,13 +1,13 @@
-## The THEOplayer component
+# The THEOplayer component
 
-### Architecture
+## Architecture
 
-<img src="https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/theoplayer_flutter_sdk_arch.png">
+<img src="https://raw.githubusercontent.com/THEOplayer/flutter-theoplayer-sdk/main/doc/theoplayer_flutter_sdk_arch.png" />
 
 THEOplayer Flutter SDK utilizes the well-known THEOplayer native SDKs under the hood 
 and exposes the APIs on a single API layer in Flutter to speed up prototyping and development.
 
-### Available APIs
+## Available APIs
 - Basic player APIs (play, pause, seek, etc...) on the `THEOplayer` instance
 - `SourceDescription`-related classes
 - Player events (`CANPLAY, PLAYING, TIMEUPDATE`, etc..)
@@ -15,7 +15,7 @@ and exposes the APIs on a single API layer in Flutter to speed up prototyping an
 - `Track`-related classes
 - Track events (`ADD_TRACK, REMOVE_TRACK, ADD_CUE, ENTER_CUE`, etc..)
 
-### API Reference
+## API Reference
 _To be completed._
 
 Please use your IDE's features to discover the available APIs.
