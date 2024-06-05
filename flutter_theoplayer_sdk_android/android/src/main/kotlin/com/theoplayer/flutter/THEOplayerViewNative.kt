@@ -126,6 +126,9 @@ internal class THEOplayerViewNative(
         tpv.onPause()
     }
 
+    override fun configureSurface(surfaceId: Long, width: Long, height: Long) {
+    }
+
     override fun setSource(source: FlutterSourceDescription?) {
         isFirstPlaying = false
         tpv.player.source = SourceTransformer.toSourceDescription(source)

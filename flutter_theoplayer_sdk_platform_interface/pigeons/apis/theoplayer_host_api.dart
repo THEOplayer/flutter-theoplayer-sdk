@@ -78,4 +78,7 @@ abstract class THEOplayerNativeAPI {
   void onLifecycleResume();
   
   void onLifecyclePause();
+
+  void configureSurface(int surfaceId, int width, int height);
+
 }

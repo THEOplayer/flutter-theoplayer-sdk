@@ -203,4 +203,9 @@ class THEOplayerViewControllerMobile extends THEOplayerViewController {
   @override
   void setPresentationMode(PresentationMode presentationMode, AutomaticFullscreenExitListener? automaticFullscreenExitListener) {
   }
+
+  @override
+  void configureSurface(int surfaceId, int width, int height) {
+    _nativeAPI.configureSurface(surfaceId, width, height);
+  }
 }

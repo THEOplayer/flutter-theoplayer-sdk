@@ -318,6 +318,10 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
         print("Unsupported presentationMode $presentationMode");
     }
   }
+
+  @override
+  void configureSurface(int surfaceId, int width, int height) {
+  }
 }
 
 extension on HTMLElement {
