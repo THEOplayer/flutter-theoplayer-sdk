@@ -52,7 +52,9 @@ class THEOplayerViewNative(
     private val audioTrackBridge: AudioTrackBridge
     private val videoTrackBridge: VideoTrackBridge
 
-    var surface: Surface? = null;
+    private var surface: Surface? = null;
+
+    var destroyListener: DestroyListener? = null;
 
     // Workaround to eliminate the initial transparent layout with initExpensiveAndroidView
     // TODO: remove it once initExpensiveAndroidView is not used.
@@ -129,6 +131,7 @@ class THEOplayerViewNative(
         audioTrackBridge.removeListeners()
         videoTrackBridge.removeListeners()
         tpv.onDestroy()
+        destroyListener?.onDestroyed();
     }
 
     // activity lifecycle events
@@ -287,4 +290,7 @@ class THEOplayerViewNative(
         tpv.player.stop()
     }
 
+    fun interface DestroyListener {
+        fun onDestroyed()
+    }
 }

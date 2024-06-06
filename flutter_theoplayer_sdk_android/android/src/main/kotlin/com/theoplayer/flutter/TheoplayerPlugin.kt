@@ -38,16 +38,23 @@ class TheoplayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
 
         when (call.method) {
             "createPlayer" -> {
-                Log.e("TheoplayerPlugin", "createPlayer - onMethodCall - arguments: ${call.arguments}")
+                Log.d("TheoplayerPlugin", "createPlayer - onMethodCall - arguments: ${call.arguments}")
 
                 //TODO: extract this logic
                 val flutterPlayerConfig = (call.arguments as? Map<String, Any>?)?.get("playerConfig") as? Map<*, *>
                 val useSurfaceTexture: Boolean = (flutterPlayerConfig?.get("androidConfig") as? Map<*, *>)?.get("viewComposition") as? String == "SURFACE_TEXTURE"
 
                 val entry = if (useSurfaceTexture) this.flutterPluginBinding.textureRegistry.createSurfaceTexture() else this.flutterPluginBinding.textureRegistry.createSurfaceProducer()
-                Log.e("TheoplayerPlugin", "createPlayer - entry created: ${entry.id()}")
+                Log.d("TheoplayerPlugin", "createPlayer - entry created: ${entry.id()}")
 
                 val theoplayer = this.theoPlayerViewFactory.createHeadless(flutterPluginBinding.applicationContext, entry, null);
+
+                theoplayer.destroyListener = THEOplayerViewNative.DestroyListener {
+                    Log.e("TheoplayerPlugin", "destroyListener - entry: ${entry.id()}")
+                    theoPlayers.remove(entry.id());
+                    surfaces.remove(entry.id());
+                    theoplayer.destroyListener = null;
+                }
 
                 theoPlayers.put(entry.id(), theoplayer);
                 surfaces.put(entry.id(), entry);
