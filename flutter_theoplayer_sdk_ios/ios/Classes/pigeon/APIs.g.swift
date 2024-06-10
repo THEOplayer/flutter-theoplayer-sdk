@@ -444,6 +444,7 @@ protocol THEOplayerNativeAPI {
   func dispose() throws
   func onLifecycleResume() throws
   func onLifecyclePause() throws
+  func configureSurface(surfaceId: Int64, width: Int64, height: Int64) throws
 }
 
 /// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
@@ -924,6 +925,23 @@ class THEOplayerNativeAPISetup {
       }
     } else {
       onLifecyclePauseChannel.setMessageHandler(nil)
+    }
+    let configureSurfaceChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.configureSurface", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      configureSurfaceChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let surfaceIdArg = args[0] is Int64 ? args[0] as! Int64 : Int64(args[0] as! Int32)
+        let widthArg = args[1] is Int64 ? args[1] as! Int64 : Int64(args[1] as! Int32)
+        let heightArg = args[2] is Int64 ? args[2] as! Int64 : Int64(args[2] as! Int32)
+        do {
+          try api.configureSurface(surfaceId: surfaceIdArg, width: widthArg, height: heightArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      configureSurfaceChannel.setMessageHandler(nil)
     }
   }
 }

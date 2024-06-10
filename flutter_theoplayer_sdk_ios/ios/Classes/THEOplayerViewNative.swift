@@ -213,6 +213,9 @@ extension THEOplayerViewNative: THEOplayerNativeAPI {
     func onLifecyclePause() throws {
         // do nothing
     }
-    
+
+    func configureSurface(surfaceId: Int64, width: Int64, height: Int64) throws {
+        // do nothing
+    }
     
 }

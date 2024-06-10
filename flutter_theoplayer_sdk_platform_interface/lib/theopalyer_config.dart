@@ -34,15 +34,44 @@ class THEOplayerConfig {
 }
 
 class AndroidConfig {
-  final bool useHybridComposition;
+  @Deprecated("Use [viewComposition]")
+  late final bool useHybridComposition;
+  late final AndroidViewComposition viewComposition;
 
   // TODO: revisit this change after THEOplayer Android refactor with Surface.
   // with Flutter 3.19 useHybridComposition is the best way to render video with THEOplayer.
-  AndroidConfig({this.useHybridComposition = true});
+  @Deprecated("Use [AndroidConfig.create]")
+  AndroidConfig({this.useHybridComposition = true}) {
+    viewComposition = useHybridComposition ? AndroidViewComposition.HYBRID_COMPOSITION : AndroidViewComposition.TEXTURE_LAYER;
+  }
+
+  AndroidConfig.create({this.viewComposition = AndroidViewComposition.SURFACE_TEXTURE}) {
+    useHybridComposition = false;
+  }
 
   Map<String, dynamic> toJson() => {
-        'useHybridComposition': useHybridComposition,
+        'viewComposition': viewComposition.name.toUpperCase(),
       };
+}
+/// https://github.com/flutter/flutter/wiki/Android-Platform-Views
+/// TODO: move to pigeons
+enum AndroidViewComposition {
+
+  /// initExpensiveAndroidView - using PlatformView to render the video
+  HYBRID_COMPOSITION(true),
+  /// initAndroidView - PlatformView - using PlatformView to render the video
+  TEXTURE_LAYER(true),
+
+  /// uses Texture instead of PlatformView
+  SURFACE_TEXTURE(false),
+
+  /// uses Texture(instead of PlatformView) with SurfaceProducer, works with Impeller too from Flutter 3.22
+  /// https://docs.flutter.dev/release/breaking-changes/android-surface-plugins
+  SURFACE_PRODUCER(false);
+
+  final bool isPlatformView;
+  const AndroidViewComposition(bool this.isPlatformView);
+
 }
 
 class FullscreenConfig {

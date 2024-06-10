@@ -43,6 +43,6 @@ class _PresentationModeAwareWidgetState extends State<PresentationModeAwareWidge
 
   @override
   Widget build(BuildContext context) {
-    return widget.presentationModeToCheck.contains(presentationMode) ? widget.player.getView() : Container(color: Colors.black,);
+    return Container(color: Colors.black, child: widget.presentationModeToCheck.contains(presentationMode) ? widget.player.getView() : Container());
   }
 }
