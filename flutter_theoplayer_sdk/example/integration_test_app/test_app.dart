@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:theoplayer/theoplayer.dart';
+import 'package:theoplayer/widget/chromeless_widget.dart';
 
 // Test license to load sources from localhost and theoplayer.com domains
 // ignore: constant_identifier_names
@@ -9,8 +10,9 @@ const TEST_LICENSE = String.fromEnvironment("TEST_LICENSE", defaultValue: "");
 
 class TestApp extends StatefulWidget {
   final _playerReady = Completer();
+  final AndroidViewComposition androidViewComposition;
 
-  TestApp({super.key});
+  TestApp({super.key, this.androidViewComposition = AndroidViewComposition.HYBRID_COMPOSITION});
 
   @override
   State<TestApp> createState() => _TestAppState();
@@ -36,7 +38,7 @@ class _TestAppState extends State<TestApp> {
     player = THEOplayer(
         theoPlayerConfig: THEOplayerConfig(
           license: TEST_LICENSE,
-          androidConfiguration: AndroidConfig(useHybridComposition: true)        ),
+          androidConfiguration: AndroidConfig.create(viewComposition: widget.androidViewComposition)        ),
         onCreate: () {
           print("TestApp - THEOplayer - onCreate");
           player.addEventListener(PlayerEventTypes.SOURCECHANGE, (event) {
@@ -101,7 +103,7 @@ class _TestAppState extends State<TestApp> {
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
-                        ChromelessPlayer(key: const Key("testChromelessPlayer"), player: player),
+                        ChromelessPlayerView(key: const Key("testChromelessPlayer"), player: player),
                       ],
 
                     ),
@@ -113,21 +115,5 @@ class _TestAppState extends State<TestApp> {
         ),
       ),
     );
-  }
-}
-
-class ChromelessPlayer extends StatelessWidget {
-  static GlobalKey globalKey = GlobalKey();
-
-  const ChromelessPlayer({
-    super.key,
-    required this.player,
-  });
-
-  final THEOplayer player;
-
-  @override
-  Widget build(BuildContext context) {
-    return player.getView();
   }
 }

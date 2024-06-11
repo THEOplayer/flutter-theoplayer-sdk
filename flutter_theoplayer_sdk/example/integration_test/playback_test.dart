@@ -10,43 +10,54 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:theoplayer/theoplayer.dart';
+import 'package:theoplayer/widget/chromeless_widget.dart';
 
 import '../integration_test_app/test_app.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('Test basic playback', (WidgetTester tester) async {
-    TestApp app = TestApp();
-    await tester.pumpWidget(app);
-
-    final chromlessPlayerView = find.byKey(const Key('testChromelessPlayer'));
-    await tester.ensureVisible(chromlessPlayerView);
-    final player = (tester.firstElement(chromlessPlayerView).widget as ChromelessPlayer).player;
-    await tester.pumpAndSettle();
-    await app.waitForPlayerReady();
-
-    print("Testing isInitialized()");
-    expect(player.isInitialized(), isTrue);
-
-    print("Testing isPaused()");
-    expect(player.isPaused(), isTrue);
-
-    player.setMuted(true);
-    player.setAutoplay(true);
-
-    print("Setting source");
-
-    player.setSource(SourceDescription(sources: [
-      TypedSource(src: "https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8"),
-    ]));
-
-    await tester.pumpAndSettle(const Duration(seconds: 10));
-
-    print("Testing playback duration():  ${player.getDuration()}");
-    expect(player.getDuration() >= 0, isTrue);
-
-    print("Testing playback currentTime():  ${player.getCurrentTime()}");
-    expect(player.getCurrentTime() >= 5, isTrue);
+  testWidgets('Test basic playback with HYBRID_COMPOSITION', (WidgetTester tester) async {
+    await runBasicPlaybackTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
   });
+
+  // the only difference is is on Android
+  testWidgets('Test basic playback with SURFACE_TEXTURE', (WidgetTester tester) async {
+    await runBasicPlaybackTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
+  });
+}
+
+Future<void> runBasicPlaybackTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
+  TestApp app = TestApp(androidViewComposition: androidViewComposition,);
+  await tester.pumpWidget(app);
+
+  final chromlessPlayerView = find.byKey(const Key('testChromelessPlayer'));
+  await tester.ensureVisible(chromlessPlayerView);
+  final player = (tester.firstElement(chromlessPlayerView).widget as ChromelessPlayerView).player;
+  await tester.pumpAndSettle();
+  await app.waitForPlayerReady();
+  await tester.pumpAndSettle();
+
+  print("Testing isInitialized()");
+  expect(player.isInitialized(), isTrue);
+
+  print("Testing isPaused()");
+  expect(player.isPaused(), isTrue);
+
+  player.setMuted(true);
+  player.setAutoplay(true);
+
+  print("Setting source");
+
+  player.setSource(SourceDescription(sources: [
+    TypedSource(src: "https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8"),
+  ]));
+
+  await tester.pumpAndSettle(const Duration(seconds: 10));
+
+  print("Testing playback duration():  ${player.getDuration()}");
+  expect(player.getDuration() >= 0, isTrue);
+
+  print("Testing playback currentTime():  ${player.getCurrentTime()}");
+  expect(player.getCurrentTime() >= 5, isTrue);
 }
