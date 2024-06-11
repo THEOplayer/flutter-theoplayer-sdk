@@ -1,6 +1,9 @@
 package com.theoplayer.flutter
 
 import android.content.Context
+import android.os.Build
+import android.util.Log
+import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
@@ -17,6 +20,9 @@ import com.theoplayer.flutter.transformers.SourceTransformer
 import com.theoplayer.flutter.transformers.TimeRangeTransformer
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.platform.PlatformView
+import io.flutter.view.TextureRegistry
+import io.flutter.view.TextureRegistry.SurfaceProducer
+import io.flutter.view.TextureRegistry.SurfaceTextureEntry
 import java.util.Date
 
 typealias FlutterSourceDescription = com.theoplayer.flutter.pigeon.SourceDescription
@@ -24,12 +30,18 @@ typealias FlutterReadyState = com.theoplayer.flutter.pigeon.ReadyState
 typealias FlutterPreloadType = com.theoplayer.flutter.pigeon.PreloadType
 typealias FlutterTimeRange = com.theoplayer.flutter.pigeon.TimeRange
 
-internal class THEOplayerViewNative(
+class THEOplayerViewNative(
     context: Context,
     id: Int,
     creationParams: Map<String, Any>?,
     messenger: BinaryMessenger
 ) : PlatformView, THEOplayerNativeAPI {
+
+    constructor(context: Context, entry: TextureRegistry.TextureEntry, creationParams: Map<String, Any>?, messenger: BinaryMessenger) : this(context, entry.id().toInt(), creationParams, messenger) {
+        surfaceEntry = entry;
+    }
+
+    private var surfaceEntry: TextureRegistry.TextureEntry? = null
 
     private val theoplayerWrapper: LinearLayout
     private val tpv: THEOplayerView
@@ -39,6 +51,10 @@ internal class THEOplayerViewNative(
     private val textTrackBridge: TextTrackBridge
     private val audioTrackBridge: AudioTrackBridge
     private val videoTrackBridge: VideoTrackBridge
+
+    private var surface: Surface? = null;
+
+    var destroyListener: DestroyListener? = null;
 
     // Workaround to eliminate the initial transparent layout with initExpensiveAndroidView
     // TODO: remove it once initExpensiveAndroidView is not used.
@@ -68,7 +84,7 @@ internal class THEOplayerViewNative(
         val license = flutterPlayerConfig?.get("license") as? String
         val licenseUrl = flutterPlayerConfig?.get("licenseUrl") as? String
         useHybridComposition =
-            (flutterPlayerConfig?.get("androidConfig") as? Map<*, *>)?.get("useHybridComposition") as? Boolean == true
+            (flutterPlayerConfig?.get("androidConfig") as? Map<*, *>)?.get("viewComposition") as? String == "HYBRID_COMPOSITION"
 
         val playerConfigBuilder = THEOplayerConfig.Builder()
         license?.let { playerConfigBuilder.license(it) }
@@ -115,6 +131,7 @@ internal class THEOplayerViewNative(
         audioTrackBridge.removeListeners()
         videoTrackBridge.removeListeners()
         tpv.onDestroy()
+        destroyListener?.onDestroyed();
     }
 
     // activity lifecycle events
@@ -126,9 +143,26 @@ internal class THEOplayerViewNative(
         tpv.onPause()
     }
 
+    override fun configureSurface(surfaceId: Long, width: Long, height: Long) {
+
+        if (surface == null) {
+
+            surface = when(surfaceEntry) {
+                is SurfaceTextureEntry -> Surface((surfaceEntry as SurfaceTextureEntry).surfaceTexture())
+                is SurfaceProducer -> (surfaceEntry as SurfaceProducer).surface
+                else -> {
+                    throw Exception("Unsupported surface: $surfaceEntry");
+                }
+            }
+        }
+        Log.d("[THEOplayerViewNative]", "setCustomSurface: " + surface + ", valid: " + surface!!.isValid + ", w: " + width + ", h: " + height );
+        tpv.player.setCustomSurface(surface, width.toInt(), height.toInt());
+    }
+
     override fun setSource(source: FlutterSourceDescription?) {
         isFirstPlaying = false
         tpv.player.source = SourceTransformer.toSourceDescription(source)
+
     }
 
     override fun getSource(): FlutterSourceDescription? {
@@ -207,6 +241,14 @@ internal class THEOplayerViewNative(
         return PlayerEnumTransformer.toFlutterPreloadType(tpv.player.preload)
     }
 
+    override fun setAllowBackgroundPlayback(allowBackgroundPlayback: Boolean) {
+        tpv.settings.setAllowBackgroundPlayback(allowBackgroundPlayback)
+    }
+
+    override fun allowBackgroundPlayback(): Boolean {
+        return tpv.settings.allowBackgroundPlayback()
+    }
+
     override fun getReadyState(): FlutterReadyState {
         return PlayerEnumTransformer.toFlutterReadyState(tpv.player.readyState)
     }
@@ -248,4 +290,7 @@ internal class THEOplayerViewNative(
         tpv.player.stop()
     }
 
+    fun interface DestroyListener {
+        fun onDestroyed()
+    }
 }

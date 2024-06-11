@@ -258,7 +258,7 @@ interface Ad {
  * <br/> - `'midroll-and-postroll'`: Mid- and postrolls are preloaded.
  *
  * @remarks
- * <br/> - For Google IMA, preloading starts 4 seconds before ad playback.
+ * <br/> - For Google IMA, preloading starts 8 seconds before ad playback.
  *
  * @category Ads
  * @public
@@ -271,7 +271,6 @@ type AdPreloadType = 'none' | 'midroll-and-postroll';
  *
  * @remarks
  * <br/> - An ad is loaded when the ad resource (e.g. VAST file) is downloaded.
- * <br/> - another remark
  *
  * @category Ads
  * @public
@@ -921,7 +920,7 @@ interface AdDescription {
      *
      * @defaultValue
      * <br/> - `true` for live content,
-     * <br/> - `false` for VOD content
+     * <br/> - `false` for VOD content.
      */
     replaceContent?: boolean;
     /**
@@ -1079,6 +1078,7 @@ interface IMAAdDescription extends AdDescription {
      *
      * @remarks
      * <br/> - VAST, VMAP and VPAID are supported.
+     * <br/> - Overlay ads and banners are only displayed if the container element (the player) is big enough in pixels.
      */
     sources: string | AdSource;
     /**
@@ -4495,11 +4495,11 @@ interface UpdateQualityEvent extends Event<'update'> {
  */
 interface Quality extends EventDispatcher<QualityEventMap> {
     /**
-     * The average bandwidth of the quality.
+     * The average bandwidth of the quality, in bits per second.
      */
     readonly averageBandwidth?: number;
     /**
-     * The required bandwidth for the quality.
+     * The required bandwidth for the quality, in bits per second.
      */
     readonly bandwidth: number;
     /**
@@ -6288,7 +6288,7 @@ type EdgeStyle = 'none' | 'dropshadow' | 'raised' | 'depressed' | 'uniform';
  * The adaptive bitrate strategy of the first segment, represented by a value from the following list:
  * <br/> - `'performance'`: The player will optimize ABR behavior to focus on the performance of the player. This strategy initiates playback with the lowest quality suitable for the device which means faster start-up time.
  * <br/> - `'quality'`: The player will optimize ABR behavior to focus displaying the best visual quality to the end-user. This strategy initiates playback with the highest bit rate suitable for the device.
- * <br/> - `'bandwidth'`: The player will optimize the ABR behavior to focus on displaying the most optimal quality based on historic data of available bandwidth and knowledge of the network conditions.
+ * <br/> - `'bandwidth'`: The player will optimize the ABR behavior to focus on displaying the most optimal quality based on historic data of available bandwidth and knowledge of the network conditions. When no historic data is available, the player will start playback at a medium bitrate quality (up to 2.5 Mbps).
  *
  * @category ABR
  * @public
@@ -6327,7 +6327,7 @@ interface ABRStrategyConfiguration {
     metadata?: ABRMetadata;
 }
 /**
- * The adaptive bitrate stratey.
+ * The adaptive bitrate strategy.
  *
  * @category ABR
  * @public
@@ -6378,6 +6378,8 @@ interface ABRConfiguration {
      * If the player detects that the decoder is unable to hold so much data,
      * it will reduce `maxBufferLength` and restrict `targetBuffer` to be less than
      * this maximum.
+     *
+     * @defaultValue `Infinity`
      */
     readonly maxBufferLength: number;
     /**
@@ -12246,6 +12248,14 @@ interface MediaMelonConfiguration {
      * <br/> - When omitted, will not be reported to Media Melon.
      */
     subscriberID?: string;
+    /**
+     * The URL of the media metadata.
+     */
+    metaURL?: string;
+    /**
+     * The content asset identifier.
+     */
+    assetID?: string;
 }
 
 /**

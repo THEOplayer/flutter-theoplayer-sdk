@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:theoplayer/widget/fullscreen_widget.dart';
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
 import 'package:theoplayer_platform_interface/theopalyer_config.dart';
 import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
@@ -31,14 +33,23 @@ typedef PlayerCreatedCallback = void Function();
 /// Callback that's triggered every time the internal player state is changing. See [THEOplayer.setStateListener].
 typedef StateChangeListener = void Function();
 
+/// Signature for a function that builds a fullscreen widget given an [THEOplayer].
+///
+/// Used by [THEOplayer.fullscreenBuilder].
+typedef FullscreenWidgetBuilder = Widget Function(BuildContext context, THEOplayer theoplayer);
+
 /// Class to initialize and interact with THEOplayer
 class THEOplayer implements EventDispatcher {
   final THEOplayerConfig theoPlayerConfig;
   final PlayerCreatedCallback? onCreate;
+  late final FullscreenWidgetBuilder _fullscreenBuilder;
   late final PlayerState _playerState;
   late final THEOplayerView _tpv;
   late THEOplayerViewController? _theoPlayerViewController;
   AppLifecycleListener? _lifecycleListener;
+  late BuildContext _currentContext;
+
+  final globalKey = GlobalKey();
 
   final TextTracksHolder _textTrackListHolder = TextTracksHolder();
   final AudioTracksHolder _audioTrackListHolder = AudioTracksHolder();
@@ -47,12 +58,13 @@ class THEOplayer implements EventDispatcher {
   /// Initialize THEOplayer with a [THEOplayerConfig].
   /// [onCreate] is called once the underlying native THEOplayerView is fully created and available to use.
 
-  THEOplayer({required this.theoPlayerConfig, this.onCreate}) {
+  THEOplayer({required this.theoPlayerConfig, this.onCreate, FullscreenWidgetBuilder? fullscreenBuilder}) {
     _playerState = PlayerState();
     _tpv = THEOplayerView(
-        key: UniqueKey(),
+        key: globalKey,
         theoPlayerConfig: theoPlayerConfig,
-        onCreated: (THEOplayerViewController viewController) {
+        onCreated: (THEOplayerViewController viewController, BuildContext context) {
+          _currentContext = context;
           _theoPlayerViewController = viewController;
           _playerState.setViewController(_theoPlayerViewController!);
           _textTrackListHolder.setup(viewController.getTextTracks());
@@ -62,22 +74,25 @@ class THEOplayer implements EventDispatcher {
           onCreate?.call();
           _playerState.initialized();
         });
+    _fullscreenBuilder = fullscreenBuilder ??
+        (BuildContext context, THEOplayer theoplayer) {
+          return FullscreenStatefulWidget(
+            theoplayer: theoplayer,
+            fullscreenConfig: theoPlayerConfig.fullscreenConfig,
+          );
+        };
   }
 
   void _setupLifeCycleListeners() {
-    _lifecycleListener = AppLifecycleListener(
-      onResume: (){
-        _theoPlayerViewController?.onLifecycleResume();
-      },
-      onPause: () {
-        _theoPlayerViewController?.onLifecyclePause();
-      },
-      onStateChange: (state) {
-        if (kDebugMode) {
-          print("THEOplayer: Detected lifecycle change: $state");
-        }
+    _lifecycleListener = AppLifecycleListener(onResume: () {
+      _theoPlayerViewController?.onLifecycleResume();
+    }, onPause: () {
+      _theoPlayerViewController?.onLifecyclePause();
+    }, onStateChange: (state) {
+      if (kDebugMode) {
+        print("THEOplayer: Detected lifecycle change: $state");
       }
-    );
+    });
   }
 
   /// Returns the player widget that can be added to the view hierarchy to show videos
@@ -232,7 +247,7 @@ class THEOplayer implements EventDispatcher {
   /// Remarks:
   /// * 'metadata' loads enough resources to be able to determine the [THEOplayer.getDuration].
   /// * 'auto' loads media up to ABRConfiguration.targetBuffer.
-  /// 
+  ///
   /// * ABRConfiguration is not exposed yet in Flutter.
   void setPreload(PreloadType preload) {
     _playerState.preload = preload;
@@ -296,6 +311,20 @@ class THEOplayer implements EventDispatcher {
     return _playerState.played;
   }
 
+  /// Set whether playback continues when the app goes to background.
+  ///
+  /// Remarks:
+  /// * on Web this flag has no impact.
+  void setAllowBackgroundPlayback(bool allowBackgroundPlayback) {
+    _playerState.allowBackgroundPlayback = allowBackgroundPlayback;
+    _theoPlayerViewController?.setAllowBackgroundPlayback(allowBackgroundPlayback);
+  }
+
+  /// Whether playback continues when the app goes to background.
+  bool allowBackgroundPlayback() {
+    return _playerState.allowBackgroundPlayback;
+  }
+
   /// The last error that occurred for the current source, if any.
   String? getError() {
     return _playerState.error;
@@ -309,6 +338,65 @@ class THEOplayer implements EventDispatcher {
   void stop() {
     _theoPlayerViewController?.stop();
     _playerState.resetState();
+  }
+
+  PresentationMode getPresentationMode() {
+    return _playerState.presentationMode;
+  }
+
+  void setPresentationMode(PresentationMode presentationMode) {
+    if (_playerState.presentationMode == presentationMode) {
+      return;
+    }
+
+    PresentationMode previousPresentationMode = _playerState.presentationMode;
+    _playerState.presentationMode = presentationMode;
+
+    Future? fullscreenPresentingFuture;
+
+    switch (presentationMode) {
+      case PresentationMode.FULLSCREEN:
+        fullscreenPresentingFuture = Navigator.of(_currentContext, rootNavigator: true).push(MaterialPageRoute(
+            builder: (context) {
+              return _fullscreenBuilder(context, this);
+            },
+            settings: null));
+
+        fullscreenPresentingFuture.then((value) => restorePlayerStateAfterLeavingFullscreen());
+
+        //only used on web for now:
+        _theoPlayerViewController?.setPresentationMode(presentationMode, () {
+          if (fullscreenPresentingFuture != null) {
+            Navigator.of(_currentContext, rootNavigator: true).maybePop();
+          }
+        });
+      case PresentationMode.INLINE:
+        if (previousPresentationMode == PresentationMode.FULLSCREEN) {
+          if (kIsWeb) {
+            // web is smoother with maybePop()
+            // TODO: check later
+            Navigator.of(_currentContext, rootNavigator: true).maybePop();
+          } else {
+            Navigator.of(_currentContext, rootNavigator: true).pop();
+          }
+          //NOTE: fullscreenPresentingFuture still will be called, if any
+        }
+      default:
+        print("Unsupported presentationMode $presentationMode");
+    }
+  }
+
+  void restorePlayerStateAfterLeavingFullscreen() {
+    if (kDebugMode) {
+      print("THEOplayer: Exit fullscreen");
+    }
+    _playerState.presentationMode = PresentationMode.INLINE;
+    SystemChrome.setPreferredOrientations(theoPlayerConfig.fullscreenConfig.preferredRestoredOrientations).then((value) => {
+      SystemChrome.restoreSystemUIOverlays()
+    });
+
+    //only used on web for now:
+    _theoPlayerViewController?.setPresentationMode(PresentationMode.INLINE, null);
   }
 
   /// Releases and destroys all resources

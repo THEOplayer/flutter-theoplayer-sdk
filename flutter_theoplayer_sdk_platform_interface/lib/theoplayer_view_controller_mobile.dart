@@ -154,6 +154,14 @@ class THEOplayerViewControllerMobile extends THEOplayerViewController {
     return _nativeAPI.getPlayed();
   }
 
+  void setAllowBackgroundPlayback(bool allowBackgroundPlayback) {
+    _nativeAPI.setAllowBackgroundPlayback(allowBackgroundPlayback);
+  }
+
+  Future<bool> allowBackgroundPlayback() {
+    return _nativeAPI.allowBackgroundPlayback();
+  }
+
   Future<String?> getError() {
     return _nativeAPI.getError();
   }
@@ -190,5 +198,14 @@ class THEOplayerViewControllerMobile extends THEOplayerViewController {
   @override
   void onLifecycleResume() {
     _nativeAPI.onLifecycleResume();
+  }
+  
+  @override
+  void setPresentationMode(PresentationMode presentationMode, AutomaticFullscreenExitListener? automaticFullscreenExitListener) {
+  }
+
+  @override
+  void configureSurface(int surfaceId, int width, int height) {
+    _nativeAPI.configureSurface(surfaceId, width, height);
   }
 }

@@ -36,7 +36,12 @@ class TheoplayerWeb extends TheoplayerPlatform {
   }
 
   @override
-  Widget buildView(BuildContext context, THEOplayerConfig theoPlayerConfig, THEOplayerViewCreatedCallback createdCallback) {
+  void initalize(THEOplayerConfig theoPlayerConfig, InitializeNativeResultCallback callback) {
+    callback(TheoplayerPlatform.UNSUPPORTED_TEXTURE_ID);
+  }
+
+  @override
+  Widget buildView(BuildContext context, THEOplayerConfig theoPlayerConfig, THEOplayerViewCreatedCallback createdCallback, int textureId) {
     // Pass parameters to the platform side.
     Map<String, dynamic> creationParams = <String, dynamic>{};
 
@@ -51,7 +56,7 @@ class TheoplayerWeb extends TheoplayerPlatform {
       viewType: viewType,
       creationParams: creationParams,
       onPlatformViewCreated: (id) {
-        createdCallback(THEOplayerViewControllerWeb(id, ui.platformViewRegistry.getViewById(id) as HTMLElement, theoPlayerConfig));
+        createdCallback(THEOplayerViewControllerWeb(id, ui.platformViewRegistry.getViewById(id) as HTMLElement, theoPlayerConfig), context);
       },
     );
   }

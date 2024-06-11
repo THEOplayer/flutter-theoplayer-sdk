@@ -67,6 +67,10 @@ abstract class THEOplayerViewController implements EventDispatcher {
 
   Future<List<TimeRange?>> getPlayed();
 
+  void setAllowBackgroundPlayback(bool allowBackgroundPlayback);
+
+  Future<bool> allowBackgroundPlayback();
+
   Future<String?> getError();
 
   TextTracks getTextTracks();
@@ -81,6 +85,20 @@ abstract class THEOplayerViewController implements EventDispatcher {
 
   // application lifecycle listeners
   void onLifecycleResume();
-  
+
   void onLifecyclePause();
+
+  //PresentationMode getPresentationMode();
+
+  void setPresentationMode(PresentationMode presentationMode, AutomaticFullscreenExitListener? automaticFullscreenExitListener);
+
+  void configureSurface(int surfaceId, int width, int height);
+}
+
+typedef AutomaticFullscreenExitListener = void Function();
+
+enum PresentationMode {
+  INLINE,
+  FULLSCREEN,
+  PIP,
 }

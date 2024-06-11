@@ -6,6 +6,11 @@ on:
 
 jobs:
   build_android:
+
+    strategy:
+      matrix:
+        flutter_version: ['stable', 'beta']
+
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
@@ -17,10 +22,10 @@ jobs:
         distribution: 'zulu'
         java-version: 17
 
-    - name: Setup flutter
+    - name: Setup Flutter (${{ matrix.flutter_version }} channel)
       uses: subosito/flutter-action@v2
       with:
-        channel: 'stable' # or: 'beta', 'dev', 'master' (or 'main')
+        channel: ${{ matrix.flutter_version }} # or: 'beta', 'stable', 'master'
         cache: true
         cache-key: 'flutter-:os:-:channel:-:version:-:arch:-:hash:' # optional, change this to force refresh cache
         cache-path: '${{ runner.tool_cache }}/flutter/:channel:-:version:-:arch:' # optional, change this to specify the cache path
@@ -99,7 +104,7 @@ jobs:
     - name: Save APK to artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: example_app.apk
+        name: example_app-${{ matrix.flutter_version }}.apk
         path: flutter_theoplayer_sdk/example/build/app/outputs/flutter-apk/app-release.apk
         retention-days: 5
 

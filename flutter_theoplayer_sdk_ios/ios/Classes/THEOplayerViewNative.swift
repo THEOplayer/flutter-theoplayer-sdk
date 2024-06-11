@@ -6,7 +6,7 @@ import THEOplayerSDK
 //TODO: https://github.com/flutter/packages/blob/main/packages/pigeon/example/README.md#swift
 extension FlutterError: Error {}
 
-class THEOplayerViewNative: NSObject, FlutterPlatformView {
+class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDelegate {
     private let _view: UIView
     private let _theoplayer: THEOplayer
     private let _pigeonMessenger: PigeonBinaryMessengerWrapper
@@ -15,9 +15,14 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView {
     private let _textTrackBridge: TextTrackBridge
     private let _audioTrackBridge: AudioTrackBridge
     private let _videoTrackBridge: VideoTrackBridge
+    private var _allowBackgroundPlayback = false
 
     func view() -> UIView {
         return _view
+    }
+    
+    func shouldContinueAudioPlaybackInBackground() -> Bool {
+        return self._allowBackgroundPlayback
     }
 
     init(frame: CGRect, viewIdentifier viewId: Int64, arguments args: Any?, binaryMessenger messenger: FlutterBinaryMessenger?) {
@@ -56,6 +61,7 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView {
         super.init()
         
         THEOplayerNativeAPISetup.setUp(binaryMessenger: _pigeonMessenger, api: self)
+        _theoplayer.backgroundPlaybackDelegate = self
     }
 }
 
@@ -144,6 +150,14 @@ extension THEOplayerViewNative: THEOplayerNativeAPI {
         return PlayerEnumTransformer.toFlutterPreloadType(preload: _theoplayer.preload)
     }
     
+    func setAllowBackgroundPlayback(allowBackgroundPlayback: Bool) throws {
+        self._allowBackgroundPlayback = allowBackgroundPlayback
+    }
+    
+    func allowBackgroundPlayback() throws -> Bool {
+        return self._allowBackgroundPlayback
+    }
+    
     func getReadyState() throws -> ReadyState {
         return PlayerEnumTransformer.toFlutterReadyState(readyState: _theoplayer.readyState)
     }
@@ -199,6 +213,9 @@ extension THEOplayerViewNative: THEOplayerNativeAPI {
     func onLifecyclePause() throws {
         // do nothing
     }
-    
+
+    func configureSurface(surfaceId: Int64, width: Int64, height: Int64) throws {
+        // do nothing
+    }
     
 }

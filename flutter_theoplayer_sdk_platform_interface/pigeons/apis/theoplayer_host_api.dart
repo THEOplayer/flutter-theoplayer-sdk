@@ -64,6 +64,10 @@ abstract class THEOplayerNativeAPI {
 
   List<TimeRange> getPlayed();
 
+  void setAllowBackgroundPlayback(bool allowBackgroundPlayback);
+
+  bool allowBackgroundPlayback();
+
   String? getError();
 
   void stop();
@@ -74,4 +78,7 @@ abstract class THEOplayerNativeAPI {
   void onLifecycleResume();
   
   void onLifecyclePause();
+
+  void configureSurface(int surfaceId, int width, int height);
+
 }

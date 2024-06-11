@@ -9,6 +9,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
+import 'package:theoplayer/widget/chromeless_widget.dart';
 
 import '../integration_test_app/test_app.dart';
 
@@ -22,7 +23,7 @@ void main() {
     //await _setupPlayer();
     final chromlessPlayerView = find.byKey(const Key('testChromelessPlayer'));
     await tester.ensureVisible(chromlessPlayerView);
-    final player = (tester.firstElement(chromlessPlayerView).widget as ChromelessPlayer).player;
+    final player = (tester.firstElement(chromlessPlayerView).widget as ChromelessPlayerView).player;
 
     await tester.pumpAndSettle();
     await app.waitForPlayerReady();
