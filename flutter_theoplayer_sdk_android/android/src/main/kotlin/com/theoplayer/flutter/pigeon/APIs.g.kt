@@ -574,6 +574,8 @@ interface THEOplayerNativeAPI {
   fun onLifecycleResume()
   fun onLifecyclePause()
   fun configureSurface(surfaceId: Long, width: Long, height: Long)
+  fun startChromecast()
+  fun stopChromecast()
 
   companion object {
     /** The codec used by THEOplayerNativeAPI. */
@@ -1187,6 +1189,40 @@ interface THEOplayerNativeAPI {
             var wrapped: List<Any?>
             try {
               api.configureSurface(surfaceIdArg, widthArg, heightArg)
+              wrapped = listOf<Any?>(null)
+            } catch (exception: Throwable) {
+              wrapped = wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.startChromecast", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            var wrapped: List<Any?>
+            try {
+              api.startChromecast()
+              wrapped = listOf<Any?>(null)
+            } catch (exception: Throwable) {
+              wrapped = wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.stopChromecast", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            var wrapped: List<Any?>
+            try {
+              api.stopChromecast()
               wrapped = listOf<Any?>(null)
             } catch (exception: Throwable) {
               wrapped = wrapError(exception)
