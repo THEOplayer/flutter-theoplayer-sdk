@@ -160,6 +160,11 @@ class _MyAppState extends State<MyApp> {
                                 player.startChromecast();
                               },
                               child: const Text("start casting")),
+                          FilledButton(
+                              onPressed: (){
+                                player.stopChromecast();
+                              },
+                              child: const Text("stop casting")),
                           Column(
                             children: [
                               const Text("Sources"),
