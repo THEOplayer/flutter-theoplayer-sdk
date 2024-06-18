@@ -445,6 +445,8 @@ protocol THEOplayerNativeAPI {
   func onLifecycleResume() throws
   func onLifecyclePause() throws
   func configureSurface(surfaceId: Int64, width: Int64, height: Int64) throws
+  func startChromecast() throws
+  func stopChromecast() throws
 }
 
 /// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
@@ -942,6 +944,32 @@ class THEOplayerNativeAPISetup {
       }
     } else {
       configureSurfaceChannel.setMessageHandler(nil)
+    }
+    let startChromecastChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.startChromecast", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      startChromecastChannel.setMessageHandler { _, reply in
+        do {
+          try api.startChromecast()
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      startChromecastChannel.setMessageHandler(nil)
+    }
+    let stopChromecastChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.stopChromecast", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      stopChromecastChannel.setMessageHandler { _, reply in
+        do {
+          try api.stopChromecast()
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      stopChromecastChannel.setMessageHandler(nil)
     }
   }
 }

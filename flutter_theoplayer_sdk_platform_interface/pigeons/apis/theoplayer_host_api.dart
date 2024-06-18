@@ -81,4 +81,8 @@ abstract class THEOplayerNativeAPI {
 
   void configureSurface(int surfaceId, int width, int height);
 
+  //TODO: move this into a separate class
+  void startChromecast();
+  void stopChromecast();
+
 }
