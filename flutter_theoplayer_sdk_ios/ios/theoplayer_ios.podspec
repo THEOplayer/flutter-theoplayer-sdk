@@ -23,5 +23,6 @@ THEOplayer Flutter iOS SDK
   s.swift_version = '5.0'
 
   s.dependency 'THEOplayerSDK-core', '7.3.0'
+  s.dependency 'THEOplayer-Integration-GoogleCast', '7.3.0'
 
 end
