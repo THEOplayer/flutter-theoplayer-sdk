@@ -229,6 +229,10 @@ abstract class THEOplayerNativeAPI {
   //TODO: move this into a separate class
   void startChromecast();
   void stopChromecast();
+  // source will be used when starting/joining a Chromecast session (if not specified, player.source will be used)
+  void setChromecastStartingSource(SourceDescription? source);
+  // source will be used when stopping/leaving a Chromecast session (if not specified, current source on Chromecast will be used)
+  void setChromecastStoppingSource(SourceDescription? source);
 
 }
 
