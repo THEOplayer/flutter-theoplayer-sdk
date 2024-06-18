@@ -316,7 +316,7 @@ class THEOplayerViewNative(
     }
 
     override fun stopChromecast() {
-        tpv.cast?.chromecast?.start()
+        tpv.cast?.chromecast?.stop()
     }
 
     fun interface DestroyListener {
