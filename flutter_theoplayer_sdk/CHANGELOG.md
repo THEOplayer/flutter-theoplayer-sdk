@@ -1,3 +1,7 @@
+## [Unreleased]
+
+* Fixed an issue where playback failed with license error when using Texture-based (SURFACE_TEXTURE, SURFACE_PRODUCER) rendering.
+
 ## 7.3.0
 
 * Updated THEOplayer to 7.3.0.
