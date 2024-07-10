@@ -47,7 +47,7 @@ class TheoplayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
                 val entry = if (useSurfaceTexture) this.flutterPluginBinding.textureRegistry.createSurfaceTexture() else this.flutterPluginBinding.textureRegistry.createSurfaceProducer()
                 Log.d("TheoplayerPlugin", "createPlayer - entry created: ${entry.id()}")
 
-                val theoplayer = this.theoPlayerViewFactory.createHeadless(flutterPluginBinding.applicationContext, entry, null);
+                val theoplayer = this.theoPlayerViewFactory.createHeadless(flutterPluginBinding.applicationContext, entry, call.arguments);
 
                 theoplayer.destroyListener = THEOplayerViewNative.DestroyListener {
                     Log.e("TheoplayerPlugin", "destroyListener - entry: ${entry.id()}")
