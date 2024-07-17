@@ -32,7 +32,19 @@ class _MyAppState extends State<MyApp> {
 
     player = THEOplayer(
         fullscreenBuilder: (BuildContext context, THEOplayer player) {
-          return FullscreenStatefulWidget(theoplayer: player, fullscreenConfig: player.theoPlayerConfig.fullscreenConfig);
+          // default, chromeless behaviour, same as not specifying a fullscreenBuilder.
+          // return FullscreenStatefulWidget(theoplayer: player, fullscreenConfig: player.theoPlayerConfig.fullscreenConfig),
+
+          // example on how to pass a custom UI with the player
+          return Scaffold(
+            body: Stack(
+              alignment: Alignment.center,
+              children: [
+                FullscreenStatefulWidget(theoplayer: player, fullscreenConfig: player.theoPlayerConfig.fullscreenConfig),
+                PlayerUI(player: player),
+              ],
+            ),
+          );
         },
         theoPlayerConfig: THEOplayerConfig(
           license: PLAYER_LICENSE,
