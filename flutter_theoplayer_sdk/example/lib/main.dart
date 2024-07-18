@@ -39,7 +39,11 @@ class _MyAppState extends State<MyApp> {
             body: Stack(
               alignment: Alignment.center,
               children: [
-                FullscreenStatefulWidget(theoplayer: player, fullscreenConfig: player.theoPlayerConfig.fullscreenConfig),
+                // for hybrid composition:
+                //FullscreenStatefulWidget(theoplayer: player, fullscreenConfig: player.theoPlayerConfig.fullscreenConfig),
+
+                // for Texture-based composition:
+                AspectRatioCustomFullscreenWidget(theoplayer: player, fullscreenConfig: player.theoPlayerConfig.fullscreenConfig),
                 PlayerUI(player: player),
               ],
             ),
@@ -77,6 +81,10 @@ class _MyAppState extends State<MyApp> {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
+                      //for hybrid compositon.
+                      // ChromelessPlayerView(player: player),
+
+                      //for Texture-based composition:
                       AspectRatioChromelessPlayerView(player: player, continuouslyFollowAspectRatioChanges: true,),
                       PlayerUI(player: player),
                     ],
