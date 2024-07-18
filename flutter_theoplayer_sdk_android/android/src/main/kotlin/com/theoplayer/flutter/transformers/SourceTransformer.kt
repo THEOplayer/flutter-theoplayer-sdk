@@ -2,12 +2,15 @@ package com.theoplayer.flutter.transformers
 
 import com.theoplayer.android.api.source.SourceDescription
 import com.theoplayer.android.api.source.TypedSource
+import com.theoplayer.android.api.source.addescription.AdDescription
+import com.theoplayer.android.api.source.addescription.GoogleImaAdDescription
 import com.theoplayer.android.api.source.drm.DRMConfiguration
 import com.theoplayer.android.api.source.drm.FairPlayKeySystemConfiguration
 import com.theoplayer.android.api.source.drm.KeySystemConfiguration
 
 typealias FlutterSourceDescription = com.theoplayer.flutter.pigeon.SourceDescription
 typealias FlutterTypedSource = com.theoplayer.flutter.pigeon.TypedSource
+typealias FlutterAdDescription = com.theoplayer.flutter.pigeon.AdDescription
 typealias FlutterDRMConfiguration = com.theoplayer.flutter.pigeon.DRMConfiguration
 typealias FlutterWidevineDRMConfiguration = com.theoplayer.flutter.pigeon.WidevineDRMConfiguration
 typealias FlutterFairPlayDRMConfiguration = com.theoplayer.flutter.pigeon.FairPlayDRMConfiguration
@@ -19,8 +22,9 @@ object SourceTransformer {
             return null
         }
 
-        return FlutterSourceDescription(sourceDescription.sources
-            .map { toFlutterTypedSource(it) }
+        return FlutterSourceDescription(
+            sources = sourceDescription.sources.map { toFlutterTypedSource(it) },
+            ads = sourceDescription.ads.map { toFlutterGoogleImaAdDescription(it) }
         )
     }
 
@@ -34,6 +38,18 @@ object SourceTransformer {
         }
 
         return FlutterTypedSource(typedSource.src, drm)
+    }
+
+    fun toFlutterGoogleImaAdDescription(adDescription: AdDescription?): FlutterAdDescription? {
+        if (adDescription == null) {
+            return null
+        }
+
+        if (adDescription !is GoogleImaAdDescription) {
+            return null
+        }
+
+        return FlutterAdDescription(adDescription.integration?.name ?: "", adDescription.sources, adDescription.timeOffset ?: "")
     }
 
     fun toFlutterDRMConfiguration(drmConfiguration: DRMConfiguration): FlutterDRMConfiguration {
@@ -75,6 +91,10 @@ object SourceTransformer {
             *flutterSourceDescription.sources
                 .map { toTypedSource(it) }
                 .toTypedArray())
+            .ads(
+                *flutterSourceDescription.ads?.map { toGoogleImaAdDescription(it) }?.toTypedArray()
+                    ?: emptyArray()
+            )
             .build()
     }
 
@@ -90,6 +110,20 @@ object SourceTransformer {
         }
 
         return typedSourceBuilder.build()
+    }
+
+    fun toGoogleImaAdDescription(flutterTypedSource: FlutterAdDescription?): GoogleImaAdDescription? {
+        if (flutterTypedSource == null) {
+            return null
+        }
+
+        val imaBuilder = GoogleImaAdDescription.Builder(flutterTypedSource.source)
+
+        flutterTypedSource.timeOffset?.let {
+            imaBuilder.timeOffset(it);
+        }
+
+        return imaBuilder.build()
     }
 
     fun toDRMConfiguration(flutterDRMConfiguration: FlutterDRMConfiguration): DRMConfiguration {

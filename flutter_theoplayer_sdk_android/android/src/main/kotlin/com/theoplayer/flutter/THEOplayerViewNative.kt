@@ -129,6 +129,7 @@ class THEOplayerViewNative(
         videoTrackBridge.attachListeners()
 
         configureCastIntegration()
+        configureGoogleImaIntegration()
     }
 
     fun configureCastIntegration() {
