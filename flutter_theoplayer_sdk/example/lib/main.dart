@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:theoplayer/theoplayer.dart';
-import 'package:theoplayer/widget/chromeless_widget.dart';
 import 'package:theoplayer/widget/fullscreen_widget.dart';
 import 'package:theoplayer_example/player_widgets/current_time_widget.dart';
 import 'package:theoplayer_example/player_widgets/player_ui_widget.dart';
+import 'package:theoplayer_example/player_widgets/texture_widgets/aspect_ratio_chromeless_widget.dart';
 
 // use your THEOplayer Flutter license here from https://portal.theoplayer.com
 // without a license the player only accepts URLs from 'localhost' or 'theoplayer.com' domains
@@ -78,7 +77,7 @@ class _MyAppState extends State<MyApp> {
                   child: Stack(
                     alignment: Alignment.center,
                     children: [
-                      ChromelessPlayerView(player: player),
+                      AspectRatioChromelessPlayerView(player: player, continuouslyFollowAspectRatioChanges: true,),
                       PlayerUI(player: player),
                     ],
                   ),
