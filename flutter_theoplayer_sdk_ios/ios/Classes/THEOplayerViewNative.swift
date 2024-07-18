@@ -3,6 +3,7 @@ import Flutter
 import THEOplayerSDK
 import THEOplayerGoogleCastIntegration
 import GoogleCast
+import THEOplayerGoogleIMAIntegration
 
 //TODO: This extension of Error is required to do use FlutterError in any Swift code.
 //TODO: https://github.com/flutter/packages/blob/main/packages/pigeon/example/README.md#swift
@@ -68,6 +69,7 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
         super.init()
         
         configureCastIntegration()
+        configureGoogleImaIntegration()
         
         THEOplayerNativeAPISetup.setUp(binaryMessenger: _pigeonMessenger, api: self)
         _theoplayer.backgroundPlaybackDelegate = self
@@ -91,6 +93,12 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
         
         castIntegration.setConnectionDelegate(self)
     }
+    
+    func configureGoogleImaIntegration() {
+        let imaIntegration: Integration = GoogleIMAIntegrationFactory.createIntegration(on: _theoplayer)
+        _theoplayer.addIntegration(imaIntegration)
+    }
+
 }
 
 extension THEOplayerViewNative: THEOplayerNativeAPI {

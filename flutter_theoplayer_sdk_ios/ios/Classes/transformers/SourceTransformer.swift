@@ -17,6 +17,9 @@ struct SourceTransformer {
         return SourceDescription(
             sources: source.sources.map({ typedSource in
                 toFlutterTypedSource(typedSource: typedSource)
+            }),
+            ads: source.ads?.map({ adDesc in
+                toFlutterGoogleImaAdDescription(adDescription: adDesc)
             })
         )
     }
@@ -32,6 +35,15 @@ struct SourceTransformer {
         }
         
         return TypedSource(src: typedSource.src.absoluteString, drm: flutterDRMConfiguration)
+    }
+    
+    static func toFlutterGoogleImaAdDescription(adDescription: THEOplayerSDK.AdDescription?) -> AdDescription? {
+        guard let adDescription = adDescription, let imaAdDescription = adDescription as? GoogleImaAdDescription else {
+            return nil
+        }
+        
+        //TODO: parse adIntegration properly
+        return AdDescription(adIntegration: "google-ima", source: imaAdDescription.src.absoluteString , timeOffset: imaAdDescription.timeOffset ?? "")
     }
     
     
@@ -73,7 +85,12 @@ struct SourceTransformer {
                 .map({ typedSource in
                     toTypedSource(typedSource: typedSource)
                 })
-                .compactMap({ $0 })
+                .compactMap({ $0 }),
+            ads: source.ads?.filter({ ad in
+                ad != nil
+            }).map({ ad in
+                toGoogleImaAdDescription(adDescription: ad!)
+            })
         )
     }
     
@@ -88,6 +105,14 @@ struct SourceTransformer {
             src: typedSource.src,
             type: "",
             drm: drm)
+    }
+    
+    static func toGoogleImaAdDescription(adDescription: AdDescription) -> THEOplayerSDK.AdDescription {
+        
+        return THEOplayerSDK.GoogleImaAdDescription(
+            src: adDescription.source,
+            timeOffset: adDescription.timeOffset
+            )
     }
     
     static func toDRMConfiguration(flutterDRMConfiguration: DRMConfiguration?) -> THEOplayerSDK.DRMConfiguration? {
