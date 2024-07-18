@@ -24,5 +24,6 @@ THEOplayer Flutter iOS SDK
 
   s.dependency 'THEOplayerSDK-core', '7.3.0'
   s.dependency 'THEOplayer-Integration-GoogleCast', '7.3.0'
+  s.dependency 'THEOplayer-Integration-GoogleIMA', '7.3.0'
 
 end
