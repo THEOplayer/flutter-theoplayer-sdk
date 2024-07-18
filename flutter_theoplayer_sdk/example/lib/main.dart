@@ -25,6 +25,8 @@ class _MyAppState extends State<MyApp> {
   UniqueKey key2 = UniqueKey();
   late THEOplayer player;
 
+  final _messangerKey = GlobalKey<ScaffoldMessengerState>();
+
   @override
   void initState() {
     super.initState();
@@ -56,6 +58,23 @@ class _MyAppState extends State<MyApp> {
           print("main - THEOplayer - onCreate");
           player.setAutoplay(true);
           player.setAllowBackgroundPlayback(true);
+          // print errors
+          player.addEventListener(PlayerEventTypes.ERROR, (errorEvent) {
+            var error = errorEvent as ErrorEvent;
+            _messangerKey.currentState?.showSnackBar(
+              SnackBar(
+                duration: const Duration(milliseconds: 6000),
+                backgroundColor: Colors.red,
+                content: Text(error.error),
+                action: SnackBarAction(
+                  label: 'OK',
+                  onPressed: () {
+                    // Code to execute.
+                  },
+                ),
+              ),
+            );
+          });
         });
   }
 
@@ -68,6 +87,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      scaffoldMessengerKey: _messangerKey,
       home: Scaffold(
         appBar: AppBar(
           title: const Text('THEOplayer example app'),
