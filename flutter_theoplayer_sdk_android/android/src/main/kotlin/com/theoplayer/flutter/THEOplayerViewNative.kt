@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.THEOplayerView
+import com.theoplayer.android.api.ads.ima.GoogleImaIntegrationFactory
 import com.theoplayer.android.api.cast.CastConfiguration
 import com.theoplayer.android.api.cast.CastIntegrationFactory
 import com.theoplayer.android.api.cast.CastStrategy
@@ -136,9 +137,16 @@ class THEOplayerViewNative(
             castConfiguration = CastConfiguration.Builder().castStrategy(CastStrategy.AUTO).build()
         )
 
-        tpv.player.addIntegration(castIntegration);
+        tpv.player.addIntegration(castIntegration)
         castIntegration!!.setConnectionCallback(this)
 
+    }
+
+    fun configureGoogleImaIntegration() {
+        val imaIntegration = GoogleImaIntegrationFactory.createGoogleImaIntegration(
+            theoplayerView = tpv
+        )
+        tpv.player.addIntegration(imaIntegration)
     }
 
     override fun getView(): View {
