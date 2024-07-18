@@ -1,7 +1,40 @@
 class SourceDescription {
   final List<TypedSource?> sources;
+  final List<AdDescription?>? ads;
 
-  const SourceDescription({required this.sources});
+  const SourceDescription(this.ads, {required this.sources});
+}
+
+/*
+
+// NOTE: this abstraction/inheritance doesn't get generated in pigeons for some reason
+// TODO: check later
+
+
+class AdDescription {
+  final String adIntegration;
+
+  AdDescription({required this.adIntegration});
+}
+
+//TODO: extending doesn't work
+class GoogleImaAdDescription /*extends AdDescription*/ {
+  final String adIntegration;
+  final String source;
+  final String timeOffset;
+
+  GoogleImaAdDescription(this.timeOffset, this.adIntegration, {required this.source});
+}
+
+ */
+
+// TODO: we need to differentiate Pigeon and Public facing APIs and then we can hide the [adIntegration]
+class AdDescription {
+  final String adIntegration;
+  final String source;
+  final String timeOffset;
+
+  AdDescription(this.timeOffset, {required this.source, required this.adIntegration});
 }
 
 class TypedSource {

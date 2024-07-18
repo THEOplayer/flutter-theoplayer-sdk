@@ -85,13 +85,17 @@ class TimeRange {
 class SourceDescription {
   SourceDescription({
     required this.sources,
+    this.ads,
   });
 
   List<TypedSource?> sources;
 
+  List<AdDescription?>? ads;
+
   Object encode() {
     return <Object?>[
       sources,
+      ads,
     ];
   }
 
@@ -99,6 +103,38 @@ class SourceDescription {
     result as List<Object?>;
     return SourceDescription(
       sources: (result[0] as List<Object?>?)!.cast<TypedSource?>(),
+      ads: (result[1] as List<Object?>?)?.cast<AdDescription?>(),
+    );
+  }
+}
+
+class AdDescription {
+  AdDescription({
+    required this.adIntegration,
+    required this.source,
+    required this.timeOffset,
+  });
+
+  String adIntegration;
+
+  String source;
+
+  String timeOffset;
+
+  Object encode() {
+    return <Object?>[
+      adIntegration,
+      source,
+      timeOffset,
+    ];
+  }
+
+  static AdDescription decode(Object result) {
+    result as List<Object?>;
+    return AdDescription(
+      adIntegration: result[0]! as String,
+      source: result[1]! as String,
+      timeOffset: result[2]! as String,
     );
   }
 }
@@ -653,23 +689,26 @@ class _THEOplayerNativeAPICodec extends StandardMessageCodec {
   const _THEOplayerNativeAPICodec();
   @override
   void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is DRMConfiguration) {
+    if (value is AdDescription) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
-    } else if (value is FairPlayDRMConfiguration) {
+    } else if (value is DRMConfiguration) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
-    } else if (value is SourceDescription) {
+    } else if (value is FairPlayDRMConfiguration) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
-    } else if (value is TimeRange) {
+    } else if (value is SourceDescription) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
-    } else if (value is TypedSource) {
+    } else if (value is TimeRange) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
-    } else if (value is WidevineDRMConfiguration) {
+    } else if (value is TypedSource) {
       buffer.putUint8(133);
+      writeValue(buffer, value.encode());
+    } else if (value is WidevineDRMConfiguration) {
+      buffer.putUint8(134);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -680,16 +719,18 @@ class _THEOplayerNativeAPICodec extends StandardMessageCodec {
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
       case 128: 
-        return DRMConfiguration.decode(readValue(buffer)!);
+        return AdDescription.decode(readValue(buffer)!);
       case 129: 
-        return FairPlayDRMConfiguration.decode(readValue(buffer)!);
+        return DRMConfiguration.decode(readValue(buffer)!);
       case 130: 
-        return SourceDescription.decode(readValue(buffer)!);
+        return FairPlayDRMConfiguration.decode(readValue(buffer)!);
       case 131: 
-        return TimeRange.decode(readValue(buffer)!);
+        return SourceDescription.decode(readValue(buffer)!);
       case 132: 
-        return TypedSource.decode(readValue(buffer)!);
+        return TimeRange.decode(readValue(buffer)!);
       case 133: 
+        return TypedSource.decode(readValue(buffer)!);
+      case 134: 
         return WidevineDRMConfiguration.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -1677,20 +1718,23 @@ class _THEOplayerFlutterAPICodec extends StandardMessageCodec {
   const _THEOplayerFlutterAPICodec();
   @override
   void writeValue(WriteBuffer buffer, Object? value) {
-    if (value is DRMConfiguration) {
+    if (value is AdDescription) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
-    } else if (value is FairPlayDRMConfiguration) {
+    } else if (value is DRMConfiguration) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
-    } else if (value is SourceDescription) {
+    } else if (value is FairPlayDRMConfiguration) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
-    } else if (value is TypedSource) {
+    } else if (value is SourceDescription) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
-    } else if (value is WidevineDRMConfiguration) {
+    } else if (value is TypedSource) {
       buffer.putUint8(132);
+      writeValue(buffer, value.encode());
+    } else if (value is WidevineDRMConfiguration) {
+      buffer.putUint8(133);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -1701,14 +1745,16 @@ class _THEOplayerFlutterAPICodec extends StandardMessageCodec {
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
       case 128: 
-        return DRMConfiguration.decode(readValue(buffer)!);
+        return AdDescription.decode(readValue(buffer)!);
       case 129: 
-        return FairPlayDRMConfiguration.decode(readValue(buffer)!);
+        return DRMConfiguration.decode(readValue(buffer)!);
       case 130: 
-        return SourceDescription.decode(readValue(buffer)!);
+        return FairPlayDRMConfiguration.decode(readValue(buffer)!);
       case 131: 
-        return TypedSource.decode(readValue(buffer)!);
+        return SourceDescription.decode(readValue(buffer)!);
       case 132: 
+        return TypedSource.decode(readValue(buffer)!);
+      case 133: 
         return WidevineDRMConfiguration.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);

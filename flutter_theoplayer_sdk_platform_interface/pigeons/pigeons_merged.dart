@@ -63,8 +63,35 @@ enum PreloadType {
 
 class SourceDescription {
   final List<TypedSource?> sources;
+  final List<AdDescription?>? ads;
 
-  const SourceDescription({required this.sources});
+  const SourceDescription(this.ads, {required this.sources});
+}
+
+/*
+class AdDescription {
+  final String adIntegration;
+
+  AdDescription({required this.adIntegration});
+}
+
+//TODO: extending doesn't work
+class GoogleImaAdDescription /*extends AdDescription*/ {
+  final String adIntegration;
+  final String source;
+  final String timeOffset;
+
+  GoogleImaAdDescription(this.timeOffset, this.adIntegration, {required this.source});
+}
+
+ */
+
+class AdDescription {
+  final String adIntegration;
+  final String source;
+  final String timeOffset;
+
+  AdDescription(this.timeOffset, {required this.source, required this.adIntegration});
 }
 
 class TypedSource {

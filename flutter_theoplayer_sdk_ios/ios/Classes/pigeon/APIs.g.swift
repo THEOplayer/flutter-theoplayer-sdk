@@ -102,17 +102,47 @@ struct TimeRange {
 /// Generated class from Pigeon that represents data sent in messages.
 struct SourceDescription {
   var sources: [TypedSource?]
+  var ads: [AdDescription?]? = nil
 
   static func fromList(_ list: [Any?]) -> SourceDescription? {
     let sources = list[0] as! [TypedSource?]
+    let ads: [AdDescription?]? = nilOrValue(list[1])
 
     return SourceDescription(
-      sources: sources
+      sources: sources,
+      ads: ads
     )
   }
   func toList() -> [Any?] {
     return [
       sources,
+      ads,
+    ]
+  }
+}
+
+/// Generated class from Pigeon that represents data sent in messages.
+struct AdDescription {
+  var adIntegration: String
+  var source: String
+  var timeOffset: String
+
+  static func fromList(_ list: [Any?]) -> AdDescription? {
+    let adIntegration = list[0] as! String
+    let source = list[1] as! String
+    let timeOffset = list[2] as! String
+
+    return AdDescription(
+      adIntegration: adIntegration,
+      source: source,
+      timeOffset: timeOffset
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      adIntegration,
+      source,
+      timeOffset,
     ]
   }
 }
@@ -350,16 +380,18 @@ private class THEOplayerNativeAPICodecReader: FlutterStandardReader {
   override func readValue(ofType type: UInt8) -> Any? {
     switch type {
       case 128:
-        return DRMConfiguration.fromList(self.readValue() as! [Any?])
+        return AdDescription.fromList(self.readValue() as! [Any?])
       case 129:
-        return FairPlayDRMConfiguration.fromList(self.readValue() as! [Any?])
+        return DRMConfiguration.fromList(self.readValue() as! [Any?])
       case 130:
-        return SourceDescription.fromList(self.readValue() as! [Any?])
+        return FairPlayDRMConfiguration.fromList(self.readValue() as! [Any?])
       case 131:
-        return TimeRange.fromList(self.readValue() as! [Any?])
+        return SourceDescription.fromList(self.readValue() as! [Any?])
       case 132:
-        return TypedSource.fromList(self.readValue() as! [Any?])
+        return TimeRange.fromList(self.readValue() as! [Any?])
       case 133:
+        return TypedSource.fromList(self.readValue() as! [Any?])
+      case 134:
         return WidevineDRMConfiguration.fromList(self.readValue() as! [Any?])
       default:
         return super.readValue(ofType: type)
@@ -369,23 +401,26 @@ private class THEOplayerNativeAPICodecReader: FlutterStandardReader {
 
 private class THEOplayerNativeAPICodecWriter: FlutterStandardWriter {
   override func writeValue(_ value: Any) {
-    if let value = value as? DRMConfiguration {
+    if let value = value as? AdDescription {
       super.writeByte(128)
       super.writeValue(value.toList())
-    } else if let value = value as? FairPlayDRMConfiguration {
+    } else if let value = value as? DRMConfiguration {
       super.writeByte(129)
       super.writeValue(value.toList())
-    } else if let value = value as? SourceDescription {
+    } else if let value = value as? FairPlayDRMConfiguration {
       super.writeByte(130)
       super.writeValue(value.toList())
-    } else if let value = value as? TimeRange {
+    } else if let value = value as? SourceDescription {
       super.writeByte(131)
       super.writeValue(value.toList())
-    } else if let value = value as? TypedSource {
+    } else if let value = value as? TimeRange {
       super.writeByte(132)
       super.writeValue(value.toList())
-    } else if let value = value as? WidevineDRMConfiguration {
+    } else if let value = value as? TypedSource {
       super.writeByte(133)
+      super.writeValue(value.toList())
+    } else if let value = value as? WidevineDRMConfiguration {
+      super.writeByte(134)
       super.writeValue(value.toList())
     } else {
       super.writeValue(value)
@@ -1009,14 +1044,16 @@ private class THEOplayerFlutterAPICodecReader: FlutterStandardReader {
   override func readValue(ofType type: UInt8) -> Any? {
     switch type {
       case 128:
-        return DRMConfiguration.fromList(self.readValue() as! [Any?])
+        return AdDescription.fromList(self.readValue() as! [Any?])
       case 129:
-        return FairPlayDRMConfiguration.fromList(self.readValue() as! [Any?])
+        return DRMConfiguration.fromList(self.readValue() as! [Any?])
       case 130:
-        return SourceDescription.fromList(self.readValue() as! [Any?])
+        return FairPlayDRMConfiguration.fromList(self.readValue() as! [Any?])
       case 131:
-        return TypedSource.fromList(self.readValue() as! [Any?])
+        return SourceDescription.fromList(self.readValue() as! [Any?])
       case 132:
+        return TypedSource.fromList(self.readValue() as! [Any?])
+      case 133:
         return WidevineDRMConfiguration.fromList(self.readValue() as! [Any?])
       default:
         return super.readValue(ofType: type)
@@ -1026,20 +1063,23 @@ private class THEOplayerFlutterAPICodecReader: FlutterStandardReader {
 
 private class THEOplayerFlutterAPICodecWriter: FlutterStandardWriter {
   override func writeValue(_ value: Any) {
-    if let value = value as? DRMConfiguration {
+    if let value = value as? AdDescription {
       super.writeByte(128)
       super.writeValue(value.toList())
-    } else if let value = value as? FairPlayDRMConfiguration {
+    } else if let value = value as? DRMConfiguration {
       super.writeByte(129)
       super.writeValue(value.toList())
-    } else if let value = value as? SourceDescription {
+    } else if let value = value as? FairPlayDRMConfiguration {
       super.writeByte(130)
       super.writeValue(value.toList())
-    } else if let value = value as? TypedSource {
+    } else if let value = value as? SourceDescription {
       super.writeByte(131)
       super.writeValue(value.toList())
-    } else if let value = value as? WidevineDRMConfiguration {
+    } else if let value = value as? TypedSource {
       super.writeByte(132)
+      super.writeValue(value.toList())
+    } else if let value = value as? WidevineDRMConfiguration {
+      super.writeByte(133)
       super.writeValue(value.toList())
     } else {
       super.writeValue(value)

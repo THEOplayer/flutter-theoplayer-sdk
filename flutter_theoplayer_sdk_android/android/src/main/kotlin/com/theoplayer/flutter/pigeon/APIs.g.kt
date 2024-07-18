@@ -136,19 +136,47 @@ data class TimeRange (
 
 /** Generated class from Pigeon that represents data sent in messages. */
 data class SourceDescription (
-  val sources: List<TypedSource?>
+  val sources: List<TypedSource?>,
+  val ads: List<AdDescription?>? = null
 
 ) {
   companion object {
     @Suppress("UNCHECKED_CAST")
     fun fromList(list: List<Any?>): SourceDescription {
       val sources = list[0] as List<TypedSource?>
-      return SourceDescription(sources)
+      val ads = list[1] as List<AdDescription?>?
+      return SourceDescription(sources, ads)
     }
   }
   fun toList(): List<Any?> {
     return listOf<Any?>(
       sources,
+      ads,
+    )
+  }
+}
+
+/** Generated class from Pigeon that represents data sent in messages. */
+data class AdDescription (
+  val adIntegration: String,
+  val source: String,
+  val timeOffset: String
+
+) {
+  companion object {
+    @Suppress("UNCHECKED_CAST")
+    fun fromList(list: List<Any?>): AdDescription {
+      val adIntegration = list[0] as String
+      val source = list[1] as String
+      val timeOffset = list[2] as String
+      return AdDescription(adIntegration, source, timeOffset)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf<Any?>(
+      adIntegration,
+      source,
+      timeOffset,
     )
   }
 }
@@ -474,30 +502,35 @@ private object THEOplayerNativeAPICodec : StandardMessageCodec() {
     return when (type) {
       128.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          DRMConfiguration.fromList(it)
+          AdDescription.fromList(it)
         }
       }
       129.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          FairPlayDRMConfiguration.fromList(it)
+          DRMConfiguration.fromList(it)
         }
       }
       130.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          SourceDescription.fromList(it)
+          FairPlayDRMConfiguration.fromList(it)
         }
       }
       131.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          TimeRange.fromList(it)
+          SourceDescription.fromList(it)
         }
       }
       132.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          TypedSource.fromList(it)
+          TimeRange.fromList(it)
         }
       }
       133.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          TypedSource.fromList(it)
+        }
+      }
+      134.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
           WidevineDRMConfiguration.fromList(it)
         }
@@ -507,28 +540,32 @@ private object THEOplayerNativeAPICodec : StandardMessageCodec() {
   }
   override fun writeValue(stream: ByteArrayOutputStream, value: Any?)   {
     when (value) {
-      is DRMConfiguration -> {
+      is AdDescription -> {
         stream.write(128)
         writeValue(stream, value.toList())
       }
-      is FairPlayDRMConfiguration -> {
+      is DRMConfiguration -> {
         stream.write(129)
         writeValue(stream, value.toList())
       }
-      is SourceDescription -> {
+      is FairPlayDRMConfiguration -> {
         stream.write(130)
         writeValue(stream, value.toList())
       }
-      is TimeRange -> {
+      is SourceDescription -> {
         stream.write(131)
         writeValue(stream, value.toList())
       }
-      is TypedSource -> {
+      is TimeRange -> {
         stream.write(132)
         writeValue(stream, value.toList())
       }
-      is WidevineDRMConfiguration -> {
+      is TypedSource -> {
         stream.write(133)
+        writeValue(stream, value.toList())
+      }
+      is WidevineDRMConfiguration -> {
+        stream.write(134)
         writeValue(stream, value.toList())
       }
       else -> super.writeValue(stream, value)
@@ -1282,25 +1319,30 @@ private object THEOplayerFlutterAPICodec : StandardMessageCodec() {
     return when (type) {
       128.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          DRMConfiguration.fromList(it)
+          AdDescription.fromList(it)
         }
       }
       129.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          FairPlayDRMConfiguration.fromList(it)
+          DRMConfiguration.fromList(it)
         }
       }
       130.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          SourceDescription.fromList(it)
+          FairPlayDRMConfiguration.fromList(it)
         }
       }
       131.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          TypedSource.fromList(it)
+          SourceDescription.fromList(it)
         }
       }
       132.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          TypedSource.fromList(it)
+        }
+      }
+      133.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
           WidevineDRMConfiguration.fromList(it)
         }
@@ -1310,24 +1352,28 @@ private object THEOplayerFlutterAPICodec : StandardMessageCodec() {
   }
   override fun writeValue(stream: ByteArrayOutputStream, value: Any?)   {
     when (value) {
-      is DRMConfiguration -> {
+      is AdDescription -> {
         stream.write(128)
         writeValue(stream, value.toList())
       }
-      is FairPlayDRMConfiguration -> {
+      is DRMConfiguration -> {
         stream.write(129)
         writeValue(stream, value.toList())
       }
-      is SourceDescription -> {
+      is FairPlayDRMConfiguration -> {
         stream.write(130)
         writeValue(stream, value.toList())
       }
-      is TypedSource -> {
+      is SourceDescription -> {
         stream.write(131)
         writeValue(stream, value.toList())
       }
-      is WidevineDRMConfiguration -> {
+      is TypedSource -> {
         stream.write(132)
+        writeValue(stream, value.toList())
+      }
+      is WidevineDRMConfiguration -> {
+        stream.write(133)
         writeValue(stream, value.toList())
       }
       else -> super.writeValue(stream, value)
