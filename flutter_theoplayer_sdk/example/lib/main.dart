@@ -196,6 +196,12 @@ class _MyAppState extends State<MyApp> {
                                 },
                                 child: const Text("Widevine KeyOS source - Android"),
                               ),
+                              FilledButton(
+                                onPressed: () => {
+                                  player.setSource(GOOGLE_IMA_HLS)
+                                },
+                                child: const Text("IMA HLS source"),
+                              ),
                             ],
                           )
                         ],
