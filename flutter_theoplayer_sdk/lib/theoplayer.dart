@@ -15,6 +15,7 @@ import 'package:theoplayer/theoplayer_tracklist_wrapper.dart';
 import 'package:theoplayer/theoplayer_view.dart';
 
 // TODO: check this, quick fix for the main.dart
+// TODO: move exports into a separate file
 export 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
 export 'package:theoplayer_platform_interface/theopalyer_config.dart';
 export 'package:theoplayer_platform_interface/theoplayer_events.dart';
@@ -25,6 +26,8 @@ export 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videot
 export 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack_events.dart';
 export 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack_events.dart';
 export 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack.dart';
+export 'package:theoplayer/widget/chromeless_widget.dart';
+export 'package:theoplayer/widget/fullscreen_widget.dart';
 
 /// Callback that's used at player creation.
 /// This is called once the underlying native THEOplayerView is fully created and available to use.

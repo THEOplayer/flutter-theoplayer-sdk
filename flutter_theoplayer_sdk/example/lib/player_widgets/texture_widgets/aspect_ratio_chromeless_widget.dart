@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:theoplayer/theoplayer.dart';
-import 'package:theoplayer/widget/chromeless_widget.dart';
-import 'package:theoplayer_platform_interface/helpers/logger.dart';
 
 /// Widget that adapts to the aspect ratio of the video
 /// Use it when AndroidViewComposition is Texture-based ([AndroidViewComposition.SURFACE_TEXTURE]/[AndroidViewComposition.SURFACE_PRODUCER])
@@ -53,7 +51,6 @@ class _AspectRatioChromelessPlayerViewState extends State<AspectRatioChromelessP
   void _resizeEventListener(event) {
     var resizeEvent = (event as ResizeEvent);
 
-    debugLog("YOLO [AspectRatioChromelessPlayerView] RESIZE event received: ${resizeEvent.width}x${resizeEvent.height}");
     // we are not interested in monitoring the following size changes after the first one
     if (!widget.continuouslyFollowAspectRatioChanges) {
       _detatchResizeEventListener();
