@@ -62,6 +62,9 @@ class _QualityChangeState extends State<QualityChangeWidget> {
   void initState() {
     super.initState();
 
+    audioID = widget.player.getAudioTracks().firstWhereOrNull((track) => track.isEnabled)?.activeQuality?.uid ?? -1;
+    videoID = widget.player.getVideoTracks().firstWhereOrNull((track) => track.isEnabled)?.activeQuality?.uid ?? -1;
+
     widget.player.getAudioTracks().addEventListener(AudioTracksEventTypes.ADDTRACK, addAudioTrackListener);
     widget.player.getVideoTracks().addEventListener(VideoTracksEventTypes.ADDTRACK, addVideoTrackListener);
   }

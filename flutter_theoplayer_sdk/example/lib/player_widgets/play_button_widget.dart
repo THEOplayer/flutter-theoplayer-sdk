@@ -22,6 +22,7 @@ class _PlayButtonWidgetState extends State<PlayButtonWidget> {
   @override
   void initState() {
     super.initState();
+    playing = !widget.player.isPaused();
     widget.player.addEventListener(PlayerEventTypes.PLAY, playEventListener);
     widget.player.addEventListener(PlayerEventTypes.PLAYING, playingEventListener);
     widget.player.addEventListener(PlayerEventTypes.PAUSE, pauseEventListener);
