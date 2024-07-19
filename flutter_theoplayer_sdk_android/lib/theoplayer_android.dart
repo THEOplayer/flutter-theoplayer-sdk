@@ -3,6 +3,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:theoplayer_android/texture_manager.dart';
 import 'package:theoplayer_android/theoplayer_view_controller_android.dart';
 import 'package:theoplayer_platform_interface/platform/platform_players_service.dart';
 import 'package:theoplayer_platform_interface/theopalyer_config.dart';
@@ -41,10 +42,13 @@ class THEOplayerAndroid extends TheoplayerPlatform {
     creationParams["playerConfig"] = theoPlayerConfig.toJson();
 
     if (!theoPlayerConfig.androidConfig.viewComposition.isPlatformView) {
-      var texture = Texture(textureId: textureId);
-      Future.delayed(Duration.zero, (){ // wait for the next tick, TODO: check microTasks
+      // use TextureManager to avoid triggering of the lifecycle callbacks
+      // this mimics the behaviour of PlatformViewLink
+      // TODO: we should check if we can avoid this re-rendering few levels higher
+      var texture = TextureManager.createTexture(textureId, (texId){
         var controller = THEOplayerViewControllerAndroid(textureId);
         // trigger the surface attachment
+        // NOTE: THEOplayer Android performs a seek on setCustomSurface()
         controller.configureSurface(textureId, 0, 0);
         createdCallback(controller, context);
       });
