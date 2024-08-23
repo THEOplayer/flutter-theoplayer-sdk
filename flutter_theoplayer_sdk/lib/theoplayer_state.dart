@@ -30,6 +30,7 @@ class PlayerState {
   List<TimeRange?> seekable = [];
   List<TimeRange?> played = [];
   bool allowBackgroundPlayback = false;
+  bool allowAutomaticPictureInPicture = false;
   String? error;
 
   bool isInitialized = false;

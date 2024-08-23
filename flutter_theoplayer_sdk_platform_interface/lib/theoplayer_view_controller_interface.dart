@@ -7,7 +7,9 @@ import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttra
 abstract class THEOplayerViewController implements EventDispatcher {
   static const String TAG = "THEOplayerViewController";
 
-  THEOplayerViewController(int id) {}
+  THEOplayerViewController(this.id);
+
+  int id;
 
   String get channelSuffix;
 

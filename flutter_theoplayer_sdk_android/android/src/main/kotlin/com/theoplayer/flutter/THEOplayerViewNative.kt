@@ -12,6 +12,7 @@ import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.event.player.PlayingEvent
+import com.theoplayer.android.api.pip.PipConfiguration
 import com.theoplayer.flutter.pigeon.THEOplayerFlutterAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeAPI.Companion.setUp
@@ -32,7 +33,7 @@ typealias FlutterTimeRange = com.theoplayer.flutter.pigeon.TimeRange
 
 class THEOplayerViewNative(
     context: Context,
-    id: Int,
+    val id: Int,
     creationParams: Map<String, Any>?,
     messenger: BinaryMessenger
 ) : PlatformView, THEOplayerNativeAPI {
@@ -89,6 +90,7 @@ class THEOplayerViewNative(
         val playerConfigBuilder = THEOplayerConfig.Builder()
         license?.let { playerConfigBuilder.license(it) }
         licenseUrl?.let { playerConfigBuilder.licenseUrl(it) }
+        playerConfigBuilder.pipConfiguration(PipConfiguration.Builder().build())
 
         theoplayerWrapper = LinearLayout(context)
         theoplayerWrapper.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)

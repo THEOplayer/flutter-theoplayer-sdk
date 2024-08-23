@@ -1,23 +1,32 @@
 package com.theoplayer.flutter
 
+import android.app.Activity
+import android.content.ComponentCallbacks2
+import android.content.res.Configuration
+import android.os.Build
 import android.util.Log
-import android.util.LongSparseArray
+import com.theoplayer.flutter.helpers.PiPChangeListener
+import com.theoplayer.flutter.helpers.PipHandler
+import com.theoplayer.flutter.platform.PlatformActivityService
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterPluginBinding
+import io.flutter.embedding.engine.plugins.activity.ActivityAware
+import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
-import io.flutter.view.TextureRegistry
 
-class TheoplayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
+class TheoplayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware,
+    PiPChangeListener {
 
     private lateinit var flutterPluginBinding:  FlutterPluginBinding
 
-    private val theoPlayers = LongSparseArray<THEOplayerViewNative>()
-    private val surfaces = LongSparseArray<TextureRegistry.TextureEntry>()
+    private lateinit var theoPlayerViewFactory: THEOplayerViewNativeFactory
+    private lateinit var currentActivity: Activity
 
-    private lateinit var theoPlayerViewFactory: THEOplayerViewNativeFactory;
+    private lateinit var pipHandler: PipHandler
 
-    override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onAttachedToEngine(flutterPluginBinding: FlutterPluginBinding) {
+
         this.flutterPluginBinding = flutterPluginBinding
         this.theoPlayerViewFactory = THEOplayerViewNativeFactory(flutterPluginBinding.binaryMessenger)
 
@@ -28,11 +37,35 @@ class TheoplayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
 
         val methodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "com.theoplayer.global/players")
         methodChannel.setMethodCallHandler(this)
+
+        //TODO: enum
+        PlatformActivityService.ensureInitialized(flutterPluginBinding.binaryMessenger)
+
+        pipHandler = PipHandler(this)
     }
 
-    override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
+    override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
 
     }
+
+    override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+        currentActivity = binding.activity;
+        pipHandler.attachToActivityBinding(binding)
+    }
+
+    override fun onDetachedFromActivityForConfigChanges() {
+        pipHandler.detachFromActivityBinding()
+    }
+
+    override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+        pipHandler.attachToActivityBinding(binding)
+    }
+
+    override fun onDetachedFromActivity() {
+        pipHandler.detachFromActivityBinding()
+    }
+
+
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         Log.d("TheoplayerPlugin", "onMethodCall: ${call.method}")
 
@@ -49,22 +82,20 @@ class TheoplayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler {
 
                 val theoplayer = this.theoPlayerViewFactory.createHeadless(flutterPluginBinding.applicationContext, entry, call.arguments);
 
-                theoplayer.destroyListener = THEOplayerViewNative.DestroyListener {
-                    Log.e("TheoplayerPlugin", "destroyListener - entry: ${entry.id()}")
-                    theoPlayers.remove(entry.id());
-                    surfaces.remove(entry.id());
-                    theoplayer.destroyListener = null;
-                }
-
-                theoPlayers.put(entry.id(), theoplayer);
-                surfaces.put(entry.id(), entry);
-
-                result.success(entry.id())
+                result.success(theoplayer.id)
             }
 
             else -> {
                 result.notImplemented()
             }
         }
+    }
+
+    override fun onEnterPiP(playerID: Int) {
+        //TODO("Not yet implemented")
+    }
+
+    override fun onExitPiP(playerID: Int) {
+        //TODO("Not yet implemented")
     }
 }
