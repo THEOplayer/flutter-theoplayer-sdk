@@ -35,7 +35,7 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
         let licenseUrl = playerConfig?["licenseUrl"] as? String
 
         _theoplayer = THEOplayer(configuration: THEOplayerConfiguration(
-            pip: nil,
+            pip: PiPConfiguration(nativePictureInPicture: true, canStartPictureInPictureAutomaticallyFromInline: true),
             license: license,
             licenseUrl: licenseUrl
         ))
