@@ -1,4 +1,4 @@
-import 'dart:js';
+import 'dart:js_interop_unsafe';
 
 import 'package:flutter/foundation.dart';
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart' as PlatformInterface;
@@ -314,9 +314,29 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
             document.exitFullscreen();
           }
         }
+      case PresentationMode.PIP: {
+        HTMLVideoElement? videoElement = _getPlayingVideoElement();
+        //NOTE: videoElement.requestPictureInPicture() doesn't work
+        videoElement?.callMethod("requestPictureInPicture".toJS);
+
+      }
       default:
         print("Unsupported presentationMode $presentationMode");
     }
+  }
+
+  HTMLVideoElement? _getPlayingVideoElement() {
+    var _allVideoElements = _playerWrapperDiv.getElementsByTagName("video");
+
+    HTMLVideoElement? videoElement = null;
+
+    for (int i=0; i < _allVideoElements.length; i++) {
+      var e = _allVideoElements.item(i);
+      if (e?.getAttribute("src") != null) {
+        videoElement = e as HTMLVideoElement;
+      }
+    }
+    return videoElement;
   }
 
   @override
@@ -328,10 +348,20 @@ extension on HTMLElement {
   external JSPromise<JSAny?> requestFullscreen();
 }
 
+extension on HTMLVideoElement {
+  external JSPromise<JSAny?> requestPictureInPicture();
+}
+
+extension on VideoElement {
+  external JSPromise<JSAny?> requestPictureInPicture();
+}
+
 extension on Document {
   external HTMLElement? fullscreenElement;
+  external HTMLElement? pictureInPictureElement;
 
   external JSPromise<JSAny?> exitFullscreen();
+  external JSPromise<JSAny?> exitPictureInPicture();
 }
 
 class WebEventTypes {

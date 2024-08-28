@@ -429,10 +429,15 @@ class THEOplayer implements EventDispatcher {
 
 
       case PresentationMode.PIP:
+
           _presentationModeBeforePip = previousPresentationMode;
 
-          if (userTriggered) {
-            PlatformActivityService.instance.triggerEnterPictureInPicture();
+          if (kIsWeb) {
+            _theoPlayerViewController?.setPresentationMode(PresentationMode.PIP, null);
+          } else {
+            if (userTriggered) {
+              PlatformActivityService.instance.triggerEnterPictureInPicture();
+            }
           }
 
       default:
