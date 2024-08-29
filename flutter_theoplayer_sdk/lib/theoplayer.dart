@@ -1,9 +1,5 @@
-import 'dart:math';
-import 'dart:ui';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:theoplayer/widget/fullscreen_widget.dart';
@@ -69,6 +65,8 @@ class THEOplayer implements EventDispatcher {
 
   // internal helpers
   PresentationMode _presentationModeBeforePip = PresentationMode.INLINE;
+  bool _manualInterventionForPipRestoration = false;
+  bool _manualInterventionForFullscreenRestoration = false;
 
   /// Initialize THEOplayer with a [THEOplayerConfig].
   /// [onCreate] is called once the underlying native THEOplayerView is fully created and available to use.
@@ -389,28 +387,24 @@ class THEOplayer implements EventDispatcher {
     PresentationMode previousPresentationMode = _playerState.presentationMode;
     _playerState.presentationMode = presentationMode;
 
-    Future? fullscreenPresentingFuture;
-
     switch (presentationMode) {
       case PresentationMode.FULLSCREEN:
+        _manualInterventionForFullscreenRestoration = false;
+
         if (previousPresentationMode == PresentationMode.INLINE) {
-          fullscreenPresentingFuture = Navigator.of(_currentContext, rootNavigator: true).push(MaterialPageRoute(
-              builder: (context) {
-                return _fullscreenBuilder(context, this);
-              },
-              settings: null));
-
-          fullscreenPresentingFuture.then((value) => _restorePlayerStateAfterLeavingFullscreen());
-
-          //only used on web for now:
-          _theoPlayerViewController?.setPresentationMode(presentationMode, () {
-            if (fullscreenPresentingFuture != null) {
-              Navigator.of(_currentContext, rootNavigator: true).maybePop();
-            }
-          });
+          _enterFullscreen();
         } else if (previousPresentationMode == PresentationMode.PIP) {
           debugLog("THEOplayer_$id: Back to fullscreen from PiP");
-          Navigator.of(_currentContext, rootNavigator: true).pop();
+          if (kIsWeb) {
+            // we need this to avoid the callback on the previous setPresentationMode()  override the presentation mode we need for fullscreen.
+            // TODO: try to kill it
+            _manualInterventionForPipRestoration = true;
+            // on web first we need to exit fullscreen and go back to inline
+            _theoPlayerViewController?.setPresentationMode(PresentationMode.INLINE, null);
+            _enterFullscreen();
+          } else {
+            Navigator.of(_currentContext, rootNavigator: true).pop();
+          }
         }
       case PresentationMode.INLINE:
         if (previousPresentationMode == PresentationMode.FULLSCREEN) {
@@ -424,16 +418,40 @@ class THEOplayer implements EventDispatcher {
           //NOTE: fullscreenPresentingFuture still will be called, if any
         } else if (previousPresentationMode == PresentationMode.PIP) {
           debugLog("THEOplayer_$id: Back to inline from PiP");
-          Navigator.of(_currentContext, rootNavigator: true).pop();
+          if (kIsWeb) {
+            //TODO: try to move the logic of "if kIsWeb" inside the underlying viewController, so we don't need any platform check.
+            _theoPlayerViewController?.setPresentationMode(PresentationMode.INLINE, null);
+          } else {
+            Navigator.of(_currentContext, rootNavigator: true).pop();
+          }
         }
 
 
       case PresentationMode.PIP:
 
+          _manualInterventionForPipRestoration = false;
           _presentationModeBeforePip = previousPresentationMode;
 
           if (kIsWeb) {
-            _theoPlayerViewController?.setPresentationMode(PresentationMode.PIP, null);
+            if (previousPresentationMode == PresentationMode.FULLSCREEN) {
+              // we need this to avoid the callback on the previous setPresentationMode()  override the presentation mode we need for pip.
+              // TODO: try to kill it
+              _manualInterventionForFullscreenRestoration = true;
+              // first exit fullscreen before going into PiP
+              // we are faking a transition without real presentationMode change
+              // TODO: make this cleaner
+              _presentationModeBeforePip = PresentationMode.INLINE;
+              _theoPlayerViewController?.setPresentationMode(PresentationMode.INLINE, null);
+              Navigator.of(_currentContext, rootNavigator: true).pop();
+
+            }
+
+            _theoPlayerViewController?.setPresentationMode(PresentationMode.PIP, (){
+              debugLog("THEOplayer_$id: reset presentationMode after PIP: $_presentationModeBeforePip}");
+              if (!_manualInterventionForPipRestoration) {
+                _playerState.presentationMode = _presentationModeBeforePip;
+              }
+            });
           } else {
             if (userTriggered) {
               PlatformActivityService.instance.triggerEnterPictureInPicture();
@@ -445,16 +463,40 @@ class THEOplayer implements EventDispatcher {
     }
   }
 
+  void _enterFullscreen() {
+    Future? fullscreenPresentingFuture;
+
+    fullscreenPresentingFuture = Navigator.of(_currentContext, rootNavigator: true).push(MaterialPageRoute(
+        builder: (context) {
+          return _fullscreenBuilder(context, this);
+        },
+        settings: null));
+    
+    fullscreenPresentingFuture.then((value) => _restorePlayerStateAfterLeavingFullscreen());
+    
+    //only used on web for now:
+    _theoPlayerViewController?.setPresentationMode(PresentationMode.FULLSCREEN, () {
+      if (fullscreenPresentingFuture != null) {
+        Navigator.of(_currentContext, rootNavigator: true).maybePop();
+      }
+    });
+  }
+
   void _restorePlayerStateAfterLeavingFullscreen() {
     debugLog("THEOplayer_$id: Exit fullscreen");
 
-    _playerState.presentationMode = PresentationMode.INLINE;
+    if (!_manualInterventionForFullscreenRestoration) {
+      _playerState.presentationMode = PresentationMode.INLINE;
+    }
+
     SystemChrome.setPreferredOrientations(theoPlayerConfig.fullscreenConfig.preferredRestoredOrientations).then((value) => {
       SystemChrome.restoreSystemUIOverlays()
     });
 
     //only used on web for now:
-    _theoPlayerViewController?.setPresentationMode(PresentationMode.INLINE, null);
+    if (!_manualInterventionForFullscreenRestoration) {
+      _theoPlayerViewController?.setPresentationMode(PresentationMode.INLINE, null);
+    }
   }
 
   /// Releases and destroys all resources

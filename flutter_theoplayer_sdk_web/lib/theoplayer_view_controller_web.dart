@@ -261,6 +261,9 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   }
 
   JSExportedDartFunction? jsFullscreenChangeListener;
+  JSExportedDartFunction? jsPiPEnterListener;
+  JSExportedDartFunction? jsPiPLeaveListener;
+
   PresentationMode? currentPresentationMode = PresentationMode.INLINE;
 
   @override
@@ -313,11 +316,80 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
           if (document.fullscreenElement != null) {
             document.exitFullscreen();
           }
+        } else if (previousPresentationMode == PresentationMode.PIP) {
+          if (document.pictureInPictureElement != null) {
+            if (kDebugMode) {
+              print('Exit pip');
+            }
+
+            try {
+              document.exitPictureInPicture();
+            } catch (e) {
+              print('Error when exitPictureInPicture(), $e');
+            }
+          } else {
+            if (kDebugMode) {
+              print('We were in PiP, but no pictureInPictureElement !?!?');
+            }
+          }
         }
       case PresentationMode.PIP: {
+
         HTMLVideoElement? videoElement = _getPlayingVideoElement();
+
+        jsPiPEnterListener = ((JSAny event) {
+          if (document.pictureInPictureElement != null) {
+            if (kDebugMode) {
+              print(
+                'Element: ${document.pictureInPictureElement} entered PiP mode.',
+              );
+            }
+          } else {
+            if (kDebugMode) {
+              print('ERROR entering PiP mode.');
+            }
+          }
+        }).toJS;
+
+        jsPiPLeaveListener =((JSAny event) {
+
+            if (kDebugMode) {
+              print('Leaving PiP mode.');
+            }
+            if (jsPiPEnterListener != null) {
+              elementToFullscreen.removeEventListener(
+                WebEventTypes.PICTUREINPICTURE_ENTER,
+                jsPiPEnterListener,
+              );
+            }
+
+            if (jsPiPLeaveListener != null) {
+              elementToFullscreen.removeEventListener(
+                WebEventTypes.PICTUREINPICTURE_EXIT,
+                jsPiPLeaveListener,
+              );
+            }
+
+            automaticFullscreenExitListener?.call();
+
+        }).toJS;
+
+        videoElement?.addEventListener(
+          WebEventTypes.PICTUREINPICTURE_ENTER,
+          jsPiPEnterListener,
+        );
+
+        videoElement?.addEventListener(
+          WebEventTypes.PICTUREINPICTURE_EXIT,
+          jsPiPLeaveListener,
+        );
+
         //NOTE: videoElement.requestPictureInPicture() doesn't work
-        videoElement?.callMethod("requestPictureInPicture".toJS);
+        try {
+          videoElement?.callMethod("requestPictureInPicture".toJS);
+        } catch (e) {
+          print('Error when requestPictureInPicture() , $e');
+        }
 
       }
       default:
@@ -366,4 +438,7 @@ extension on Document {
 
 class WebEventTypes {
   static const FULLSCREEN_CHANGE = 'fullscreenchange';
+  static const PICTUREINPICTURE_ENTER = 'enterpictureinpicture';
+  static const PICTUREINPICTURE_EXIT = 'leavepictureinpicture';
+
 }
