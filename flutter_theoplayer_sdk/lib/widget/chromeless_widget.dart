@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -32,7 +34,7 @@ class _ChromelessPlayerViewState extends State<ChromelessPlayerView> {
   @override
   Widget build(BuildContext context) {
     List<PresentationMode> presentationModeToCheck = [PresentationMode.INLINE];
-    if (kIsWeb) {
+    if (kIsWeb || Platform.isIOS) {
       // on web we don't present an extra PresentationModeAwareWidget for PIP, so the current one has to be aware of PIP mode,
       // otherwise the THEOplayerView will be disposed
       presentationModeToCheck.add(PresentationMode.PIP);

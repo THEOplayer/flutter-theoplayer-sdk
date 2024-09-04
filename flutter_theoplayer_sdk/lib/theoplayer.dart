@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -349,7 +351,7 @@ class THEOplayer implements EventDispatcher {
 
   void setAllowAutomaticPictureInPicture(bool allowAutomaticPictureInPicture) {
     _playerState.allowAutomaticPictureInPicture = allowAutomaticPictureInPicture;
-    //TODO: pass me
+    _theoPlayerViewController?.setAllowAutomaticPictureInPicture(allowAutomaticPictureInPicture);
   }
 
   bool allowAutomaticPictureInPicture() {
@@ -376,6 +378,11 @@ class THEOplayer implements EventDispatcher {
   }
 
   void setPresentationMode(PresentationMode presentationMode) {
+    if (!kIsWeb && presentationMode == PresentationMode.PIP) {
+      print("Programmatically setting Picture-in-Picture mode it not possible on ${defaultTargetPlatform.name}! Please check the `setAllowAutomaticPictureInPicture()` API.");
+      return;
+    }
+    
     _setPresentationMode(presentationMode);
   }
 
@@ -403,7 +410,11 @@ class THEOplayer implements EventDispatcher {
             _theoPlayerViewController?.setPresentationMode(PresentationMode.INLINE, null);
             _enterFullscreen();
           } else {
-            Navigator.of(_currentContext, rootNavigator: true).pop();
+            if (Platform.isIOS) {
+              //do nothing, AVplayer will do the transition
+            } else {
+              Navigator.of(_currentContext, rootNavigator: true).pop();
+            }
           }
         }
       case PresentationMode.INLINE:
@@ -422,7 +433,11 @@ class THEOplayer implements EventDispatcher {
             //TODO: try to move the logic of "if kIsWeb" inside the underlying viewController, so we don't need any platform check.
             _theoPlayerViewController?.setPresentationMode(PresentationMode.INLINE, null);
           } else {
-            Navigator.of(_currentContext, rootNavigator: true).pop();
+            if (Platform.isIOS) {
+              //do nothing, AVplayer will do the transition
+            } else {
+              Navigator.of(_currentContext, rootNavigator: true).pop();
+            }
           }
         }
 
@@ -565,7 +580,11 @@ class PlayerPlatformActivityServiceListener implements PlatformActivityServiceLi
         },
         settings: null);
 
-    Navigator.of(player._currentContext, rootNavigator: true).push(pipRoute);
+    if (Platform.isIOS) {
+      //do nothing, AVplayer will do the transition
+    } else {
+      Navigator.of(player._currentContext, rootNavigator: true).push(pipRoute);
+    }
   }
 
   @override

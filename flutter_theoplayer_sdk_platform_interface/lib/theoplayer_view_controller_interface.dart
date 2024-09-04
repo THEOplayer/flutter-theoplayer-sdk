@@ -73,6 +73,10 @@ abstract class THEOplayerViewController implements EventDispatcher {
 
   Future<bool> allowBackgroundPlayback();
 
+  void setAllowAutomaticPictureInPicture(bool allowAutomaticPictureInPicture);
+
+  Future<bool> allowAutomaticPictureInPicture();
+
   Future<String?> getError();
 
   TextTracks getTextTracks();
