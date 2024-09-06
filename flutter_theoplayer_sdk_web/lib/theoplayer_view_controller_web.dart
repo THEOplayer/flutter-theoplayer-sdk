@@ -235,6 +235,18 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
     // do nothing
   }
 
+
+  @override
+  Future<bool> allowAutomaticPictureInPicture() {
+    // do nothing
+    return Future.value(true);
+  }
+
+  @override
+  void setAllowAutomaticPictureInPicture(bool allowAutomaticPictureInPicture) {
+    // do nothing
+  }
+
   @override
   TextTracks getTextTracks() {
     return _tracksController.getTextTracks();
