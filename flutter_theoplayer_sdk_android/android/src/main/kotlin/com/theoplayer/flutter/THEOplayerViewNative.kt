@@ -1,7 +1,6 @@
 package com.theoplayer.flutter
 
 import android.content.Context
-import android.os.Build
 import android.util.Log
 import android.view.Surface
 import android.view.View
@@ -52,6 +51,8 @@ class THEOplayerViewNative(
     private val textTrackBridge: TextTrackBridge
     private val audioTrackBridge: AudioTrackBridge
     private val videoTrackBridge: VideoTrackBridge
+
+    private var allowAutomaticPictureInPicture: Boolean = false;
 
     private var surface: Surface? = null;
 
@@ -249,6 +250,14 @@ class THEOplayerViewNative(
 
     override fun allowBackgroundPlayback(): Boolean {
         return tpv.settings.allowBackgroundPlayback()
+    }
+
+    override fun setAllowAutomaticPictureInPicture(allowAutomaticPictureInPicture: Boolean) {
+        this.allowAutomaticPictureInPicture = allowAutomaticPictureInPicture
+    }
+
+    override fun allowAutomaticPictureInPicture(): Boolean {
+        return this.allowAutomaticPictureInPicture
     }
 
     override fun getReadyState(): FlutterReadyState {

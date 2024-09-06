@@ -1,11 +1,7 @@
 package com.theoplayer.flutter
 
 import android.app.Activity
-import android.content.ComponentCallbacks2
-import android.content.res.Configuration
-import android.os.Build
 import android.util.Log
-import com.theoplayer.flutter.helpers.PiPChangeListener
 import com.theoplayer.flutter.helpers.PipHandler
 import com.theoplayer.flutter.platform.PlatformActivityService
 import io.flutter.embedding.engine.plugins.FlutterPlugin
@@ -15,8 +11,7 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 
-class TheoplayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware,
-    PiPChangeListener {
+class TheoplayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, ActivityAware {
 
     private lateinit var flutterPluginBinding:  FlutterPluginBinding
 
@@ -41,7 +36,7 @@ class TheoplayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, Activit
         //TODO: enum
         PlatformActivityService.ensureInitialized(flutterPluginBinding.binaryMessenger)
 
-        pipHandler = PipHandler(this)
+        pipHandler = PipHandler()
     }
 
     override fun onDetachedFromEngine(binding: FlutterPluginBinding) {
@@ -89,13 +84,5 @@ class TheoplayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, Activit
                 result.notImplemented()
             }
         }
-    }
-
-    override fun onEnterPiP(playerID: Int) {
-        //TODO("Not yet implemented")
-    }
-
-    override fun onExitPiP(playerID: Int) {
-        //TODO("Not yet implemented")
     }
 }

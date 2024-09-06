@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:theoplayer/widget/chromeless_widget.dart';
 import 'package:theoplayer/widget/fullscreen_widget.dart';
 import 'package:theoplayer/widget/presentationmode_aware_widget.dart';
 import 'package:theoplayer_platform_interface/helpers/logger.dart';
@@ -115,7 +116,7 @@ class THEOplayer implements EventDispatcher {
       debugLog("THEOplayer_$id: Detected lifecycle change: $state");
     });
 
-    _platformActivityServiceListener = PlayerPlatformActivityServiceListener(player: this);
+    _platformActivityServiceListener = _PlayerPlatformActivityServiceListener(player: this);
     PlatformActivityService.instance.addPlatformActivityServiceListener(_platformActivityServiceListener!);
   }
 
@@ -355,6 +356,7 @@ class THEOplayer implements EventDispatcher {
   }
 
   bool allowAutomaticPictureInPicture() {
+    //NOTE: we don't rely on the underlying native state
     return _playerState.allowAutomaticPictureInPicture;
   }
 
@@ -541,11 +543,13 @@ class THEOplayer implements EventDispatcher {
 
 }
 
-class PlayerPlatformActivityServiceListener implements PlatformActivityServiceListener {
+/// Platform listener that receives PiP-related events from native.
+/// Only used on Android and iOS
+class _PlayerPlatformActivityServiceListener implements PlatformActivityServiceListener {
 
   THEOplayer player;
 
-  PlayerPlatformActivityServiceListener({required this.player});
+  _PlayerPlatformActivityServiceListener({required this.player});
 
   @override
   void onExitPictureInPicture() {
@@ -571,18 +575,17 @@ class PlayerPlatformActivityServiceListener implements PlatformActivityServiceLi
 
     player._setPresentationMode(PresentationMode.PIP, userTriggered: false);
 
-
-    var pipModeFullscreenWidget = PresentationModeAwareWidget(player: player, presentationModeToCheck: const [PresentationMode.PIP]);
-
-    MaterialPageRoute pipRoute = MaterialPageRoute(
-        builder: (context) {
-          return pipModeFullscreenWidget;
-        },
-        settings: null);
-
     if (Platform.isIOS) {
       //do nothing, AVplayer will do the transition
     } else {
+      var pipModeFullscreenWidget = _FakePiPFullscreenWindow(player: player);
+
+      MaterialPageRoute pipRoute = MaterialPageRoute(
+          builder: (context) {
+            return pipModeFullscreenWidget;
+          },
+          settings: null);
+
       Navigator.of(player._currentContext, rootNavigator: true).push(pipRoute);
     }
   }
@@ -590,4 +593,24 @@ class PlayerPlatformActivityServiceListener implements PlatformActivityServiceLi
   @override
   int get playerID => player.id;
 
+}
+/// We use this widget to present the player in "fullscreen" to make it fully visible in PiP without any UI elements
+class _FakePiPFullscreenWindow extends StatelessWidget {
+  const _FakePiPFullscreenWindow({
+    super.key,
+    required this.player,
+  });
+
+  final THEOplayer player;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        color: Colors.black,
+        child: Align(
+            alignment: Alignment.center,
+            child: AspectRatio(
+                aspectRatio: player.getVideoWidth() / player.getVideoHeight(),
+                child: PresentationModeAwareWidget(player: player, presentationModeToCheck: const [PresentationMode.PIP]))));
+  }
 }

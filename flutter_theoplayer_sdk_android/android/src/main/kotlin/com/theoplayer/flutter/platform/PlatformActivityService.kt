@@ -27,7 +27,6 @@ class PlatformActivityService private constructor(messenger: BinaryMessenger): M
         val INSTANCE: PlatformActivityService by lazy { privateInstance ?: throw Exception("Call `PlatformActivityService.ensureInitialized` first!") }
     }
 
-    //TODO: private
     private val callbacks = mutableListOf<PlatformActivityServiceCallback>()
     private val methodChannelPlatformActivityService: MethodChannel = MethodChannel(messenger, "com.theoplayer.global/activity").also {
         it.setMethodCallHandler(this)
@@ -61,9 +60,9 @@ class PlatformActivityService private constructor(messenger: BinaryMessenger): M
                     }
                     result.success(null);
                 } else {
-                    //TODO: define error codes
-                    //TODO: can we make sure we don't even arrive here?
-                    result.error("1000", "NOT_SUPPORTED", null)
+                    //TODO: define error codes for future
+                    //TODO: we need to make sure that we don't even arrive here at all.
+                    result.error("", "NOT_SUPPORTED", null)
                 }
             }
 

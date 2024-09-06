@@ -58,6 +58,7 @@ class _MyAppState extends State<MyApp> {
           print("main - THEOplayer - onCreate");
           player.setAutoplay(true);
           player.setAllowBackgroundPlayback(true);
+          player.setAllowAutomaticPictureInPicture(true);
           // print errors
           player.addEventListener(PlayerEventTypes.ERROR, (errorEvent) {
             var error = errorEvent as ErrorEvent;

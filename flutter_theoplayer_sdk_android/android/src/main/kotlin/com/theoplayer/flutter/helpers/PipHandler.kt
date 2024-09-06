@@ -2,10 +2,12 @@ package com.theoplayer.flutter.helpers
 
 import android.content.ComponentCallbacks2
 import android.content.res.Configuration
-import android.graphics.Rect
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.core.util.forEach
 import com.theoplayer.flutter.THEOplayerViewNative
 import com.theoplayer.flutter.THEOplayerViewNativeFactory
 import com.theoplayer.flutter.platform.PlatformActivityService
@@ -14,7 +16,7 @@ import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.PluginRegistry.UserLeaveHintListener
 
-class PipHandler(pipChangeListener: PiPChangeListener) {
+class PipHandler {
 
     private val NO_PLAYER_IN_PIP = -1
 
@@ -31,11 +33,9 @@ class PipHandler(pipChangeListener: PiPChangeListener) {
                     if (!isInPictureInPictureMode) {
                         PlatformActivityService.INSTANCE.sendExitPictureInPicture()
                         exitPip(playerInPip, null);
-                        pipChangeListener.onExitPiP(playerInPip)
                     } else {
                         //NOTE: we could trigger enterPiP from here too, e.g. this happens when the transition finished.
                         //PlatformActivityService.INSTANCE.sendUserLeaveHint()
-                        //pipChangeListener.onEnterPiP(playerInPip)
                     }
                 }
             }
@@ -48,20 +48,24 @@ class PipHandler(pipChangeListener: PiPChangeListener) {
         }
     }
 
+    /**
+     * Gets triggered when the user presses the home button
+     */
     private val userLeaveHintListener = UserLeaveHintListener {
         Log.d("PipHandler", "userLeaveHintListener")
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { //TODO: O
-            PlatformActivityService.INSTANCE.sendUserLeaveHint()
-            enterPip(-1, null)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            enterPipIfPossible()
         }
     }
 
+    /**
+     * Gets triggered if we receive a manual action from Flutter
+     * NOTE: currently disabled due to differences in iOS and Android PiP
+     */
     private val pipCallback = object : PlatformActivityServiceCallback {
         override fun doEnterPictureInPicture() {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) { //O
-                //TODO: fix ID
-                PlatformActivityService.INSTANCE.sendUserLeaveHint()
-                enterPip(-1, null)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                enterPipIfPossible()
             }
         }
     }
@@ -69,7 +73,6 @@ class PipHandler(pipChangeListener: PiPChangeListener) {
     fun attachToActivityBinding(activityBinding: ActivityPluginBinding) {
         this.activityBinding = activityBinding
         activityBinding.addOnUserLeaveHintListener(userLeaveHintListener)
-        activityBinding.addOnWindowFocusChangedListener { Log.d("PipHandler", "onWindowFocusChangedListener") }
         activityBinding.activity.registerComponentCallbacks(componentCallback)
         PlatformActivityService.INSTANCE.addCallback(pipCallback)
     }
@@ -80,18 +83,33 @@ class PipHandler(pipChangeListener: PiPChangeListener) {
         activityBinding?.activity?.unregisterComponentCallbacks(componentCallback)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun enterPipIfPossible() {
+        findFirstPlayerThatCanEnterIntoPip()?.let {
+            PlatformActivityService.INSTANCE.sendUserLeaveHint()
+            Handler(Looper.getMainLooper()).post {
+                enterPip(it, null)
+            }
+        }
+    }
 
-    @RequiresApi(Build.VERSION_CODES.O) //TODO: O
-    fun enterPip(playerID: Int, result: MethodChannel.Result?) {
+    private fun findFirstPlayerThatCanEnterIntoPip() : Int? {
+        THEOplayerViewNativeFactory.players.forEach { id, player ->
+            if (player.allowAutomaticPictureInPicture()) {
+                return id
+            }
+        }
+        return null
+    }
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun enterPip(playerID: Int, result: MethodChannel.Result?) {
         Log.d("PipHandler", "enterPip")
         val didEnter = this.activityBinding?.activity?.enterPictureInPictureMode(
             android.app.PictureInPictureParams.Builder()
-                .setSourceRectHint(Rect(100, 100, 100, 100))
                 .build()
         ) ?: false
-
-        //val tpv = THEOplayerViewNativeFactory.players[0];
-        //Log.d("PipHandler", "enterPip: tpv: ${tpv.view.height}, ${tpv.view.width}, ${tpv.view.x}, ${tpv.view.y}")
 
         Log.d("PipHandler", "enterPip: didEnter: $didEnter")
         didEnteredPiP = didEnter
@@ -105,10 +123,4 @@ class PipHandler(pipChangeListener: PiPChangeListener) {
         playerInPip = NO_PLAYER_IN_PIP
     }
 
-
-}
-
-interface PiPChangeListener {
-    fun onEnterPiP(playerID: Int)
-    fun onExitPiP(playerID: Int)
 }
