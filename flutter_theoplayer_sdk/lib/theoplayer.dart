@@ -337,24 +337,34 @@ class THEOplayer implements EventDispatcher {
   }
 
   /// Set whether playback continues when the app goes to background.
+  /// Useful if audio-only playback is required in the background.
   ///
   /// Remarks:
   /// * on Web this flag has no impact.
+  /// * on Android and iOS manual implementation is still required to connect the player to the Notification Center APIs to be able to control the playback from outside the app.
   void setAllowBackgroundPlayback(bool allowBackgroundPlayback) {
     _playerState.allowBackgroundPlayback = allowBackgroundPlayback;
     _theoPlayerViewController?.setAllowBackgroundPlayback(allowBackgroundPlayback);
   }
 
-  /// Whether playback continues when the app goes to background.
+  /// Whether playback continues in Picture-in-Picture mode when the app goes to background.
   bool allowBackgroundPlayback() {
     return _playerState.allowBackgroundPlayback;
   }
 
+  /// Set whether playback continues Picture-in-Picture mode when the app goes to background.
+  ///
+  /// Remarks:
+  /// * on Web this flag has no impact.
+  /// * on Android and iOS if this flag is TRUE, the player will go to Picture-in-Picture mode when the user presses the home button. (puts the application into background)
+  /// * on Android and iOS there can be only one player with this flag set to TRUE. (having multiple ones can cause unexpected behaviour)
+  /// * on iOS the player has to be not paused when entering Picture-in-Picture
   void setAllowAutomaticPictureInPicture(bool allowAutomaticPictureInPicture) {
     _playerState.allowAutomaticPictureInPicture = allowAutomaticPictureInPicture;
     _theoPlayerViewController?.setAllowAutomaticPictureInPicture(allowAutomaticPictureInPicture);
   }
 
+  /// Whether playback continues in Picture-in-Picture when the app goes to background.
   bool allowAutomaticPictureInPicture() {
     //NOTE: we don't rely on the underlying native state
     return _playerState.allowAutomaticPictureInPicture;
@@ -375,10 +385,18 @@ class THEOplayer implements EventDispatcher {
     _playerState.resetState();
   }
 
+  /// Returns the current [PresentationMode]
   PresentationMode getPresentationMode() {
     return _playerState.presentationMode;
   }
 
+  /// Sets the current [PresentationMode] for the player
+  ///
+  /// Remarks:
+  /// * [PresentationMode.INLINE]: The player is shown in its original location on the page/in the app
+  /// * [PresentationMode.FULLSCREEN]: The player fills the entire screen (by presenting a new fullscreen view in the view hierarchy).
+  ///   Check [THEOplayerConfig.fullscreenConfig] and [THEOplayer.fullscreenConfig] for more customization.
+  /// * [PresentationMode.PIP]: The player is shown in Picture-in-Picture mode. ONLY AVAILABLE ON WEB! For Android and iOS check [setAllowAutomaticPictureInPicture].
   void setPresentationMode(PresentationMode presentationMode) {
     if (!kIsWeb && presentationMode == PresentationMode.PIP) {
       print("Programmatically setting Picture-in-Picture mode it not possible on ${defaultTargetPlatform.name}! Please check the `setAllowAutomaticPictureInPicture()` API.");
