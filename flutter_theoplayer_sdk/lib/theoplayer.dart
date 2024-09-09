@@ -406,6 +406,55 @@ class THEOplayer implements EventDispatcher {
     _setPresentationMode(presentationMode);
   }
 
+  /// Picture-in-Picture flow
+  ///
+  /// - ENTERing PIP mode
+  ///
+  ///                   ┌────────────────────────┐             ┌──────────────────────────────────────┐                   ┌────────────────────────────┐
+  ///                   │                        │             │                                      │                   │                            │
+  ///  WEB              │setPresentationMode(PiP)├────────────►│videoElement.requestPictureInPicture()├──────────────────►│   Browser entered PiP mode │
+  ///                   │                        │             │                                      │                   │                            │
+  ///                   └────────────────────────┘             └──────────────────────────────────────┘                   └────────────────────────────┘
+  ///
+  /// - EXITing PIP mode by closing the PIP window
+  ///   - WebEventTypes.PICTUREINPICTURE_EXIT is triggered from the video element ───► resolves setPresentationMode(PIP) callback
+  ///
+  ///
+  ///
+  ///
+  ///
+  /// - ENTERing PIP mode
+  ///                                    ┌─────────────────┐                                 ┌─────────────────────────────┐
+  ///                                    │ onUserLeaveHint │                                 │new _FakePiPFullscreenWindow │
+  /// ANDROID           ┌───────────────►│   from native   ┼──────────────────┐    ┌────────►│  with stretched fullscreen  ├─────────────────┐
+  ///                   │                └─────────────────┘                  │    │         │           player            │                 │
+  ///                   │                                                     │    │         └─────────────────────────────┘                 │
+  ///                   │                                                     ▼    │                                                         ▼
+  ///         ┌─────────┼──────────┐                                  ┌────────────┴──┐                                            ┌───────────────────┐
+  ///         │ Application moving │                                  │onUserLeaveHint│                                            │Application entered│
+  ///         │   to background    │                                  │  in Flutter   │                                            │     PiP mode      │
+  ///         └─────────┬──────────┘                                  └────────────┬──┘                                            └───────────────────┘
+  ///                   │                                                     ▲    │                                                         ▲
+  ///                   │                                                     │    │                                                         │
+  ///                   │          ┌─────────────────────────────┐            │    │            ┌─────────────────────────┐                  │
+  ///                   │          │ xxxWillStartPictureInPicture│            │    │            │ AVplayer transitions to │                  │
+  ///  iOS              └─────────►│        from native          ├────────────┘    └───────────►│    Picture-in-Picture   ├──────────────────┘
+  ///                              └─────────────────────────────┘                              └─────────────────────────┘
+  ///
+  /// - EXITing PIP mode by closing the PIP window
+  ///   - ANDROID:
+  ///     - `onConfigurationChanged` detected by the PipHandler on the Activity
+  ///     - `onExitPictureInPicture` called in Flutter
+  ///     - `_FakePiPFullscreenWindow` is popped
+  ///     - player is back in the previous presentation mode
+  ///
+  ///   - iOS:
+  ///     - `pictureInPictureControllerWillStopPictureInPicture` is called in the native player
+  ///     - AVplayer transitions back to inline
+  ///     - `onExitPictureInPicture` called in Flutter
+  ///     - player is back in the previous presentation mode
+  ///
+
   void _setPresentationMode(PresentationMode presentationMode, {bool userTriggered = true}) {
     if (_playerState.presentationMode == presentationMode) {
       return;
@@ -488,9 +537,14 @@ class THEOplayer implements EventDispatcher {
               }
             });
           } else {
+            // manually transition to PIP
+            // right now it is disabled, we don't suppor this due to inconsistency between iOS and Android
+
+            /*
             if (userTriggered) {
               PlatformActivityService.instance.triggerEnterPictureInPicture();
             }
+            */
           }
 
       default:
