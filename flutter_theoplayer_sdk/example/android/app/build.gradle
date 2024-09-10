@@ -22,7 +22,7 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-def theoplayerVersion ='7.12.0'
+def theoplayerVersion ='8.0.0'
 
 android {
     namespace "com.theoplayer.theoplayer_example"
