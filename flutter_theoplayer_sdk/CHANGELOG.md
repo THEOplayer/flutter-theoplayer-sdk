@@ -1,3 +1,8 @@
+## 8.0.0
+
+* Updated THEOplayer to 8.0.0.
+* Added Picture-in-Picture support with `THEOplayer.setPresentationMode(PresentationMode.PIP)` API for WEB and `THEOplayer.setAllowAutomaticPictureInPicture(bool)` for Android and iOS.
+
 ## 7.12.0
 
 * Updated THEOplayer to 7.12.0.
