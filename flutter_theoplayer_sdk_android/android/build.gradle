@@ -18,14 +18,14 @@ rootProject.allprojects {
     repositories {
         google()
         mavenCentral()
-        maven { url 'https://jitpack.io' }
+        maven { url "https://maven.theoplayer.com/releases" }
     }
 }
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
-def theoplayerVersion ='7.3.0'
+def theoplayerVersion ='7.12.0'
 
 android {
     if (project.android.hasProperty("namespace")) {
