@@ -1,6 +1,7 @@
 import Foundation
 import Flutter
 import THEOplayerSDK
+import AVKit
 
 //TODO: This extension of Error is required to do use FlutterError in any Swift code.
 //TODO: https://github.com/flutter/packages/blob/main/packages/pigeon/example/README.md#swift
@@ -16,6 +17,7 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
     private let _audioTrackBridge: AudioTrackBridge
     private let _videoTrackBridge: VideoTrackBridge
     private var _allowBackgroundPlayback = false
+    private var _allowAutomaticPictureInPicture = true
 
     func view() -> UIView {
         return _view
@@ -24,7 +26,7 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
     func shouldContinueAudioPlaybackInBackground() -> Bool {
         return self._allowBackgroundPlayback
     }
-
+    
     init(frame: CGRect, viewIdentifier viewId: Int64, arguments args: Any?, binaryMessenger messenger: FlutterBinaryMessenger?) {
         _view = UIView()
         _view.frame = frame
@@ -34,11 +36,18 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
         let license = playerConfig?["license"] as? String
         let licenseUrl = playerConfig?["licenseUrl"] as? String
 
-        _theoplayer = THEOplayer(configuration: THEOplayerConfiguration(
-            pip: nil,
-            license: license,
-            licenseUrl: licenseUrl
-        ))
+        let pipConfig = PiPConfigurationBuilder()
+        pipConfig.nativePictureInPicture = _allowAutomaticPictureInPicture;
+        pipConfig.canStartPictureInPictureAutomaticallyFromInline = _allowAutomaticPictureInPicture;
+        
+        let theoConfig = THEOplayerConfigurationBuilder()
+        theoConfig.license = license
+        theoConfig.licenseUrl = licenseUrl
+        //we need to enable pip on theoplayerConfig, otherwise theoplayer.pip will be not setup correctly
+        theoConfig.pip = pipConfig.build()
+        
+        _theoplayer = THEOplayer(configuration: theoConfig.build())
+        
         _theoplayer.frame = _view.bounds
         _theoplayer.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         _theoplayer.addAsSubview(of: _view)
@@ -62,6 +71,11 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
         
         THEOplayerNativeAPISetup.setUp(binaryMessenger: _pigeonMessenger, api: self)
         _theoplayer.backgroundPlaybackDelegate = self
+        
+        //TODO: this limitation can be removed in the native SDK
+        if #available(iOS 14.0, *) {
+            _theoplayer.pip?.nativePictureInPictureDelegate = self
+        }
     }
 }
 
@@ -158,6 +172,19 @@ extension THEOplayerViewNative: THEOplayerNativeAPI {
         return self._allowBackgroundPlayback
     }
     
+    func setAllowAutomaticPictureInPicture(allowAutomaticPictureInPicture: Bool) throws {
+        if #available(iOS 14.0, *) {
+            self._allowAutomaticPictureInPicture = allowAutomaticPictureInPicture
+            self._theoplayer.pip?.configure(configuration: generatePiPConfiguration())
+        } else {
+            print("PIP is only available from iOS 14!")
+        }
+    }
+    
+    func allowAutomaticPictureInPicture() throws -> Bool {
+        return _allowAutomaticPictureInPicture
+    }
+    
     func getReadyState() throws -> ReadyState {
         return PlayerEnumTransformer.toFlutterReadyState(readyState: _theoplayer.readyState)
     }
@@ -218,4 +245,21 @@ extension THEOplayerViewNative: THEOplayerNativeAPI {
         // do nothing
     }
     
+    private func generatePiPConfiguration() -> PiPConfiguration {
+        let pipConfig = PiPConfigurationBuilder()
+        pipConfig.nativePictureInPicture = _allowAutomaticPictureInPicture;
+        pipConfig.canStartPictureInPictureAutomaticallyFromInline = _allowAutomaticPictureInPicture;
+        return pipConfig.build()
+    }
+}
+
+extension THEOplayerViewNative: AVPictureInPictureControllerDelegateExtended {
+    // we dispatch events on "willXXXX" do give time to Flutter to react
+    func pictureInPictureControllerWillStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
+        PlatformActivityService.shared().sendUserLeaveHint()
+    }
+    
+    func pictureInPictureControllerWillStopPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
+        PlatformActivityService.shared().sendExitPictureInPicture()
+    }
 }

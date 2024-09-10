@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:theoplayer/theoplayer.dart';
 import 'package:theoplayer_example/player_widgets/current_time_widget.dart';
@@ -58,6 +59,7 @@ class _MyAppState extends State<MyApp> {
           print("main - THEOplayer - onCreate");
           player.setAutoplay(true);
           player.setAllowBackgroundPlayback(true);
+          player.setAllowAutomaticPictureInPicture(true);
           // print errors
           player.addEventListener(PlayerEventTypes.ERROR, (errorEvent) {
             var error = errorEvent as ErrorEvent;
@@ -74,6 +76,11 @@ class _MyAppState extends State<MyApp> {
                 ),
               ),
             );
+          });
+
+          player.addEventListener(PlayerEventTypes.PRESENTATIONMODECHANGE, (pmEvent) {
+            var pmd = pmEvent as PresentationModeChangeEvent;
+            print("New presentation mode: ${pmd.presentationMode}");
           });
         });
   }
@@ -144,6 +151,20 @@ class _MyAppState extends State<MyApp> {
                                 player.setPresentationMode(PresentationMode.FULLSCREEN);
                               },
                               child: const Text("Open Fullscreen")),
+                          FilledButton(
+                              onPressed: () {
+                                if (kIsWeb) {
+                                  player.setPresentationMode(PresentationMode.PIP);
+                                } else {
+                                  player.setAllowAutomaticPictureInPicture(!player.allowAutomaticPictureInPicture());
+                                }
+                              },
+                              child: const Text("Open PiP (web) / Flip automatic PiP mode (native)")),
+                          FilledButton(
+                              onPressed: () {
+                                player.setPresentationMode(PresentationMode.INLINE);
+                              },
+                              child: const Text("INLINE")),
                           FilledButton(
                               onPressed: () {
                                 player.getVideoTracks().first.targetQuality = player.getVideoTracks().first.qualities.first;
