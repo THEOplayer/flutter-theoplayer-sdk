@@ -133,7 +133,7 @@ extension THEOplayerViewNative: THEOplayerNativeAPI {
     }
     
     func setPlaybackRate(playbackRate: Double) throws {
-        _theoplayer.setPlaybackRate(playbackRate)
+        _theoplayer.playbackRate = playbackRate
     }
     
     func getPlaybackRate() throws -> Double {
@@ -157,7 +157,7 @@ extension THEOplayerViewNative: THEOplayerNativeAPI {
     }
     
     func setPreload(preload: PreloadType) throws {
-        _theoplayer.setPreload(PlayerEnumTransformer.toPreloadType(preload: preload))
+        _theoplayer.preload = PlayerEnumTransformer.toPreloadType(preload: preload)
     }
     
     func getPreload() throws -> PreloadType {
