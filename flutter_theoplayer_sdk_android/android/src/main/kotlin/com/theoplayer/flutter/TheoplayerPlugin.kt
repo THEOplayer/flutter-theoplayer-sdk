@@ -33,7 +33,6 @@ class TheoplayerPlugin : FlutterPlugin, MethodChannel.MethodCallHandler, Activit
         val methodChannel = MethodChannel(flutterPluginBinding.binaryMessenger, "com.theoplayer.global/players")
         methodChannel.setMethodCallHandler(this)
 
-        //TODO: enum
         PlatformActivityService.ensureInitialized(flutterPluginBinding.binaryMessenger)
 
         pipHandler = PipHandler()

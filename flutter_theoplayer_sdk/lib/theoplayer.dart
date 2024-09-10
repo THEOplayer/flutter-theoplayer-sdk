@@ -347,7 +347,7 @@ class THEOplayer implements EventDispatcher {
     _theoPlayerViewController?.setAllowBackgroundPlayback(allowBackgroundPlayback);
   }
 
-  /// Whether playback continues in Picture-in-Picture mode when the app goes to background.
+  /// Whether playback continues when the app goes to background.
   bool allowBackgroundPlayback() {
     return _playerState.allowBackgroundPlayback;
   }

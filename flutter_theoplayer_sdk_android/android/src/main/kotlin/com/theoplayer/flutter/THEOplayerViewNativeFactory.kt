@@ -31,7 +31,7 @@ class THEOplayerViewNativeFactory(private val messenger: BinaryMessenger) : Plat
         tpv.destroyListener = THEOplayerViewNative.DestroyListener {
             Log.e("TheoplayerPlugin", "destroyListener - entry: ${tpv.id}")
             players.remove(tpv.id);
-            players.remove(tpv.id);
+            surfaces.remove(tpv.id);
             tpv.destroyListener = null;
         }
     }
