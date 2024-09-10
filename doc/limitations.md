@@ -5,7 +5,7 @@ This sections lists any limitations and known issues in the current package vers
 ## Platform support
 THEOplayer Flutter SDK is capable of running on
 
-- iOS 12 and above
+- iOS 13 and above
 - Android 5 and above
 - Mainstream web browsers (Firefox 120+, Chrome 119+, Safari 17+, Microsoft Edge 119+)
 
