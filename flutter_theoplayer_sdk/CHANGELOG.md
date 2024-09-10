@@ -2,6 +2,7 @@
 
 * Updated THEOplayer to 8.0.0.
 * Added Picture-in-Picture support with `THEOplayer.setPresentationMode(PresentationMode.PIP)` API for WEB and `THEOplayer.setAllowAutomaticPictureInPicture(bool)` for Android and iOS.
+* Removed iOS 12 support. The minimum supported iOS version is now iOS 13.
 
 ## 7.12.0
 
