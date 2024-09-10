@@ -1,6 +1,6 @@
 name: theoplayer
 description: Official THEOplayer Flutter SDK that brings streaming video playback for Android, iOS, and Web platforms with DRM support and premium features.
-version: 7.12.0
+version: 8.0.0
 homepage: https://theoplayer.com
 repository: https://github.com/THEOplayer/flutter-theoplayer-sdk
 
@@ -13,10 +13,10 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  theoplayer_platform_interface: 7.12.0
-  theoplayer_android: 7.12.0
-  theoplayer_ios: 7.12.0
-  theoplayer_web: 7.12.0
+  theoplayer_platform_interface: 8.0.0
+  theoplayer_android: 8.0.0
+  theoplayer_ios: 8.0.0
+  theoplayer_web: 8.0.0
 
 dev_dependencies:
   flutter_test:
