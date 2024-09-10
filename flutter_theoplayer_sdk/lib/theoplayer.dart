@@ -1,8 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter/widgets.dart';
+import 'package:theoplayer/widget/chromeless_widget.dart';
 import 'package:theoplayer/widget/fullscreen_widget.dart';
+import 'package:theoplayer/widget/presentationmode_aware_widget.dart';
+import 'package:theoplayer_platform_interface/helpers/logger.dart';
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
+import 'package:theoplayer_platform_interface/platform/platform_activity_service.dart';
 import 'package:theoplayer_platform_interface/theopalyer_config.dart';
 import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
 import 'package:theoplayer_platform_interface/theoplayer_events.dart';
@@ -50,6 +57,7 @@ class THEOplayer implements EventDispatcher {
   late final THEOplayerView _tpv;
   late THEOplayerViewController? _theoPlayerViewController;
   AppLifecycleListener? _lifecycleListener;
+  PlatformActivityServiceListener? _platformActivityServiceListener;
   late BuildContext _currentContext;
 
   final globalKey = GlobalKey();
@@ -58,10 +66,17 @@ class THEOplayer implements EventDispatcher {
   final AudioTracksHolder _audioTrackListHolder = AudioTracksHolder();
   final VideoTracksHolder _videoTrackListHolder = VideoTracksHolder();
 
+  // internal helpers
+  PresentationMode _presentationModeBeforePip = PresentationMode.INLINE;
+  bool _manualInterventionForPipRestoration = false;
+  bool _manualInterventionForFullscreenRestoration = false;
+
   /// Initialize THEOplayer with a [THEOplayerConfig].
   /// [onCreate] is called once the underlying native THEOplayerView is fully created and available to use.
 
   THEOplayer({required this.theoPlayerConfig, this.onCreate, FullscreenWidgetBuilder? fullscreenBuilder}) {
+    debugLog("THEOplayer: constructor");
+
     _playerState = PlayerState();
     _tpv = THEOplayerView(
         key: globalKey,
@@ -69,6 +84,7 @@ class THEOplayer implements EventDispatcher {
         onCreated: (THEOplayerViewController viewController, BuildContext context) {
           _currentContext = context;
           _theoPlayerViewController = viewController;
+          debugLog("THEOplayer_$id: onCreated");
           _playerState.setViewController(_theoPlayerViewController!);
           _textTrackListHolder.setup(viewController.getTextTracks());
           _audioTrackListHolder.setup(viewController.getAudioTracks());
@@ -84,18 +100,24 @@ class THEOplayer implements EventDispatcher {
             fullscreenConfig: theoPlayerConfig.fullscreenConfig,
           );
         };
+
+
   }
 
+  int get id => _theoPlayerViewController?.id ?? -1;
+
   void _setupLifeCycleListeners() {
+    print("THEOplayer_$id: _setupLifeCycleListeners");
     _lifecycleListener = AppLifecycleListener(onResume: () {
       _theoPlayerViewController?.onLifecycleResume();
     }, onPause: () {
       _theoPlayerViewController?.onLifecyclePause();
     }, onStateChange: (state) {
-      if (kDebugMode) {
-        print("THEOplayer: Detected lifecycle change: $state");
-      }
+      debugLog("THEOplayer_$id: Detected lifecycle change: $state");
     });
+
+    _platformActivityServiceListener = _PlayerPlatformActivityServiceListener(player: this);
+    PlatformActivityService.instance.addPlatformActivityServiceListener(_platformActivityServiceListener!);
   }
 
   /// Returns the player widget that can be added to the view hierarchy to show videos
@@ -315,9 +337,11 @@ class THEOplayer implements EventDispatcher {
   }
 
   /// Set whether playback continues when the app goes to background.
+  /// Useful if audio-only playback is required in the background.
   ///
   /// Remarks:
   /// * on Web this flag has no impact.
+  /// * on Android and iOS manual implementation is still required to connect the player to the Notification Center APIs to be able to control the playback from outside the app.
   void setAllowBackgroundPlayback(bool allowBackgroundPlayback) {
     _playerState.allowBackgroundPlayback = allowBackgroundPlayback;
     _theoPlayerViewController?.setAllowBackgroundPlayback(allowBackgroundPlayback);
@@ -326,6 +350,24 @@ class THEOplayer implements EventDispatcher {
   /// Whether playback continues when the app goes to background.
   bool allowBackgroundPlayback() {
     return _playerState.allowBackgroundPlayback;
+  }
+
+  /// Set whether playback continues Picture-in-Picture mode when the app goes to background.
+  ///
+  /// Remarks:
+  /// * on Web this flag has no impact.
+  /// * on Android and iOS if this flag is TRUE, the player will go to Picture-in-Picture mode when the user presses the home button. (puts the application into background)
+  /// * on Android and iOS there can be only one player with this flag set to TRUE. (having multiple ones can cause unexpected behaviour)
+  /// * on iOS the player has to be not paused when entering Picture-in-Picture
+  void setAllowAutomaticPictureInPicture(bool allowAutomaticPictureInPicture) {
+    _playerState.allowAutomaticPictureInPicture = allowAutomaticPictureInPicture;
+    _theoPlayerViewController?.setAllowAutomaticPictureInPicture(allowAutomaticPictureInPicture);
+  }
+
+  /// Whether playback continues in Picture-in-Picture when the app goes to background.
+  bool allowAutomaticPictureInPicture() {
+    //NOTE: we don't rely on the underlying native state
+    return _playerState.allowAutomaticPictureInPicture;
   }
 
   /// The last error that occurred for the current source, if any.
@@ -343,11 +385,77 @@ class THEOplayer implements EventDispatcher {
     _playerState.resetState();
   }
 
+  /// Returns the current [PresentationMode]
   PresentationMode getPresentationMode() {
     return _playerState.presentationMode;
   }
 
+  /// Sets the current [PresentationMode] for the player
+  ///
+  /// Remarks:
+  /// * [PresentationMode.INLINE]: The player is shown in its original location on the page/in the app
+  /// * [PresentationMode.FULLSCREEN]: The player fills the entire screen (by presenting a new fullscreen view in the view hierarchy).
+  ///   Check [THEOplayerConfig.fullscreenConfig] and [THEOplayer.fullscreenConfig] for more customization.
+  /// * [PresentationMode.PIP]: The player is shown in Picture-in-Picture mode. ONLY AVAILABLE ON WEB! For Android and iOS check [setAllowAutomaticPictureInPicture].
   void setPresentationMode(PresentationMode presentationMode) {
+    if (!kIsWeb && presentationMode == PresentationMode.PIP) {
+      print("Programmatically setting Picture-in-Picture mode it not possible on ${defaultTargetPlatform.name}! Please check the `setAllowAutomaticPictureInPicture()` API.");
+      return;
+    }
+    
+    _setPresentationMode(presentationMode);
+  }
+
+  /// Picture-in-Picture flow
+  ///
+  /// - ENTERing PIP mode
+  ///
+  ///                   ┌────────────────────────┐             ┌──────────────────────────────────────┐                   ┌────────────────────────────┐
+  ///                   │                        │             │                                      │                   │                            │
+  ///  WEB              │setPresentationMode(PiP)├────────────►│videoElement.requestPictureInPicture()├──────────────────►│   Browser entered PiP mode │
+  ///                   │                        │             │                                      │                   │                            │
+  ///                   └────────────────────────┘             └──────────────────────────────────────┘                   └────────────────────────────┘
+  ///
+  /// - EXITing PIP mode by closing the PIP window
+  ///   - WebEventTypes.PICTUREINPICTURE_EXIT is triggered from the video element ───► resolves setPresentationMode(PIP) callback
+  ///
+  ///
+  ///
+  ///
+  ///
+  /// - ENTERing PIP mode
+  ///                                    ┌─────────────────┐                                 ┌─────────────────────────────┐
+  ///                                    │ onUserLeaveHint │                                 │new _FakePiPFullscreenWindow │
+  /// ANDROID           ┌───────────────►│   from native   ┼──────────────────┐    ┌────────►│  with stretched fullscreen  ├─────────────────┐
+  ///                   │                └─────────────────┘                  │    │         │           player            │                 │
+  ///                   │                                                     │    │         └─────────────────────────────┘                 │
+  ///                   │                                                     ▼    │                                                         ▼
+  ///         ┌─────────┼──────────┐                                  ┌────────────┴──┐                                            ┌───────────────────┐
+  ///         │ Application moving │                                  │onUserLeaveHint│                                            │Application entered│
+  ///         │   to background    │                                  │  in Flutter   │                                            │     PiP mode      │
+  ///         └─────────┬──────────┘                                  └────────────┬──┘                                            └───────────────────┘
+  ///                   │                                                     ▲    │                                                         ▲
+  ///                   │                                                     │    │                                                         │
+  ///                   │          ┌─────────────────────────────┐            │    │            ┌─────────────────────────┐                  │
+  ///                   │          │ xxxWillStartPictureInPicture│            │    │            │ AVplayer transitions to │                  │
+  ///  iOS              └─────────►│        from native          ├────────────┘    └───────────►│    Picture-in-Picture   ├──────────────────┘
+  ///                              └─────────────────────────────┘                              └─────────────────────────┘
+  ///
+  /// - EXITing PIP mode by closing the PIP window
+  ///   - ANDROID:
+  ///     - `onConfigurationChanged` detected by the PipHandler on the Activity
+  ///     - `onExitPictureInPicture` called in Flutter
+  ///     - `_FakePiPFullscreenWindow` is popped
+  ///     - player is back in the previous presentation mode
+  ///
+  ///   - iOS:
+  ///     - `pictureInPictureControllerWillStopPictureInPicture` is called in the native player
+  ///     - AVplayer transitions back to inline
+  ///     - `onExitPictureInPicture` called in Flutter
+  ///     - player is back in the previous presentation mode
+  ///
+
+  void _setPresentationMode(PresentationMode presentationMode, {bool userTriggered = true}) {
     if (_playerState.presentationMode == presentationMode) {
       return;
     }
@@ -355,24 +463,29 @@ class THEOplayer implements EventDispatcher {
     PresentationMode previousPresentationMode = _playerState.presentationMode;
     _playerState.presentationMode = presentationMode;
 
-    Future? fullscreenPresentingFuture;
-
     switch (presentationMode) {
       case PresentationMode.FULLSCREEN:
-        fullscreenPresentingFuture = Navigator.of(_currentContext, rootNavigator: true).push(MaterialPageRoute(
-            builder: (context) {
-              return _fullscreenBuilder(context, this);
-            },
-            settings: null));
+        _manualInterventionForFullscreenRestoration = false;
 
-        fullscreenPresentingFuture.then((value) => restorePlayerStateAfterLeavingFullscreen());
-
-        //only used on web for now:
-        _theoPlayerViewController?.setPresentationMode(presentationMode, () {
-          if (fullscreenPresentingFuture != null) {
-            Navigator.of(_currentContext, rootNavigator: true).maybePop();
+        if (previousPresentationMode == PresentationMode.INLINE) {
+          _enterFullscreen();
+        } else if (previousPresentationMode == PresentationMode.PIP) {
+          debugLog("THEOplayer_$id: Back to fullscreen from PiP");
+          if (kIsWeb) {
+            // we need this to avoid the callback on the previous setPresentationMode()  override the presentation mode we need for fullscreen.
+            // TODO: try to kill it
+            _manualInterventionForPipRestoration = true;
+            // on web first we need to exit fullscreen and go back to inline
+            _theoPlayerViewController?.setPresentationMode(PresentationMode.INLINE, null);
+            _enterFullscreen();
+          } else {
+            if (Platform.isIOS) {
+              //do nothing, AVplayer will do the transition
+            } else {
+              Navigator.of(_currentContext, rootNavigator: true).pop();
+            }
           }
-        });
+        }
       case PresentationMode.INLINE:
         if (previousPresentationMode == PresentationMode.FULLSCREEN) {
           if (kIsWeb) {
@@ -383,27 +496,104 @@ class THEOplayer implements EventDispatcher {
             Navigator.of(_currentContext, rootNavigator: true).pop();
           }
           //NOTE: fullscreenPresentingFuture still will be called, if any
+        } else if (previousPresentationMode == PresentationMode.PIP) {
+          debugLog("THEOplayer_$id: Back to inline from PiP");
+          if (kIsWeb) {
+            //TODO: try to move the logic of "if kIsWeb" inside the underlying viewController, so we don't need any platform check.
+            _theoPlayerViewController?.setPresentationMode(PresentationMode.INLINE, null);
+          } else {
+            if (Platform.isIOS) {
+              //do nothing, AVplayer will do the transition
+            } else {
+              Navigator.of(_currentContext, rootNavigator: true).pop();
+            }
+          }
         }
+
+
+      case PresentationMode.PIP:
+
+          _manualInterventionForPipRestoration = false;
+          _presentationModeBeforePip = previousPresentationMode;
+
+          if (kIsWeb) {
+            if (previousPresentationMode == PresentationMode.FULLSCREEN) {
+              // we need this to avoid the callback on the previous setPresentationMode()  override the presentation mode we need for pip.
+              // TODO: try to kill it
+              _manualInterventionForFullscreenRestoration = true;
+              // first exit fullscreen before going into PiP
+              // we are faking a transition without real presentationMode change
+              // TODO: make this cleaner
+              _presentationModeBeforePip = PresentationMode.INLINE;
+              _theoPlayerViewController?.setPresentationMode(PresentationMode.INLINE, null);
+              Navigator.of(_currentContext, rootNavigator: true).pop();
+
+            }
+
+            _theoPlayerViewController?.setPresentationMode(PresentationMode.PIP, (){
+              debugLog("THEOplayer_$id: reset presentationMode after PIP: $_presentationModeBeforePip}");
+              if (!_manualInterventionForPipRestoration) {
+                _playerState.presentationMode = _presentationModeBeforePip;
+              }
+            });
+          } else {
+            // manually transition to PIP
+            // right now it is disabled, we don't support this due to inconsistency between iOS and Android
+
+            /*
+            if (userTriggered) {
+              PlatformActivityService.instance.triggerEnterPictureInPicture();
+            }
+            */
+          }
+
       default:
-        print("Unsupported presentationMode $presentationMode");
+        print("THEOplayer_$id: Unsupported presentationMode $presentationMode");
     }
   }
 
-  void restorePlayerStateAfterLeavingFullscreen() {
-    if (kDebugMode) {
-      print("THEOplayer: Exit fullscreen");
+  void _enterFullscreen() {
+    Future? fullscreenPresentingFuture;
+
+    fullscreenPresentingFuture = Navigator.of(_currentContext, rootNavigator: true).push(MaterialPageRoute(
+        builder: (context) {
+          return _fullscreenBuilder(context, this);
+        },
+        settings: null));
+    
+    fullscreenPresentingFuture.then((value) => _restorePlayerStateAfterLeavingFullscreen());
+    
+    //only used on web for now:
+    _theoPlayerViewController?.setPresentationMode(PresentationMode.FULLSCREEN, () {
+      if (fullscreenPresentingFuture != null) {
+        Navigator.of(_currentContext, rootNavigator: true).maybePop();
+      }
+    });
+  }
+
+  void _restorePlayerStateAfterLeavingFullscreen() {
+    debugLog("THEOplayer_$id: Exit fullscreen");
+
+    if (!_manualInterventionForFullscreenRestoration) {
+      _playerState.presentationMode = PresentationMode.INLINE;
     }
-    _playerState.presentationMode = PresentationMode.INLINE;
+
     SystemChrome.setPreferredOrientations(theoPlayerConfig.fullscreenConfig.preferredRestoredOrientations).then((value) => {
       SystemChrome.restoreSystemUIOverlays()
     });
 
     //only used on web for now:
-    _theoPlayerViewController?.setPresentationMode(PresentationMode.INLINE, null);
+    if (!_manualInterventionForFullscreenRestoration) {
+      _theoPlayerViewController?.setPresentationMode(PresentationMode.INLINE, null);
+    }
   }
 
   /// Releases and destroys all resources
   void dispose() {
+    if (_platformActivityServiceListener != null) {
+      PlatformActivityService.instance.removePlatformActivityServiceListener(_platformActivityServiceListener!);
+    }
+
     _lifecycleListener?.dispose();
     _theoPlayerViewController?.dispose();
     _playerState.dispose();
@@ -421,5 +611,78 @@ class THEOplayer implements EventDispatcher {
   @override
   void removeEventListener(String eventType, EventListener<Event> listener) {
     _playerState.eventManager.removeEventListener(eventType, listener);
+  }
+
+}
+
+/// Platform listener that receives PiP-related events from native.
+/// Only used on Android and iOS
+class _PlayerPlatformActivityServiceListener implements PlatformActivityServiceListener {
+
+  THEOplayer player;
+
+  _PlayerPlatformActivityServiceListener({required this.player});
+
+  @override
+  void onExitPictureInPicture() {
+    debugLog("THEOplayer_$playerID: PlayerPlatformActivityServiceListener onExitPictureInPicture");
+
+    if (!player.allowAutomaticPictureInPicture()) {
+      debugLog("THEOplayer_$playerID: PlayerPlatformActivityServiceListener onExitPictureInPicture not for me");
+    }
+
+    player._setPresentationMode(player._presentationModeBeforePip);
+
+  }
+
+
+  @override
+  void onUserLeaveHint() {
+    debugLog("THEOplayer_$playerID:: PlayerPlatformActivityServiceListener onUserLeaveHint");
+
+
+    if (!player.allowAutomaticPictureInPicture()) {
+      debugLog("THEOplayer_$playerID: PlayerPlatformActivityServiceListener onUserLeaveHint not for me");
+    }
+
+    player._setPresentationMode(PresentationMode.PIP, userTriggered: false);
+
+    if (Platform.isIOS) {
+      //do nothing, AVplayer will do the transition
+    } else {
+      var pipModeFullscreenWidget = _FakePiPFullscreenWindow(player: player);
+
+      MaterialPageRoute pipRoute = MaterialPageRoute(
+          builder: (context) {
+            return pipModeFullscreenWidget;
+          },
+          settings: null);
+
+      Navigator.of(player._currentContext, rootNavigator: true).push(pipRoute);
+    }
+  }
+
+  @override
+  int get playerID => player.id;
+
+}
+/// We use this widget to present the player in "fullscreen" to make it fully visible in PiP without any UI elements
+class _FakePiPFullscreenWindow extends StatelessWidget {
+  const _FakePiPFullscreenWindow({
+    super.key,
+    required this.player,
+  });
+
+  final THEOplayer player;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        color: Colors.black,
+        child: Align(
+            alignment: Alignment.center,
+            child: AspectRatio(
+                aspectRatio: player.getVideoWidth() / player.getVideoHeight(),
+                child: PresentationModeAwareWidget(player: player, presentationModeToCheck: const [PresentationMode.PIP]))));
   }
 }

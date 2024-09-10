@@ -90,8 +90,18 @@ please reach out to us for support.
 <td colspan="3">Event stream, emsg, ID3, EXT-X-DATERANGE</td>
 </tr>
 <tr>
+<td><strong>Fullscreen</strong></td>
+<td colspan="3">Supported through <code>player.presentationMode</code> API</td>
+</tr>
+<tr>
+<td><strong><a href="https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/picture-in-picture.md">Picture-in-Picture</a></strong></td>
+<td>Supported through <code>player.allowAutomaticPictureInPicture</code> API</td>
+<td>Supported through <code>player.presentationMode</code> API</td>
+<td>Supported through <code>player.allowAutomaticPictureInPicture</code> API</td>
+</tr>
+<tr>
 <td><strong>Advertising Integration</strong></td>
-<td colspan="3">Coming soon…</td>
+<td colspan="3">Coming soon… (Can not wait? <a href="https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/custom-branches.md">Check our in-app integration branches</a>)</td>
 </tr>
 <tr>
 <td><strong>Analytics Connectors</strong></td>
@@ -99,7 +109,7 @@ please reach out to us for support.
 </tr>
 <tr>
 <td><strong>Cast Integration</strong></td>
-<td colspan="3">Coming soon…</td>
+<td colspan="3">Coming soon… (Can not wait? <a href="https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/custom-branches.md">Check our in-app integration branches</a>)</td>
 </tr>
 </tbody>
 </table>
@@ -119,6 +129,8 @@ and discussed in the next section. Finally, an overview of features, limitations
 - Knowledge Base
   - [Using custom DRM connectors](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/custom_drm.md)
   - [Limitations and known issues](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/limitations.md)
+  - [Picture-in-picture](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/picture-in-picture.md)
+  - [Custom branches](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/custom-branches.md): custom forks to expose native functionality 
 
 ## Contributing
 

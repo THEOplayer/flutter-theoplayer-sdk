@@ -7,7 +7,9 @@ import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttra
 abstract class THEOplayerViewController implements EventDispatcher {
   static const String TAG = "THEOplayerViewController";
 
-  THEOplayerViewController(int id) {}
+  THEOplayerViewController(this.id);
+
+  int id;
 
   String get channelSuffix;
 
@@ -70,6 +72,10 @@ abstract class THEOplayerViewController implements EventDispatcher {
   void setAllowBackgroundPlayback(bool allowBackgroundPlayback);
 
   Future<bool> allowBackgroundPlayback();
+
+  void setAllowAutomaticPictureInPicture(bool allowAutomaticPictureInPicture);
+
+  Future<bool> allowAutomaticPictureInPicture();
 
   Future<String?> getError();
 

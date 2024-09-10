@@ -68,6 +68,10 @@ abstract class THEOplayerNativeAPI {
 
   bool allowBackgroundPlayback();
 
+  void setAllowAutomaticPictureInPicture(bool allowAutomaticPictureInPicture);
+
+  bool allowAutomaticPictureInPicture();
+
   String? getError();
 
   void stop();

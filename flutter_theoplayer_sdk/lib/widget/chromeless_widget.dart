@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:theoplayer/theoplayer.dart';
 import 'package:theoplayer/widget/presentationmode_aware_widget.dart';
@@ -30,6 +33,12 @@ class _ChromelessPlayerViewState extends State<ChromelessPlayerView> {
 
   @override
   Widget build(BuildContext context) {
-    return PresentationModeAwareWidget(player: widget.player, presentationModeToCheck: const [PresentationMode.INLINE]);
+    List<PresentationMode> presentationModeToCheck = [PresentationMode.INLINE];
+    if (kIsWeb || Platform.isIOS) {
+      // on web we don't present an extra PresentationModeAwareWidget for PIP, so the current one has to be aware of PIP mode,
+      // otherwise the THEOplayerView will be disposed
+      presentationModeToCheck.add(PresentationMode.PIP);
+    }
+    return PresentationModeAwareWidget(player: widget.player, presentationModeToCheck: presentationModeToCheck);
   }
 }

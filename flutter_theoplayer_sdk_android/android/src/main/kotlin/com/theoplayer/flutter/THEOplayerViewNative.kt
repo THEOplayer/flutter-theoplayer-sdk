@@ -1,7 +1,6 @@
 package com.theoplayer.flutter
 
 import android.content.Context
-import android.os.Build
 import android.util.Log
 import android.view.Surface
 import android.view.View
@@ -12,6 +11,7 @@ import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.event.player.PlayingEvent
+import com.theoplayer.android.api.pip.PipConfiguration
 import com.theoplayer.flutter.pigeon.THEOplayerFlutterAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeAPI.Companion.setUp
@@ -32,7 +32,7 @@ typealias FlutterTimeRange = com.theoplayer.flutter.pigeon.TimeRange
 
 class THEOplayerViewNative(
     context: Context,
-    id: Int,
+    val id: Int,
     creationParams: Map<String, Any>?,
     messenger: BinaryMessenger
 ) : PlatformView, THEOplayerNativeAPI {
@@ -51,6 +51,8 @@ class THEOplayerViewNative(
     private val textTrackBridge: TextTrackBridge
     private val audioTrackBridge: AudioTrackBridge
     private val videoTrackBridge: VideoTrackBridge
+
+    private var allowAutomaticPictureInPicture: Boolean = false;
 
     private var surface: Surface? = null;
 
@@ -89,6 +91,7 @@ class THEOplayerViewNative(
         val playerConfigBuilder = THEOplayerConfig.Builder()
         license?.let { playerConfigBuilder.license(it) }
         licenseUrl?.let { playerConfigBuilder.licenseUrl(it) }
+        playerConfigBuilder.pipConfiguration(PipConfiguration.Builder().build())
 
         theoplayerWrapper = LinearLayout(context)
         theoplayerWrapper.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
@@ -247,6 +250,14 @@ class THEOplayerViewNative(
 
     override fun allowBackgroundPlayback(): Boolean {
         return tpv.settings.allowBackgroundPlayback()
+    }
+
+    override fun setAllowAutomaticPictureInPicture(allowAutomaticPictureInPicture: Boolean) {
+        this.allowAutomaticPictureInPicture = allowAutomaticPictureInPicture
+    }
+
+    override fun allowAutomaticPictureInPicture(): Boolean {
+        return this.allowAutomaticPictureInPicture
     }
 
     override fun getReadyState(): FlutterReadyState {

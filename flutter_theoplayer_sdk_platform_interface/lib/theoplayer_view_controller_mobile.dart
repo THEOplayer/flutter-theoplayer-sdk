@@ -162,6 +162,14 @@ class THEOplayerViewControllerMobile extends THEOplayerViewController {
     return _nativeAPI.allowBackgroundPlayback();
   }
 
+  void setAllowAutomaticPictureInPicture(bool allowBackgroundPlayback) {
+    _nativeAPI.setAllowAutomaticPictureInPicture(allowBackgroundPlayback);
+  }
+
+  Future<bool> allowAutomaticPictureInPicture() {
+    return _nativeAPI.allowAutomaticPictureInPicture();
+  }
+
   Future<String?> getError() {
     return _nativeAPI.getError();
   }

@@ -439,6 +439,8 @@ protocol THEOplayerNativeAPI {
   func getPlayed() throws -> [TimeRange]
   func setAllowBackgroundPlayback(allowBackgroundPlayback: Bool) throws
   func allowBackgroundPlayback() throws -> Bool
+  func setAllowAutomaticPictureInPicture(allowAutomaticPictureInPicture: Bool) throws
+  func allowAutomaticPictureInPicture() throws -> Bool
   func getError() throws -> String?
   func stop() throws
   func dispose() throws
@@ -860,6 +862,34 @@ class THEOplayerNativeAPISetup {
       }
     } else {
       allowBackgroundPlaybackChannel.setMessageHandler(nil)
+    }
+    let setAllowAutomaticPictureInPictureChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setAllowAutomaticPictureInPicture", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      setAllowAutomaticPictureInPictureChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let allowAutomaticPictureInPictureArg = args[0] as! Bool
+        do {
+          try api.setAllowAutomaticPictureInPicture(allowAutomaticPictureInPicture: allowAutomaticPictureInPictureArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      setAllowAutomaticPictureInPictureChannel.setMessageHandler(nil)
+    }
+    let allowAutomaticPictureInPictureChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.allowAutomaticPictureInPicture", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      allowAutomaticPictureInPictureChannel.setMessageHandler { _, reply in
+        do {
+          let result = try api.allowAutomaticPictureInPicture()
+          reply(wrapResult(result))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      allowAutomaticPictureInPictureChannel.setMessageHandler(nil)
     }
     let getErrorChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getError", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
