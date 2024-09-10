@@ -538,7 +538,7 @@ class THEOplayer implements EventDispatcher {
             });
           } else {
             // manually transition to PIP
-            // right now it is disabled, we don't suppor this due to inconsistency between iOS and Android
+            // right now it is disabled, we don't support this due to inconsistency between iOS and Android
 
             /*
             if (userTriggered) {

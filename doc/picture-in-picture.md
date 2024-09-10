@@ -29,8 +29,8 @@ Enable `Background Audio mode` for your application target in [XCode](https://de
 <img src="https://raw.githubusercontent.com/THEOplayer/flutter-theoplayer-sdk/main/doc/xcode_background_modes.png" />
 
 ### Limitations
-- In multi-player scenarios there can be only one player that has `allowAutomaticPictureInPicture` set to `true`.
-- On iOS paused player can not enter PiP mode
+- In multi-player scenarios there can be only one player that has `allowAutomaticPictureInPicture` set to `true`. Failing to do so might lead to unpredictable behaviour.
+- On iOS paused player can not enter PiP mode.
 - Calling `THEOplayer.setPresentationMode(PresentationMode.PIP)` API to explicitly enter PiP mode doesn't work on iOS and Android. 
   - This limitation is due to the differences on how native iOS and Android handles the PiP mode. 
     - iOS moves the player into PiP, while keeping the ViewController on the screen.
