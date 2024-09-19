@@ -663,6 +663,32 @@ class _PlayerPlatformActivityServiceListener implements PlatformActivityServiceL
   }
 
   @override
+  void onPlayActionReceived() {
+    debugLog("THEOplayer_$playerID:: PlayerPlatformActivityServiceListener onPlayActionReceived");
+
+
+    if (!player.allowAutomaticPictureInPicture()) {
+      debugLog("THEOplayer_$playerID: PlayerPlatformActivityServiceListener onPlayActionReceived not for me");
+    }
+
+    player.play();
+
+  }
+
+  @override
+  void onPauseActionReceived() {
+    debugLog("THEOplayer_$playerID:: PlayerPlatformActivityServiceListener onPauseActionReceived");
+
+
+    if (!player.allowAutomaticPictureInPicture()) {
+      debugLog("THEOplayer_$playerID: PlayerPlatformActivityServiceListener onPauseActionReceived not for me");
+    }
+
+    player.pause();
+
+  }
+
+  @override
   int get playerID => player.id;
 
 }
