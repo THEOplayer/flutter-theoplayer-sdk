@@ -1,5 +1,6 @@
 package com.theoplayer.flutter.helpers
 
+import android.app.PictureInPictureParams
 import android.content.ComponentCallbacks2
 import android.content.res.Configuration
 import android.os.Build
@@ -7,7 +8,6 @@ import android.os.Handler
 import android.os.Looper
 import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.core.util.forEach
 import com.theoplayer.flutter.THEOplayerViewNativeFactory
 import com.theoplayer.flutter.platform.PlatformActivityService
 import com.theoplayer.flutter.platform.PlatformActivityServiceCallback
@@ -85,21 +85,12 @@ class PipHandler {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun enterPipIfPossible() {
-        findFirstPlayerThatCanEnterIntoPip()?.let {
+        THEOplayerViewNativeFactory.findFirstPlayerThatCanEnterIntoPip()?.let {
             PlatformActivityService.INSTANCE.sendUserLeaveHint()
             Handler(Looper.getMainLooper()).post {
                 enterPip(it, null)
             }
         }
-    }
-
-    private fun findFirstPlayerThatCanEnterIntoPip() : Int? {
-        THEOplayerViewNativeFactory.players.forEach { id, player ->
-            if (player.allowAutomaticPictureInPicture()) {
-                return id
-            }
-        }
-        return null
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
