@@ -71,8 +71,7 @@ class PiPActionHandler(private val theoPlayerViewNative: THEOplayerViewNative, p
         theoPlayerViewNative.getUnderlyingPlayer().addEventListener(PlayerEventTypes.PLAYING, stateChangeEventListener)
         theoPlayerViewNative.getUnderlyingPlayer().addEventListener(PlayerEventTypes.PAUSE, stateChangeEventListener)
         theoPlayerViewNative.getUnderlyingPlayer().addEventListener(PlayerEventTypes.ENDED, stateChangeEventListener)
-        theoPlayerViewNative.getUnderlyingPlayer().addEventListener(PlayerEventTypes.SOURCECHANGE, stateChangeEventListener
-        )
+        theoPlayerViewNative.getUnderlyingPlayer().addEventListener(PlayerEventTypes.SOURCECHANGE, stateChangeEventListener)
     }
 
     private fun removeStateChangeListeners() {

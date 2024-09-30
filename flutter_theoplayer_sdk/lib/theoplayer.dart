@@ -629,6 +629,7 @@ class _PlayerPlatformActivityServiceListener implements PlatformActivityServiceL
 
     if (!player.allowAutomaticPictureInPicture()) {
       debugLog("THEOplayer_$playerID: PlayerPlatformActivityServiceListener onExitPictureInPicture not for me");
+      return;
     }
 
     player._setPresentationMode(player._presentationModeBeforePip);
@@ -643,6 +644,7 @@ class _PlayerPlatformActivityServiceListener implements PlatformActivityServiceL
 
     if (!player.allowAutomaticPictureInPicture()) {
       debugLog("THEOplayer_$playerID: PlayerPlatformActivityServiceListener onUserLeaveHint not for me");
+      return;
     }
 
     player._setPresentationMode(PresentationMode.PIP, userTriggered: false);
@@ -669,6 +671,7 @@ class _PlayerPlatformActivityServiceListener implements PlatformActivityServiceL
 
     if (!player.allowAutomaticPictureInPicture()) {
       debugLog("THEOplayer_$playerID: PlayerPlatformActivityServiceListener onPlayActionReceived not for me");
+      return;
     }
 
     player.play();
@@ -682,6 +685,7 @@ class _PlayerPlatformActivityServiceListener implements PlatformActivityServiceL
 
     if (!player.allowAutomaticPictureInPicture()) {
       debugLog("THEOplayer_$playerID: PlayerPlatformActivityServiceListener onPauseActionReceived not for me");
+      return;
     }
 
     player.pause();
