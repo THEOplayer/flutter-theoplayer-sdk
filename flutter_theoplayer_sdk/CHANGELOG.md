@@ -1,3 +1,7 @@
+## [Unreleased]
+
+* Fixed an issue where play/pause buttons were not connected in the Picture-in-Picture window on Android.
+
 ## 8.0.0
 
 * Updated THEOplayer to 8.0.0.
