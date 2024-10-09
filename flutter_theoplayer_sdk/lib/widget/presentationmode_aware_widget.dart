@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:theoplayer/theoplayer.dart';
+import 'package:theoplayer/theoplayer_internal.dart';
 
 /// Internal PresentationMode aware widget to make sure the view is removed from the hierarchy before transitions are happening.
 /// Android and Web are ok, but iOS doesn't remove the view in time when switching between presentation modes.

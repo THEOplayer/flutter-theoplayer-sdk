@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:theoplayer/theoplayer.dart';
+import 'package:theoplayer/theoplayer_internal.dart';
 import 'package:theoplayer/widget/presentationmode_aware_widget.dart';
 
 class FullscreenStatefulWidget extends StatefulWidget {

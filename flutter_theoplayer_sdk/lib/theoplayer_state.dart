@@ -1,5 +1,5 @@
 import 'package:theoplayer_platform_interface/theoplayer_event_manager.dart';
-import 'package:theoplayer/theoplayer.dart';
+import 'package:theoplayer/theoplayer_internal.dart';
 
 //TODO: move this into theoplayer.dart
 
