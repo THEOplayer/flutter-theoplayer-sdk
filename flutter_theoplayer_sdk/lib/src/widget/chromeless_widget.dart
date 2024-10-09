@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:theoplayer/src/theoplayer_internal.dart';
 import 'package:theoplayer/src/widget/presentationmode_aware_widget.dart';
+import 'package:theoplayer_platform_interface/theoplayer_view_controller_interface.dart';
 
 class ChromelessPlayerView extends StatefulWidget {
   const ChromelessPlayerView({

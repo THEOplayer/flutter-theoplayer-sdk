@@ -1,5 +1,8 @@
-import 'package:theoplayer_platform_interface/theoplayer_event_manager.dart';
 import 'package:theoplayer/src/theoplayer_internal.dart';
+import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
+import 'package:theoplayer_platform_interface/theoplayer_events.dart';
+import 'package:theoplayer_platform_interface/theoplayer_view_controller_interface.dart';
+import 'package:theoplayer_platform_interface/theoplayer_event_manager.dart';
 
 //TODO: move this into theoplayer.dart
 
