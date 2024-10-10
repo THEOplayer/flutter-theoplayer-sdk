@@ -20,4 +20,4 @@ _To be completed._
 
 Please use your IDE's features to discover the available APIs.
 
-Read [`theoplayer.dart`](../flutter_theoplayer_sdk/lib/theoplayer.dart) for all the details.
+Read [`theoplayer.dart`](../flutter_theoplayer_sdk/flutter_theoplayer_sdk/lib/theoplayer.dart) for all the details.

@@ -1,12 +1,12 @@
 name: THEOplayerFlutterSDK
 
 packages:
-  - flutter_theoplayer_sdk_platform_interface
-  - flutter_theoplayer_sdk_android
-  - flutter_theoplayer_sdk_ios
-  - flutter_theoplayer_sdk_web
-  - flutter_theoplayer_sdk
-  - flutter_theoplayer_sdk/example
+  - flutter_theoplayer_sdk/flutter_theoplayer_sdk_platform_interface
+  - flutter_theoplayer_sdk/flutter_theoplayer_sdk_android
+  - flutter_theoplayer_sdk/flutter_theoplayer_sdk_ios
+  - flutter_theoplayer_sdk/flutter_theoplayer_sdk_web
+  - flutter_theoplayer_sdk/flutter_theoplayer_sdk
+  - flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
 
 command:
   bootstrap:
