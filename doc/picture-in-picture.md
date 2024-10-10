@@ -29,6 +29,8 @@ Enable `Background Audio mode` for your application target in [XCode](https://de
 <img src="https://raw.githubusercontent.com/THEOplayer/flutter-theoplayer-sdk/main/doc/xcode_background_modes.png" />
 
 ### Limitations
+- Picture-in-Picture is only supported from Android O (Oreo, API level 26).
+- Picture-in-Picture is only supported from iOS 14.
 - In multi-player scenarios there can be only one player that has `allowAutomaticPictureInPicture` set to `true`. Failing to do so might lead to unpredictable behaviour.
 - On iOS paused player can not enter PiP mode.
 - Calling `THEOplayer.setPresentationMode(PresentationMode.PIP)` API to explicitly enter PiP mode doesn't work on iOS and Android. 

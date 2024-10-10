@@ -4,8 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import 'package:theoplayer/theoplayer.dart';
-import 'package:theoplayer/widget/presentationmode_aware_widget.dart';
+import 'package:theoplayer/src/theoplayer_internal.dart';
+import 'package:theoplayer/src/widget/presentationmode_aware_widget.dart';
+import 'package:theoplayer_platform_interface/theopalyer_config.dart';
+import 'package:theoplayer_platform_interface/theoplayer_view_controller_interface.dart';
 
 class FullscreenStatefulWidget extends StatefulWidget {
   final THEOplayer theoplayer;

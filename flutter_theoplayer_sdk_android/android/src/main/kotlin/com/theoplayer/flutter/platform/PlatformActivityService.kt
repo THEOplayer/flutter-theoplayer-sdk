@@ -48,6 +48,14 @@ class PlatformActivityService private constructor(messenger: BinaryMessenger): M
         methodChannelPlatformActivityService.invokeMethod("onExitPictureInPicture", null);
     }
 
+    fun sendPlayActionReceived() {
+        methodChannelPlatformActivityService.invokeMethod("playActionReceived", null);
+    }
+
+    fun sendPauseActionReceived() {
+        methodChannelPlatformActivityService.invokeMethod("pauseActionReceived", null);
+    }
+
     override fun onMethodCall(call: MethodCall, result: MethodChannel.Result) {
         when (call.method) {
             "enterPictureInPicture" -> {

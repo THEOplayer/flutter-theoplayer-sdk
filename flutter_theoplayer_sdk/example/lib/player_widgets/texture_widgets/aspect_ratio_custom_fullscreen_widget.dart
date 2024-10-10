@@ -4,7 +4,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:theoplayer/theoplayer.dart';
-import 'package:theoplayer/widget/presentationmode_aware_widget.dart';
 
 /// Copy of the [FullscreenStatefulWidget] and spiced-up with basic aspect ratio configuration.
 /// Note: not listening to changes and assumes that the player is already playing a video when displaying this widget

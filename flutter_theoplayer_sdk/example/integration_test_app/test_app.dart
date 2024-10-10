@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:theoplayer/theoplayer.dart';
-import 'package:theoplayer/widget/chromeless_widget.dart';
 
 // Test license to load sources from localhost and theoplayer.com domains
 // ignore: constant_identifier_names

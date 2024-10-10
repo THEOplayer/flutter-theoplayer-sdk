@@ -12,6 +12,7 @@ import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.event.player.PlayingEvent
 import com.theoplayer.android.api.pip.PipConfiguration
+import com.theoplayer.android.api.player.Player
 import com.theoplayer.flutter.pigeon.THEOplayerFlutterAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeAPI.Companion.setUp
@@ -299,6 +300,10 @@ class THEOplayerViewNative(
     override fun stop() {
         isFirstPlaying = false
         tpv.player.stop()
+    }
+
+    fun getUnderlyingPlayer(): Player {
+        return tpv.player;
     }
 
     fun interface DestroyListener {
