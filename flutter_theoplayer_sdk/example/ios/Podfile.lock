@@ -4,8 +4,8 @@ PODS:
     - Flutter
   - theoplayer_ios (1.0.3):
     - Flutter
-    - THEOplayerSDK-core (= 8.0.0)
-  - THEOplayerSDK-core (8.0.0)
+    - THEOplayerSDK-core (= 8.2.0)
+  - THEOplayerSDK-core (8.2.0)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
@@ -27,9 +27,9 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   integration_test: ce0a3ffa1de96d1a89ca0ac26fca7ea18a749ef4
-  theoplayer_ios: d46b247b7c3e7caea3e3f7c527a210914b82127a
-  THEOplayerSDK-core: bffd1defb5031cc6b257f71f57931a87d4b3877c
+  theoplayer_ios: c6172ac72ac8bbc62b90ebdfcf802a65935965af
+  THEOplayerSDK-core: 0596e3bfd8afeb0e479ba54cd30ee74eac8a5e60
 
 PODFILE CHECKSUM: a57f30d18f102dd3ce366b1d62a55ecbef2158e5
 
-COCOAPODS: 1.12.1
+COCOAPODS: 1.15.2
