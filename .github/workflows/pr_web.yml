@@ -34,11 +34,11 @@ jobs:
 
     - name: Pub get
       run: flutter pub get
-      working-directory: flutter_theoplayer_sdk
+      working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk
 
     - name: Run test
       run: flutter test
-      working-directory: flutter_theoplayer_sdk
+      working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk
 
     - name: Install Chrome Browser
       uses: browser-actions/setup-chrome@v1
@@ -90,7 +90,7 @@ jobs:
       run: |
         flutter config --enable-web
         flutter drive --driver=webdriver_integration_test/webdriver.dart --target=integration_test_single_entrypoint/entrypoint.dart -d web-server --web-renderer ${{ matrix.renderer }} --profile --driver-port=4444 -v --web-browser-flag="--disable-web-security --autoplay-policy=no-user-gesture-required" --chrome-binary ${{ steps.setup-chrome.outputs.chrome-path }}
-      working-directory: flutter_theoplayer_sdk/example
+      working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
       env:
         TEST_LICENSE: ${{ secrets.TEST_LICENSE }}
 
@@ -101,11 +101,11 @@ jobs:
 
     - name: Build Web
       run: flutter build web
-      working-directory: flutter_theoplayer_sdk/example
+      working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
 
     - name: Save WEB to artifacts
       uses: actions/upload-artifact@v4
       with:
         name: web-${{ matrix.renderer }}-${{ matrix.flutter_version }}
-        path: flutter_theoplayer_sdk/example/build/web/
+        path: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example/build/web/
         retention-days: 5
