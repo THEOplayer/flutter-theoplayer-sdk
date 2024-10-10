@@ -7,8 +7,8 @@ update_theoplayer_android() {
   else
     echo "Updating THEOplayer Android SDK to: ${ANDROID}"
 
-    sed -i '' "s/def theoplayerVersion =.*/def theoplayerVersion ='${ANDROID}'/g" flutter_theoplayer_sdk_android/android/build.gradle
-    sed -i '' "s/def theoplayerVersion =.*/def theoplayerVersion ='${ANDROID}'/g" flutter_theoplayer_sdk/example/android/app/build.gradle
+    sed -i '' "s/def theoplayerVersion =.*/def theoplayerVersion ='${ANDROID}'/g" flutter_theoplayer_sdk/flutter_theoplayer_sdk_android/android/build.gradle
+    sed -i '' "s/def theoplayerVersion =.*/def theoplayerVersion ='${ANDROID}'/g" flutter_theoplayer_sdk/flutter_theoplayer_sdk/example/android/app/build.gradle
   fi
   echo ""
 }
@@ -20,9 +20,9 @@ update_theoplayer_ios() {
   else
     echo "Updating THEOplayer iOS SDK to: ${IOS}"
 
-    sed -i '' "s/s.dependency 'THEOplayerSDK-core', '.*/s.dependency 'THEOplayerSDK-core', '${IOS}'/g" flutter_theoplayer_sdk_ios/ios/theoplayer_ios.podspec
-    pod update THEOplayerSDK-core --project-directory=flutter_theoplayer_sdk/example/ios
-    pod install --repo-update --project-directory=flutter_theoplayer_sdk/example/ios
+    sed -i '' "s/s.dependency 'THEOplayerSDK-core', '.*/s.dependency 'THEOplayerSDK-core', '${IOS}'/g" flutter_theoplayer_sdk/flutter_theoplayer_sdk_ios/ios/theoplayer_ios.podspec
+    pod update THEOplayerSDK-core --project-directory=flutter_theoplayer_sdk/flutter_theoplayer_sdk/example/ios
+    pod install --repo-update --project-directory=flutter_theoplayer_sdk/flutter_theoplayer_sdk/example/ios
   fi
   echo ""
 }
@@ -36,7 +36,7 @@ update_theoplayer_web() {
 
     URL="https://registry.npmjs.org/theoplayer/-/theoplayer-${WEB}.tgz"
     echo "Fetching the package from ${URL}"
-    curl -s ${URL} | tar -C flutter_theoplayer_sdk/example/web/  -xvz --exclude='README.md' --exclude='package.json' --strip-components=1
+    curl -s ${URL} | tar -C flutter_theoplayer_sdk/flutter_theoplayer_sdk/example/web/  -xvz --exclude='README.md' --exclude='package.json' --strip-components=1
   fi
   echo ""
 }

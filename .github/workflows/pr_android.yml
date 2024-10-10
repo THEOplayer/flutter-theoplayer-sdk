@@ -38,11 +38,11 @@ jobs:
 
     - name: Pub get
       run: flutter pub get
-      working-directory: flutter_theoplayer_sdk
+      working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk
 
     - name: Run unit test
       run: flutter test
-      working-directory: flutter_theoplayer_sdk
+      working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk
 
     # configure for emulator
     - name: Enable KVM
@@ -89,23 +89,23 @@ jobs:
         emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
         disable-animations: true
         script: flutter test integration_test
-        working-directory: flutter_theoplayer_sdk/example
+        working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
       env:
         TEST_LICENSE: ${{ secrets.TEST_LICENSE }}
 
     - name: Build APK
       run: flutter build apk
-      working-directory: flutter_theoplayer_sdk/example
+      working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
 
     - name: Build app bundle
       run: flutter build appbundle
-      working-directory: flutter_theoplayer_sdk/example
+      working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
 
     - name: Save APK to artifacts
       uses: actions/upload-artifact@v4
       with:
         name: example_app-${{ matrix.flutter_version }}.apk
-        path: flutter_theoplayer_sdk/example/build/app/outputs/flutter-apk/app-release.apk
+        path: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example/build/app/outputs/flutter-apk/app-release.apk
         retention-days: 5
 
 
