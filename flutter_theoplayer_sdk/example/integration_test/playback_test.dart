@@ -10,7 +10,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:theoplayer/theoplayer.dart';
-import 'package:theoplayer/widget/chromeless_widget.dart';
 
 import '../integration_test_app/test_app.dart';
 
