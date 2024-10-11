@@ -35,6 +35,10 @@ class PlatformActivityService {
         //final int id = call.arguments as int;
         //_listeners.where((listener) => listener.playerID == id).forEach((listener) => listener.onExitPictureInPicture());
         _listeners.forEach((listener) => listener.onExitPictureInPicture());
+      case 'playActionReceived':
+        _listeners.forEach((listener) => listener.onPlayActionReceived());
+      case 'pauseActionReceived':
+        _listeners.forEach((listener) => listener.onPauseActionReceived());
       default:
         throw UnimplementedError("${call.method} was invoked but isn't implemented by PlatformActivityService");
     }
@@ -52,4 +56,7 @@ abstract class PlatformActivityServiceListener {
   int get playerID;
   void onUserLeaveHint();
   void onExitPictureInPicture();
+
+  void onPlayActionReceived();
+  void onPauseActionReceived();
 }

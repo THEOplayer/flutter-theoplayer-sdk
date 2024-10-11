@@ -3,6 +3,7 @@ package com.theoplayer.flutter
 import android.content.Context
 import android.util.Log
 import android.util.SparseArray
+import androidx.core.util.forEach
 import io.flutter.plugin.common.BinaryMessenger
 import io.flutter.plugin.common.StandardMessageCodec
 import io.flutter.plugin.platform.PlatformView
@@ -14,6 +15,15 @@ class THEOplayerViewNativeFactory(private val messenger: BinaryMessenger) : Plat
     companion object {
         val players = SparseArray<THEOplayerViewNative>()
         val surfaces = SparseArray<TextureRegistry.TextureEntry>()
+
+        fun findFirstPlayerThatCanEnterIntoPip() : Int? {
+            players.forEach { id, player ->
+                if (player.allowAutomaticPictureInPicture()) {
+                    return id
+                }
+            }
+            return null
+        }
     }
 
     override fun create(context: Context, viewId: Int, args: Any?): PlatformView {
@@ -45,5 +55,4 @@ class THEOplayerViewNativeFactory(private val messenger: BinaryMessenger) : Plat
 
         return tpv;
     }
-
 }
