@@ -2,6 +2,7 @@
 
 * Fixed an issue where play/pause buttons were not connected in the Picture-in-Picture window on Android.
 * Updated THEOplayer to 8.2.0.
+* Updated Kotlin version to 1.9.25 (to match with THEOplayer Android SDK)
 
 ## 8.0.0
 
