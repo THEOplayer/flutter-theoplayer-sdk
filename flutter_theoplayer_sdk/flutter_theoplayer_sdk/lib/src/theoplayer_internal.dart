@@ -132,6 +132,16 @@ class THEOplayer implements EventDispatcher {
 
   /// Set current source which describes desired playback of a media resource.
   void setSource(SourceDescription source) {
+
+    if (!kIsWeb) {
+      TypedSource? theoLiveSource = source.sources.firstWhere((typedSource) => typedSource?.integration == SourceIntegrationId.theolive, orElse: () => null);
+      if (theoLiveSource != null) {
+        printLog("Using THEOlive sources are not supported on ${defaultTargetPlatform.name}");
+        stop();
+        return;
+      }
+    }
+
     _playerState.resetState();
     _theoPlayerViewController?.setSource(source: source);
   }
