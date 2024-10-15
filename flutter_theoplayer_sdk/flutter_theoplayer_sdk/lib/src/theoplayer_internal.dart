@@ -81,7 +81,7 @@ class THEOplayer implements EventDispatcher {
         (BuildContext context, THEOplayer theoplayer) {
           return FullscreenStatefulWidget(
             theoplayer: theoplayer,
-            fullscreenConfig: theoPlayerConfig.fullscreenConfig,
+            fullscreenConfig: theoPlayerConfig.fullscreenConfiguration,
           );
         };
 
@@ -572,7 +572,7 @@ class THEOplayer implements EventDispatcher {
       _playerState.presentationMode = PresentationMode.INLINE;
     }
 
-    SystemChrome.setPreferredOrientations(theoPlayerConfig.fullscreenConfig.preferredRestoredOrientations).then((value) => {
+    SystemChrome.setPreferredOrientations(theoPlayerConfig.fullscreenConfiguration.preferredRestoredOrientations).then((value) => {
       SystemChrome.restoreSystemUIOverlays()
     });
 

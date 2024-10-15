@@ -3,34 +3,52 @@ import 'package:flutter/services.dart';
 class THEOplayerConfig {
   String? _license;
   String? _licenseUrl;
-  AndroidConfig androidConfig = AndroidConfig();
-  FullscreenConfig fullscreenConfig = FullscreenConfig();
+  AndroidConfig _androidConfig = AndroidConfig();
+  FullscreenConfig _fullscreenConfig = FullscreenConfig();
+  TheoLiveConfiguration? _theoLive = null;
 
-  THEOplayerConfig({String? license, String? licenseUrl, AndroidConfig? androidConfiguration, FullscreenConfig? fullscreenConfiguration}) {
+  THEOplayerConfig({String? license, String? licenseUrl, AndroidConfig? androidConfiguration, FullscreenConfig? fullscreenConfiguration, TheoLiveConfiguration? theolive,}) {
     _license = license;
     _licenseUrl = licenseUrl;
     if (androidConfiguration != null) {
-      androidConfig = androidConfiguration;
+      _androidConfig = androidConfiguration;
     }
     if (fullscreenConfiguration != null) {
-      fullscreenConfig = fullscreenConfiguration;
+      _fullscreenConfig = fullscreenConfiguration;
+    }
+    if (theolive != null) {
+      _theoLive = theolive;
     }
   }
 
-  String? getLicense() {
+  String? get license {
     return _license;
   }
 
-  String? getLicenseUrl() {
+  String? get licenseUrl {
     return _licenseUrl;
+  }
+
+  TheoLiveConfiguration? get theoLive {
+    return _theoLive;
+  }
+
+  FullscreenConfig get fullscreenConfiguration {
+    return _fullscreenConfig;
+  }
+
+  AndroidConfig get androidConfig {
+    return _androidConfig;
   }
 
   //TODO: fix this, don't generate JSON manually.
   Map<String, dynamic> toJson() => {
         'license': _license,
         'licenseUrl': _licenseUrl,
-        'androidConfig': androidConfig.toJson(),
+        'androidConfig': _androidConfig._toJson(),
+        'theoLive': _theoLive?._toJson()
       };
+
 }
 
 class AndroidConfig {
@@ -49,9 +67,9 @@ class AndroidConfig {
     useHybridComposition = false;
   }
 
-  Map<String, dynamic> toJson() => {
-        'viewComposition': viewComposition.name.toUpperCase(),
-      };
+  Map<String, dynamic> _toJson() => {
+    'viewComposition': viewComposition.name.toUpperCase(),
+  };
 }
 /// https://github.com/flutter/flutter/wiki/Android-Platform-Views
 /// TODO: move to pigeons
@@ -84,4 +102,16 @@ class FullscreenConfig {
     this.preferredRestoredOrientations = const [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
     this.fullscreenSystemUiMode = SystemUiMode.immersive
   });
+}
+
+class TheoLiveConfiguration {
+  String? externalSessionId;
+  bool? fallbackEnabled;
+
+  TheoLiveConfiguration({this.externalSessionId = null, this.fallbackEnabled = null});
+
+  Map<String, dynamic> _toJson() => {
+    'externalSessionId': externalSessionId,
+    'fallbackEnabled': fallbackEnabled,
+  };
 }

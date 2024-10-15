@@ -46,7 +46,7 @@ class _MyAppState extends State<MyApp> {
                 //FullscreenStatefulWidget(theoplayer: player, fullscreenConfig: player.theoPlayerConfig.fullscreenConfig),
 
                 // for Texture-based composition:
-                AspectRatioCustomFullscreenWidget(theoplayer: player, fullscreenConfig: player.theoPlayerConfig.fullscreenConfig),
+                AspectRatioCustomFullscreenWidget(theoplayer: player, fullscreenConfig: player.theoPlayerConfig.fullscreenConfiguration),
                 PlayerUI(player: player),
               ],
             ),
