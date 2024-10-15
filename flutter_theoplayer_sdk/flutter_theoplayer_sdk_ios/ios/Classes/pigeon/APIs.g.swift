@@ -77,6 +77,10 @@ enum PreloadType: Int {
   case metadata = 2
 }
 
+enum SourceIntegrationId: Int {
+  case theolive = 0
+}
+
 /// Generated class from Pigeon that represents data sent in messages.
 struct TimeRange {
   var start: Double
@@ -121,6 +125,7 @@ struct SourceDescription {
 struct TypedSource {
   var src: String
   var drm: DRMConfiguration? = nil
+  var integration: SourceIntegrationId? = nil
 
   static func fromList(_ list: [Any?]) -> TypedSource? {
     let src = list[0] as! String
@@ -128,16 +133,23 @@ struct TypedSource {
     if let drmList: [Any?] = nilOrValue(list[1]) {
       drm = DRMConfiguration.fromList(drmList)
     }
+    var integration: SourceIntegrationId? = nil
+    let integrationEnumVal: Int? = nilOrValue(list[2])
+    if let integrationRawValue = integrationEnumVal {
+      integration = SourceIntegrationId(rawValue: integrationRawValue)!
+    }
 
     return TypedSource(
       src: src,
-      drm: drm
+      drm: drm,
+      integration: integration
     )
   }
   func toList() -> [Any?] {
     return [
       src,
       drm?.toList(),
+      integration?.rawValue,
     ]
   }
 }

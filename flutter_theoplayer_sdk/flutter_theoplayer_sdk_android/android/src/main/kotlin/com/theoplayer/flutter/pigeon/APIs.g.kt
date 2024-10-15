@@ -112,6 +112,16 @@ enum class PreloadType(val raw: Int) {
   }
 }
 
+enum class SourceIntegrationId(val raw: Int) {
+  THEOLIVE(0);
+
+  companion object {
+    fun ofRaw(raw: Int): SourceIntegrationId? {
+      return values().firstOrNull { it.raw == raw }
+    }
+  }
+}
+
 /** Generated class from Pigeon that represents data sent in messages. */
 data class TimeRange (
   val start: Double,
@@ -156,7 +166,8 @@ data class SourceDescription (
 /** Generated class from Pigeon that represents data sent in messages. */
 data class TypedSource (
   val src: String,
-  val drm: DRMConfiguration? = null
+  val drm: DRMConfiguration? = null,
+  val integration: SourceIntegrationId? = null
 
 ) {
   companion object {
@@ -166,13 +177,17 @@ data class TypedSource (
       val drm: DRMConfiguration? = (list[1] as List<Any?>?)?.let {
         DRMConfiguration.fromList(it)
       }
-      return TypedSource(src, drm)
+      val integration: SourceIntegrationId? = (list[2] as Int?)?.let {
+        SourceIntegrationId.ofRaw(it)
+      }
+      return TypedSource(src, drm, integration)
     }
   }
   fun toList(): List<Any?> {
     return listOf<Any?>(
       src,
       drm?.toList(),
+      integration?.raw,
     )
   }
 }
