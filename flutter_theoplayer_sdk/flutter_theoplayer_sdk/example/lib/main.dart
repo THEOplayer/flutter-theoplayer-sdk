@@ -186,6 +186,15 @@ class _MyAppState extends State<MyApp> {
                                 onPressed: () {
                                   _licenseConfigCheckDialog(context);
                                   player.setSource(SourceDescription(sources: [
+                                    TheoLiveSource(src: "2vqqekesftg9zuvxu9tdme6kl"),
+                                  ]));
+                                },
+                                child: const Text("THEOlive source (web-only)"),
+                              ),
+                              FilledButton(
+                                onPressed: () {
+                                  _licenseConfigCheckDialog(context);
+                                  player.setSource(SourceDescription(sources: [
                                     TypedSource(
                                         src: "https://storage.googleapis.com/wvmedia/cenc/h264/tears/tears_sd.mpd",
                                         drm: DRMConfiguration(
