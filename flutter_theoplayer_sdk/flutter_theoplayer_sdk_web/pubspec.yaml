@@ -6,7 +6,7 @@ repository: https://github.com/THEOplayer/flutter-theoplayer-sdk
 
 environment:
   sdk: ^3.3.0
-  flutter: ">=3.19.0"
+  flutter: '>=3.19.0'
 
 dependencies:
   flutter:
@@ -15,7 +15,8 @@ dependencies:
     sdk: flutter
   theoplayer_platform_interface: 8.2.0
   js: ^0.6.7
-  web: ">=0.5.0 <0.6.0"
+  # NOTE: if you use web 1.0.0+, it will require Dart ^3.4.0
+  web: '>=0.5.0 <2.0.0'
 
 dev_dependencies:
   flutter_test:
