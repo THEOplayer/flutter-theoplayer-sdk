@@ -94,7 +94,17 @@ class THEOplayerConfigParams {
   external factory THEOplayerConfigParams({
     String? libraryLocation,
     String? license,
-    String? licenseUrl
+    String? licenseUrl,
+    TheoLiveConfig? theoLive,
+  });
+}
+
+@JS()
+@anonymous
+class TheoLiveConfig {
+  external factory TheoLiveConfig({
+      String? externalSessionId,
+      bool? fallbackEnabled,
   });
 }
 
@@ -111,9 +121,11 @@ class SourceDescription {
 class TypedSource {
   external factory TypedSource({ required String src, 
     String? type,
-    ContentProtection? contentProtection
+    ContentProtection? contentProtection,
+    String? integration
   });
 
+  external String? get integration; // theolive,
   external String get src;
   external String? get type;
   external ContentProtection? get contentProtection;

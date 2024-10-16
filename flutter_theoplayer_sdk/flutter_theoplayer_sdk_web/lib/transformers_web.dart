@@ -60,9 +60,9 @@ SourceDescription toSourceDescription(PlatformInterface.SourceDescription flutte
     }
 
     FairplayContentProtectionConfiguration? flutterFairplayDrmConfiguration;
-    PlatformInterface.FairPlayDRMConfiguration? faiplay = flutterTypedSource.drm?.fairplay;
-    if (faiplay != null) {
-      flutterFairplayDrmConfiguration = FairplayContentProtectionConfiguration(licenseAcquisitionURL: faiplay.licenseAcquisitionURL, certificateURL: faiplay.certificateURL);
+    PlatformInterface.FairPlayDRMConfiguration? fairplay = flutterTypedSource.drm?.fairplay;
+    if (fairplay != null) {
+      flutterFairplayDrmConfiguration = FairplayContentProtectionConfiguration(licenseAcquisitionURL: fairplay.licenseAcquisitionURL, certificateURL: fairplay.certificateURL);
     }
 
     WidevineContentProtectionConfiguration? flutterWidevineDrmConfiguration;
@@ -71,7 +71,7 @@ SourceDescription toSourceDescription(PlatformInterface.SourceDescription flutte
       flutterWidevineDrmConfiguration = WidevineContentProtectionConfiguration(licenseAcquisitionURL: widevine.licenseAcquisitionURL);
     }
 
-    flutterTypedSources.add(TypedSource(src: flutterTypedSource.src, contentProtection: ContentProtection(fairplay: flutterFairplayDrmConfiguration, widevine: flutterWidevineDrmConfiguration)));
+    flutterTypedSources.add(TypedSource(integration: flutterTypedSource.integration?.name, src: flutterTypedSource.src, contentProtection: ContentProtection(fairplay: flutterFairplayDrmConfiguration, widevine: flutterWidevineDrmConfiguration)));
   }
 
   return SourceDescription(sources: flutterTypedSources);

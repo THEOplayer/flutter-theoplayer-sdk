@@ -25,11 +25,20 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
 
   THEOplayerViewControllerWeb(int id, this._playerWrapperDiv, THEOplayerConfig theoPlayerConfig) : super(id) {
     _channelSuffix = id.toString();
+    var webTheoliveConfig;
+    var theoliveConfig = theoPlayerConfig.theoLive;
+    if (theoliveConfig != null) {
+      webTheoliveConfig = TheoLiveConfig(
+          externalSessionId: theoliveConfig.externalSessionId,
+          fallbackEnabled: theoliveConfig.fallbackEnabled,
+      );
+    }
     _theoPlayerJS = THEOplayerJS(
         _playerWrapperDiv,
         THEOplayerConfigParams(
-          license: theoPlayerConfig.getLicense(),
-          licenseUrl: theoPlayerConfig.getLicenseUrl(),
+          license: theoPlayerConfig.license,
+          licenseUrl: theoPlayerConfig.licenseUrl,
+          theoLive: webTheoliveConfig,
         ));
     _eventForwarder = PlayerEventForwarderWeb(_theoPlayerJS);
     _tracksController = THEOplayerTrackControllerWeb(_theoPlayerJS);

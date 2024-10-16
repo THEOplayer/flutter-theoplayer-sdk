@@ -14,3 +14,4 @@ export 'package:theoplayer/src/widget/chromeless_widget.dart';
 export 'package:theoplayer/src/widget/fullscreen_widget.dart';
 //TODO: make an API class
 export 'package:theoplayer/src/theoplayer_internal.dart';
+export 'package:theoplayer_platform_interface/api/source.dart';

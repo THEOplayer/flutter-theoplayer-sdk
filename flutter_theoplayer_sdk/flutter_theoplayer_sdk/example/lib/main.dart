@@ -46,7 +46,7 @@ class _MyAppState extends State<MyApp> {
                 //FullscreenStatefulWidget(theoplayer: player, fullscreenConfig: player.theoPlayerConfig.fullscreenConfig),
 
                 // for Texture-based composition:
-                AspectRatioCustomFullscreenWidget(theoplayer: player, fullscreenConfig: player.theoPlayerConfig.fullscreenConfig),
+                AspectRatioCustomFullscreenWidget(theoplayer: player, fullscreenConfig: player.theoPlayerConfig.fullscreenConfiguration),
                 PlayerUI(player: player),
               ],
             ),
@@ -181,6 +181,15 @@ class _MyAppState extends State<MyApp> {
                                   ]));
                                 },
                                 child: const Text("Basic source"),
+                              ),
+                              FilledButton(
+                                onPressed: () {
+                                  _licenseConfigCheckDialog(context);
+                                  player.setSource(SourceDescription(sources: [
+                                    TheoLiveSource(src: "2vqqekesftg9zuvxu9tdme6kl"),
+                                  ]));
+                                },
+                                child: const Text("THEOlive source (web-only)"),
                               ),
                               FilledButton(
                                 onPressed: () {

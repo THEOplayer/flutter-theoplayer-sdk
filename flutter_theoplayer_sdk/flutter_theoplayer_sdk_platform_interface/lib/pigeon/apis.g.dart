@@ -56,6 +56,10 @@ enum PreloadType {
   metadata,
 }
 
+enum SourceIntegrationId {
+  theolive,
+}
+
 class TimeRange {
   TimeRange({
     required this.start,
@@ -107,16 +111,20 @@ class TypedSource {
   TypedSource({
     required this.src,
     this.drm,
+    this.integration,
   });
 
   String src;
 
   DRMConfiguration? drm;
 
+  SourceIntegrationId? integration;
+
   Object encode() {
     return <Object?>[
       src,
       drm?.encode(),
+      integration?.index,
     ];
   }
 
@@ -126,6 +134,9 @@ class TypedSource {
       src: result[0]! as String,
       drm: result[1] != null
           ? DRMConfiguration.decode(result[1]! as List<Object?>)
+          : null,
+      integration: result[2] != null
+          ? SourceIntegrationId.values[result[2]! as int]
           : null,
     );
   }

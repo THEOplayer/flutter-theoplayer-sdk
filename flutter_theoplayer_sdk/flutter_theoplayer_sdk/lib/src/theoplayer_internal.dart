@@ -81,7 +81,7 @@ class THEOplayer implements EventDispatcher {
         (BuildContext context, THEOplayer theoplayer) {
           return FullscreenStatefulWidget(
             theoplayer: theoplayer,
-            fullscreenConfig: theoPlayerConfig.fullscreenConfig,
+            fullscreenConfig: theoPlayerConfig.fullscreenConfiguration,
           );
         };
 
@@ -132,6 +132,16 @@ class THEOplayer implements EventDispatcher {
 
   /// Set current source which describes desired playback of a media resource.
   void setSource(SourceDescription source) {
+
+    if (!kIsWeb) {
+      TypedSource? theoLiveSource = source.sources.firstWhere((typedSource) => typedSource?.integration == SourceIntegrationId.theolive, orElse: () => null);
+      if (theoLiveSource != null) {
+        printLog("Using THEOlive sources are not supported on ${defaultTargetPlatform.name}");
+        stop();
+        return;
+      }
+    }
+
     _playerState.resetState();
     _theoPlayerViewController?.setSource(source: source);
   }
@@ -562,7 +572,7 @@ class THEOplayer implements EventDispatcher {
       _playerState.presentationMode = PresentationMode.INLINE;
     }
 
-    SystemChrome.setPreferredOrientations(theoPlayerConfig.fullscreenConfig.preferredRestoredOrientations).then((value) => {
+    SystemChrome.setPreferredOrientations(theoPlayerConfig.fullscreenConfiguration.preferredRestoredOrientations).then((value) => {
       SystemChrome.restoreSystemUIOverlays()
     });
 

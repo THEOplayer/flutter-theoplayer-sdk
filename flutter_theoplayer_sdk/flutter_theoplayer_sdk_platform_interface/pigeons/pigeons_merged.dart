@@ -70,8 +70,13 @@ class SourceDescription {
 class TypedSource {
   final String src;
   final DRMConfiguration? drm;
+  final SourceIntegrationId? integration;
 
-  const TypedSource({required this.src, this.drm});
+  const TypedSource({required this.src, this.drm, this.integration});
+}
+
+enum SourceIntegrationId {
+  theolive,
 }
 
 class DRMConfiguration {
