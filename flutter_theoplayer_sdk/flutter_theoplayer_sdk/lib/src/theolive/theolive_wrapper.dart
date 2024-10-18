@@ -1,12 +1,12 @@
-import 'package:theoplayer_platform_interface/theolive/theolive_api.dart';
 import 'package:theoplayer_platform_interface/theolive/theolive_events.dart';
+import 'package:theoplayer_platform_interface/theolive/theolive_internal_api.dart';
 import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
 import 'package:theoplayer_platform_interface/theoplayer_event_manager.dart';
 import 'package:theoplayer_platform_interface/theoplayer_events.dart';
 
-class THEOliveAPIHolder extends THEOliveAPI {
+class THEOliveAPIHolder extends THEOliveInternalInterface {
   final EventManager _eventManager = EventManager();
-  THEOliveAPIInternalInterface? _internalTHEOliveAPI;
+  THEOliveInternalInterface? _internalTHEOliveAPI;
 
   void forwardingEventListener(event) {
     _eventManager.dispatchEvent(event);
@@ -15,7 +15,7 @@ class THEOliveAPIHolder extends THEOliveAPI {
   THEOliveAPIHolder();
 
   /// Method to setup the THEOlive event listeners).
-  void setup(THEOliveAPIInternalInterface? internalTHEOliveAPI) {
+  void setup(THEOliveInternalInterface? internalTHEOliveAPI) {
     _internalTHEOliveAPI = internalTHEOliveAPI;
 
     _internalTHEOliveAPI?.addEventListener(THEOliveApiEventTypes.PUBLICATIONLOADSTART, forwardingEventListener);

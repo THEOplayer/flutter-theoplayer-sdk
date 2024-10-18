@@ -2,7 +2,7 @@ import 'dart:js_interop_unsafe';
 
 import 'package:flutter/foundation.dart';
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart' as PlatformInterface;
-import 'package:theoplayer_platform_interface/theolive/theolive_api.dart';
+import 'package:theoplayer_platform_interface/theolive/theolive_internal_api.dart';
 import 'package:theoplayer_platform_interface/theopalyer_config.dart';
 import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart' as PlatformInterfaceEventDispatcher;
 import 'package:theoplayer_platform_interface/theoplayer_events.dart' as PlatformInterfaceEvents;
@@ -444,7 +444,7 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   }
 
   @override
-  THEOliveAPIInternalInterface? getTheoLive() {
+  THEOliveInternalInterface? getTheoLive() {
     return _theoliveController;
   }
 }

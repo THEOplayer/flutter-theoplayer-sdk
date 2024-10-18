@@ -130,7 +130,7 @@ class THEOplayer implements EventDispatcher {
 
 
     /// THEOlive API
-  THEOliveAPI? get theoLive {
+  THEOlive? get theoLive {
     return _theoLiveAPIHolder;
   }
 
