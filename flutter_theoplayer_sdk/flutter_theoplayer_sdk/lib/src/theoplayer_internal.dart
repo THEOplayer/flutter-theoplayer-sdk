@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:theoplayer/src/theolive/theolive_wrapper.dart';
 import 'package:theoplayer/src/widget/fullscreen_widget.dart';
 import 'package:theoplayer/src/widget/presentationmode_aware_widget.dart';
 import 'package:theoplayer_platform_interface/helpers/logger.dart';
@@ -16,6 +17,7 @@ import 'package:theoplayer_platform_interface/theoplayer_view_controller_interfa
 import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
 import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
 import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack.dart';
+import 'package:theoplayer_platform_interface/theolive/theolive_api.dart';
 import 'package:theoplayer/src/theoplayer_state.dart';
 import 'package:theoplayer/src/theoplayer_tracklist_wrapper.dart';
 import 'package:theoplayer/src/theoplayer_view.dart';
@@ -49,6 +51,7 @@ class THEOplayer implements EventDispatcher {
   final TextTracksHolder _textTrackListHolder = TextTracksHolder();
   final AudioTracksHolder _audioTrackListHolder = AudioTracksHolder();
   final VideoTracksHolder _videoTrackListHolder = VideoTracksHolder();
+  final THEOliveAPIHolder _theoLiveAPIHolder = THEOliveAPIHolder();
 
   // internal helpers
   PresentationMode _presentationModeBeforePip = PresentationMode.INLINE;
@@ -73,6 +76,7 @@ class THEOplayer implements EventDispatcher {
           _textTrackListHolder.setup(viewController.getTextTracks());
           _audioTrackListHolder.setup(viewController.getAudioTracks());
           _videoTrackListHolder.setup(viewController.getVideoTracks());
+          _theoLiveAPIHolder.setup(viewController.getTheoLive());
           _setupLifeCycleListeners();
           onCreate?.call();
           _playerState.initialized();
@@ -122,6 +126,12 @@ class THEOplayer implements EventDispatcher {
   /// List of video tracks of the current source.
   VideoTracks getVideoTracks() {
     return _videoTrackListHolder;
+  }
+
+
+    /// THEOlive API
+  THEOliveAPI? get theoLive {
+    return _theoLiveAPIHolder;
   }
 
   /// [StateChangeListener] that's triggered every time the internal player state is changing.
@@ -593,6 +603,7 @@ class THEOplayer implements EventDispatcher {
     _playerState.dispose();
     _textTrackListHolder.dispose();
     _audioTrackListHolder.dispose();
+    _theoLiveAPIHolder.dispose();
   }
 
   /// Add the given listener for the given [PlayerEventTypes] type(s).

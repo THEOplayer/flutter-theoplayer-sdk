@@ -2,6 +2,7 @@ import 'dart:js_interop_unsafe';
 
 import 'package:flutter/foundation.dart';
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart' as PlatformInterface;
+import 'package:theoplayer_platform_interface/theolive/theolive_api.dart';
 import 'package:theoplayer_platform_interface/theopalyer_config.dart';
 import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart' as PlatformInterfaceEventDispatcher;
 import 'package:theoplayer_platform_interface/theoplayer_events.dart' as PlatformInterfaceEvents;
@@ -10,6 +11,7 @@ import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiot
 import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
 import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack.dart';
 import 'package:theoplayer_web/player_event_forwarder_web.dart';
+import 'package:theoplayer_web/theolive/theolive_controller_web.dart';
 import 'package:theoplayer_web/theoplayer_api_web.dart';
 import 'package:theoplayer_web/track/theoplayer_track_controller_web.dart';
 import 'package:theoplayer_web/transformers_web.dart';
@@ -22,6 +24,7 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   late final THEOplayerJS _theoPlayerJS;
   late final PlayerEventForwarderWeb _eventForwarder;
   late final THEOplayerTrackControllerWeb _tracksController;
+  late final THEOliveControllerWeb _theoliveController;
 
   THEOplayerViewControllerWeb(int id, this._playerWrapperDiv, THEOplayerConfig theoPlayerConfig) : super(id) {
     _channelSuffix = id.toString();
@@ -42,6 +45,9 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
         ));
     _eventForwarder = PlayerEventForwarderWeb(_theoPlayerJS);
     _tracksController = THEOplayerTrackControllerWeb(_theoPlayerJS);
+    if (_theoPlayerJS.theoLive != null) {
+      _theoliveController = THEOliveControllerWeb(_theoPlayerJS.theoLive!);
+    }
   }
 
   String get channelSuffix => _channelSuffix;
@@ -60,6 +66,7 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   void dispose() {
     _eventForwarder.clear();
     _tracksController.dispose();
+    _theoliveController.dispose();
   }
 
   @override
@@ -434,6 +441,11 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
 
   @override
   void configureSurface(int surfaceId, int width, int height) {
+  }
+
+  @override
+  THEOliveAPIInternalInterface? getTheoLive() {
+    return _theoliveController;
   }
 }
 

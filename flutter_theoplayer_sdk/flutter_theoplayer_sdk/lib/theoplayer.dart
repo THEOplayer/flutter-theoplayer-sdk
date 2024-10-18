@@ -9,6 +9,8 @@ export 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videot
 export 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack_events.dart';
 export 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack_events.dart';
 export 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack.dart';
+export 'package:theoplayer_platform_interface/theolive/theolive_api.dart';
+export 'package:theoplayer_platform_interface/theolive/theolive_events.dart';
 export 'package:theoplayer/src/widget/presentationmode_aware_widget.dart';
 export 'package:theoplayer/src/widget/chromeless_widget.dart';
 export 'package:theoplayer/src/widget/fullscreen_widget.dart';
