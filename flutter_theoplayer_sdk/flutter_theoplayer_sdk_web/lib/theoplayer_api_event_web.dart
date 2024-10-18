@@ -281,3 +281,35 @@ class CueExitEventJS {
 class CueUpdateEventJS {
   external THEOplayerTextTrackCue cue;
 }
+
+//THEOlive events
+
+@JS()
+@anonymous
+class PublicationLoadedEventJS {
+  external String publicationId;
+}
+
+@JS()
+@anonymous
+class PublicationLoadStartEventJS {
+  external String publicationId;
+}
+
+@JS()
+@anonymous
+class PublicationOfflineEventJS {
+  external String publicationId;
+}
+
+@JS()
+@anonymous
+class IntentToFallbackEventJS {}
+
+@JS()
+@anonymous
+class EnterBadNetworkModeEventJS {}
+
+@JS()
+@anonymous
+class ExitBadNetworkModeEventJS {}
