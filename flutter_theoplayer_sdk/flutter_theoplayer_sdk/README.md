@@ -83,7 +83,9 @@ please reach out to us for support.
 </tr>
 <tr>
 <td><strong>Subtitles &amp; Closed Captions</strong></td>
-<td colspan="3">In-stream subtitles supported by the platform</td>
+<td colspan="3">In-stream subtitles supported by the platform.</br>
+Note: If you use Texture-based rendering (SURFACE_TEXTURE and SURFACE_PRODUCER) on Android, you need to implement the subtitle rendering based on track events.
+</td>
 </tr>
 <tr>
 <td><strong>Metadata</strong></td>
@@ -110,6 +112,12 @@ please reach out to us for support.
 <tr>
 <td><strong>Cast Integration</strong></td>
 <td colspan="3">Coming soon… (Can not wait? <a href="https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/custom-branches.md">Check our in-app integration branches</a>)</td>
+</tr>
+<tr>
+<td><strong><a href="https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/theolive.md">THEOlive</a></strong></td>
+<td>Coming soon… (Can not wait? <a href="https://github.com/THEOplayer/flutter-theolive-sdk">You can still use our THEOlive SDK</a>)</td>
+<td>Supported through <code>THEOliveSource</code> and <code>player.theolive</code> API</td>
+<td>Coming soon… (Can not wait? <a href="https://github.com/THEOplayer/flutter-theolive-sdk">You can still use our THEOlive SDK</a>)</td>
 </tr>
 </tbody>
 </table>

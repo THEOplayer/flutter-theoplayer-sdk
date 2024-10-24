@@ -1,5 +1,6 @@
 [Unreleased]
 
+* Added [THEOlive support](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/theolive.md) for Flutter WEB.
 * Deprecated getX and setX methods on THEOplayer API in favor of properties.
 * Added new properties on THEOplayer API. (`muted`, `played`, `buffered`, `videoTracks`, etc... for the full list check the API.)
 * Changed `THEOplayer.allowBackgroundPlayback()` to `THEOplayer.allowBackgroundPlayback`. **(Breaking change)**.
