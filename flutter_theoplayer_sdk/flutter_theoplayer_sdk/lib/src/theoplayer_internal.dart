@@ -222,13 +222,7 @@ class THEOplayer implements EventDispatcher {
   }
 
   /// The current value of whether the player should immediately start playback after source change.
-  /// Deprecated("Use [autoplay] instead.")
-  @Deprecated("Use [autoplay] instead.")
-  bool isAutoplay() {
-    return autoplay;
-  }
-  /// The current value of whether the player should immediately start playback after source change.
-  bool get autoplay {
+  bool get isAutoplay {
     return _playerState.isAutoplay;
   }
 
@@ -243,14 +237,7 @@ class THEOplayer implements EventDispatcher {
   }
 
   /// Whether the player is paused.
-  /// Deprecated("Use [paused] instead.")
-  @Deprecated("Use [paused] instead.")
-  bool isPaused() {
-    return paused;
-  }
-
-  /// Whether the player is paused.
-  bool get paused {
+  bool get isPaused {
     return _playerState.isPaused;
   }
 
@@ -416,14 +403,7 @@ class THEOplayer implements EventDispatcher {
   }
 
   /// Whether audio is muted.
-  /// Deprecated("Use [muted] instead.")
-  @Deprecated("Use [muted] instead.")
-  bool isMuted() {
-    return muted;
-  }
-
-  /// Whether audio is muted.
-  bool get muted {
+  bool get isMuted {
     return _playerState.muted;
   }
 
@@ -495,38 +475,17 @@ class THEOplayer implements EventDispatcher {
   }
 
   /// Whether the player is seeking.
-  /// Deprecated("Use [seeking] instead.")
-  @Deprecated("Use [seeking] instead.")
-  bool isSeeking() {
-    return seeking;
-  }
-
-  /// Whether the player is seeking.
-  bool get seeking {
+  bool get isSeeking {
     return _playerState.isSeeking;
   }
 
   /// Returns true, whenever a underlying native view is already initialized.
-  /// Deprecated("Use [initialized] instead.")
-  @Deprecated("Use [initialized] instead.")
-  bool isInitialized() {
-    return initialized;
-  }
-
-  /// Returns true, whenever a underlying native view is already initialized.
-  bool get initialized {
+  bool get isInitialized {
     return _playerState.isInitialized;
   }
 
   /// Whether playback of the media is ended.
-  /// Deprecated("Use [ended] instead.")
-  @Deprecated("Use [ended] instead.")
-  bool isEnded() {
-    return ended;
-  }
-
-  /// Whether playback of the media is ended.
-  bool get ended {
+  bool get isEnded {
     return _playerState.isEnded;
   }
 
@@ -677,7 +636,7 @@ class THEOplayer implements EventDispatcher {
   ///
   /// Remarks:
   /// * All resources associated with the current source are released.
-  /// * The player can be reused by setting a new source with [setSource].
+  /// * The player can be reused by setting a new source with [source].
   void stop() {
     _theoPlayerViewController?.stop();
     _playerState.resetState();

@@ -262,18 +262,18 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> logApiCalls() async {
     print("source: ${player.source}");
-    print("isAutoplay: ${player.autoplay}");
-    print("isPaused: ${player.paused}");
+    print("isAutoplay: ${player.isAutoplay}");
+    print("isPaused: ${player.isPaused}");
     print("currentTime: ${player.currentTime}");
     print("currentProgramDateTIme: ${player.currentProgramDateTime}");
     print("duration: ${player.duration}");
     print("playbackRate: ${player.playbackRate}");
     print("volume: ${player.volume}");
-    print("isMuted: ${player.muted}");
+    print("isMuted: ${player.isMuted}");
     print("preload: ${player.preload}");
     print("readyState: ${player.readyState}");
-    print("isSeeking: ${player.seeking}");
-    print("isEnded: ${player.ended}");
+    print("isSeeking: ${player.isSeeking}");
+    print("isEnded: ${player.isEnded}");
     print("videoHeight: ${player.videoHeight}");
     print("videoWidth: ${player.videoWidth}");
     print("buffered: ${player.buffered}");
