@@ -109,25 +109,52 @@ class THEOplayer implements EventDispatcher {
   }
 
   /// Returns the player widget that can be added to the view hierarchy to show videos
+  /// Deprecated, use [view].
+  @Deprecated("Use [view] instead.")
   Widget getView() {
+    return view;
+  }
+
+  /// Returns the player widget that can be added to the view hierarchy to show videos
+  Widget get view {
     return _tpv;
   }
 
   /// List of text tracks of the current source.
+  /// Deprecated, use [textTracks].
+  @Deprecated("Use [textTracks] instead.")
   TextTracks getTextTracks() {
+    return textTracks;
+  }
+
+  /// List of text tracks of the current source.
+  TextTracks get textTracks {
     return _textTrackListHolder;
   }
 
   /// List of audio tracks of the current source.
+  /// Deprecated, use [audioTracks].
+  @Deprecated("Use [audioTracks] instead.")
   AudioTracks getAudioTracks() {
+    return audioTracks;
+  }
+
+  /// List of audio tracks of the current source.
+  AudioTracks get audioTracks {
     return _audioTrackListHolder;
   }
 
   /// List of video tracks of the current source.
+  /// Deprecated, use [videoTracks].
+  @Deprecated("Use [videoTracks] instead.")
   VideoTracks getVideoTracks() {
-    return _videoTrackListHolder;
+    return videoTracks;
   }
 
+  /// List of video tracks of the current source.
+  VideoTracks get videoTracks {
+    return _videoTrackListHolder;
+  }
 
     /// THEOlive API
   THEOlive? get theoLive {
@@ -141,10 +168,16 @@ class THEOplayer implements EventDispatcher {
   }
 
   /// Set current source which describes desired playback of a media resource.
+  /// Deprecated("Use [source] instead.")
+  @Deprecated("Use [source] instead.")
   void setSource(SourceDescription source) {
+    this.source = source;
+  }
+  /// Set current source which describes desired playback of a media resource.
+  set source(SourceDescription? source) {
 
     if (!kIsWeb) {
-      TypedSource? theoLiveSource = source.sources.firstWhere((typedSource) => typedSource?.integration == SourceIntegrationId.theolive, orElse: () => null);
+      TypedSource? theoLiveSource = source?.sources.firstWhere((typedSource) => typedSource?.integration == SourceIntegrationId.theolive, orElse: () => null);
       if (theoLiveSource != null) {
         printLog("Using THEOlive sources are not supported on ${defaultTargetPlatform.name}");
         stop();
@@ -160,18 +193,42 @@ class THEOplayer implements EventDispatcher {
   ///
   /// Remarks:
   /// * Changing source will [stop] the previous source.
+  ///
+  /// Deprecated("Use [source] instead.")
+  @Deprecated("Use [source] instead.")
   SourceDescription? getSource() {
+    return source;
+  }
+
+  /// The current source which describes desired playback of a media resource.
+  ///
+  /// Remarks:
+  /// * Changing source will [stop] the previous source.
+  SourceDescription? get source {
     return _playerState.source;
   }
 
   /// Set whether the player should immediately start playback after source change.
+  /// Deprecated("Use [autoplay] instead.")
+  @Deprecated("Use [autoplay] instead.")
   void setAutoplay(bool autoplay) {
+    this.autoplay = autoplay;
+  }
+
+  /// Set whether the player should immediately start playback after source change.
+  set autoplay(bool autoplay) {
     _playerState.isAutoplay = autoplay;
     _theoPlayerViewController?.setAutoplay(autoplay);
   }
 
   /// The current value of whether the player should immediately start playback after source change.
+  /// Deprecated("Use [autoplay] instead.")
+  @Deprecated("Use [autoplay] instead.")
   bool isAutoplay() {
+    return autoplay;
+  }
+  /// The current value of whether the player should immediately start playback after source change.
+  bool get autoplay {
     return _playerState.isAutoplay;
   }
 
@@ -186,17 +243,38 @@ class THEOplayer implements EventDispatcher {
   }
 
   /// Whether the player is paused.
+  /// Deprecated("Use [paused] instead.")
+  @Deprecated("Use [paused] instead.")
   bool isPaused() {
+    return paused;
+  }
+
+  /// Whether the player is paused.
+  bool get paused {
     return _playerState.isPaused;
   }
 
   /// Set the current playback position of the media, in seconds.
+  /// Deprecated("Use [currentTime] instead.")
+  @Deprecated("Use [currentTime] instead.")
   void setCurrentTime(double currentTime) {
+    this.currentTime = currentTime;
+  }
+
+  /// Set the current playback position of the media, in seconds.
+  set currentTime(double currentTime) {
     _theoPlayerViewController?.setCurrentTime(currentTime);
   }
 
   /// The current playback position of the media, in seconds.
+  /// Deprecated("Use [currentTime] instead.")
+  @Deprecated("Use [currentTime] instead.")
   double getCurrentTime() {
+    return currentTime;
+  }
+
+  /// The current playback position of the media, in seconds.
+  double get currentTime {
     return _playerState.currentTime;
   }
 
@@ -209,12 +287,30 @@ class THEOplayer implements EventDispatcher {
   ///
   /// Remarks:
   /// * The relation between [getCurrentProgramDateTime] and [getCurrentTime] is determined by the manifest.
+  ///
+  /// Deprecated("Use [currentProgramDateTime] instead.")
+  @Deprecated("Use [currentProgramDateTime] instead.")
   DateTime? getCurrentProgramDateTime() {
+    return currentProgramDateTime;
+  }
+
+  /// The current playback position of the media, as a timestamp.
+  ///
+  /// Remarks:
+  /// * The relation between [currentProgramDateTime] and [currentTime] is determined by the manifest.
+  DateTime? get currentProgramDateTime {
     return _playerState.currentProgramDateTime;
   }
 
   /// The duration of the media, in seconds.
+  /// Deprecated("Use [duration] instead.")
+  @Deprecated("Use [duration] instead.")
   double getDuration() {
+    return duration;
+  }
+
+  /// The duration of the media, in seconds.
+  double get duration {
     return _playerState.duration;
   }
 
@@ -228,13 +324,37 @@ class THEOplayer implements EventDispatcher {
   /// Example:
   /// * playbackRate = 0.70 will slow down the playback rate of the media by 30%.
   /// * playbackRate = 1.25 will speed up the playback rate of the media by 25%.
+  ///
+  /// Deprecated("Use [playbackRate] instead.")
+  @Deprecated("Use [playbackRate] instead.")
   void setPlaybackRate(double playbackRate) {
+    this.playbackRate = playbackRate;
+  }
+
+  /// Set the playback rate of the media.
+  ///
+  /// Remarks:
+  /// * Playback rate is represented by a number where 1 is default playback speed.
+  /// * Playback rate must be a positive number.
+  /// * It is recommended that you limit the range to between 0.5 and 4.
+  ///
+  /// Example:
+  /// * playbackRate = 0.70 will slow down the playback rate of the media by 30%.
+  /// * playbackRate = 1.25 will speed up the playback rate of the media by 25%.
+  set playbackRate(double playbackRate) {
     _playerState.playbackRate = playbackRate;
     _theoPlayerViewController?.setPlaybackRate(playbackRate);
   }
 
   /// The playback rate of the media.
+  /// Deprecated("Use [playbackRate] instead.")
+  @Deprecated("Use [playbackRate] instead.")
   double getPlaybackRate() {
+    return playbackRate;
+  }
+
+  /// The playback rate of the media.
+  double get playbackRate {
     return _playerState.playbackRate;
   }
 
@@ -245,26 +365,65 @@ class THEOplayer implements EventDispatcher {
   ///
   /// Example:
   /// * volume = 0.7 will reduce the audio volume of the media by 30%.
+  ///
+  /// Deprecated("Use [volume] instead.")
+  @Deprecated("Use [volume] instead.")
   void setVolume(double volume) {
+    this.volume = volume;
+  }
+
+  /// Set the volume of the audio.
+  ///
+  /// Remarks:
+  /// * Volume is represented by a floating point number between 0.0 and 1.0.
+  ///
+  /// Example:
+  /// * volume = 0.7 will reduce the audio volume of the media by 30%.
+  set volume(double volume) {
     _theoPlayerViewController?.setVolume(volume);
   }
 
   /// The volume of the audio.
+  /// Deprecated("Use [volume] instead.")
+  @Deprecated("Use [volume] instead.")
   double getVolume() {
+    return volume;
+  }
+
+  /// The volume of the audio.
+  double get volume {
     return _playerState.volume;
   }
 
   /// Set whether audio is muted.
   ///
   /// Remarks:
-  /// * on Web only muted autplay is allowed.
+  /// * on Web only muted autoplay is allowed.
+  ///
+  /// Deprecated("Use [muted] instead.")
+  @Deprecated("Use [muted] instead.")
   void setMuted(bool muted) {
+    this.muted = muted;
+  }
+
+  /// Set whether audio is muted.
+  ///
+  /// Remarks:
+  /// * on Web only muted autoplay is allowed.
+  set muted(bool muted) {
     _playerState.muted = muted;
     _theoPlayerViewController?.setMuted(muted);
   }
 
   /// Whether audio is muted.
+  /// Deprecated("Use [muted] instead.")
+  @Deprecated("Use [muted] instead.")
   bool isMuted() {
+    return muted;
+  }
+
+  /// Whether audio is muted.
+  bool get muted {
     return _playerState.muted;
   }
 
@@ -278,13 +437,37 @@ class THEOplayer implements EventDispatcher {
   /// * 'auto' loads media up to ABRConfiguration.targetBuffer.
   ///
   /// * ABRConfiguration is not exposed yet in Flutter.
+  ///
+  /// Deprecated("Use [preload] instead.")
+  @Deprecated("Use [preload] instead.")
   void setPreload(PreloadType preload) {
+    this.preload = preload;
+  }
+
+  /// The preload type of the player, represented by a value from the following list:
+  /// * [PreloadType.none] : The player will not load anything on source change.
+  /// * [PreloadType.metadata] : The player will immediately load metadata on source change.
+  /// * [PreloadType.auto] : The player will immediately load metadata and media on source change.
+  ///
+  /// Remarks:
+  /// * 'metadata' loads enough resources to be able to determine the [THEOplayer.duration].
+  /// * 'auto' loads media up to ABRConfiguration.targetBuffer.
+  ///
+  /// * ABRConfiguration is not exposed yet in Flutter.
+  set preload(PreloadType preload) {
     _playerState.preload = preload;
     _theoPlayerViewController?.setPreload(preload);
   }
 
   /// The preload setting of the player.
+  /// Deprecated("Use [preload] instead.")
+  @Deprecated("Use [preload] instead.")
   PreloadType getPreload() {
+    return preload;
+  }
+
+  /// The preload setting of the player.
+  PreloadType get preload {
     return _playerState.preload;
   }
 
@@ -294,50 +477,140 @@ class THEOplayer implements EventDispatcher {
   /// * [ReadyState.have_current_data] : The player has its current frame in its buffer.
   /// * [ReadyState.have_future_data] : The player has enough data for immediate playback.
   /// * [ReadyState.have_enough_data] : The player has enough data for continuous playback.
+  ///
+  /// Deprecated("Use [readyState] instead.")
+  @Deprecated("Use [readyState] instead.")
   ReadyState getReadyState() {
+    return readyState;
+  }
+
+  /// The ready state of the player, represented by a value from the following list:
+  /// * [ReadyState.have_nothing] : The player has no information about the duration of its source.
+  /// * [ReadyState.have_metadata] : The player has information about the duration of its source.
+  /// * [ReadyState.have_current_data] : The player has its current frame in its buffer.
+  /// * [ReadyState.have_future_data] : The player has enough data for immediate playback.
+  /// * [ReadyState.have_enough_data] : The player has enough data for continuous playback.
+  ReadyState get readyState {
     return _playerState.readyState;
   }
 
   /// Whether the player is seeking.
+  /// Deprecated("Use [seeking] instead.")
+  @Deprecated("Use [seeking] instead.")
   bool isSeeking() {
+    return seeking;
+  }
+
+  /// Whether the player is seeking.
+  bool get seeking {
     return _playerState.isSeeking;
   }
 
+  /// Returns true, whenever a underlying native view is already initialized.
+  /// Deprecated("Use [initialized] instead.")
+  @Deprecated("Use [initialized] instead.")
   bool isInitialized() {
+    return initialized;
+  }
+
+  /// Returns true, whenever a underlying native view is already initialized.
+  bool get initialized {
     return _playerState.isInitialized;
   }
 
   /// Whether playback of the media is ended.
+  /// Deprecated("Use [ended] instead.")
+  @Deprecated("Use [ended] instead.")
   bool isEnded() {
+    return ended;
+  }
+
+  /// Whether playback of the media is ended.
+  bool get ended {
     return _playerState.isEnded;
   }
 
   /// The width of the active video rendition, in pixels.
+  /// Deprecated("Use [videoWidth] instead.")
+  @Deprecated("Use [videoWidth] instead.")
   int getVideoWidth() {
+    return videoWidth;
+  }
+
+  /// The width of the active video rendition, in pixels.
+  int get videoWidth {
     return _playerState.videoWidth;
   }
 
   /// The height of the active video rendition, in pixels.
+  /// Deprecated("Use [videoHeight] instead.")
+  @Deprecated("Use [videoHeight] instead.")
   int getVideoHeight() {
+    return videoHeight;
+  }
+
+  /// The height of the active video rendition, in pixels.
+  int get videoHeight {
     return _playerState.videoHeight;
   }
 
   /// Returns a [TimeRange] list object that represents the ranges of the media resource that the player has buffered.
+  /// Deprecated("Use [buffered] instead.")
+  @Deprecated("Use [buffered] instead.")
   List<TimeRange?> getBuffered() {
+    return buffered;
+  }
+
+  /// Returns a [TimeRange] list object that represents the ranges of the media resource that the player has buffered.
+  List<TimeRange?> get buffered {
     return _playerState.buffered;
+  }
+
+
+  /// Returns a [TimeRange] list object that represents the ranges of the media resource that are seekable by the player.
+  ///
+  /// Remarks:
+  /// * On source change, seekable becomes available after [getReadyState] is at least HAVE_METADATA.
+  ///
+  /// Deprecated("Use [seekable] instead.")
+  @Deprecated("Use [seekable] instead.")
+  List<TimeRange?> getSeekable() {
+    return seekable;
   }
 
   /// Returns a [TimeRange] list object that represents the ranges of the media resource that are seekable by the player.
   ///
   /// Remarks:
   /// * On source change, seekable becomes available after [getReadyState] is at least HAVE_METADATA.
-  List<TimeRange?> getSeekable() {
+  List<TimeRange?> get seekable {
     return _playerState.seekable;
   }
 
   /// Returns a [TimeRange] list object that represents the ranges of the media resource that the player has played.
+  ///
+  /// Deprecated("Use [played] instead.")
+  @Deprecated("Use [played] instead.")
   List<TimeRange?> getPlayed() {
+    return played;
+  }
+
+  /// Returns a [TimeRange] list object that represents the ranges of the media resource that the player has played.
+  List<TimeRange?> get played {
     return _playerState.played;
+  }
+
+
+  /// Set whether playback continues when the app goes to background.
+  /// Useful if audio-only playback is required in the background.
+  ///
+  /// Remarks:
+  /// * on Web this flag has no impact.
+  /// * on Android and iOS manual implementation is still required to connect the player to the Notification Center APIs to be able to control the playback from outside the app.
+  ///
+  /// Deprecated("Use [allowBackgroundPlayback] instead.")
+  @Deprecated("Use [allowBackgroundPlayback] instead.")
+  void setAllowBackgroundPlayback(bool allowBackgroundPlayback) {
+    this.allowBackgroundPlayback = allowBackgroundPlayback;
   }
 
   /// Set whether playback continues when the app goes to background.
@@ -346,13 +619,13 @@ class THEOplayer implements EventDispatcher {
   /// Remarks:
   /// * on Web this flag has no impact.
   /// * on Android and iOS manual implementation is still required to connect the player to the Notification Center APIs to be able to control the playback from outside the app.
-  void setAllowBackgroundPlayback(bool allowBackgroundPlayback) {
+  set allowBackgroundPlayback(bool allowBackgroundPlayback) {
     _playerState.allowBackgroundPlayback = allowBackgroundPlayback;
     _theoPlayerViewController?.setAllowBackgroundPlayback(allowBackgroundPlayback);
   }
 
   /// Whether playback continues when the app goes to background.
-  bool allowBackgroundPlayback() {
+  bool get allowBackgroundPlayback {
     return _playerState.allowBackgroundPlayback;
   }
 
@@ -363,19 +636,40 @@ class THEOplayer implements EventDispatcher {
   /// * on Android and iOS if this flag is TRUE, the player will go to Picture-in-Picture mode when the user presses the home button. (puts the application into background)
   /// * on Android and iOS there can be only one player with this flag set to TRUE. (having multiple ones can cause unexpected behaviour)
   /// * on iOS the player has to be not paused when entering Picture-in-Picture
+  ///
+  /// Deprecated("Use [allowAutomaticPictureInPicture] instead.")
+  @Deprecated("Use [allowAutomaticPictureInPicture] instead.")
   void setAllowAutomaticPictureInPicture(bool allowAutomaticPictureInPicture) {
+    this.allowAutomaticPictureInPicture = allowAutomaticPictureInPicture;
+  }
+
+  /// Set whether playback continues Picture-in-Picture mode when the app goes to background.
+  ///
+  /// Remarks:
+  /// * on Web this flag has no impact.
+  /// * on Android and iOS if this flag is TRUE, the player will go to Picture-in-Picture mode when the user presses the home button. (puts the application into background)
+  /// * on Android and iOS there can be only one player with this flag set to TRUE. (having multiple ones can cause unexpected behaviour)
+  /// * on iOS the player has to be not paused when entering Picture-in-Picture
+  set allowAutomaticPictureInPicture(bool allowAutomaticPictureInPicture) {
     _playerState.allowAutomaticPictureInPicture = allowAutomaticPictureInPicture;
     _theoPlayerViewController?.setAllowAutomaticPictureInPicture(allowAutomaticPictureInPicture);
   }
 
   /// Whether playback continues in Picture-in-Picture when the app goes to background.
-  bool allowAutomaticPictureInPicture() {
+  bool get allowAutomaticPictureInPicture {
     //NOTE: we don't rely on the underlying native state
     return _playerState.allowAutomaticPictureInPicture;
   }
 
   /// The last error that occurred for the current source, if any.
+  /// Deprecated("Use [error] instead.")
+  @Deprecated("Use [error] instead.")
   String? getError() {
+    return error;
+  }
+
+  /// The last error that occurred for the current source, if any.
+  String? get error {
     return _playerState.error;
   }
 
@@ -391,6 +685,11 @@ class THEOplayer implements EventDispatcher {
 
   /// Returns the current [PresentationMode]
   PresentationMode getPresentationMode() {
+    return presentationMode;
+  }
+
+  /// Returns the current [PresentationMode]
+  PresentationMode get presentationMode {
     return _playerState.presentationMode;
   }
 
@@ -400,8 +699,19 @@ class THEOplayer implements EventDispatcher {
   /// * [PresentationMode.INLINE]: The player is shown in its original location on the page/in the app
   /// * [PresentationMode.FULLSCREEN]: The player fills the entire screen (by presenting a new fullscreen view in the view hierarchy).
   ///   Check [THEOplayerConfig.fullscreenConfig] and [THEOplayer.fullscreenConfig] for more customization.
-  /// * [PresentationMode.PIP]: The player is shown in Picture-in-Picture mode. ONLY AVAILABLE ON WEB! For Android and iOS check [setAllowAutomaticPictureInPicture].
+  /// * [PresentationMode.PIP]: The player is shown in Picture-in-Picture mode. ONLY AVAILABLE ON WEB! For Android and iOS check [allowAutomaticPictureInPicture].
   void setPresentationMode(PresentationMode presentationMode) {
+    this.presentationMode = presentationMode;
+  }
+
+  /// Sets the current [PresentationMode] for the player
+  ///
+  /// Remarks:
+  /// * [PresentationMode.INLINE]: The player is shown in its original location on the page/in the app
+  /// * [PresentationMode.FULLSCREEN]: The player fills the entire screen (by presenting a new fullscreen view in the view hierarchy).
+  ///   Check [THEOplayerConfig.fullscreenConfig] and [THEOplayer.fullscreenConfig] for more customization.
+  /// * [PresentationMode.PIP]: The player is shown in Picture-in-Picture mode. ONLY AVAILABLE ON WEB! For Android and iOS check [setAllowAutomaticPictureInPicture].
+  set presentationMode(PresentationMode presentationMode) {
     if (!kIsWeb && presentationMode == PresentationMode.PIP) {
       print("Programmatically setting Picture-in-Picture mode it not possible on ${defaultTargetPlatform.name}! Please check the `setAllowAutomaticPictureInPicture()` API.");
       return;
@@ -601,6 +911,7 @@ class THEOplayer implements EventDispatcher {
     _lifecycleListener?.dispose();
     _theoPlayerViewController?.dispose();
     _playerState.dispose();
+    _videoTrackListHolder.dispose();
     _textTrackListHolder.dispose();
     _audioTrackListHolder.dispose();
     _theoLiveAPIHolder.dispose();
@@ -632,7 +943,7 @@ class _PlayerPlatformActivityServiceListener implements PlatformActivityServiceL
   void onExitPictureInPicture() {
     debugLog("THEOplayer_$playerID: PlayerPlatformActivityServiceListener onExitPictureInPicture");
 
-    if (!player.allowAutomaticPictureInPicture()) {
+    if (!player.allowAutomaticPictureInPicture) {
       debugLog("THEOplayer_$playerID: PlayerPlatformActivityServiceListener onExitPictureInPicture not for me");
       return;
     }
@@ -647,7 +958,7 @@ class _PlayerPlatformActivityServiceListener implements PlatformActivityServiceL
     debugLog("THEOplayer_$playerID:: PlayerPlatformActivityServiceListener onUserLeaveHint");
 
 
-    if (!player.allowAutomaticPictureInPicture()) {
+    if (!player.allowAutomaticPictureInPicture) {
       debugLog("THEOplayer_$playerID: PlayerPlatformActivityServiceListener onUserLeaveHint not for me");
       return;
     }
@@ -674,7 +985,7 @@ class _PlayerPlatformActivityServiceListener implements PlatformActivityServiceL
     debugLog("THEOplayer_$playerID:: PlayerPlatformActivityServiceListener onPlayActionReceived");
 
 
-    if (!player.allowAutomaticPictureInPicture()) {
+    if (!player.allowAutomaticPictureInPicture) {
       debugLog("THEOplayer_$playerID: PlayerPlatformActivityServiceListener onPlayActionReceived not for me");
       return;
     }
@@ -688,7 +999,7 @@ class _PlayerPlatformActivityServiceListener implements PlatformActivityServiceL
     debugLog("THEOplayer_$playerID:: PlayerPlatformActivityServiceListener onPauseActionReceived");
 
 
-    if (!player.allowAutomaticPictureInPicture()) {
+    if (!player.allowAutomaticPictureInPicture) {
       debugLog("THEOplayer_$playerID: PlayerPlatformActivityServiceListener onPauseActionReceived not for me");
       return;
     }

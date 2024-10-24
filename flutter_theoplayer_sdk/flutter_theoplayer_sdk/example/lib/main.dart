@@ -281,7 +281,7 @@ class _MyAppState extends State<MyApp> {
     print("error: ${player.getError()}");
     print("audio target quality: ${player.getAudioTracks().first.targetQuality?.uid}");
     print("audio active quality: ${player.getAudioTracks().first.activeQuality?.uid}");
-    print("allowBackgroundPlayback: ${player.allowBackgroundPlayback()}");
+    print("allowBackgroundPlayback: ${player.allowBackgroundPlayback}");
   }
 
   Future<void> _licenseConfigCheckDialog(BuildContext context) async {
