@@ -28,7 +28,7 @@ void main() {
     await tester.pumpAndSettle();
     await app.waitForPlayerReady();
 
-    expect(player.isInitialized(), isTrue, reason: "Testing isInitialized()");
-    expect(player.isPaused(), isTrue, reason: "Testing isPaused()");
+    expect(player.isInitialized, isTrue, reason: "Testing isInitialized()");
+    expect(player.isPaused, isTrue, reason: "Testing isPaused()");
   });
 }

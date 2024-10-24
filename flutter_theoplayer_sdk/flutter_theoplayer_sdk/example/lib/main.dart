@@ -57,9 +57,9 @@ class _MyAppState extends State<MyApp> {
         ),
         onCreate: () {
           print("main - THEOplayer - onCreate");
-          player.setAutoplay(true);
-          player.setAllowBackgroundPlayback(true);
-          player.setAllowAutomaticPictureInPicture(true);
+          player.autoplay = true;
+          player.allowBackgroundPlayback = true;
+          player.allowAutomaticPictureInPicture = true;
           // print errors
           player.addEventListener(PlayerEventTypes.ERROR, (errorEvent) {
             var error = errorEvent as ErrorEvent;
@@ -156,7 +156,7 @@ class _MyAppState extends State<MyApp> {
                                 if (kIsWeb) {
                                   player.setPresentationMode(PresentationMode.PIP);
                                 } else {
-                                  player.setAllowAutomaticPictureInPicture(!player.allowAutomaticPictureInPicture());
+                                  player.allowAutomaticPictureInPicture = !player.allowAutomaticPictureInPicture;
                                 }
                               },
                               child: const Text("Open PiP (web) / Flip automatic PiP mode (native)")),
@@ -176,39 +176,40 @@ class _MyAppState extends State<MyApp> {
                               FilledButton(
                                 onPressed: () {
                                   _licenseConfigCheckDialog(context);
-                                  player.setSource(SourceDescription(sources: [
+                                  player.source = SourceDescription(sources: [
                                     TypedSource(src: "https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8"),
-                                  ]));
+                                  ]);
                                 },
                                 child: const Text("Basic source"),
                               ),
                               FilledButton(
                                 onPressed: () {
                                   _licenseConfigCheckDialog(context);
-                                  player.setSource(SourceDescription(sources: [
+
+                                  player.source = SourceDescription(sources: [
                                     TheoLiveSource(src: "2vqqekesftg9zuvxu9tdme6kl"),
-                                  ]));
+                                  ]);
                                 },
                                 child: const Text("THEOlive source (web-only)"),
                               ),
                               FilledButton(
                                 onPressed: () {
                                   _licenseConfigCheckDialog(context);
-                                  player.setSource(SourceDescription(sources: [
+                                  player.source = SourceDescription(sources: [
                                     TypedSource(
                                         src: "https://storage.googleapis.com/wvmedia/cenc/h264/tears/tears_sd.mpd",
                                         drm: DRMConfiguration(
                                           widevine: WidevineDRMConfiguration(
                                               licenseAcquisitionURL: "https://proxy.uat.widevine.com/proxy?provider=widevine_test"),
                                         )),
-                                  ]));
+                                  ]);
                                 },
                                 child: const Text("Widevine source"),
                               ),
                               FilledButton(
                                 onPressed: () {
                                   _licenseConfigCheckDialog(context);
-                                  player.setSource(SourceDescription(sources: [
+                                  player.source = SourceDescription(sources: [
                                     TypedSource(
                                         src: "https://fps.ezdrm.com/demo/video/ezdrm.m3u8",
                                         drm: DRMConfiguration(
@@ -219,14 +220,14 @@ class _MyAppState extends State<MyApp> {
                                             headers: null,
                                           ),
                                         )),
-                                  ]));
+                                  ]);
                                 },
                                 child: const Text("Fairplay EZDRM source - iOS"),
                               ),
                               FilledButton(
                                 onPressed: () {
                                   _licenseConfigCheckDialog(context);
-                                  player.setSource(SourceDescription(sources: [
+                                  player.source = SourceDescription(sources: [
                                     TypedSource(
                                         src:
                                             "https://d2jl6e4h8300i8.cloudfront.net/netflix_meridian/4k-18.5!9/keyos-logo/g180-avc_a2.0-vbr-aac-128k/r30/dash-wv-pr/stream.mpd",
@@ -240,7 +241,7 @@ class _MyAppState extends State<MyApp> {
                                             licenseAcquisitionURL: "https://wv-keyos.licensekeyserver.com",
                                           ),
                                         )),
-                                  ]));
+                                  ]);
                                 },
                                 child: const Text("Widevine KeyOS source - Android"),
                               ),
@@ -260,28 +261,28 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> logApiCalls() async {
-    print("source: ${player.getSource()}");
-    print("isAutoplay: ${player.isAutoplay()}");
-    print("isPaused: ${player.isPaused()}");
-    print("currentTime: ${player.getCurrentTime()}");
-    print("currentProgramDateTIme: ${player.getCurrentProgramDateTime()}");
-    print("duration: ${player.getDuration()}");
-    print("playbackRate: ${player.getPlaybackRate()}");
-    print("volume: ${player.getVolume()}");
-    print("isMuted: ${player.isMuted()}");
-    print("preload: ${player.getPreload()}");
-    print("readyState: ${player.getReadyState()}");
-    print("isSeeking: ${player.isSeeking()}");
-    print("isEnded: ${player.isEnded()}");
-    print("videoHeight: ${player.getVideoHeight()}");
-    print("videoWidth: ${player.getVideoWidth()}");
-    print("buffered: ${player.getBuffered()}");
-    print("seekable: ${player.getSeekable()}");
-    print("played: ${(player.getPlayed())}");
-    print("error: ${player.getError()}");
-    print("audio target quality: ${player.getAudioTracks().first.targetQuality?.uid}");
-    print("audio active quality: ${player.getAudioTracks().first.activeQuality?.uid}");
-    print("allowBackgroundPlayback: ${player.allowBackgroundPlayback()}");
+    print("source: ${player.source}");
+    print("isAutoplay: ${player.isAutoplay}");
+    print("isPaused: ${player.isPaused}");
+    print("currentTime: ${player.currentTime}");
+    print("currentProgramDateTIme: ${player.currentProgramDateTime}");
+    print("duration: ${player.duration}");
+    print("playbackRate: ${player.playbackRate}");
+    print("volume: ${player.volume}");
+    print("isMuted: ${player.isMuted}");
+    print("preload: ${player.preload}");
+    print("readyState: ${player.readyState}");
+    print("isSeeking: ${player.isSeeking}");
+    print("isEnded: ${player.isEnded}");
+    print("videoHeight: ${player.videoHeight}");
+    print("videoWidth: ${player.videoWidth}");
+    print("buffered: ${player.buffered}");
+    print("seekable: ${player.seekable}");
+    print("played: ${(player.played)}");
+    print("error: ${player.error}");
+    print("audio target quality: ${player.audioTracks.first.targetQuality?.uid}");
+    print("audio active quality: ${player.audioTracks.first.activeQuality?.uid}");
+    print("allowBackgroundPlayback: ${player.allowBackgroundPlayback}");
   }
 
   Future<void> _licenseConfigCheckDialog(BuildContext context) async {

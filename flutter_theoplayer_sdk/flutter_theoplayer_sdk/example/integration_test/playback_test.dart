@@ -50,10 +50,10 @@ Future<void> runBasicPlaybackTest(WidgetTester tester, AndroidViewComposition an
   await tester.pumpAndSettle();
 
   print("Testing isInitialized()");
-  expect(player.isInitialized(), isTrue);
+  expect(player.isInitialized, isTrue);
 
   print("Testing isPaused()");
-  expect(player.isPaused(), isTrue);
+  expect(player.isPaused, isTrue);
 
   player.setMuted(true);
   player.setAutoplay(true);
@@ -85,10 +85,10 @@ Future<void> runBasicTHEOlivePlaybackTest(WidgetTester tester, AndroidViewCompos
   await tester.pumpAndSettle();
 
   print("Testing isInitialized()");
-  expect(player.isInitialized(), isTrue);
+  expect(player.isInitialized, isTrue);
 
   print("Testing isPaused()");
-  expect(player.isPaused(), isTrue);
+  expect(player.isPaused, isTrue);
 
   player.setMuted(true);
   player.setAutoplay(true);
