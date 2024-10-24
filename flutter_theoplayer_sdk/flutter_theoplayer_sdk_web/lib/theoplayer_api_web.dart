@@ -54,6 +54,8 @@ class THEOplayerJS extends THEOplayerEventListener {
   external THEOplayerArrayList<THEOplayerTextTrack> get textTracks;
   external THEOplayerArrayList<THEOplayerAudioTrack> get audioTracks;
   external THEOplayerArrayList<THEOplayerVideoTrack> get videoTracks;
+
+  external THEOplayerTheoLiveApi? get theoLive;
 }
 
 @JS("Date")
@@ -260,4 +262,13 @@ class THEOplayerVideoQuality extends THEOplayerMediaQuality {
   external int get width;
   external double get frameRate;
   external double get firstFrame;
+}
+
+// API for https://www.theoplayer.com/docs/theoplayer/v8/api-reference/web/interfaces/TheoLiveApi.html
+// Porting changes from https://github.com/THEOplayer/flutter-theolive-sdk/blob/develop/flutter_theolive_sdk_platform_interface/pigeons/apis/theolive_host_api.dart
+@JS()
+@anonymous
+class THEOplayerTheoLiveApi extends THEOplayerEventListener {
+  external bool badNetworkMode;
+  external preloadPublications(List<String> publicationIds);
 }

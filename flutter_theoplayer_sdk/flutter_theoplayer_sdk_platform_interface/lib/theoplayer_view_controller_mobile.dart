@@ -1,5 +1,6 @@
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
 import 'package:theoplayer_platform_interface/pigeon_binary_messenger_wrapper.dart';
+import 'package:theoplayer_platform_interface/theolive/theolive_internal_api.dart';
 import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
 import 'package:theoplayer_platform_interface/theoplayer_events.dart';
 import 'package:theoplayer_platform_interface/theoplayer_flutter_api.dart';
@@ -215,5 +216,11 @@ class THEOplayerViewControllerMobile extends THEOplayerViewController {
   @override
   void configureSurface(int surfaceId, int width, int height) {
     _nativeAPI.configureSurface(surfaceId, width, height);
+  }
+
+  @override
+  THEOliveInternalInterface? getTheoLive() {
+    // TODO: implement getTheoLive
+    return null;
   }
 }

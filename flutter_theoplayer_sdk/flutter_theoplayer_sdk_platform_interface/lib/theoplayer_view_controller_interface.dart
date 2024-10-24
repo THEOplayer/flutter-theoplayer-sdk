@@ -1,4 +1,5 @@
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
+import 'package:theoplayer_platform_interface/theolive/theolive_internal_api.dart';
 import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
 import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
 import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
@@ -99,6 +100,8 @@ abstract class THEOplayerViewController implements EventDispatcher {
   void setPresentationMode(PresentationMode presentationMode, AutomaticFullscreenExitListener? automaticFullscreenExitListener);
 
   void configureSurface(int surfaceId, int width, int height);
+
+  THEOliveInternalInterface? getTheoLive();
 }
 
 typedef AutomaticFullscreenExitListener = void Function();
