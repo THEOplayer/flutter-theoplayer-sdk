@@ -24,7 +24,7 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   late final THEOplayerJS _theoPlayerJS;
   late final PlayerEventForwarderWeb _eventForwarder;
   late final THEOplayerTrackControllerWeb _tracksController;
-  late final THEOliveControllerWeb _theoliveController;
+  late final THEOliveControllerWeb? _theoliveController;
 
   THEOplayerViewControllerWeb(int id, this._playerWrapperDiv, THEOplayerConfig theoPlayerConfig) : super(id) {
     _channelSuffix = id.toString();
@@ -66,7 +66,7 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   void dispose() {
     _eventForwarder.clear();
     _tracksController.dispose();
-    _theoliveController.dispose();
+    _theoliveController?.dispose();
   }
 
   @override
