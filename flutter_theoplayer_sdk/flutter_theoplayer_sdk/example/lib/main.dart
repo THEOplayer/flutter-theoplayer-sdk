@@ -54,6 +54,8 @@ class _MyAppState extends State<MyApp> {
         },
         theoPlayerConfig: THEOplayerConfig(
           license: PLAYER_LICENSE,
+          // Extra THEOlive configuration:
+          //theolive: TheoLiveConfiguration(externalSessionId: "mySessionID"),
         ),
         onCreate: () {
           print("main - THEOplayer - onCreate");
@@ -82,6 +84,7 @@ class _MyAppState extends State<MyApp> {
             var pmd = pmEvent as PresentationModeChangeEvent;
             print("New presentation mode: ${pmd.presentationMode}");
           });
+
         });
   }
 
@@ -186,6 +189,35 @@ class _MyAppState extends State<MyApp> {
                                 onPressed: () {
                                   _licenseConfigCheckDialog(context);
 
+                                  /**
+                                   * register for theolive events, if interested
+                                   *
+                                   *
+                                  player.theoLive?.addEventListener(THEOliveApiEventTypes.PUBLICATIONLOADSTART, (e) {
+                                    print("PUBLICATIONLOADSTART");
+                                  });
+                                  player.theoLive?.addEventListener(THEOliveApiEventTypes.PUBLICATIONOFFLINE, (e) {
+                                    print("PUBLICATIONOFFLINE");
+                                  });
+                                  player.theoLive?.addEventListener(THEOliveApiEventTypes.PUBLICATIONLOADED, (e) {
+                                    print("PUBLICATIONLOADED");
+                                  });
+                                  player.theoLive?.addEventListener(THEOliveApiEventTypes.INTENTTOFALLBACK, (e) {
+                                    print("INTENTTOFALLBACK");
+                                  });
+                                  player.theoLive?.addEventListener(THEOliveApiEventTypes.ENTERBADNETWORKMODE, (e) {
+                                    print("ENTERBADNETWORKMODE");
+                                  });
+                                  player.theoLive?.addEventListener(THEOliveApiEventTypes.EXITBADNETWORKMODE, (e) {
+                                    print("EXITBADNETWORKMODE");
+                                  });
+                                   */
+
+                                  /**
+                                   * preload channels for faster startup
+                                   *
+                                   player.theoLive?.preloadChannels(["2vqqekesftg9zuvxu9tdme6kl"]);
+                                   */
                                   player.source = SourceDescription(sources: [
                                     TheoLiveSource(src: "2vqqekesftg9zuvxu9tdme6kl"),
                                   ]);
@@ -282,7 +314,14 @@ class _MyAppState extends State<MyApp> {
     print("error: ${player.error}");
     print("audio target quality: ${player.audioTracks.first.targetQuality?.uid}");
     print("audio active quality: ${player.audioTracks.first.activeQuality?.uid}");
+    print("video target quality: ${player.videoTracks.first.targetQuality?.uid}");
+    print("video active quality: ${player.videoTracks.first.activeQuality?.uid}");
     print("allowBackgroundPlayback: ${player.allowBackgroundPlayback}");
+
+    if (kIsWeb) {
+      print("theolive publicaitionState: ${player.theoLive?.publicationState}");
+      print("theolive badnetwork: ${player.theoLive?.badNetworkMode}");
+    }
   }
 
   Future<void> _licenseConfigCheckDialog(BuildContext context) async {
