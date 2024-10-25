@@ -1,1 +1,1 @@
-flutter_theoplayer_sdk/README.md
+flutter_theoplayer_sdk/flutter_theoplayer_sdk/README.md

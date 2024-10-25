@@ -42,4 +42,4 @@ The `example` project within the SDK package contains a sample UI.
 ## Missing features
 THEOplayer Flutter SDK is not in feature parity yet with the native SDKs, new features will be added continuously.
 
-For the current feature list, please visit the [README](../flutter_theoplayer_sdk/README.md) page.
+For the current feature list, please visit the [README](../flutter_theoplayer_sdk/flutter_theoplayer_sdk/README.md) page.
