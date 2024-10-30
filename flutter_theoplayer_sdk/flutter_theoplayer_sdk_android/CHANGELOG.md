@@ -1,3 +1,15 @@
+## 8.3.0
+
+* Updated THEOplayer to 8.3.0.
+* Added [THEOlive support](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/theolive.md) for Flutter WEB.
+* Deprecated getX and setX methods on THEOplayer API in favor of properties.
+* Added new properties on THEOplayer API. (`muted`, `played`, `buffered`, `videoTracks`, etc... for the full list check the API.)
+* Changed `THEOplayer.allowBackgroundPlayback()` to `THEOplayer.allowBackgroundPlayback`. **(Breaking change)**.
+* Changed `THEOplayer.allowAutomaticPictureInPicture()` to `THEOplayer.allowAutomaticPictureInPicture`. **(Breaking change)**.
+* Changed `THEOplayer.isEnded()` to `THEOplayer.isEnded`. **(Breaking change)**.
+* Changed `THEOplayer.isPlaying()` to `THEOplayer.isPlaying`. **(Breaking change)**.
+* Changed `THEOplayer.isSeeking()` to `THEOplayer.isSeeking`. **(Breaking change)**.
+
 ## 8.2.0
 
 * Fixed an issue where play/pause buttons were not connected in the Picture-in-Picture window on Android.
