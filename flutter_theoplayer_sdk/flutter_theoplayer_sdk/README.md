@@ -83,7 +83,7 @@ please reach out to us for support.
 </tr>
 <tr>
 <td><strong>Subtitles &amp; Closed Captions</strong></td>
-<td colspan="3">In-stream subtitles supported by the platform.</br>
+<td colspan="3">In-stream subtitles supported by the platform.<br/>
 Note: If you use Texture-based rendering (SURFACE_TEXTURE and SURFACE_PRODUCER) on Android, you need to implement the subtitle rendering based on track events.
 </td>
 </tr>
