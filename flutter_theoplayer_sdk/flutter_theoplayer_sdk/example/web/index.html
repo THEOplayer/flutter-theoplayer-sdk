@@ -38,7 +38,14 @@
   </script>
   <!-- This script adds the flutter initialization JS code -->
   <script src="flutter.js" defer></script>
-  <script src="THEOplayer.chromeless.js" type="application/javascript"></script>
+  <!-- This script loads the THEOplayer Web SDK.
+       For this example, we use an externally hosted version. -->
+  <script src="https://cdn.jsdelivr.net/npm/theoplayer@8.4.0/THEOplayer.chromeless.js"></script>
+  <!-- However, we recommend copying the files from the THEOplayer Web SDK to your Flutter Web project
+       so they're bundled together with your Flutter app.
+       Then, replace the above script with:
+  -->
+  <!-- <script src="THEOplayer.chromeless.js"></script> -->
 </head>
 <body>
   <script>
