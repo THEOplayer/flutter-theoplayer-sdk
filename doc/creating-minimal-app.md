@@ -205,7 +205,7 @@ By using the `flutter run ios` command, you can try out your applicaiton on an i
 
 ## Getting started on Web
 
-You need to acquire THEOplayer HTML5 SDK from [THEOportal](https://portal.theoplayer.com/) (or from an NPM package, e.g. from [6.9.0](https://registry.npmjs.org/theoplayer/-/theoplayer-6.9.0.tgz)).
+You need to acquire THEOplayer HTML5 SDK from [THEOportal](https://portal.theoplayer.com/) (or from an NPM package, e.g. from [8.4.0](https://registry.npmjs.org/theoplayer/-/theoplayer-8.4.0.tgz)).
 
 **The current iteration of the THEOplayer Flutter SDK is not able to automatically pull THEOplayer HTML5 SDK from NPM, 
 so this is now a manual procedure.**
