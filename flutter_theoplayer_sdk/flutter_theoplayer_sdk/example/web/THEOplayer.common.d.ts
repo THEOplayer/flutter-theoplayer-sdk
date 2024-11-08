@@ -4081,6 +4081,14 @@ interface MillicastSource extends TypedSource {
      * @see https://millicast.github.io/millicast-sdk/global.html#DirectorSubscriberOptions
      */
     subscriberToken?: string;
+    /**
+     * An optional configuration object to set additional subscriber options.
+     *
+     * - The available options are listed in the link below.
+     *
+     * @see https://millicast.github.io/millicast-sdk/View.html#connect
+     */
+    connectOptions?: Record<string, any>;
 }
 
 /**
