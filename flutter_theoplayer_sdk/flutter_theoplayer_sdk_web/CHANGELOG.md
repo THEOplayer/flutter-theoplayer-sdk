@@ -1,3 +1,7 @@
+## 8.4.0
+
+* Updated THEOplayer to 8.4.0.
+
 ## 8.3.0
 
 * Updated THEOplayer to 8.3.0.
