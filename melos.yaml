@@ -7,6 +7,13 @@ packages:
   - flutter_theoplayer_sdk/flutter_theoplayer_sdk_web
   - flutter_theoplayer_sdk/flutter_theoplayer_sdk
   - flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
+  - flutter_integration_google_ima/flutter_integration_google_ima_platform_interface
+  - flutter_integration_google_ima/flutter_integration_google_ima_android
+  - flutter_integration_google_ima/flutter_integration_google_ima_ios
+  - flutter_integration_google_ima/flutter_integration_google_ima_web
+  - flutter_integration_google_ima/flutter_integration_google_ima
+  - flutter_integration_google_ima/flutter_integration_google_ima/example
+
 
 command:
   bootstrap:
