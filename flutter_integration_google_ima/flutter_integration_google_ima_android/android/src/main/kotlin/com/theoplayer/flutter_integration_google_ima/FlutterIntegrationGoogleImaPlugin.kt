@@ -1,12 +1,13 @@
 package com.theoplayer.flutter_integration_google_ima
 
-import androidx.annotation.NonNull
-
+import com.theoplayer.android.api.ads.ima.GoogleImaIntegrationFactory
+import com.theoplayer.flutter.THEOplayerViewNativeFactory
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+
 
 /** FlutterIntegrationGoogleImaPlugin */
 class FlutterIntegrationGoogleImaPlugin: FlutterPlugin, MethodCallHandler {
@@ -23,6 +24,12 @@ class FlutterIntegrationGoogleImaPlugin: FlutterPlugin, MethodCallHandler {
 
   override fun onMethodCall(call: MethodCall, result: Result) {
     if (call.method == "getPlatformVersion") {
+
+      //var p = THEOplayerViewNativeFactory.players.get(0)
+      //val imaIntegration = GoogleImaIntegrationFactory.createGoogleImaIntegration(THEOplayerViewNativeFactory.players.get(0).getUnderlyingTHEOplayerView())
+
+      //p.addIntegration(imaIntegration)
+
       result.success("Android ${android.os.Build.VERSION.RELEASE}")
     } else {
       result.notImplemented()

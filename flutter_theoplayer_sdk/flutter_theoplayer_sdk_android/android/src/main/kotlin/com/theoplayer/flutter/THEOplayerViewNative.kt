@@ -6,6 +6,7 @@ import android.view.Surface
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
+import com.theoplayer.android.api.Integration
 import com.theoplayer.android.api.THEOplayerConfig
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.event.EventListener
@@ -303,7 +304,20 @@ class THEOplayerViewNative(
     }
 
     fun getUnderlyingPlayer(): Player {
-        return tpv.player;
+        return tpv.player
+    }
+
+    fun getUnderlyingTHEOplayerView(): THEOplayerView {
+        return tpv
+    }
+
+    //TODO: add pigeon?
+    fun addIntegration(integration: Integration) {
+        tpv.player.addIntegration(integration)
+    }
+
+    fun removeIntegration(integration: Integration) {
+        tpv.player.removeIntegration(integration)
     }
 
     fun interface DestroyListener {
