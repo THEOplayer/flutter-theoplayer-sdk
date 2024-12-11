@@ -12,6 +12,8 @@ dependencies:
   flutter:
     sdk: flutter
   theoplayer_integration_google_ima_platform_interface: 8.3.0
+  theoplayer_android: 8.3.0
+
 
 dev_dependencies:
   flutter_test:

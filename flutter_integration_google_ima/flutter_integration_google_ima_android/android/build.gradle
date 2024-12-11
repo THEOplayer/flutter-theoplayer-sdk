@@ -50,6 +50,8 @@ android {
     }
 
     dependencies {
+        implementation 'com.theoplayer.theoplayer-sdk-android:integration-ads-ima:8.3.0' //TODO: take version from config
+        compileOnly 'com.theoplayer.theoplayer-sdk-android:core:8.3.0' //TODO: take version from config
         testImplementation("org.jetbrains.kotlin:kotlin-test")
         testImplementation("org.mockito:mockito-core:5.0.0")
     }
