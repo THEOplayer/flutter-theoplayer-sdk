@@ -50,6 +50,14 @@ enum TextTrackReadyState {
   error,
 }
 
+enum IntegrationKind {
+  theoads,
+  google_ima,
+  google_dai,
+  mediatailor,
+  custom,
+}
+
 enum PreloadType {
   none,
   auto,
@@ -82,6 +90,187 @@ class TimeRange {
     return TimeRange(
       start: result[0]! as double,
       end: result[1]! as double,
+    );
+  }
+}
+
+class Ad {
+  Ad({
+    required this.id,
+    required this.companions,
+    this.type,
+    this.adBreak,
+    required this.skipOffset,
+    required this.integration,
+    this.customIntegration,
+    this.customData,
+  });
+
+  String id;
+
+  List<CompanionAd?> companions;
+
+  String? type;
+
+  AdBreak? adBreak;
+
+  int skipOffset;
+
+  IntegrationKind integration;
+
+  String? customIntegration;
+
+  Object? customData;
+
+  Object encode() {
+    return <Object?>[
+      id,
+      companions,
+      type,
+      adBreak?.encode(),
+      skipOffset,
+      integration.index,
+      customIntegration,
+      customData,
+    ];
+  }
+
+  static Ad decode(Object result) {
+    result as List<Object?>;
+    return Ad(
+      id: result[0]! as String,
+      companions: (result[1] as List<Object?>?)!.cast<CompanionAd?>(),
+      type: result[2] as String?,
+      adBreak: result[3] != null
+          ? AdBreak.decode(result[3]! as List<Object?>)
+          : null,
+      skipOffset: result[4]! as int,
+      integration: IntegrationKind.values[result[5]! as int],
+      customIntegration: result[6] as String?,
+      customData: result[7],
+    );
+  }
+}
+
+class CompanionAd {
+  CompanionAd({
+    required this.adSlotId,
+    required this.altText,
+    required this.clickThrough,
+    required this.height,
+    required this.width,
+    required this.resourceURI,
+    required this.type,
+  });
+
+  String adSlotId;
+
+  String altText;
+
+  String clickThrough;
+
+  int height;
+
+  int width;
+
+  String resourceURI;
+
+  String type;
+
+  Object encode() {
+    return <Object?>[
+      adSlotId,
+      altText,
+      clickThrough,
+      height,
+      width,
+      resourceURI,
+      type,
+    ];
+  }
+
+  static CompanionAd decode(Object result) {
+    result as List<Object?>;
+    return CompanionAd(
+      adSlotId: result[0]! as String,
+      altText: result[1]! as String,
+      clickThrough: result[2]! as String,
+      height: result[3]! as int,
+      width: result[4]! as int,
+      resourceURI: result[5]! as String,
+      type: result[6]! as String,
+    );
+  }
+}
+
+class AdBreak {
+  AdBreak({
+    required this.ads,
+    required this.maxDuration,
+    required this.maxRemainingDuration,
+    required this.timeOffset,
+    required this.integration,
+    this.customIntegration,
+    this.customData,
+  });
+
+  List<Ad?> ads;
+
+  int maxDuration;
+
+  int maxRemainingDuration;
+
+  int timeOffset;
+
+  IntegrationKind integration;
+
+  String? customIntegration;
+
+  Object? customData;
+
+  Object encode() {
+    return <Object?>[
+      ads,
+      maxDuration,
+      maxRemainingDuration,
+      timeOffset,
+      integration.index,
+      customIntegration,
+      customData,
+    ];
+  }
+
+  static AdBreak decode(Object result) {
+    result as List<Object?>;
+    return AdBreak(
+      ads: (result[0] as List<Object?>?)!.cast<Ad?>(),
+      maxDuration: result[1]! as int,
+      maxRemainingDuration: result[2]! as int,
+      timeOffset: result[3]! as int,
+      integration: IntegrationKind.values[result[4]! as int],
+      customIntegration: result[5] as String?,
+      customData: result[6],
+    );
+  }
+}
+
+class AdDescription {
+  AdDescription({
+    required this.adIntegration,
+  });
+
+  String adIntegration;
+
+  Object encode() {
+    return <Object?>[
+      adIntegration,
+    ];
+  }
+
+  static AdDescription decode(Object result) {
+    result as List<Object?>;
+    return AdDescription(
+      adIntegration: result[0]! as String,
     );
   }
 }
@@ -2287,6 +2476,706 @@ abstract class THEOplayerFlutterAPI {
           }
         });
       }
+    }
+  }
+}
+
+class _THEOplayerFlutterAdsAPICodec extends StandardMessageCodec {
+  const _THEOplayerFlutterAdsAPICodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is Ad) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else if (value is AdBreak) {
+      buffer.putUint8(129);
+      writeValue(buffer, value.encode());
+    } else if (value is CompanionAd) {
+      buffer.putUint8(130);
+      writeValue(buffer, value.encode());
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128: 
+        return Ad.decode(readValue(buffer)!);
+      case 129: 
+        return AdBreak.decode(readValue(buffer)!);
+      case 130: 
+        return CompanionAd.decode(readValue(buffer)!);
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
+}
+
+abstract class THEOplayerFlutterAdsAPI {
+  static const MessageCodec<Object?> codec = _THEOplayerFlutterAdsAPICodec();
+
+  void onAdBegin(Ad ad);
+
+  void onAdBreakBegin(AdBreak adbreak);
+
+  void onAdBreakChange(AdBreak adbreak);
+
+  void onAdBreakEnd(AdBreak adbreak);
+
+  void onAdClicked(Ad ad);
+
+  void onAddAdBreak(AdBreak adbreak);
+
+  void onAddAd(Ad ad);
+
+  void onAdEnd(Ad ad);
+
+  void onAdError(Ad ad);
+
+  void onAdFirstQuartile(Ad ad);
+
+  void onAdImpression(Ad ad);
+
+  void onAdLoaded(Ad ad);
+
+  void onAdMidpoint(Ad ad);
+
+  void onAdSkip(Ad ad);
+
+  void onAdTapped(Ad ad);
+
+  void onAdThirdQuartile(Ad ad);
+
+  void onRemoveAdBreak(AdBreak adbreak);
+
+  static void setup(THEOplayerFlutterAdsAPI? api, {BinaryMessenger? binaryMessenger}) {
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBegin', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBegin was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final Ad? arg_ad = (args[0] as Ad?);
+          assert(arg_ad != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBegin was null, expected non-null Ad.');
+          try {
+            api.onAdBegin(arg_ad!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBreakBegin', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBreakBegin was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final AdBreak? arg_adbreak = (args[0] as AdBreak?);
+          assert(arg_adbreak != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBreakBegin was null, expected non-null AdBreak.');
+          try {
+            api.onAdBreakBegin(arg_adbreak!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBreakChange', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBreakChange was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final AdBreak? arg_adbreak = (args[0] as AdBreak?);
+          assert(arg_adbreak != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBreakChange was null, expected non-null AdBreak.');
+          try {
+            api.onAdBreakChange(arg_adbreak!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBreakEnd', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBreakEnd was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final AdBreak? arg_adbreak = (args[0] as AdBreak?);
+          assert(arg_adbreak != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBreakEnd was null, expected non-null AdBreak.');
+          try {
+            api.onAdBreakEnd(arg_adbreak!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdClicked', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdClicked was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final Ad? arg_ad = (args[0] as Ad?);
+          assert(arg_ad != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdClicked was null, expected non-null Ad.');
+          try {
+            api.onAdClicked(arg_ad!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAddAdBreak', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAddAdBreak was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final AdBreak? arg_adbreak = (args[0] as AdBreak?);
+          assert(arg_adbreak != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAddAdBreak was null, expected non-null AdBreak.');
+          try {
+            api.onAddAdBreak(arg_adbreak!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAddAd', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAddAd was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final Ad? arg_ad = (args[0] as Ad?);
+          assert(arg_ad != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAddAd was null, expected non-null Ad.');
+          try {
+            api.onAddAd(arg_ad!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdEnd', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdEnd was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final Ad? arg_ad = (args[0] as Ad?);
+          assert(arg_ad != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdEnd was null, expected non-null Ad.');
+          try {
+            api.onAdEnd(arg_ad!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdError', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdError was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final Ad? arg_ad = (args[0] as Ad?);
+          assert(arg_ad != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdError was null, expected non-null Ad.');
+          try {
+            api.onAdError(arg_ad!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdFirstQuartile', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdFirstQuartile was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final Ad? arg_ad = (args[0] as Ad?);
+          assert(arg_ad != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdFirstQuartile was null, expected non-null Ad.');
+          try {
+            api.onAdFirstQuartile(arg_ad!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdImpression', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdImpression was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final Ad? arg_ad = (args[0] as Ad?);
+          assert(arg_ad != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdImpression was null, expected non-null Ad.');
+          try {
+            api.onAdImpression(arg_ad!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdLoaded', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdLoaded was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final Ad? arg_ad = (args[0] as Ad?);
+          assert(arg_ad != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdLoaded was null, expected non-null Ad.');
+          try {
+            api.onAdLoaded(arg_ad!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdMidpoint', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdMidpoint was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final Ad? arg_ad = (args[0] as Ad?);
+          assert(arg_ad != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdMidpoint was null, expected non-null Ad.');
+          try {
+            api.onAdMidpoint(arg_ad!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdSkip', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdSkip was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final Ad? arg_ad = (args[0] as Ad?);
+          assert(arg_ad != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdSkip was null, expected non-null Ad.');
+          try {
+            api.onAdSkip(arg_ad!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdTapped', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdTapped was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final Ad? arg_ad = (args[0] as Ad?);
+          assert(arg_ad != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdTapped was null, expected non-null Ad.');
+          try {
+            api.onAdTapped(arg_ad!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdThirdQuartile', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdThirdQuartile was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final Ad? arg_ad = (args[0] as Ad?);
+          assert(arg_ad != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdThirdQuartile was null, expected non-null Ad.');
+          try {
+            api.onAdThirdQuartile(arg_ad!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onRemoveAdBreak', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onRemoveAdBreak was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final AdBreak? arg_adbreak = (args[0] as AdBreak?);
+          assert(arg_adbreak != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onRemoveAdBreak was null, expected non-null AdBreak.');
+          try {
+            api.onRemoveAdBreak(arg_adbreak!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+  }
+}
+
+class _THEOplayerNativeAdsAPICodec extends StandardMessageCodec {
+  const _THEOplayerNativeAdsAPICodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is Ad) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else if (value is AdBreak) {
+      buffer.putUint8(129);
+      writeValue(buffer, value.encode());
+    } else if (value is AdDescription) {
+      buffer.putUint8(130);
+      writeValue(buffer, value.encode());
+    } else if (value is CompanionAd) {
+      buffer.putUint8(131);
+      writeValue(buffer, value.encode());
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128: 
+        return Ad.decode(readValue(buffer)!);
+      case 129: 
+        return AdBreak.decode(readValue(buffer)!);
+      case 130: 
+        return AdDescription.decode(readValue(buffer)!);
+      case 131: 
+        return CompanionAd.decode(readValue(buffer)!);
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
+}
+
+class THEOplayerNativeAdsAPI {
+  /// Constructor for [THEOplayerNativeAdsAPI].  The [binaryMessenger] named argument is
+  /// available for dependency injection.  If it is left null, the default
+  /// BinaryMessenger will be used which routes to the host platform.
+  THEOplayerNativeAdsAPI({BinaryMessenger? binaryMessenger})
+      : _binaryMessenger = binaryMessenger;
+  final BinaryMessenger? _binaryMessenger;
+
+  static const MessageCodec<Object?> codec = _THEOplayerNativeAdsAPICodec();
+
+  Future<bool> isPlaying() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAdsAPI.isPlaying', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
+        await channel.send(null) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else if (replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (replyList[0] as bool?)!;
+    }
+  }
+
+  Future<List<Ad?>> getCurrentAds() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAdsAPI.getCurrentAds', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
+        await channel.send(null) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else if (replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (replyList[0] as List<Object?>?)!.cast<Ad?>();
+    }
+  }
+
+  Future<AdBreak> getCurrentAdBreak() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAdsAPI.getCurrentAdBreak', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
+        await channel.send(null) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else if (replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (replyList[0] as AdBreak?)!;
+    }
+  }
+
+  Future<List<Ad?>> getScheduledAds() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAdsAPI.getScheduledAds', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
+        await channel.send(null) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else if (replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (replyList[0] as List<Object?>?)!.cast<Ad?>();
+    }
+  }
+
+  Future<void> schedule(AdDescription arg_adDescription) async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAdsAPI.schedule', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
+        await channel.send(<Object?>[arg_adDescription]) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
+  Future<void> skip() async {
+    final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAdsAPI.skip', codec,
+        binaryMessenger: _binaryMessenger);
+    final List<Object?>? replyList =
+        await channel.send(null) as List<Object?>?;
+    if (replyList == null) {
+      throw PlatformException(
+        code: 'channel-error',
+        message: 'Unable to establish connection on channel.',
+      );
+    } else if (replyList.length > 1) {
+      throw PlatformException(
+        code: replyList[0]! as String,
+        message: replyList[1] as String?,
+        details: replyList[2],
+      );
+    } else {
+      return;
     }
   }
 }

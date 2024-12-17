@@ -71,6 +71,14 @@ enum TextTrackReadyState: Int {
   case error = 3
 }
 
+enum IntegrationKind: Int {
+  case theoads = 0
+  case googleIma = 1
+  case googleDai = 2
+  case mediatailor = 3
+  case custom = 4
+}
+
 enum PreloadType: Int {
   case none = 0
   case auto = 1
@@ -99,6 +107,157 @@ struct TimeRange {
     return [
       start,
       end,
+    ]
+  }
+}
+
+/// Generated class from Pigeon that represents data sent in messages.
+struct Ad {
+  var id: String
+  var companions: [CompanionAd?]
+  var type: String? = nil
+  var adBreak: AdBreak? = nil
+  var skipOffset: Int64
+  var integration: IntegrationKind
+  var customIntegration: String? = nil
+  var customData: Any? = nil
+
+  static func fromList(_ list: [Any?]) -> Ad? {
+    let id = list[0] as! String
+    let companions = list[1] as! [CompanionAd?]
+    let type: String? = nilOrValue(list[2])
+    var adBreak: AdBreak? = nil
+    if let adBreakList: [Any?] = nilOrValue(list[3]) {
+      adBreak = AdBreak.fromList(adBreakList)
+    }
+    let skipOffset = list[4] is Int64 ? list[4] as! Int64 : Int64(list[4] as! Int32)
+    let integration = IntegrationKind(rawValue: list[5] as! Int)!
+    let customIntegration: String? = nilOrValue(list[6])
+    let customData: Any? = list[7]
+
+    return Ad(
+      id: id,
+      companions: companions,
+      type: type,
+      adBreak: adBreak,
+      skipOffset: skipOffset,
+      integration: integration,
+      customIntegration: customIntegration,
+      customData: customData
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      id,
+      companions,
+      type,
+      adBreak?.toList(),
+      skipOffset,
+      integration.rawValue,
+      customIntegration,
+      customData,
+    ]
+  }
+}
+
+/// Generated class from Pigeon that represents data sent in messages.
+struct CompanionAd {
+  var adSlotId: String
+  var altText: String
+  var clickThrough: String
+  var height: Int64
+  var width: Int64
+  var resourceURI: String
+  var type: String
+
+  static func fromList(_ list: [Any?]) -> CompanionAd? {
+    let adSlotId = list[0] as! String
+    let altText = list[1] as! String
+    let clickThrough = list[2] as! String
+    let height = list[3] is Int64 ? list[3] as! Int64 : Int64(list[3] as! Int32)
+    let width = list[4] is Int64 ? list[4] as! Int64 : Int64(list[4] as! Int32)
+    let resourceURI = list[5] as! String
+    let type = list[6] as! String
+
+    return CompanionAd(
+      adSlotId: adSlotId,
+      altText: altText,
+      clickThrough: clickThrough,
+      height: height,
+      width: width,
+      resourceURI: resourceURI,
+      type: type
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      adSlotId,
+      altText,
+      clickThrough,
+      height,
+      width,
+      resourceURI,
+      type,
+    ]
+  }
+}
+
+/// Generated class from Pigeon that represents data sent in messages.
+struct AdBreak {
+  var ads: [Ad?]
+  var maxDuration: Int64
+  var maxRemainingDuration: Int64
+  var timeOffset: Int64
+  var integration: IntegrationKind
+  var customIntegration: String? = nil
+  var customData: Any? = nil
+
+  static func fromList(_ list: [Any?]) -> AdBreak? {
+    let ads = list[0] as! [Ad?]
+    let maxDuration = list[1] is Int64 ? list[1] as! Int64 : Int64(list[1] as! Int32)
+    let maxRemainingDuration = list[2] is Int64 ? list[2] as! Int64 : Int64(list[2] as! Int32)
+    let timeOffset = list[3] is Int64 ? list[3] as! Int64 : Int64(list[3] as! Int32)
+    let integration = IntegrationKind(rawValue: list[4] as! Int)!
+    let customIntegration: String? = nilOrValue(list[5])
+    let customData: Any? = list[6]
+
+    return AdBreak(
+      ads: ads,
+      maxDuration: maxDuration,
+      maxRemainingDuration: maxRemainingDuration,
+      timeOffset: timeOffset,
+      integration: integration,
+      customIntegration: customIntegration,
+      customData: customData
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      ads,
+      maxDuration,
+      maxRemainingDuration,
+      timeOffset,
+      integration.rawValue,
+      customIntegration,
+      customData,
+    ]
+  }
+}
+
+/// Generated class from Pigeon that represents data sent in messages.
+struct AdDescription {
+  var adIntegration: String
+
+  static func fromList(_ list: [Any?]) -> AdDescription? {
+    let adIntegration = list[0] as! String
+
+    return AdDescription(
+      adIntegration: adIntegration
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      adIntegration,
     ]
   }
 }
@@ -1206,6 +1365,332 @@ class THEOplayerFlutterAPI: THEOplayerFlutterAPIProtocol {
     let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onCanPlayThrough", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([currentTimeArg] as [Any?]) { _ in
       completion(.success(Void()))
+    }
+  }
+}
+private class THEOplayerFlutterAdsAPICodecReader: FlutterStandardReader {
+  override func readValue(ofType type: UInt8) -> Any? {
+    switch type {
+      case 128:
+        return Ad.fromList(self.readValue() as! [Any?])
+      case 129:
+        return AdBreak.fromList(self.readValue() as! [Any?])
+      case 130:
+        return CompanionAd.fromList(self.readValue() as! [Any?])
+      default:
+        return super.readValue(ofType: type)
+    }
+  }
+}
+
+private class THEOplayerFlutterAdsAPICodecWriter: FlutterStandardWriter {
+  override func writeValue(_ value: Any) {
+    if let value = value as? Ad {
+      super.writeByte(128)
+      super.writeValue(value.toList())
+    } else if let value = value as? AdBreak {
+      super.writeByte(129)
+      super.writeValue(value.toList())
+    } else if let value = value as? CompanionAd {
+      super.writeByte(130)
+      super.writeValue(value.toList())
+    } else {
+      super.writeValue(value)
+    }
+  }
+}
+
+private class THEOplayerFlutterAdsAPICodecReaderWriter: FlutterStandardReaderWriter {
+  override func reader(with data: Data) -> FlutterStandardReader {
+    return THEOplayerFlutterAdsAPICodecReader(data: data)
+  }
+
+  override func writer(with data: NSMutableData) -> FlutterStandardWriter {
+    return THEOplayerFlutterAdsAPICodecWriter(data: data)
+  }
+}
+
+class THEOplayerFlutterAdsAPICodec: FlutterStandardMessageCodec {
+  static let shared = THEOplayerFlutterAdsAPICodec(readerWriter: THEOplayerFlutterAdsAPICodecReaderWriter())
+}
+
+/// Generated protocol from Pigeon that represents Flutter messages that can be called from Swift.
+protocol THEOplayerFlutterAdsAPIProtocol {
+  func onAdBegin(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdBreakBegin(adbreak adbreakArg: AdBreak, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdBreakChange(adbreak adbreakArg: AdBreak, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdBreakEnd(adbreak adbreakArg: AdBreak, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdClicked(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAddAdBreak(adbreak adbreakArg: AdBreak, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAddAd(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdEnd(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdError(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdFirstQuartile(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdImpression(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdLoaded(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdMidpoint(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdSkip(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdTapped(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdThirdQuartile(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onRemoveAdBreak(adbreak adbreakArg: AdBreak, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+}
+class THEOplayerFlutterAdsAPI: THEOplayerFlutterAdsAPIProtocol {
+  private let binaryMessenger: FlutterBinaryMessenger
+  init(binaryMessenger: FlutterBinaryMessenger){
+    self.binaryMessenger = binaryMessenger
+  }
+  var codec: FlutterStandardMessageCodec {
+    return THEOplayerFlutterAdsAPICodec.shared
+  }
+  func onAdBegin(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBegin", binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([adArg] as [Any?]) { _ in
+      completion(.success(Void()))
+    }
+  }
+  func onAdBreakBegin(adbreak adbreakArg: AdBreak, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBreakBegin", binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([adbreakArg] as [Any?]) { _ in
+      completion(.success(Void()))
+    }
+  }
+  func onAdBreakChange(adbreak adbreakArg: AdBreak, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBreakChange", binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([adbreakArg] as [Any?]) { _ in
+      completion(.success(Void()))
+    }
+  }
+  func onAdBreakEnd(adbreak adbreakArg: AdBreak, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBreakEnd", binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([adbreakArg] as [Any?]) { _ in
+      completion(.success(Void()))
+    }
+  }
+  func onAdClicked(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdClicked", binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([adArg] as [Any?]) { _ in
+      completion(.success(Void()))
+    }
+  }
+  func onAddAdBreak(adbreak adbreakArg: AdBreak, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAddAdBreak", binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([adbreakArg] as [Any?]) { _ in
+      completion(.success(Void()))
+    }
+  }
+  func onAddAd(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAddAd", binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([adArg] as [Any?]) { _ in
+      completion(.success(Void()))
+    }
+  }
+  func onAdEnd(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdEnd", binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([adArg] as [Any?]) { _ in
+      completion(.success(Void()))
+    }
+  }
+  func onAdError(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdError", binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([adArg] as [Any?]) { _ in
+      completion(.success(Void()))
+    }
+  }
+  func onAdFirstQuartile(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdFirstQuartile", binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([adArg] as [Any?]) { _ in
+      completion(.success(Void()))
+    }
+  }
+  func onAdImpression(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdImpression", binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([adArg] as [Any?]) { _ in
+      completion(.success(Void()))
+    }
+  }
+  func onAdLoaded(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdLoaded", binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([adArg] as [Any?]) { _ in
+      completion(.success(Void()))
+    }
+  }
+  func onAdMidpoint(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdMidpoint", binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([adArg] as [Any?]) { _ in
+      completion(.success(Void()))
+    }
+  }
+  func onAdSkip(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdSkip", binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([adArg] as [Any?]) { _ in
+      completion(.success(Void()))
+    }
+  }
+  func onAdTapped(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdTapped", binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([adArg] as [Any?]) { _ in
+      completion(.success(Void()))
+    }
+  }
+  func onAdThirdQuartile(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdThirdQuartile", binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([adArg] as [Any?]) { _ in
+      completion(.success(Void()))
+    }
+  }
+  func onRemoveAdBreak(adbreak adbreakArg: AdBreak, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onRemoveAdBreak", binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([adbreakArg] as [Any?]) { _ in
+      completion(.success(Void()))
+    }
+  }
+}
+private class THEOplayerNativeAdsAPICodecReader: FlutterStandardReader {
+  override func readValue(ofType type: UInt8) -> Any? {
+    switch type {
+      case 128:
+        return Ad.fromList(self.readValue() as! [Any?])
+      case 129:
+        return AdBreak.fromList(self.readValue() as! [Any?])
+      case 130:
+        return AdDescription.fromList(self.readValue() as! [Any?])
+      case 131:
+        return CompanionAd.fromList(self.readValue() as! [Any?])
+      default:
+        return super.readValue(ofType: type)
+    }
+  }
+}
+
+private class THEOplayerNativeAdsAPICodecWriter: FlutterStandardWriter {
+  override func writeValue(_ value: Any) {
+    if let value = value as? Ad {
+      super.writeByte(128)
+      super.writeValue(value.toList())
+    } else if let value = value as? AdBreak {
+      super.writeByte(129)
+      super.writeValue(value.toList())
+    } else if let value = value as? AdDescription {
+      super.writeByte(130)
+      super.writeValue(value.toList())
+    } else if let value = value as? CompanionAd {
+      super.writeByte(131)
+      super.writeValue(value.toList())
+    } else {
+      super.writeValue(value)
+    }
+  }
+}
+
+private class THEOplayerNativeAdsAPICodecReaderWriter: FlutterStandardReaderWriter {
+  override func reader(with data: Data) -> FlutterStandardReader {
+    return THEOplayerNativeAdsAPICodecReader(data: data)
+  }
+
+  override func writer(with data: NSMutableData) -> FlutterStandardWriter {
+    return THEOplayerNativeAdsAPICodecWriter(data: data)
+  }
+}
+
+class THEOplayerNativeAdsAPICodec: FlutterStandardMessageCodec {
+  static let shared = THEOplayerNativeAdsAPICodec(readerWriter: THEOplayerNativeAdsAPICodecReaderWriter())
+}
+
+/// Generated protocol from Pigeon that represents a handler of messages from Flutter.
+protocol THEOplayerNativeAdsAPI {
+  func isPlaying() throws -> Bool
+  func getCurrentAds() throws -> [Ad]
+  func getCurrentAdBreak() throws -> AdBreak
+  func getScheduledAds() throws -> [Ad]
+  func schedule(adDescription: AdDescription) throws
+  func skip() throws
+}
+
+/// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
+class THEOplayerNativeAdsAPISetup {
+  /// The codec used by THEOplayerNativeAdsAPI.
+  static var codec: FlutterStandardMessageCodec { THEOplayerNativeAdsAPICodec.shared }
+  /// Sets up an instance of `THEOplayerNativeAdsAPI` to handle messages through the `binaryMessenger`.
+  static func setUp(binaryMessenger: FlutterBinaryMessenger, api: THEOplayerNativeAdsAPI?) {
+    let isPlayingChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAdsAPI.isPlaying", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      isPlayingChannel.setMessageHandler { _, reply in
+        do {
+          let result = try api.isPlaying()
+          reply(wrapResult(result))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      isPlayingChannel.setMessageHandler(nil)
+    }
+    let getCurrentAdsChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAdsAPI.getCurrentAds", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      getCurrentAdsChannel.setMessageHandler { _, reply in
+        do {
+          let result = try api.getCurrentAds()
+          reply(wrapResult(result))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      getCurrentAdsChannel.setMessageHandler(nil)
+    }
+    let getCurrentAdBreakChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAdsAPI.getCurrentAdBreak", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      getCurrentAdBreakChannel.setMessageHandler { _, reply in
+        do {
+          let result = try api.getCurrentAdBreak()
+          reply(wrapResult(result))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      getCurrentAdBreakChannel.setMessageHandler(nil)
+    }
+    let getScheduledAdsChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAdsAPI.getScheduledAds", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      getScheduledAdsChannel.setMessageHandler { _, reply in
+        do {
+          let result = try api.getScheduledAds()
+          reply(wrapResult(result))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      getScheduledAdsChannel.setMessageHandler(nil)
+    }
+    let scheduleChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAdsAPI.schedule", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      scheduleChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let adDescriptionArg = args[0] as! AdDescription
+        do {
+          try api.schedule(adDescription: adDescriptionArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      scheduleChannel.setMessageHandler(nil)
+    }
+    let skipChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAdsAPI.skip", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      skipChannel.setMessageHandler { _, reply in
+        do {
+          try api.skip()
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      skipChannel.setMessageHandler(nil)
     }
   }
 }

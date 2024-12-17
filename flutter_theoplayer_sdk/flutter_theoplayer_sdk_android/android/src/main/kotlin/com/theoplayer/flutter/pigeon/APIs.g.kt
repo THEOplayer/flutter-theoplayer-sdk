@@ -100,6 +100,20 @@ enum class TextTrackReadyState(val raw: Int) {
   }
 }
 
+enum class IntegrationKind(val raw: Int) {
+  THEOADS(0),
+  GOOGLE_IMA(1),
+  GOOGLE_DAI(2),
+  MEDIATAILOR(3),
+  CUSTOM(4);
+
+  companion object {
+    fun ofRaw(raw: Int): IntegrationKind? {
+      return values().firstOrNull { it.raw == raw }
+    }
+  }
+}
+
 enum class PreloadType(val raw: Int) {
   NONE(0),
   AUTO(1),
@@ -140,6 +154,141 @@ data class TimeRange (
     return listOf<Any?>(
       start,
       end,
+    )
+  }
+}
+
+/** Generated class from Pigeon that represents data sent in messages. */
+data class Ad (
+  val id: String,
+  val companions: List<CompanionAd?>,
+  val type: String? = null,
+  val adBreak: AdBreak? = null,
+  val skipOffset: Long,
+  val integration: IntegrationKind,
+  val customIntegration: String? = null,
+  val customData: Any? = null
+
+) {
+  companion object {
+    @Suppress("UNCHECKED_CAST")
+    fun fromList(list: List<Any?>): Ad {
+      val id = list[0] as String
+      val companions = list[1] as List<CompanionAd?>
+      val type = list[2] as String?
+      val adBreak: AdBreak? = (list[3] as List<Any?>?)?.let {
+        AdBreak.fromList(it)
+      }
+      val skipOffset = list[4].let { if (it is Int) it.toLong() else it as Long }
+      val integration = IntegrationKind.ofRaw(list[5] as Int)!!
+      val customIntegration = list[6] as String?
+      val customData = list[7]
+      return Ad(id, companions, type, adBreak, skipOffset, integration, customIntegration, customData)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf<Any?>(
+      id,
+      companions,
+      type,
+      adBreak?.toList(),
+      skipOffset,
+      integration.raw,
+      customIntegration,
+      customData,
+    )
+  }
+}
+
+/** Generated class from Pigeon that represents data sent in messages. */
+data class CompanionAd (
+  val adSlotId: String,
+  val altText: String,
+  val clickThrough: String,
+  val height: Long,
+  val width: Long,
+  val resourceURI: String,
+  val type: String
+
+) {
+  companion object {
+    @Suppress("UNCHECKED_CAST")
+    fun fromList(list: List<Any?>): CompanionAd {
+      val adSlotId = list[0] as String
+      val altText = list[1] as String
+      val clickThrough = list[2] as String
+      val height = list[3].let { if (it is Int) it.toLong() else it as Long }
+      val width = list[4].let { if (it is Int) it.toLong() else it as Long }
+      val resourceURI = list[5] as String
+      val type = list[6] as String
+      return CompanionAd(adSlotId, altText, clickThrough, height, width, resourceURI, type)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf<Any?>(
+      adSlotId,
+      altText,
+      clickThrough,
+      height,
+      width,
+      resourceURI,
+      type,
+    )
+  }
+}
+
+/** Generated class from Pigeon that represents data sent in messages. */
+data class AdBreak (
+  val ads: List<Ad?>,
+  val maxDuration: Long,
+  val maxRemainingDuration: Long,
+  val timeOffset: Long,
+  val integration: IntegrationKind,
+  val customIntegration: String? = null,
+  val customData: Any? = null
+
+) {
+  companion object {
+    @Suppress("UNCHECKED_CAST")
+    fun fromList(list: List<Any?>): AdBreak {
+      val ads = list[0] as List<Ad?>
+      val maxDuration = list[1].let { if (it is Int) it.toLong() else it as Long }
+      val maxRemainingDuration = list[2].let { if (it is Int) it.toLong() else it as Long }
+      val timeOffset = list[3].let { if (it is Int) it.toLong() else it as Long }
+      val integration = IntegrationKind.ofRaw(list[4] as Int)!!
+      val customIntegration = list[5] as String?
+      val customData = list[6]
+      return AdBreak(ads, maxDuration, maxRemainingDuration, timeOffset, integration, customIntegration, customData)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf<Any?>(
+      ads,
+      maxDuration,
+      maxRemainingDuration,
+      timeOffset,
+      integration.raw,
+      customIntegration,
+      customData,
+    )
+  }
+}
+
+/** Generated class from Pigeon that represents data sent in messages. */
+data class AdDescription (
+  val adIntegration: String
+
+) {
+  companion object {
+    @Suppress("UNCHECKED_CAST")
+    fun fromList(list: List<Any?>): AdDescription {
+      val adIntegration = list[0] as String
+      return AdDescription(adIntegration)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf<Any?>(
+      adIntegration,
     )
   }
 }
@@ -1626,6 +1775,465 @@ class THEOplayerFlutterAPI(private val binaryMessenger: BinaryMessenger) {
       } else {
         callback(Result.failure(FlutterError("channel-error",  "Unable to establish connection on channel.", "")));
       } 
+    }
+  }
+}
+@Suppress("UNCHECKED_CAST")
+private object THEOplayerFlutterAdsAPICodec : StandardMessageCodec() {
+  override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
+    return when (type) {
+      128.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          Ad.fromList(it)
+        }
+      }
+      129.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          AdBreak.fromList(it)
+        }
+      }
+      130.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          CompanionAd.fromList(it)
+        }
+      }
+      else -> super.readValueOfType(type, buffer)
+    }
+  }
+  override fun writeValue(stream: ByteArrayOutputStream, value: Any?)   {
+    when (value) {
+      is Ad -> {
+        stream.write(128)
+        writeValue(stream, value.toList())
+      }
+      is AdBreak -> {
+        stream.write(129)
+        writeValue(stream, value.toList())
+      }
+      is CompanionAd -> {
+        stream.write(130)
+        writeValue(stream, value.toList())
+      }
+      else -> super.writeValue(stream, value)
+    }
+  }
+}
+
+/** Generated class from Pigeon that represents Flutter messages that can be called from Kotlin. */
+@Suppress("UNCHECKED_CAST")
+class THEOplayerFlutterAdsAPI(private val binaryMessenger: BinaryMessenger) {
+  companion object {
+    /** The codec used by THEOplayerFlutterAdsAPI. */
+    val codec: MessageCodec<Any?> by lazy {
+      THEOplayerFlutterAdsAPICodec
+    }
+  }
+  fun onAdBegin(adArg: Ad, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBegin", codec)
+    channel.send(listOf(adArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
+        } else {
+          callback(Result.success(Unit));
+        }
+      } else {
+        callback(Result.failure(FlutterError("channel-error",  "Unable to establish connection on channel.", "")));
+      } 
+    }
+  }
+  fun onAdBreakBegin(adbreakArg: AdBreak, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBreakBegin", codec)
+    channel.send(listOf(adbreakArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
+        } else {
+          callback(Result.success(Unit));
+        }
+      } else {
+        callback(Result.failure(FlutterError("channel-error",  "Unable to establish connection on channel.", "")));
+      } 
+    }
+  }
+  fun onAdBreakChange(adbreakArg: AdBreak, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBreakChange", codec)
+    channel.send(listOf(adbreakArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
+        } else {
+          callback(Result.success(Unit));
+        }
+      } else {
+        callback(Result.failure(FlutterError("channel-error",  "Unable to establish connection on channel.", "")));
+      } 
+    }
+  }
+  fun onAdBreakEnd(adbreakArg: AdBreak, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBreakEnd", codec)
+    channel.send(listOf(adbreakArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
+        } else {
+          callback(Result.success(Unit));
+        }
+      } else {
+        callback(Result.failure(FlutterError("channel-error",  "Unable to establish connection on channel.", "")));
+      } 
+    }
+  }
+  fun onAdClicked(adArg: Ad, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdClicked", codec)
+    channel.send(listOf(adArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
+        } else {
+          callback(Result.success(Unit));
+        }
+      } else {
+        callback(Result.failure(FlutterError("channel-error",  "Unable to establish connection on channel.", "")));
+      } 
+    }
+  }
+  fun onAddAdBreak(adbreakArg: AdBreak, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAddAdBreak", codec)
+    channel.send(listOf(adbreakArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
+        } else {
+          callback(Result.success(Unit));
+        }
+      } else {
+        callback(Result.failure(FlutterError("channel-error",  "Unable to establish connection on channel.", "")));
+      } 
+    }
+  }
+  fun onAddAd(adArg: Ad, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAddAd", codec)
+    channel.send(listOf(adArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
+        } else {
+          callback(Result.success(Unit));
+        }
+      } else {
+        callback(Result.failure(FlutterError("channel-error",  "Unable to establish connection on channel.", "")));
+      } 
+    }
+  }
+  fun onAdEnd(adArg: Ad, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdEnd", codec)
+    channel.send(listOf(adArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
+        } else {
+          callback(Result.success(Unit));
+        }
+      } else {
+        callback(Result.failure(FlutterError("channel-error",  "Unable to establish connection on channel.", "")));
+      } 
+    }
+  }
+  fun onAdError(adArg: Ad, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdError", codec)
+    channel.send(listOf(adArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
+        } else {
+          callback(Result.success(Unit));
+        }
+      } else {
+        callback(Result.failure(FlutterError("channel-error",  "Unable to establish connection on channel.", "")));
+      } 
+    }
+  }
+  fun onAdFirstQuartile(adArg: Ad, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdFirstQuartile", codec)
+    channel.send(listOf(adArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
+        } else {
+          callback(Result.success(Unit));
+        }
+      } else {
+        callback(Result.failure(FlutterError("channel-error",  "Unable to establish connection on channel.", "")));
+      } 
+    }
+  }
+  fun onAdImpression(adArg: Ad, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdImpression", codec)
+    channel.send(listOf(adArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
+        } else {
+          callback(Result.success(Unit));
+        }
+      } else {
+        callback(Result.failure(FlutterError("channel-error",  "Unable to establish connection on channel.", "")));
+      } 
+    }
+  }
+  fun onAdLoaded(adArg: Ad, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdLoaded", codec)
+    channel.send(listOf(adArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
+        } else {
+          callback(Result.success(Unit));
+        }
+      } else {
+        callback(Result.failure(FlutterError("channel-error",  "Unable to establish connection on channel.", "")));
+      } 
+    }
+  }
+  fun onAdMidpoint(adArg: Ad, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdMidpoint", codec)
+    channel.send(listOf(adArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
+        } else {
+          callback(Result.success(Unit));
+        }
+      } else {
+        callback(Result.failure(FlutterError("channel-error",  "Unable to establish connection on channel.", "")));
+      } 
+    }
+  }
+  fun onAdSkip(adArg: Ad, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdSkip", codec)
+    channel.send(listOf(adArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
+        } else {
+          callback(Result.success(Unit));
+        }
+      } else {
+        callback(Result.failure(FlutterError("channel-error",  "Unable to establish connection on channel.", "")));
+      } 
+    }
+  }
+  fun onAdTapped(adArg: Ad, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdTapped", codec)
+    channel.send(listOf(adArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
+        } else {
+          callback(Result.success(Unit));
+        }
+      } else {
+        callback(Result.failure(FlutterError("channel-error",  "Unable to establish connection on channel.", "")));
+      } 
+    }
+  }
+  fun onAdThirdQuartile(adArg: Ad, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdThirdQuartile", codec)
+    channel.send(listOf(adArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
+        } else {
+          callback(Result.success(Unit));
+        }
+      } else {
+        callback(Result.failure(FlutterError("channel-error",  "Unable to establish connection on channel.", "")));
+      } 
+    }
+  }
+  fun onRemoveAdBreak(adbreakArg: AdBreak, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onRemoveAdBreak", codec)
+    channel.send(listOf(adbreakArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
+        } else {
+          callback(Result.success(Unit));
+        }
+      } else {
+        callback(Result.failure(FlutterError("channel-error",  "Unable to establish connection on channel.", "")));
+      } 
+    }
+  }
+}
+@Suppress("UNCHECKED_CAST")
+private object THEOplayerNativeAdsAPICodec : StandardMessageCodec() {
+  override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
+    return when (type) {
+      128.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          Ad.fromList(it)
+        }
+      }
+      129.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          AdBreak.fromList(it)
+        }
+      }
+      130.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          AdDescription.fromList(it)
+        }
+      }
+      131.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          CompanionAd.fromList(it)
+        }
+      }
+      else -> super.readValueOfType(type, buffer)
+    }
+  }
+  override fun writeValue(stream: ByteArrayOutputStream, value: Any?)   {
+    when (value) {
+      is Ad -> {
+        stream.write(128)
+        writeValue(stream, value.toList())
+      }
+      is AdBreak -> {
+        stream.write(129)
+        writeValue(stream, value.toList())
+      }
+      is AdDescription -> {
+        stream.write(130)
+        writeValue(stream, value.toList())
+      }
+      is CompanionAd -> {
+        stream.write(131)
+        writeValue(stream, value.toList())
+      }
+      else -> super.writeValue(stream, value)
+    }
+  }
+}
+
+/** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+interface THEOplayerNativeAdsAPI {
+  fun isPlaying(): Boolean
+  fun getCurrentAds(): List<Ad>
+  fun getCurrentAdBreak(): AdBreak
+  fun getScheduledAds(): List<Ad>
+  fun schedule(adDescription: AdDescription)
+  fun skip()
+
+  companion object {
+    /** The codec used by THEOplayerNativeAdsAPI. */
+    val codec: MessageCodec<Any?> by lazy {
+      THEOplayerNativeAdsAPICodec
+    }
+    /** Sets up an instance of `THEOplayerNativeAdsAPI` to handle messages through the `binaryMessenger`. */
+    @Suppress("UNCHECKED_CAST")
+    fun setUp(binaryMessenger: BinaryMessenger, api: THEOplayerNativeAdsAPI?) {
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAdsAPI.isPlaying", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            var wrapped: List<Any?>
+            try {
+              wrapped = listOf<Any?>(api.isPlaying())
+            } catch (exception: Throwable) {
+              wrapped = wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAdsAPI.getCurrentAds", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            var wrapped: List<Any?>
+            try {
+              wrapped = listOf<Any?>(api.getCurrentAds())
+            } catch (exception: Throwable) {
+              wrapped = wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAdsAPI.getCurrentAdBreak", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            var wrapped: List<Any?>
+            try {
+              wrapped = listOf<Any?>(api.getCurrentAdBreak())
+            } catch (exception: Throwable) {
+              wrapped = wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAdsAPI.getScheduledAds", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            var wrapped: List<Any?>
+            try {
+              wrapped = listOf<Any?>(api.getScheduledAds())
+            } catch (exception: Throwable) {
+              wrapped = wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAdsAPI.schedule", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val adDescriptionArg = args[0] as AdDescription
+            var wrapped: List<Any?>
+            try {
+              api.schedule(adDescriptionArg)
+              wrapped = listOf<Any?>(null)
+            } catch (exception: Throwable) {
+              wrapped = wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAdsAPI.skip", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            var wrapped: List<Any?>
+            try {
+              api.skip()
+              wrapped = listOf<Any?>(null)
+            } catch (exception: Throwable) {
+              wrapped = wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
     }
   }
 }

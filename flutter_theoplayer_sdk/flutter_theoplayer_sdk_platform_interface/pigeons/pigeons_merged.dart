@@ -55,6 +55,59 @@ class TimeRange {
   const TimeRange({required this.start, required this.end});
 }
 
+class Ad {
+  final String id;
+  //Error: pigeons/pigeons_merged.dart:60: Generic type arguments must be nullable in field "companions" in class "Ad".
+  final List<CompanionAd?> companions;
+  final String? type;
+  AdBreak? adBreak;
+  final int skipOffset;
+  final IntegrationKind integration;
+  final String? customIntegration;
+  Object? customData;
+
+  Ad({required this.id, required this.companions, required this.type, required this.skipOffset, required this.integration, required this.customIntegration});
+}
+
+enum IntegrationKind {
+  theoads,
+  google_ima,
+  google_dai,
+  mediatailor,
+  custom,
+}
+
+class CompanionAd {
+  String adSlotId;
+  String altText;
+  String clickThrough;
+  int height;
+  int width;
+  String resourceURI;
+  String type;
+
+  CompanionAd({required this.adSlotId, required this.altText, required this.clickThrough, required this.height, required this.width, required this.resourceURI, required this.type});
+
+}
+
+class AdBreak {
+  //Error: pigeons/pigeons_merged.dart:93: Generic type arguments must be nullable in field "ads" in class "AdBreak".
+  final List<Ad?> ads;
+  int maxDuration;
+  int maxRemainingDuration;
+  int timeOffset;
+  IntegrationKind integration;
+  String? customIntegration;
+  Object? customData;
+
+  AdBreak({ required this.ads, required this.maxDuration, required this.maxRemainingDuration, required this.timeOffset, required this.integration});
+}
+
+class AdDescription {
+  String adIntegration;
+
+  AdDescription({required this.adIntegration});
+}
 enum PreloadType {
   none,
   auto,
@@ -287,6 +340,45 @@ abstract class THEOplayerFlutterAPI {
 
   void onCanPlayThrough(double currentTime);
 }
+
+
+
+
+//Talking from Native to Dart
+@FlutterApi()
+abstract class THEOplayerFlutterAdsAPI {
+  void onAdBegin(Ad ad);
+  void onAdBreakBegin(AdBreak adbreak);
+  void onAdBreakChange(AdBreak adbreak);
+  void onAdBreakEnd(AdBreak adbreak);
+  void onAdClicked(Ad ad);
+  void onAddAdBreak(AdBreak adbreak);
+  void onAddAd(Ad ad);
+  void onAdEnd(Ad ad);
+  void onAdError(Ad ad);
+  void onAdFirstQuartile(Ad ad);
+  void onAdImpression(Ad ad);
+  void onAdLoaded(Ad ad);
+  void onAdMidpoint(Ad ad);
+  void onAdSkip(Ad ad);
+  void onAdTapped(Ad ad);
+  void onAdThirdQuartile(Ad ad);
+  void onRemoveAdBreak(AdBreak adbreak);
+}
+
+@HostApi()
+abstract class THEOplayerNativeAdsAPI {
+  bool isPlaying();
+  List<Ad> getCurrentAds();
+  AdBreak getCurrentAdBreak();
+  List<Ad> getScheduledAds();
+  void schedule(AdDescription adDescription);
+  void skip();
+  //TODO:
+  // getOmid()
+  // registerServerSideIntegration()
+}
+
 
 
 
