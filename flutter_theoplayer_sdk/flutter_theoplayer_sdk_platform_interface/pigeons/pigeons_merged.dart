@@ -347,30 +347,30 @@ abstract class THEOplayerFlutterAPI {
 //Talking from Native to Dart
 @FlutterApi()
 abstract class THEOplayerFlutterAdsAPI {
-  void onAdBegin(Ad ad);
-  void onAdBreakBegin(AdBreak adbreak);
-  void onAdBreakChange(AdBreak adbreak);
-  void onAdBreakEnd(AdBreak adbreak);
-  void onAdClicked(Ad ad);
-  void onAddAdBreak(AdBreak adbreak);
-  void onAddAd(Ad ad);
-  void onAdEnd(Ad ad);
-  void onAdError(Ad ad);
-  void onAdFirstQuartile(Ad ad);
-  void onAdImpression(Ad ad);
-  void onAdLoaded(Ad ad);
-  void onAdMidpoint(Ad ad);
-  void onAdSkip(Ad ad);
-  void onAdTapped(Ad ad);
-  void onAdThirdQuartile(Ad ad);
-  void onRemoveAdBreak(AdBreak adbreak);
+  void onAdBegin(Ad ad, List<Ad> currentAds, AdBreak? currentAdBreak, List<Ad> scheduledAds);
+  void onAdBreakBegin(AdBreak adbreak, List<Ad> currentAds, AdBreak? currentAdBreak, List<Ad> scheduledAds);
+  void onAdBreakChange(AdBreak adbreak, List<Ad> currentAds, AdBreak? currentAdBreak, List<Ad> scheduledAds);
+  void onAdBreakEnd(AdBreak adbreak, List<Ad> currentAds, AdBreak? currentAdBreak, List<Ad> scheduledAds);
+  void onAdClicked(Ad ad, List<Ad> currentAds, AdBreak? currentAdBreak, List<Ad> scheduledAds);
+  void onAddAdBreak(AdBreak adbreak, List<Ad> currentAds, AdBreak? currentAdBreak, List<Ad> scheduledAds);
+  void onAddAd(Ad ad, List<Ad> currentAds, AdBreak? currentAdBreak, List<Ad> scheduledAds);
+  void onAdEnd(Ad ad, List<Ad> currentAds, AdBreak? currentAdBreak, List<Ad> scheduledAds);
+  void onAdError(Ad ad, List<Ad> currentAds, AdBreak? currentAdBreak, List<Ad> scheduledAds);
+  void onAdFirstQuartile(Ad ad, List<Ad> currentAds, AdBreak? currentAdBreak, List<Ad> scheduledAds);
+  void onAdImpression(Ad ad, List<Ad> currentAds, AdBreak? currentAdBreak, List<Ad> scheduledAds);
+  void onAdLoaded(Ad ad, List<Ad> currentAds, AdBreak? currentAdBreak, List<Ad> scheduledAds);
+  void onAdMidpoint(Ad ad, List<Ad> currentAds, AdBreak? currentAdBreak, List<Ad> scheduledAds);
+  void onAdSkip(Ad ad, List<Ad> currentAds, AdBreak? currentAdBreak, List<Ad> scheduledAds);
+  void onAdTapped(Ad ad, List<Ad> currentAds, AdBreak? currentAdBreak, List<Ad> scheduledAds);
+  void onAdThirdQuartile(Ad ad, List<Ad> currentAds, AdBreak? currentAdBreak, List<Ad> scheduledAds);
+  void onRemoveAdBreak(AdBreak adbreak, List<Ad> currentAds, AdBreak? currentAdBreak, List<Ad> scheduledAds);
 }
 
 @HostApi()
 abstract class THEOplayerNativeAdsAPI {
   bool isPlaying();
   List<Ad> getCurrentAds();
-  AdBreak getCurrentAdBreak();
+  AdBreak? getCurrentAdBreak();
   List<Ad> getScheduledAds();
   void schedule(AdDescription adDescription);
   void skip();

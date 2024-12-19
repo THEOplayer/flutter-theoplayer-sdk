@@ -1376,6 +1376,8 @@ private class THEOplayerFlutterAdsAPICodecReader: FlutterStandardReader {
       case 129:
         return AdBreak.fromList(self.readValue() as! [Any?])
       case 130:
+        return AdBreak.fromList(self.readValue() as! [Any?])
+      case 131:
         return CompanionAd.fromList(self.readValue() as! [Any?])
       default:
         return super.readValue(ofType: type)
@@ -1391,8 +1393,11 @@ private class THEOplayerFlutterAdsAPICodecWriter: FlutterStandardWriter {
     } else if let value = value as? AdBreak {
       super.writeByte(129)
       super.writeValue(value.toList())
-    } else if let value = value as? CompanionAd {
+    } else if let value = value as? AdBreak {
       super.writeByte(130)
+      super.writeValue(value.toList())
+    } else if let value = value as? CompanionAd {
+      super.writeByte(131)
       super.writeValue(value.toList())
     } else {
       super.writeValue(value)
@@ -1416,23 +1421,23 @@ class THEOplayerFlutterAdsAPICodec: FlutterStandardMessageCodec {
 
 /// Generated protocol from Pigeon that represents Flutter messages that can be called from Swift.
 protocol THEOplayerFlutterAdsAPIProtocol {
-  func onAdBegin(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
-  func onAdBreakBegin(adbreak adbreakArg: AdBreak, completion: @escaping (Result<Void, FlutterError>) -> Void) 
-  func onAdBreakChange(adbreak adbreakArg: AdBreak, completion: @escaping (Result<Void, FlutterError>) -> Void) 
-  func onAdBreakEnd(adbreak adbreakArg: AdBreak, completion: @escaping (Result<Void, FlutterError>) -> Void) 
-  func onAdClicked(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
-  func onAddAdBreak(adbreak adbreakArg: AdBreak, completion: @escaping (Result<Void, FlutterError>) -> Void) 
-  func onAddAd(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
-  func onAdEnd(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
-  func onAdError(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
-  func onAdFirstQuartile(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
-  func onAdImpression(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
-  func onAdLoaded(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
-  func onAdMidpoint(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
-  func onAdSkip(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
-  func onAdTapped(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
-  func onAdThirdQuartile(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void) 
-  func onRemoveAdBreak(adbreak adbreakArg: AdBreak, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdBegin(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdBreakBegin(adbreak adbreakArg: AdBreak, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdBreakChange(adbreak adbreakArg: AdBreak, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdBreakEnd(adbreak adbreakArg: AdBreak, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdClicked(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAddAdBreak(adbreak adbreakArg: AdBreak, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAddAd(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdEnd(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdError(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdFirstQuartile(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdImpression(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdLoaded(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdMidpoint(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdSkip(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdTapped(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onAdThirdQuartile(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onRemoveAdBreak(adbreak adbreakArg: AdBreak, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void) 
 }
 class THEOplayerFlutterAdsAPI: THEOplayerFlutterAdsAPIProtocol {
   private let binaryMessenger: FlutterBinaryMessenger
@@ -1442,105 +1447,105 @@ class THEOplayerFlutterAdsAPI: THEOplayerFlutterAdsAPIProtocol {
   var codec: FlutterStandardMessageCodec {
     return THEOplayerFlutterAdsAPICodec.shared
   }
-  func onAdBegin(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+  func onAdBegin(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void)  {
     let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBegin", binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([adArg] as [Any?]) { _ in
+    channel.sendMessage([adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
-  func onAdBreakBegin(adbreak adbreakArg: AdBreak, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+  func onAdBreakBegin(adbreak adbreakArg: AdBreak, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void)  {
     let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBreakBegin", binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([adbreakArg] as [Any?]) { _ in
+    channel.sendMessage([adbreakArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
-  func onAdBreakChange(adbreak adbreakArg: AdBreak, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+  func onAdBreakChange(adbreak adbreakArg: AdBreak, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void)  {
     let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBreakChange", binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([adbreakArg] as [Any?]) { _ in
+    channel.sendMessage([adbreakArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
-  func onAdBreakEnd(adbreak adbreakArg: AdBreak, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+  func onAdBreakEnd(adbreak adbreakArg: AdBreak, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void)  {
     let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBreakEnd", binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([adbreakArg] as [Any?]) { _ in
+    channel.sendMessage([adbreakArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
-  func onAdClicked(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+  func onAdClicked(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void)  {
     let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdClicked", binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([adArg] as [Any?]) { _ in
+    channel.sendMessage([adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
-  func onAddAdBreak(adbreak adbreakArg: AdBreak, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+  func onAddAdBreak(adbreak adbreakArg: AdBreak, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void)  {
     let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAddAdBreak", binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([adbreakArg] as [Any?]) { _ in
+    channel.sendMessage([adbreakArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
-  func onAddAd(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+  func onAddAd(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void)  {
     let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAddAd", binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([adArg] as [Any?]) { _ in
+    channel.sendMessage([adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
-  func onAdEnd(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+  func onAdEnd(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void)  {
     let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdEnd", binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([adArg] as [Any?]) { _ in
+    channel.sendMessage([adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
-  func onAdError(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+  func onAdError(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void)  {
     let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdError", binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([adArg] as [Any?]) { _ in
+    channel.sendMessage([adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
-  func onAdFirstQuartile(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+  func onAdFirstQuartile(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void)  {
     let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdFirstQuartile", binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([adArg] as [Any?]) { _ in
+    channel.sendMessage([adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
-  func onAdImpression(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+  func onAdImpression(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void)  {
     let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdImpression", binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([adArg] as [Any?]) { _ in
+    channel.sendMessage([adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
-  func onAdLoaded(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+  func onAdLoaded(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void)  {
     let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdLoaded", binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([adArg] as [Any?]) { _ in
+    channel.sendMessage([adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
-  func onAdMidpoint(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+  func onAdMidpoint(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void)  {
     let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdMidpoint", binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([adArg] as [Any?]) { _ in
+    channel.sendMessage([adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
-  func onAdSkip(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+  func onAdSkip(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void)  {
     let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdSkip", binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([adArg] as [Any?]) { _ in
+    channel.sendMessage([adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
-  func onAdTapped(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+  func onAdTapped(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void)  {
     let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdTapped", binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([adArg] as [Any?]) { _ in
+    channel.sendMessage([adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
-  func onAdThirdQuartile(ad adArg: Ad, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+  func onAdThirdQuartile(ad adArg: Ad, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void)  {
     let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdThirdQuartile", binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([adArg] as [Any?]) { _ in
+    channel.sendMessage([adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
-  func onRemoveAdBreak(adbreak adbreakArg: AdBreak, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+  func onRemoveAdBreak(adbreak adbreakArg: AdBreak, currentAds currentAdsArg: [Ad], currentAdBreak currentAdBreakArg: AdBreak?, scheduledAds scheduledAdsArg: [Ad], completion: @escaping (Result<Void, FlutterError>) -> Void)  {
     let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onRemoveAdBreak", binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([adbreakArg] as [Any?]) { _ in
+    channel.sendMessage([adbreakArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
@@ -1600,7 +1605,7 @@ class THEOplayerNativeAdsAPICodec: FlutterStandardMessageCodec {
 protocol THEOplayerNativeAdsAPI {
   func isPlaying() throws -> Bool
   func getCurrentAds() throws -> [Ad]
-  func getCurrentAdBreak() throws -> AdBreak
+  func getCurrentAdBreak() throws -> AdBreak?
   func getScheduledAds() throws -> [Ad]
   func schedule(adDescription: AdDescription) throws
   func skip() throws
