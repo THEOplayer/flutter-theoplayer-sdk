@@ -7,6 +7,7 @@ import 'package:flutter/widgets.dart';
 import 'package:theoplayer/src/theolive/theolive_wrapper.dart';
 import 'package:theoplayer/src/widget/fullscreen_widget.dart';
 import 'package:theoplayer/src/widget/presentationmode_aware_widget.dart';
+import 'package:theoplayer_platform_interface/api/ads.dart';
 import 'package:theoplayer_platform_interface/helpers/logger.dart';
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
 import 'package:theoplayer_platform_interface/platform/platform_activity_service.dart';
@@ -159,6 +160,11 @@ class THEOplayer implements EventDispatcher {
     /// THEOlive API
   THEOlive? get theoLive {
     return _theoLiveAPIHolder;
+  }
+
+  //TODO: remove optional
+  Ads? get ads {
+    return _theoPlayerViewController?.getAds();
   }
 
   /// [StateChangeListener] that's triggered every time the internal player state is changing.

@@ -1,3 +1,6 @@
+import 'package:theoplayer_platform_interface/ads/theoplayer_ads_internal_interface.dart';
+import 'package:theoplayer_platform_interface/ads/theoplayer_ads_mobile.dart';
+import 'package:theoplayer_platform_interface/api/ads.dart';
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
 import 'package:theoplayer_platform_interface/pigeon_binary_messenger_wrapper.dart';
 import 'package:theoplayer_platform_interface/theolive/theolive_internal_api.dart';
@@ -18,6 +21,7 @@ class THEOplayerViewControllerMobile extends THEOplayerViewController {
   late final THEOplayerNativeAPI _nativeAPI;
   late final THEOplayerFlutterAPIImpl _flutterAPI;
   late final THEOplayerTrackControllerMobile _trackController;
+  late final AdsInternalInterface _adsInternal;
 
   THEOplayerViewControllerMobile(int id) : super(id) {
     _channelSuffix = 'id_$id';
@@ -25,6 +29,7 @@ class THEOplayerViewControllerMobile extends THEOplayerViewController {
     _nativeAPI = THEOplayerNativeAPI(binaryMessenger: _pigeonMessenger);
     _flutterAPI = THEOplayerFlutterAPIImpl(binaryMessenger: _pigeonMessenger);
     _trackController = THEOplayerTrackControllerMobile(_channelSuffix);
+    _adsInternal = AdsImplMobile(id);
   }
 
   String get channelSuffix => _channelSuffix;
@@ -222,5 +227,10 @@ class THEOplayerViewControllerMobile extends THEOplayerViewController {
   THEOliveInternalInterface? getTheoLive() {
     // TODO: implement getTheoLive
     return null;
+  }
+
+  @override
+  Ads getAds() {
+    return _adsInternal;
   }
 }
