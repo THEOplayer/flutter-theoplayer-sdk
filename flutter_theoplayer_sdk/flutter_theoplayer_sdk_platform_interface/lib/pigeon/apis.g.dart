@@ -2487,14 +2487,17 @@ class _THEOplayerFlutterAdsAPICodec extends StandardMessageCodec {
     if (value is Ad) {
       buffer.putUint8(128);
       writeValue(buffer, value.encode());
-    } else if (value is AdBreak) {
+    } else if (value is Ad) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
     } else if (value is AdBreak) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
-    } else if (value is CompanionAd) {
+    } else if (value is AdBreak) {
       buffer.putUint8(131);
+      writeValue(buffer, value.encode());
+    } else if (value is CompanionAd) {
+      buffer.putUint8(132);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -2507,10 +2510,12 @@ class _THEOplayerFlutterAdsAPICodec extends StandardMessageCodec {
       case 128: 
         return Ad.decode(readValue(buffer)!);
       case 129: 
-        return AdBreak.decode(readValue(buffer)!);
+        return Ad.decode(readValue(buffer)!);
       case 130: 
         return AdBreak.decode(readValue(buffer)!);
       case 131: 
+        return AdBreak.decode(readValue(buffer)!);
+      case 132: 
         return CompanionAd.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -2521,7 +2526,7 @@ class _THEOplayerFlutterAdsAPICodec extends StandardMessageCodec {
 abstract class THEOplayerFlutterAdsAPI {
   static const MessageCodec<Object?> codec = _THEOplayerFlutterAdsAPICodec();
 
-  void onAdBegin(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
+  void onAdBegin(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
 
   void onAdBreakBegin(AdBreak adbreak, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
 
@@ -2529,29 +2534,29 @@ abstract class THEOplayerFlutterAdsAPI {
 
   void onAdBreakEnd(AdBreak adbreak, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
 
-  void onAdClicked(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
+  void onAdClicked(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
 
   void onAddAdBreak(AdBreak adbreak, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
 
-  void onAddAd(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
+  void onAddAd(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
 
-  void onAdEnd(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
+  void onAdEnd(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
 
-  void onAdError(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
+  void onAdError(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
 
-  void onAdFirstQuartile(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
+  void onAdFirstQuartile(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
 
-  void onAdImpression(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
+  void onAdImpression(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
 
-  void onAdLoaded(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
+  void onAdLoaded(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
 
-  void onAdMidpoint(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
+  void onAdMidpoint(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
 
-  void onAdSkip(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
+  void onAdSkip(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
 
-  void onAdTapped(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
+  void onAdTapped(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
 
-  void onAdThirdQuartile(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
+  void onAdThirdQuartile(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
 
   void onRemoveAdBreak(AdBreak adbreak, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds);
 
@@ -2568,8 +2573,6 @@ abstract class THEOplayerFlutterAdsAPI {
           'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBegin was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final Ad? arg_ad = (args[0] as Ad?);
-          assert(arg_ad != null,
-              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBegin was null, expected non-null Ad.');
           final List<Ad?>? arg_currentAds = (args[1] as List<Object?>?)?.cast<Ad?>();
           assert(arg_currentAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBegin was null, expected non-null List<Ad?>.');
@@ -2578,7 +2581,7 @@ abstract class THEOplayerFlutterAdsAPI {
           assert(arg_scheduledAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBegin was null, expected non-null List<Ad?>.');
           try {
-            api.onAdBegin(arg_ad!, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
+            api.onAdBegin(arg_ad, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -2696,8 +2699,6 @@ abstract class THEOplayerFlutterAdsAPI {
           'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdClicked was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final Ad? arg_ad = (args[0] as Ad?);
-          assert(arg_ad != null,
-              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdClicked was null, expected non-null Ad.');
           final List<Ad?>? arg_currentAds = (args[1] as List<Object?>?)?.cast<Ad?>();
           assert(arg_currentAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdClicked was null, expected non-null List<Ad?>.');
@@ -2706,7 +2707,7 @@ abstract class THEOplayerFlutterAdsAPI {
           assert(arg_scheduledAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdClicked was null, expected non-null List<Ad?>.');
           try {
-            api.onAdClicked(arg_ad!, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
+            api.onAdClicked(arg_ad, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -2760,8 +2761,6 @@ abstract class THEOplayerFlutterAdsAPI {
           'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAddAd was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final Ad? arg_ad = (args[0] as Ad?);
-          assert(arg_ad != null,
-              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAddAd was null, expected non-null Ad.');
           final List<Ad?>? arg_currentAds = (args[1] as List<Object?>?)?.cast<Ad?>();
           assert(arg_currentAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAddAd was null, expected non-null List<Ad?>.');
@@ -2770,7 +2769,7 @@ abstract class THEOplayerFlutterAdsAPI {
           assert(arg_scheduledAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAddAd was null, expected non-null List<Ad?>.');
           try {
-            api.onAddAd(arg_ad!, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
+            api.onAddAd(arg_ad, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -2792,8 +2791,6 @@ abstract class THEOplayerFlutterAdsAPI {
           'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdEnd was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final Ad? arg_ad = (args[0] as Ad?);
-          assert(arg_ad != null,
-              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdEnd was null, expected non-null Ad.');
           final List<Ad?>? arg_currentAds = (args[1] as List<Object?>?)?.cast<Ad?>();
           assert(arg_currentAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdEnd was null, expected non-null List<Ad?>.');
@@ -2802,7 +2799,7 @@ abstract class THEOplayerFlutterAdsAPI {
           assert(arg_scheduledAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdEnd was null, expected non-null List<Ad?>.');
           try {
-            api.onAdEnd(arg_ad!, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
+            api.onAdEnd(arg_ad, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -2824,8 +2821,6 @@ abstract class THEOplayerFlutterAdsAPI {
           'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdError was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final Ad? arg_ad = (args[0] as Ad?);
-          assert(arg_ad != null,
-              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdError was null, expected non-null Ad.');
           final List<Ad?>? arg_currentAds = (args[1] as List<Object?>?)?.cast<Ad?>();
           assert(arg_currentAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdError was null, expected non-null List<Ad?>.');
@@ -2834,7 +2829,7 @@ abstract class THEOplayerFlutterAdsAPI {
           assert(arg_scheduledAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdError was null, expected non-null List<Ad?>.');
           try {
-            api.onAdError(arg_ad!, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
+            api.onAdError(arg_ad, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -2856,8 +2851,6 @@ abstract class THEOplayerFlutterAdsAPI {
           'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdFirstQuartile was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final Ad? arg_ad = (args[0] as Ad?);
-          assert(arg_ad != null,
-              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdFirstQuartile was null, expected non-null Ad.');
           final List<Ad?>? arg_currentAds = (args[1] as List<Object?>?)?.cast<Ad?>();
           assert(arg_currentAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdFirstQuartile was null, expected non-null List<Ad?>.');
@@ -2866,7 +2859,7 @@ abstract class THEOplayerFlutterAdsAPI {
           assert(arg_scheduledAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdFirstQuartile was null, expected non-null List<Ad?>.');
           try {
-            api.onAdFirstQuartile(arg_ad!, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
+            api.onAdFirstQuartile(arg_ad, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -2888,8 +2881,6 @@ abstract class THEOplayerFlutterAdsAPI {
           'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdImpression was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final Ad? arg_ad = (args[0] as Ad?);
-          assert(arg_ad != null,
-              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdImpression was null, expected non-null Ad.');
           final List<Ad?>? arg_currentAds = (args[1] as List<Object?>?)?.cast<Ad?>();
           assert(arg_currentAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdImpression was null, expected non-null List<Ad?>.');
@@ -2898,7 +2889,7 @@ abstract class THEOplayerFlutterAdsAPI {
           assert(arg_scheduledAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdImpression was null, expected non-null List<Ad?>.');
           try {
-            api.onAdImpression(arg_ad!, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
+            api.onAdImpression(arg_ad, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -2920,8 +2911,6 @@ abstract class THEOplayerFlutterAdsAPI {
           'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdLoaded was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final Ad? arg_ad = (args[0] as Ad?);
-          assert(arg_ad != null,
-              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdLoaded was null, expected non-null Ad.');
           final List<Ad?>? arg_currentAds = (args[1] as List<Object?>?)?.cast<Ad?>();
           assert(arg_currentAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdLoaded was null, expected non-null List<Ad?>.');
@@ -2930,7 +2919,7 @@ abstract class THEOplayerFlutterAdsAPI {
           assert(arg_scheduledAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdLoaded was null, expected non-null List<Ad?>.');
           try {
-            api.onAdLoaded(arg_ad!, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
+            api.onAdLoaded(arg_ad, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -2952,8 +2941,6 @@ abstract class THEOplayerFlutterAdsAPI {
           'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdMidpoint was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final Ad? arg_ad = (args[0] as Ad?);
-          assert(arg_ad != null,
-              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdMidpoint was null, expected non-null Ad.');
           final List<Ad?>? arg_currentAds = (args[1] as List<Object?>?)?.cast<Ad?>();
           assert(arg_currentAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdMidpoint was null, expected non-null List<Ad?>.');
@@ -2962,7 +2949,7 @@ abstract class THEOplayerFlutterAdsAPI {
           assert(arg_scheduledAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdMidpoint was null, expected non-null List<Ad?>.');
           try {
-            api.onAdMidpoint(arg_ad!, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
+            api.onAdMidpoint(arg_ad, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -2984,8 +2971,6 @@ abstract class THEOplayerFlutterAdsAPI {
           'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdSkip was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final Ad? arg_ad = (args[0] as Ad?);
-          assert(arg_ad != null,
-              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdSkip was null, expected non-null Ad.');
           final List<Ad?>? arg_currentAds = (args[1] as List<Object?>?)?.cast<Ad?>();
           assert(arg_currentAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdSkip was null, expected non-null List<Ad?>.');
@@ -2994,7 +2979,7 @@ abstract class THEOplayerFlutterAdsAPI {
           assert(arg_scheduledAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdSkip was null, expected non-null List<Ad?>.');
           try {
-            api.onAdSkip(arg_ad!, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
+            api.onAdSkip(arg_ad, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -3016,8 +3001,6 @@ abstract class THEOplayerFlutterAdsAPI {
           'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdTapped was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final Ad? arg_ad = (args[0] as Ad?);
-          assert(arg_ad != null,
-              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdTapped was null, expected non-null Ad.');
           final List<Ad?>? arg_currentAds = (args[1] as List<Object?>?)?.cast<Ad?>();
           assert(arg_currentAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdTapped was null, expected non-null List<Ad?>.');
@@ -3026,7 +3009,7 @@ abstract class THEOplayerFlutterAdsAPI {
           assert(arg_scheduledAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdTapped was null, expected non-null List<Ad?>.');
           try {
-            api.onAdTapped(arg_ad!, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
+            api.onAdTapped(arg_ad, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -3048,8 +3031,6 @@ abstract class THEOplayerFlutterAdsAPI {
           'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdThirdQuartile was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final Ad? arg_ad = (args[0] as Ad?);
-          assert(arg_ad != null,
-              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdThirdQuartile was null, expected non-null Ad.');
           final List<Ad?>? arg_currentAds = (args[1] as List<Object?>?)?.cast<Ad?>();
           assert(arg_currentAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdThirdQuartile was null, expected non-null List<Ad?>.');
@@ -3058,7 +3039,7 @@ abstract class THEOplayerFlutterAdsAPI {
           assert(arg_scheduledAds != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdThirdQuartile was null, expected non-null List<Ad?>.');
           try {
-            api.onAdThirdQuartile(arg_ad!, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
+            api.onAdThirdQuartile(arg_ad, arg_currentAds!, arg_currentAdBreak, arg_scheduledAds!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);

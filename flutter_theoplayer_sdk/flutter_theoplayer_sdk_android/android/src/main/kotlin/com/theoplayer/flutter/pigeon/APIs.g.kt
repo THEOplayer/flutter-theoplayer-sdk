@@ -1789,7 +1789,7 @@ private object THEOplayerFlutterAdsAPICodec : StandardMessageCodec() {
       }
       129.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          AdBreak.fromList(it)
+          Ad.fromList(it)
         }
       }
       130.toByte() -> {
@@ -1798,6 +1798,11 @@ private object THEOplayerFlutterAdsAPICodec : StandardMessageCodec() {
         }
       }
       131.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          AdBreak.fromList(it)
+        }
+      }
+      132.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
           CompanionAd.fromList(it)
         }
@@ -1811,7 +1816,7 @@ private object THEOplayerFlutterAdsAPICodec : StandardMessageCodec() {
         stream.write(128)
         writeValue(stream, value.toList())
       }
-      is AdBreak -> {
+      is Ad -> {
         stream.write(129)
         writeValue(stream, value.toList())
       }
@@ -1819,8 +1824,12 @@ private object THEOplayerFlutterAdsAPICodec : StandardMessageCodec() {
         stream.write(130)
         writeValue(stream, value.toList())
       }
-      is CompanionAd -> {
+      is AdBreak -> {
         stream.write(131)
+        writeValue(stream, value.toList())
+      }
+      is CompanionAd -> {
+        stream.write(132)
         writeValue(stream, value.toList())
       }
       else -> super.writeValue(stream, value)
@@ -1837,7 +1846,7 @@ class THEOplayerFlutterAdsAPI(private val binaryMessenger: BinaryMessenger) {
       THEOplayerFlutterAdsAPICodec
     }
   }
-  fun onAdBegin(adArg: Ad, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
+  fun onAdBegin(adArg: Ad?, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
     val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdBegin", codec)
     channel.send(listOf(adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg)) {
       if (it is List<*>) {
@@ -1893,7 +1902,7 @@ class THEOplayerFlutterAdsAPI(private val binaryMessenger: BinaryMessenger) {
       } 
     }
   }
-  fun onAdClicked(adArg: Ad, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
+  fun onAdClicked(adArg: Ad?, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
     val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdClicked", codec)
     channel.send(listOf(adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg)) {
       if (it is List<*>) {
@@ -1921,7 +1930,7 @@ class THEOplayerFlutterAdsAPI(private val binaryMessenger: BinaryMessenger) {
       } 
     }
   }
-  fun onAddAd(adArg: Ad, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
+  fun onAddAd(adArg: Ad?, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
     val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAddAd", codec)
     channel.send(listOf(adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg)) {
       if (it is List<*>) {
@@ -1935,7 +1944,7 @@ class THEOplayerFlutterAdsAPI(private val binaryMessenger: BinaryMessenger) {
       } 
     }
   }
-  fun onAdEnd(adArg: Ad, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
+  fun onAdEnd(adArg: Ad?, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
     val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdEnd", codec)
     channel.send(listOf(adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg)) {
       if (it is List<*>) {
@@ -1949,7 +1958,7 @@ class THEOplayerFlutterAdsAPI(private val binaryMessenger: BinaryMessenger) {
       } 
     }
   }
-  fun onAdError(adArg: Ad, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
+  fun onAdError(adArg: Ad?, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
     val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdError", codec)
     channel.send(listOf(adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg)) {
       if (it is List<*>) {
@@ -1963,7 +1972,7 @@ class THEOplayerFlutterAdsAPI(private val binaryMessenger: BinaryMessenger) {
       } 
     }
   }
-  fun onAdFirstQuartile(adArg: Ad, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
+  fun onAdFirstQuartile(adArg: Ad?, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
     val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdFirstQuartile", codec)
     channel.send(listOf(adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg)) {
       if (it is List<*>) {
@@ -1977,7 +1986,7 @@ class THEOplayerFlutterAdsAPI(private val binaryMessenger: BinaryMessenger) {
       } 
     }
   }
-  fun onAdImpression(adArg: Ad, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
+  fun onAdImpression(adArg: Ad?, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
     val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdImpression", codec)
     channel.send(listOf(adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg)) {
       if (it is List<*>) {
@@ -1991,7 +2000,7 @@ class THEOplayerFlutterAdsAPI(private val binaryMessenger: BinaryMessenger) {
       } 
     }
   }
-  fun onAdLoaded(adArg: Ad, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
+  fun onAdLoaded(adArg: Ad?, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
     val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdLoaded", codec)
     channel.send(listOf(adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg)) {
       if (it is List<*>) {
@@ -2005,7 +2014,7 @@ class THEOplayerFlutterAdsAPI(private val binaryMessenger: BinaryMessenger) {
       } 
     }
   }
-  fun onAdMidpoint(adArg: Ad, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
+  fun onAdMidpoint(adArg: Ad?, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
     val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdMidpoint", codec)
     channel.send(listOf(adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg)) {
       if (it is List<*>) {
@@ -2019,7 +2028,7 @@ class THEOplayerFlutterAdsAPI(private val binaryMessenger: BinaryMessenger) {
       } 
     }
   }
-  fun onAdSkip(adArg: Ad, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
+  fun onAdSkip(adArg: Ad?, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
     val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdSkip", codec)
     channel.send(listOf(adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg)) {
       if (it is List<*>) {
@@ -2033,7 +2042,7 @@ class THEOplayerFlutterAdsAPI(private val binaryMessenger: BinaryMessenger) {
       } 
     }
   }
-  fun onAdTapped(adArg: Ad, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
+  fun onAdTapped(adArg: Ad?, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
     val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdTapped", codec)
     channel.send(listOf(adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg)) {
       if (it is List<*>) {
@@ -2047,7 +2056,7 @@ class THEOplayerFlutterAdsAPI(private val binaryMessenger: BinaryMessenger) {
       } 
     }
   }
-  fun onAdThirdQuartile(adArg: Ad, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
+  fun onAdThirdQuartile(adArg: Ad?, currentAdsArg: List<Ad>, currentAdBreakArg: AdBreak?, scheduledAdsArg: List<Ad>, callback: (Result<Unit>) -> Unit) {
     val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAdsAPI.onAdThirdQuartile", codec)
     channel.send(listOf(adArg, currentAdsArg, currentAdBreakArg, scheduledAdsArg)) {
       if (it is List<*>) {
