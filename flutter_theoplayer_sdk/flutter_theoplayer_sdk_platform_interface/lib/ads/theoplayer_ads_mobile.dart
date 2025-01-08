@@ -84,7 +84,7 @@ class AdsImplMobile extends AdsInternalInterface implements THEOplayerFlutterAds
   }
 
   @override
-  void onAdBegin(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
+  void onAdBegin(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
     _updateLocalRepresentations(currentAds, currentAdBreak, scheduledAds);
     _eventManager.dispatchEvent(AdBeginEvent(ad));
   }
@@ -108,67 +108,67 @@ class AdsImplMobile extends AdsInternalInterface implements THEOplayerFlutterAds
   }
 
   @override
-  void onAdClicked(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
+  void onAdClicked(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
     _updateLocalRepresentations(currentAds, currentAdBreak, scheduledAds);
     _eventManager.dispatchEvent(AdClickedEvent(ad));
   }
 
   @override
-  void onAdEnd(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
+  void onAdEnd(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
     _updateLocalRepresentations(currentAds, currentAdBreak, scheduledAds);
     _eventManager.dispatchEvent(AdEndEvent(ad));
   }
 
   @override
-  void onAdError(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
+  void onAdError(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
     _updateLocalRepresentations(currentAds, currentAdBreak, scheduledAds);
     _eventManager.dispatchEvent(AdErrorEvent(ad));
   }
 
   @override
-  void onAdFirstQuartile(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
+  void onAdFirstQuartile(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
     _updateLocalRepresentations(currentAds, currentAdBreak, scheduledAds);
     _eventManager.dispatchEvent(AdFirstQuartileEvent(ad));
   }
 
   @override
-  void onAdImpression(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
+  void onAdImpression(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
     _updateLocalRepresentations(currentAds, currentAdBreak, scheduledAds);
     _eventManager.dispatchEvent(AdImpressionEvent(ad));
   }
 
   @override
-  void onAdLoaded(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
+  void onAdLoaded(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
     _updateLocalRepresentations(currentAds, currentAdBreak, scheduledAds);
     _eventManager.dispatchEvent(AdLoadedEvent(ad));
   }
 
   @override
-  void onAdMidpoint(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
+  void onAdMidpoint(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
     _updateLocalRepresentations(currentAds, currentAdBreak, scheduledAds);
     _eventManager.dispatchEvent(AdMidpointEvent(ad));
   }
 
   @override
-  void onAdSkip(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
+  void onAdSkip(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
     _updateLocalRepresentations(currentAds, currentAdBreak, scheduledAds);
     _eventManager.dispatchEvent(AdSkipEvent(ad));
   }
 
   @override
-  void onAdTapped(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
+  void onAdTapped(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
     _updateLocalRepresentations(currentAds, currentAdBreak, scheduledAds);
     _eventManager.dispatchEvent(AdTappedEvent(ad));
   }
 
   @override
-  void onAdThirdQuartile(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
+  void onAdThirdQuartile(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
     _updateLocalRepresentations(currentAds, currentAdBreak, scheduledAds);
     _eventManager.dispatchEvent(AdThirdQuartileEvent(ad));
   }
 
   @override
-  void onAddAd(Ad ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
+  void onAddAd(Ad? ad, List<Ad?> currentAds, AdBreak? currentAdBreak, List<Ad?> scheduledAds) {
     _updateLocalRepresentations(currentAds, currentAdBreak, scheduledAds);
     _eventManager.dispatchEvent(AddAdEvent(ad));
   }

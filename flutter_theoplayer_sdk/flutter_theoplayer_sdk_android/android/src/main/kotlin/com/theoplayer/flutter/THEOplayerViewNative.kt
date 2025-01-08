@@ -15,6 +15,7 @@ import com.theoplayer.android.api.event.player.PlayingEvent
 import com.theoplayer.android.api.pip.PipConfiguration
 import com.theoplayer.android.api.player.Player
 import com.theoplayer.flutter.pigeon.THEOplayerFlutterAPI
+import com.theoplayer.flutter.pigeon.THEOplayerFlutterAdsAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeAPI.Companion.setUp
 import com.theoplayer.flutter.transformers.PlayerEnumTransformer
@@ -53,6 +54,7 @@ class THEOplayerViewNative(
     private val textTrackBridge: TextTrackBridge
     private val audioTrackBridge: AudioTrackBridge
     private val videoTrackBridge: VideoTrackBridge
+    private val adsEventForwarder: AdsEventForwarder
 
     private var allowAutomaticPictureInPicture: Boolean = false;
 
@@ -123,6 +125,9 @@ class THEOplayerViewNative(
 
         videoTrackBridge = VideoTrackBridge(tpv.player, pigeonMessenger)
         videoTrackBridge.attachListeners()
+
+        adsEventForwarder = AdsEventForwarder(tpv.player.ads, THEOplayerFlutterAdsAPI(pigeonMessenger))
+        adsEventForwarder.attachListeners()
     }
 
     override fun getView(): View {
@@ -135,6 +140,7 @@ class THEOplayerViewNative(
         textTrackBridge.removeListeners()
         audioTrackBridge.removeListeners()
         videoTrackBridge.removeListeners()
+        adsEventForwarder.removeListeners()
         tpv.onDestroy()
         destroyListener?.onDestroyed();
     }
