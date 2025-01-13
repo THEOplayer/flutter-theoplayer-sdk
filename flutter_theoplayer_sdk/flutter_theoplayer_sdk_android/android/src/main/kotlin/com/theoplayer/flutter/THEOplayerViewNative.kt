@@ -12,6 +12,7 @@ import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.event.player.PlayingEvent
 import com.theoplayer.android.api.event.player.theolive.TheoLiveEventTypes
+import com.theoplayer.android.api.media3.Media3PlayerIntegrationFactory
 import com.theoplayer.android.api.pip.PipConfiguration
 import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.api.theolive.THEOLiveConfig
@@ -116,6 +117,9 @@ class THEOplayerViewNative(
         isFirstPlaying = false
         tpv.player.addEventListener(PlayerEventTypes.PLAYING, playingEventListener)
         theoplayerWrapper.addView(tpv)
+
+        val media3PlayerIntegration = Media3PlayerIntegrationFactory.createMedia3PlayerIntegration()
+        tpv.player.addIntegration(media3PlayerIntegration)
 
         pigeonMessenger = PigeonBinaryMessengerWrapper(messenger, "id_$id")
         setUp(pigeonMessenger, this)

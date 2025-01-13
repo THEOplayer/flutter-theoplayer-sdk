@@ -54,6 +54,7 @@ class _MyAppState extends State<MyApp> {
         },
         theoPlayerConfig: THEOplayerConfig(
           license: PLAYER_LICENSE,
+          androidConfiguration: AndroidConfig.create(viewComposition: AndroidViewComposition.HYBRID_COMPOSITION)
           // Extra THEOlive configuration:
           //theolive: TheoLiveConfiguration(externalSessionId: "mySessionID"),
         ),

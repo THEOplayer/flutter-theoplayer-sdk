@@ -19,6 +19,7 @@ rootProject.allprojects {
         google()
         mavenCentral()
         maven { url "https://maven.theoplayer.com/releases" }
+        maven { url "https://maven.theoplayer.com/snapshots" }
     }
 }
 
@@ -55,6 +56,7 @@ android {
     dependencies {
         // Dependency on THEOplayer
         implementation "com.theoplayer.theoplayer-sdk-android:core:$theoplayerVersion"
+        implementation "com.theoplayer.theoplayer-sdk-android:integration-media3:$theoplayerVersion"
         implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
         implementation "androidx.appcompat:appcompat:1.6.1"
 
