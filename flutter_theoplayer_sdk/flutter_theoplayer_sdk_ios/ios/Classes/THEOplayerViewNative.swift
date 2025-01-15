@@ -16,6 +16,7 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
     private let _textTrackBridge: TextTrackBridge
     private let _audioTrackBridge: AudioTrackBridge
     private let _videoTrackBridge: VideoTrackBridge
+    private let _ads: AdsEventForwarder
     private var _allowBackgroundPlayback = false
     private var _allowAutomaticPictureInPicture = true
 
@@ -66,6 +67,9 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
         
         _videoTrackBridge = VideoTrackBridge(theoplayer: _theoplayer, pigeonMessenger: _pigeonMessenger)
         _videoTrackBridge.attachListeners()
+        
+        _ads = AdsEventForwarder(ads: _theoplayer.ads, flutterAPI: THEOplayerFlutterAdsAPI(binaryMessenger: _pigeonMessenger))
+        _ads.attachListeners()
 
         super.init()
         
@@ -230,6 +234,7 @@ extension THEOplayerViewNative: THEOplayerNativeAPI {
         _textTrackBridge.removeListeners()
         _audioTrackBridge.removeListeners()
         _videoTrackBridge.removeListeners()
+        _ads.detachListeners()
         _theoplayer.destroy()
     }
     
