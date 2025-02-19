@@ -310,6 +310,10 @@ declare enum ErrorCode {
      */
     FULLSCREEN_ERROR = 11000,
     /**
+     * Changing the presentation to picture-in-picture was not possible.
+     */
+    PICTURE_IN_PICTURE_ERROR = 11001,
+    /**
      * Something went wrong while caching a source.
      */
     CACHE_SOURCE_ERROR = 12000,
@@ -969,6 +973,17 @@ interface GoogleImaConfiguration {
      */
     useNativeIma: boolean;
     /**
+     * Whether to use an ad UI element for clickthrough and displaying other ad UI.
+     *
+     * @remarks
+     * <br/> - Optional toggle for turning on usage of the adUiElement when using Google DAI SSAI. This is
+     * necessary for showing ads if they have UI specified, such as UI for GDPR compliance. If ads have extra
+     * UI elements specified and this is not enabled, ads with UI will not play. Enabling this option will
+     * remove the Learn More button and disable keyboard interactions with the ad.
+     * <br/> - This only applies to Google DAI SSAI content. IMA CSAI always uses the adUiElement.
+     */
+    useAdUiElementForSsai?: boolean;
+    /**
      * The maximum recommended bitrate in kbit/s. Ads with a bitrate below the specified maximum will be picked.
      *
      * @remarks
@@ -1162,6 +1177,14 @@ interface GoogleImaAd extends Ad {
      * <br/> - This corresponds with the apiFramework specified in vast.
      */
     apiFramework: string | undefined;
+    /**
+     * The description of the ad from the VAST response.
+     *
+     * @remarks
+     * <br/> - Available since 8.6.0.
+     * <br/> - Available for `google-ima` and `google-dai` integrations only.
+     */
+    description: string | undefined;
 }
 /**
  * Represents the information regarding the universal identifier of an ad.
@@ -1401,6 +1424,10 @@ interface AdsEventMap {
      * <br/> - only available in the Google IMA integration.
      */
     adsmanagerloaded: AdsManagerLoadedEvent;
+    /**
+     * @internal
+     */
+    overlaybegin: Event<'overlaybegin'>;
 }
 /**
  * Base type for events related to a single ad.
@@ -1598,7 +1625,7 @@ interface AdDescription {
      *
      * @remarks
      * <br/> - A timestamp which is not in the playback window will result in the ad break not being started.
-     * <br/> - VMAP resources will ignore this value as they contain an internal offset.
+     * <br/> - Do NOT set for VMAP ads. VMAP resources will ignore this value as they contain an internal offset. https://www.theoplayer.com/docs/theoplayer/how-to-guides/ads/how-to-set-up-vast-and-vmap/#vmap
      * <br/> - Since 2.18, numbers are supported for the Google IMA integration, since 2.21 other formats as well.
      *
      * @defaultValue `'start'`
@@ -2198,6 +2225,13 @@ interface DRMConfiguration {
      * Default value is ['widevine', 'playready', 'fairplay'].
      */
     preferredKeySystems?: Array<KeySystemId | (string & {})>;
+    /**
+     * A flag that affects HbbTV enabled devices and indicates whether the OIPF DRM agent should be used for handling DRM protection,
+     * even when EME is available.
+     *
+     * Default value is false.
+     */
+    useOipfDrmAgent?: boolean;
 }
 /**
  * The id of a key system. Possible values are 'widevine', 'fairplay' and 'playready'.
@@ -2251,6 +2285,8 @@ interface GoogleDAIConfiguration extends ServerSideAdInsertionConfiguration {
      * @remarks
      * <br/> - If present, this token is used instead of the API key for stricter content authorization.
      * <br/> - The publisher can control individual content streams authorizations based on this token.
+     * <br/> - See {@link https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/html5/reference/js/StreamRequest#authToken}
+     *         for more information.
      */
     authToken?: string;
     /**
@@ -2259,6 +2295,8 @@ interface GoogleDAIConfiguration extends ServerSideAdInsertionConfiguration {
      * @remarks
      * <br/> - This key is used to verify applications that are attempting to access the content.
      * <br/> - This key is configured through the Google Ad Manager UI.
+     * <br/> - See {@link https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/html5/reference/js/StreamRequest#apiKey}
+     *         for more information.
      */
     apiKey: string;
     /**
@@ -2266,6 +2304,8 @@ interface GoogleDAIConfiguration extends ServerSideAdInsertionConfiguration {
      *
      * @remarks
      * <br/> - Each entry contains the parameter name with associated value.
+     * <br/> - See {@link https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/html5/reference/js/StreamRequest#adTagParameters}
+     *         for more information.
      *
      * Valid parameters:
      * <br/> - {@link https://support.google.com/admanager/answer/7320899 | Supply targeting parameters to your stream}
@@ -2274,10 +2314,26 @@ interface GoogleDAIConfiguration extends ServerSideAdInsertionConfiguration {
     adTagParameters?: Record<string, string>;
     /**
      * The identifier for a stream activity monitor session.
+     *
+     * @remarks
+     * <br/> - See {@link https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/html5/reference/js/StreamRequest#streamActivityMonitorId}
+     *         for more information.
      */
     streamActivityMonitorID?: string;
     /**
+     * The network code for the publisher making this stream request.
+     *
+     * @remarks
+     * <br/> - See {@link https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/html5/reference/js/StreamRequest#networkCode}
+     *         for more information.
+     */
+    networkCode?: string;
+    /**
      * Optional settings object for mapping verification vendors (google.ima.OmidVerificationVendor) to OMID Access Modes (google.ima.OmidAccessMode).
+     *
+     * @remarks
+     * <br/> - See {@link https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/html5/reference/js/StreamRequest#omidAccessModeRules}
+     *         for more information.
      */
     omidAccessModeRules?: Record<number, string>;
 }
@@ -3340,6 +3396,15 @@ interface DashPlaybackConfiguration {
      * @internal
      */
     forceHardSwitchWhenSeekingBackwards?: boolean;
+    /**
+     * A flag to indicate whether or not timestamps of segmented WebVTT subtitles are relative to the segment start time.
+     *
+     * @remarks
+     * <br/> - Available since v8.9.0.
+     *
+     *  @defaultValue `true`
+     */
+    segmentRelativeVttTiming?: boolean;
 }
 
 /**
@@ -3458,6 +3523,10 @@ interface TextTrackCueEventMap {
  * @public
  */
 interface TextTrackCue extends EventDispatcher<TextTrackCueEventMap> {
+    /**
+     * @internal
+     */
+    _internalCue: unknown;
     /**
      * The text track of the cue.
      */
@@ -4044,7 +4113,11 @@ interface TextTrack extends Track, EventDispatcher<TextTrackEventMap> {
  * @public
  */
 interface TheoLiveSource extends TypedSource {
-    integration: 'theolive';
+    type: 'theolive';
+    /**
+     * @deprecated use {@link TheoLiveSource.type} instead.
+     */
+    integration?: 'theolive';
 }
 
 /**
@@ -4066,7 +4139,14 @@ interface MillicastSource extends TypedSource {
      *
      * @see https://millicast.github.io/millicast-sdk/global.html#DirectorSubscriberOptions
      */
-    streamName: string;
+    src: string;
+    /**
+     * The name of the Millicast stream to subscribe to.
+     *
+     * @see https://millicast.github.io/millicast-sdk/global.html#DirectorSubscriberOptions
+     * @deprecated use {@link MillicastSource.src} instead
+     */
+    streamName?: string;
     /**
      * The Millicast account identifier.
      *
@@ -4142,6 +4222,14 @@ interface SourceLatencyConfiguration {
      * @defaultValue `1.08`
      */
     maximumPlaybackRate?: number;
+    /**
+     * The amount of seconds that target latency can be temporarily increased to counteract unstable
+     * network conditions.
+     *
+     * @remarks
+     * <br/> - This only works for HESP and THEOlive streams.
+     */
+    leniency?: number;
 }
 
 /**
@@ -4634,6 +4722,7 @@ interface TypedSource extends BaseSource {
      * <br/> - `'video/mp4'`, `'video/webm'` and other formats: The media resource should use native HTML5 playback if supported by the browser.
      * <br/> - `'application/vnd.theo.hesp+json'`: The media resource is an HESP stream.
      * <br/> - `'millicast'`: The media resource is a {@link MillicastSource | Millicast stream}.
+     * <br/> - `'theolive'`: The media resource is a {@link TheoLiveSource | THEOlive stream}.
      *
      * @remarks
      * <br/> - Available since v2.4.0.
@@ -4680,6 +4769,7 @@ type StreamType = 'live' | 'dvr' | 'vod';
  * The integration identifier of a source specific to a pre-integration, represented by a value from the following list:
  * <br/> - `'verizon-media'`: The source is a {@link VerizonMediaSource}
  * <br/> - `'mediatailor'`: The source contains the MediaTailor initialization url
+ * <br/> - `'theolive'`: The source is a {@link TheoLiveSource}. (Deprecated, see {@link TheoLiveSource.integration})
  *
  * @category Source
  * @public
@@ -5985,11 +6075,12 @@ interface WebAudio {
  * <br/> - `'inline'`: The player is shown in its original location on the page.
  * <br/> - `'fullscreen'`: The player fills the entire screen.
  * <br/> - `'picture-in-picture'`: The player is shown on top of the page (see {@link PiPConfiguration} for more options).
+ * <br/> - `'native-picture-in-picture'`: [Experimental] The player requests out-of-app picture-in-picture mode. Not supported on Firefox.
  *
  * @category Player
  * @public
  */
-type PresentationMode = 'inline' | 'fullscreen' | 'picture-in-picture';
+type PresentationMode = 'inline' | 'fullscreen' | 'picture-in-picture' | 'native-picture-in-picture';
 /**
  * Fired when the presentation mode changes.
  *
@@ -8619,38 +8710,6 @@ interface ContentProtectionErrorEvent extends Event<'contentprotectionerror'> {
 }
 
 /**
- * A latency configuration object for managing the live offset of the player.
- * The buffer end is seen as the live point, so the live offset is defined as the difference between the buffer end and the current time.
- * @remarks
- * <br/> - Note: This API is in an experimental stage and may be subject to breaking changes.
- * <br/> - Only available with the feature `'hesp'`.
- * <br/> - Only applies to HESP streams.
- *
- * @category HESP
- * @public
- */
-interface HespLatencyConfiguration {
-    /**
-     * The start of the target live window.
-     * If the live offset becomes smaller than this value, the player will slow down.
-     */
-    readonly windowStart: number;
-    /**
-     * The live offset that the player will aim for. When correcting the offset by tuning the playbackRate,
-     * the player will stop correcting when it reaches this value.
-     */
-    readonly target: number;
-    /**
-     * The end of the target live window.
-     * If the live offset becomes higher than this value, the player will speed up.
-     */
-    readonly windowEnd: number;
-    /**
-     * The live offset at which the player will automatically trigger a live seek.
-     */
-    readonly maxOffset: number;
-}
-/**
  * The events fired by the {@link HespApi}.
  * @remarks
  * <br/> - Note: This API is in an experimental stage and may be subject to breaking changes.
@@ -8690,25 +8749,6 @@ interface HespApi extends EventDispatcher<HespApiEventMap> {
      * True if the HESP playback is in live mode.
      */
     readonly isLive: boolean;
-    /**
-     * Can be set to change the latency of the player.
-     * A HespLatencyConfiguration object which gives latency configuration of the player.
-     *
-     * @deprecated use {@link ChromelessPlayer.latency} instead
-     */
-    latency: HespLatencyConfiguration;
-    /**
-     * The `currentTime` equivalent of the latest frame generated on the HESP server.
-     * This can be `undefined` if no suitable estimate is available.
-     * This value should be accurate up to the largest of a frame duration or a RTT.
-     */
-    readonly currentServerLiveTime: number | undefined;
-    /**
-     * The current latency measured between the `currentServerLiveTime` and client's `currentTime`.
-     * This can be `undefined` if no `currentServerLiveTime` is available.
-     * This value should be accurate up to the largest of a frame duration or a RTT.
-     */
-    readonly currentLatency: number | undefined;
     /**
      * Returns the manifest for the current HESP source.
      * @remarks
@@ -8962,7 +9002,15 @@ interface ReadyStateChangeEvent extends Event<'readystatechange'> {
      */
     readonly currentTime: number;
     /**
-     * The player's new ready state.
+     * The player's new ready state, represented by a value from the following list:
+     * <br/> - 0 (HAVE_NOTHING): The player has no information about the duration of its source.
+     * <br/> - 1 (HAVE_METADATA): The player has information about the duration of its source.
+     * <br/> - 2 (HAVE_CURRENT_DATA): The player has its current frame in its buffer.
+     * <br/> - 3 (HAVE_FUTURE_DATA): The player has enough data for immediate playback.
+     * <br/> - 4 (HAVE_ENOUGH_DATA): The player has enough data for continuous playback.
+     *
+     * @remarks
+     * <br/> - See the {@link https://html.spec.whatwg.org/multipage/media.html#ready-states | HTML Media Specification}
      */
     readonly readyState: number;
 }
@@ -9150,7 +9198,7 @@ interface EncryptedEvent extends Event<'encrypted'> {
 /**
  * The latency manager, used to control low-latency live playback.
  *
- * @remark This is only used for live playback.
+ * @remarks This is only used for live playback.
  *
  * @category Player
  * @public
@@ -9261,6 +9309,7 @@ interface PublicationLoadStartEvent extends Event<'publicationloadstart'> {
  */
 interface PublicationLoadedEvent extends Event<'publicationloaded'> {
     readonly publicationId: string;
+    readonly channelName: string;
 }
 /**
  * Fired when loading a THEOlive publication that cannot be played, for example because the publication is stopped.
@@ -9321,6 +9370,256 @@ interface TheoLivePublication {
 interface TheoLiveApi extends EventDispatcher<TheoLiveApiEventMap> {
     badNetworkMode: boolean;
     preloadPublications(publicationIds: string[]): Promise<TheoLivePublication[]>;
+}
+
+/**
+ * A WebVTT-defined region scroll setting, represented by a value from the following list:
+ * <br/> - `''`: None. Cues in the region stay fixed at the location they were first painted in.
+ * <br/> - `'up'`: Up. Cues in the region will be added at the bottom of the region and push any already displayed cues in the region up until all lines of the new cue are visible in the region.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+type VTTScrollSetting = '' | /* none */ 'up';
+/**
+ * Represents a WebVTT region.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface WebVTTRegion {
+    /**
+     * The identifier of the region.
+     */
+    readonly id: string;
+    /**
+     * The number of lines in the region.
+     */
+    readonly lines: number;
+    /**
+     * The horizontal coordinate of the anchor point of the region to the viewport, as a percentage of the video width.
+     */
+    readonly regionAnchorX: number;
+    /**
+     * The vertical coordinate of the anchor point of the region to the viewport, as a percentage of the video height.
+     */
+    readonly regionAnchorY: number;
+    /**
+     * The scroll setting of the region.
+     */
+    readonly scrollValue: VTTScrollSetting;
+    /**
+     * The horizontal coordinate of the point of the viewport the anchor point of the region is anchored to, as a percentage of the video width.
+     */
+    readonly viewportAnchorX: number;
+    /**
+     * The veritcal coordinate of the point of the viewport the anchor point of the region is anchored to, as a percentage of the video height.
+     */
+    readonly viewportAnchorY: number;
+    /**
+     * The width of the region, as a percentage of the video width.
+     */
+    readonly width: number;
+    /**
+     * The identifier of the region.
+     *
+     * @deprecated Superseded by {@link WebVTTRegion.id}.
+     */
+    readonly identifier: string;
+}
+
+/**
+ * A WebVTT-defined writing direction, represented by a value from the following list:
+ * <br/> - `''`: Horizontal. A line extends horizontally and is offset vertically from the video viewport’s top edge, with consecutive lines displayed below each other.
+ * <br/> - `'rl'`: Vertical right-to-left. A line extends vertically and is offset horizontally from the video viewport’s right edge, with consecutive lines displayed to the left of each other.
+ * <br/> - `'lr'`: vertical left-to-right. A line extends vertically and is offset horizontally from the video viewport’s left edge, with consecutive lines displayed to the right of each other.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+type VTTDirectionSetting = '' | 'rl' | 'lr';
+/**
+ * A WebVTT-defined line alignment, represented by a value from the following list:
+ * <br/> - `'start'`: The cue box's start is aligned at a specified line.
+ * <br/> - `'center'`: The cue box's center is aligned at a specified line.
+ * <br/> - `'end'`: The cue box's end is aligned at a specified line.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+type VTTLineAlignSetting = 'start' | 'center' | 'end';
+/**
+ * A WebVTT-defined text alignment, represented by a value from the following list:
+ * <br/> - `'start'`: The text of each line is aligned towards the start side of the box.
+ * <br/> - `'center'`: The text of each line is aligned at the center of the box.
+ * <br/> - `'end'`: The text of each line is aligned towards the end side of the box.
+ * <br/> - `'left'`: The text of each line is aligned to the box’s left side for horizontal cues, or top side otherwise.
+ * <br/> - `'right'`: The text of each line is aligned to the box’s right side for horizontal cues, or bottom side otherwise.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+type VTTAlignSetting = 'start' | 'center' | 'end' | 'left' | 'right';
+/**
+ * A WebVTT-defined position alignment, represented by a value from the following list:
+ * <br/> - `'line-left'`: The cue box's start is aligned at a specified position.
+ * <br/> - `'center'`: The cue box's center is aligned at a specified position.
+ * <br/> - `'line-right'`: The cue box's end is aligned at a specified position.
+ * <br/> - `'auto'`: The cue box's alignment is dependent on its text alignment setting.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+type VTTPositionAlignSetting = 'line-left' | 'center' | 'line-right' | 'auto';
+/**
+ * A WebVTT-defined line offset, represented by a value from the following list:
+ * <br/> - a `number`: The line offset is expressed in a number of text lines or a percentage of the video viewport height or width.
+ * <br/> - `'auto'`: The line offset depends on the other showing tracks.
+ *
+ * @remarks
+ * <br/> - The semantics of the `number` variant are dependent on {@link WebVTTCue.snapToLines}.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+type VTTLine = number | 'auto';
+/**
+ * A WebVTT-defined position, represented by a value from the following list:
+ * <br/> - a number: The position is expressed as a percentage value.
+ * <br/> - `'auto'`: The position depends on the text alignment of the cue.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+type VTTPosition = number | 'auto';
+/**
+ * Represents a cue of a {@link https://www.w3.org/TR/webvtt1/ | WebVTT} text track.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface WebVTTCue extends TextTrackCue {
+    /**
+     * The text alignment of the cue.
+     */
+    align: VTTAlignSetting;
+    /**
+     * The content of the cue in raw unparsed form.
+     */
+    content: string;
+    /**
+     * The line offset of the cue.
+     */
+    line: VTTLine;
+    /**
+     * The line alignment of the cue.
+     */
+    lineAlign: VTTLineAlignSetting;
+    /**
+     * The position of the cue.
+     */
+    position: VTTPosition;
+    /**
+     * The position alignment of the cue.
+     */
+    positionAlign: VTTPositionAlignSetting;
+    /**
+     * The region of the cue.
+     */
+    region: WebVTTRegion | null;
+    /**
+     * Whether snap-to-lines is enabled for the cue.
+     *
+     * @remarks
+     * <br/> - This property indicates whether {@link WebVTTCue.line} is an integer number of lines or a percentage of the dimension of the video.
+     */
+    snapToLines: boolean;
+    /**
+     * The size of the cue's box.
+     *
+     * @remarks
+     * <br/> - This property is to be interpreted as a percentage of the video, relative to the cue direction stated by {@link WebVTTCue.vertical}.
+     */
+    size: number;
+    /**
+     * The text of the cue in raw unparsed form.
+     */
+    text: string;
+    /**
+     * The writing direction of the cue.
+     */
+    vertical: VTTDirectionSetting;
+}
+
+/**
+ * Represents a text track of a media resource that can be filled with cues during playback.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface CustomWebVTTTextTrack extends TextTrack {
+    /**
+     * The kind of the text track.
+     */
+    readonly type: 'webvtt';
+    /**
+     * Adds a cue to the text track.
+     * @param startTime The start time of the cue.
+     * @param endTime The end time of the cue.
+     * @param content The content of the cue.
+     */
+    addCue(startTime: number, endTime: number, content: string): WebVTTCue;
+    /**
+     * Removed a cue from the text track.
+     * @param cue The cue to be removed.
+     */
+    removeCue(cue: WebVTTCue): void;
+}
+
+/**
+ * Options for creating a custom text track.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface CustomTextTrackOptions {
+    /**
+     * The type of cues this track will support.
+     */
+    type: SupportedCustomTextTrackCueTypes;
+    /**
+     * The kind of the text track, represented by a value from the following list:
+     * <br/> - `'subtitles'`: The track contains subtitles.
+     * <br/> - `'captions'`: The track contains closed captions, a translation of dialogue and sound effects.
+     * <br/> - `'descriptions'`: The track contains descriptions, a textual description of the video.
+     * <br/> - `'chapters'`: The track contains chapter titles.
+     * <br/> - `'metadata'`: The track contains metadata. This track will not serve display purposes.
+     */
+    kind: string;
+    /**
+     * The label of the text track.
+     */
+    label?: string;
+    /**
+     * The language of the text track.
+     */
+    language?: string;
+}
+/**
+ * The supported cue types for custom text tracks.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+type SupportedCustomTextTrackCueTypes = 'webvtt';
+/**
+ * The mapping between the type in {@link CustomTextTrackOptions} and which kind of TextTrack the `player.addTextTrack()` API will return.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface CustomTextTrackMap {
+    webvtt: CustomWebVTTTextTrack;
 }
 
 /**
@@ -9790,6 +10089,16 @@ declare class ChromelessPlayer implements EventDispatcher<PlayerEventMap> {
      * {@inheritDoc EventDispatcher.removeEventListener}
      */
     removeEventListener<TType extends StringKeyOf<PlayerEventMap>>(type: TType | readonly TType[], listener: EventListener<PlayerEventMap[TType]>): void;
+    /**
+     * Adds a new custom text track to the player where cues can be added externally.
+     *
+     * @param options The options for creating the track.
+     *
+     * @remarks
+     * <br/> - This needs to be called after the player dispatches a `loadedmetadata` event.
+     * <br/> - All text tracks added using this method will be cleared when the source of the player changes.
+     */
+    addTextTrack<TOptions extends CustomTextTrackOptions>(options: TOptions): CustomTextTrackMap[TOptions['type']];
     /**
      * The web audio API.
      *
@@ -11503,7 +11812,7 @@ interface ID3BaseFrame {
      * The identifier of the frame.
      *
      * @remarks
-     * <br/> - See {@link http://id3.org/id3v2.4.0-frames | id3v2.4.0-frames - ID3.org}.
+     * <br/> - See {@link https://id3.org/id3v2.4.0-frames | id3v2.4.0-frames - ID3.org}.
      */
     id: string;
 }
@@ -11538,7 +11847,7 @@ interface ID3AttachedPicture extends ID3BaseFrame {
      * The type of the attached picture.
      *
      * @remarks
-     * <br/> - See section 4.14 of {@link http://id3.org/id3v2.4.0-frames | id3v2.4.0-frames - ID3.org}.
+     * <br/> - See section 4.14 of {@link https://id3.org/id3v2.4.0-frames | id3v2.4.0-frames - ID3.org}.
      */
     pictureType: number;
     /**
@@ -11979,185 +12288,6 @@ interface ID3Cue extends TextTrackCue {
 }
 
 /**
- * A WebVTT-defined region scroll setting, represented by a value from the following list:
- * <br/> - `''`: None. Cues in the region stay fixed at the location they were first painted in.
- * <br/> - `'up'`: Up. Cues in the region will be added at the bottom of the region and push any already displayed cues in the region up until all lines of the new cue are visible in the region.
- *
- * @category Media and Text Tracks
- * @public
- */
-type VTTScrollSetting = '' | /* none */ 'up';
-/**
- * Represents a WebVTT region.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface WebVTTRegion {
-    /**
-     * The identifier of the region.
-     */
-    readonly id: string;
-    /**
-     * The number of lines in the region.
-     */
-    readonly lines: number;
-    /**
-     * The horizontal coordinate of the anchor point of the region to the viewport, as a percentage of the video width.
-     */
-    readonly regionAnchorX: number;
-    /**
-     * The vertical coordinate of the anchor point of the region to the viewport, as a percentage of the video height.
-     */
-    readonly regionAnchorY: number;
-    /**
-     * The scroll setting of the region.
-     */
-    readonly scrollValue: VTTScrollSetting;
-    /**
-     * The horizontal coordinate of the point of the viewport the anchor point of the region is anchored to, as a percentage of the video width.
-     */
-    readonly viewportAnchorX: number;
-    /**
-     * The veritcal coordinate of the point of the viewport the anchor point of the region is anchored to, as a percentage of the video height.
-     */
-    readonly viewportAnchorY: number;
-    /**
-     * The width of the region, as a percentage of the video width.
-     */
-    readonly width: number;
-    /**
-     * The identifier of the region.
-     *
-     * @deprecated Superseded by {@link WebVTTRegion.id}.
-     */
-    readonly identifier: string;
-}
-
-/**
- * A WebVTT-defined writing direction, represented by a value from the following list:
- * <br/> - `''`: Horizontal. A line extends horizontally and is offset vertically from the video viewport’s top edge, with consecutive lines displayed below each other.
- * <br/> - `'rl'`: Vertical right-to-left. A line extends vertically and is offset horizontally from the video viewport’s right edge, with consecutive lines displayed to the left of each other.
- * <br/> - `'lr'`: vertical left-to-right. A line extends vertically and is offset horizontally from the video viewport’s left edge, with consecutive lines displayed to the right of each other.
- *
- * @category Media and Text Tracks
- * @public
- */
-type VTTDirectionSetting = '' | 'rl' | 'lr';
-/**
- * A WebVTT-defined line alignment, represented by a value from the following list:
- * <br/> - `'start'`: The cue box's start is aligned at a specified line.
- * <br/> - `'center'`: The cue box's center is aligned at a specified line.
- * <br/> - `'end'`: The cue box's end is aligned at a specified line.
- *
- * @category Media and Text Tracks
- * @public
- */
-type VTTLineAlignSetting = 'start' | 'center' | 'end';
-/**
- * A WebVTT-defined text alignment, represented by a value from the following list:
- * <br/> - `'start'`: The text of each line is aligned towards the start side of the box.
- * <br/> - `'center'`: The text of each line is aligned at the center of the box.
- * <br/> - `'end'`: The text of each line is aligned towards the end side of the box.
- * <br/> - `'left'`: The text of each line is aligned to the box’s left side for horizontal cues, or top side otherwise.
- * <br/> - `'right'`: The text of each line is aligned to the box’s right side for horizontal cues, or bottom side otherwise.
- *
- * @category Media and Text Tracks
- * @public
- */
-type VTTAlignSetting = 'start' | 'center' | 'end' | 'left' | 'right';
-/**
- * A WebVTT-defined position alignment, represented by a value from the following list:
- * <br/> - `'line-left'`: The cue box's start is aligned at a specified position.
- * <br/> - `'center'`: The cue box's center is aligned at a specified position.
- * <br/> - `'line-right'`: The cue box's end is aligned at a specified position.
- * <br/> - `'auto'`: The cue box's alignment is dependent on its text alignment setting.
- *
- * @category Media and Text Tracks
- * @public
- */
-type VTTPositionAlignSetting = 'line-left' | 'center' | 'line-right' | 'auto';
-/**
- * A WebVTT-defined line offset, represented by a value from the following list:
- * <br/> - a `number`: The line offset is expressed in a number of text lines or a percentage of the video viewport height or width.
- * <br/> - `'auto'`: The line offset depends on the other showing tracks.
- *
- * @remarks
- * <br/> - The semantics of the `number` variant are dependent on {@link WebVTTCue.snapToLines}.
- *
- * @category Media and Text Tracks
- * @public
- */
-type VTTLine = number | 'auto';
-/**
- * A WebVTT-defined position, represented by a value from the following list:
- * <br/> - a number: The position is expressed as a percentage value.
- * <br/> - `'auto'`: The position depends on the text alignment of the cue.
- *
- * @category Media and Text Tracks
- * @public
- */
-type VTTPosition = number | 'auto';
-/**
- * Represents a cue of a {@link https://www.w3.org/TR/webvtt1/ | WebVTT} text track.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface WebVTTCue extends TextTrackCue {
-    /**
-     * The text alignment of the cue.
-     */
-    align: VTTAlignSetting;
-    /**
-     * The content of the cue in raw unparsed form.
-     */
-    content: string;
-    /**
-     * The line offset of the cue.
-     */
-    line: VTTLine;
-    /**
-     * The line alignment of the cue.
-     */
-    lineAlign: VTTLineAlignSetting;
-    /**
-     * The position of the cue.
-     */
-    position: VTTPosition;
-    /**
-     * The position alignment of the cue.
-     */
-    positionAlign: VTTPositionAlignSetting;
-    /**
-     * The region of the cue.
-     */
-    region: WebVTTRegion | null;
-    /**
-     * Whether snap-to-lines is enabled for the cue.
-     *
-     * @remarks
-     * <br/> - This property indicates whether {@link WebVTTCue.line} is an integer number of lines or a percentage of the dimension of the video.
-     */
-    snapToLines: boolean;
-    /**
-     * The size of the cue's box.
-     *
-     * @remarks
-     * <br/> - This property is to be interpreted as a percentage of the video, relative to the cue direction stated by {@link WebVTTCue.vertical}.
-     */
-    size: number;
-    /**
-     * The text of the cue in raw unparsed form.
-     */
-    text: string;
-    /**
-     * The writing direction of the cue.
-     */
-    vertical: VTTDirectionSetting;
-}
-
-/**
  * Record of style properties.
  * Each entry contains the style property name with associated value.
  *
@@ -12310,6 +12440,15 @@ interface TheoAdDescription extends AdDescription {
      * <br/> - Contact THEO Technologies for more information.
      */
     useId3?: boolean;
+    /**
+     * The URI from where to retrieve the PodID's as returned from the EABN service from Google.
+     *
+     * @remarks
+     * <br/> - This is specific for our NFL integration at the moment, so it's marked internal.
+     *
+     * @internal
+     */
+    retrievePodIdURI?: string;
 }
 /**
  * Describes how and when the layout of a THEOads ad break should be overridden:
@@ -13257,4 +13396,4 @@ declare function registerContentProtectionIntegration(integrationId: string, key
  */
 declare const utils: CommonUtils;
 
-export { ABRConfiguration, ABRMetadata, ABRStrategy, ABRStrategyConfiguration, ABRStrategyType, AES128KeySystemConfiguration, AccessibilityRole, Ad, AdBreak, AdBreakEvent, AdBreakInit, AdBufferingEvent, AdDescription, AdEvent, AdInit, AdIntegrationKind, AdMetadataEvent, AdPreloadType, AdReadyState, AdSkipEvent, AdSource, AdSourceType, AdType, AddCachingTaskEvent, AddTrackEvent, AddViewEvent, Ads, AdsConfiguration, AdsEventMap, AdsManagerLoadedEvent, AgamaAnalyticsIntegrationID, AgamaConfiguration, AgamaLogLevelType, AgamaPlayerConfiguration, AgamaServiceName, AgamaSourceConfiguration, AgamaStreamType, AirPlay, AnalyticsDescription, AnalyticsIntegrationID, AudioQuality, AxinomDRMConfiguration, AxinomIntegrationID, AzureDRMConfiguration, AzureIntegrationID, Base64Util, BaseSource, Boundary, BoundaryC3, BoundaryC7, BoundaryHalftime, BoundaryInfo, BufferSource, BufferedSegments, Cache, CacheEventMap, CacheStatus, CacheTaskStatus, CachingTask, CachingTaskEventMap, CachingTaskLicense, CachingTaskList, CachingTaskListEventMap, CachingTaskParameters, CanPlayEvent, CanPlayThroughEvent, Canvas, Cast, CastConfiguration, CastEventMap, CastState, CastStateChangeEvent, CertificateRequest, CertificateResponse, Chromecast, ChromecastConfiguration, ChromecastConnectionCallback, ChromecastError, ChromecastErrorCode, ChromecastErrorEvent, ChromecastEventMap, ChromecastMetadataDescription, ChromecastMetadataImage, ChromecastMetadataType, ChromelessPlayer, ClearkeyDecryptionKey, ClearkeyKeySystemConfiguration, Clip, ClipEventMap, ComcastDRMConfiguration, ComcastIntegrationID, CommonUtils, CompanionAd, ConaxDRMConfiguration, ConaxIntegrationID, ContentProtectionError, ContentProtectionErrorCode, ContentProtectionErrorEvent, ContentProtectionIntegration, ContentProtectionIntegrationFactory, ContentProtectionRequest, ContentProtectionRequestSubType, ContentProtectionResponse, CrossOriginSetting, CsaiAdDescription, CurrentSourceChangeEvent, CustomAdIntegrationKind, DAIAvailabilityType, DRMConfiguration, DRMTodayDRMConfiguration, DRMTodayIntegrationID, DashPlaybackConfiguration, DateRangeCue, DeliveryType, DeviceBasedTitaniumDRMConfiguration, DimensionChangeEvent, DirectionChangeEvent, DurationChangeEvent, EdgeStyle, EmptiedEvent, EmsgCue, EncryptedEvent, EndedEvent, EnterBadNetworkModeEvent, ErrorCategory, ErrorCode, ErrorEvent, Event, EventDispatcher, EventListener, EventMap, EventStreamCue, EventedList, ExitBadNetworkModeEvent, ExpressPlayDRMConfiguration, ExpressPlayIntegrationID, EzdrmDRMConfiguration, EzdrmIntegrationID, FairPlayKeySystemConfiguration, FreeWheelAdDescription, FreeWheelAdUnitType, FreeWheelCue, FullscreenOptions$1 as FullscreenOptions, Geo, GlobalCast, GlobalChromecast, GoogleDAI, GoogleDAIConfiguration, GoogleDAILiveConfiguration, GoogleDAISSAIIntegrationID, GoogleDAITypedSource, GoogleDAIVodConfiguration, GoogleImaAd, GoogleImaConfiguration, HTTPHeaders, HespApi, HespApiEventMap, HespLatencyConfiguration, HespMediaType, HespSourceConfiguration, HespTypedSource, HlsDiscontinuityAlignment, HlsPlaybackConfiguration, ID3AttachedPicture, ID3BaseFrame, ID3Comments, ID3CommercialFrame, ID3Cue, ID3Frame, ID3GenericEncapsulatedObject, ID3InvolvedPeopleList, ID3PositionSynchronisationFrame, ID3PrivateFrame, ID3SynchronizedLyricsText, ID3TermsOfUse, ID3Text, ID3UniqueFileIdentifier, ID3Unknown, ID3UnsynchronisedLyricsTextTranscription, ID3UrlLink, ID3UserDefinedText, ID3UserDefinedUrlLink, ID3Yospace, IMAAdDescription, Imagine, ImagineEventMap, ImagineSSAIIntegrationID, ImagineServerSideAdInsertionConfiguration, ImagineTrackingEvent, ImagineTypedSource, IntentToFallbackEvent, InterceptableRequest, InterceptableResponse, IrdetoDRMConfiguration, IrdetoIntegrationID, JoinStrategy, KeyOSDRMConfiguration, KeyOSFairplayKeySystemConfiguration, KeyOSIntegrationID, KeyOSKeySystemConfiguration, KeySystemConfiguration, KeySystemId, Latencies, LatencyConfiguration, LatencyManager, LayoutChangeEvent, LicenseRequest, LicenseResponse, LicenseType, LinearAd, List, LoadedDataEvent, LoadedMetadataEvent, MaybeAsync, MeasurableNetworkEstimator, MediaError, MediaErrorCode, MediaFile, MediaMelonConfiguration, MediaTailorSource, MediaTrack, MediaTrackEventMap, MediaTrackList, MediaType, MetadataDescription, Metrics, MillicastSource, MoatAnalyticsIntegrationID, MoatConfiguration, MultiViewPlayer, MultiViewPlayerEventMap, MultiViewPlayerLayout, MutedAutoplayConfiguration, Network, NetworkEstimator, NetworkEstimatorController, NetworkEventMap, NetworkInterceptorController, NodeStyleVoidCallback, NonLinearAd, PauseEvent, PiPConfiguration, PiPPosition, PlayEvent, PlayReadyKeySystemConfiguration, PlayerConfiguration, PlayerEventMap, PlayerList, PlayingEvent, PreloadType, Presentation, PresentationEventMap, PresentationMode, PresentationModeChangeEvent, ProgressEvent, PublicationLoadStartEvent, PublicationLoadedEvent, PublicationOfflineEvent, Quality, QualityEvent, QualityEventMap, QualityList, RateChangeEvent, ReadyStateChangeEvent, RelatedChangeEvent, RelatedContent, RelatedContentEventMap, RelatedContentSource, RelatedHideEvent, RelatedShowEvent, RemoveCachingTaskEvent, RemoveTrackEvent, RemoveViewEvent, Representation, RepresentationChangeEvent, Request, RequestBody, RequestInit, RequestInterceptor, RequestLike, RequestMeasurer, RequestMethod, RequestSubType, RequestType, ResponseBody, ResponseInit, ResponseInterceptor, ResponseLike, ResponseType, RetryConfiguration, SSAIIntegrationId, SeamlessPeriodSwitchStrategy, SeamlessSwitchStrategy, SeekedEvent, SeekingEvent, ServerSideAdInsertionConfiguration, ServerSideAdIntegrationController, ServerSideAdIntegrationFactory, ServerSideAdIntegrationHandler, SkippedAdStrategy, SmartSightConfiguration, SmartSightIntegrationID, Source, SourceAbrConfiguration, SourceChangeEvent, SourceConfiguration, SourceDescription, SourceIntegrationId, SourceLatencyConfiguration, Sources, SpotXAdDescription, SpotxData, SpotxQueryParameter, StateChangeEvent, StereoChangeEvent, StreamOneAnalyticsIntegrationID, StreamOneConfiguration, StreamType, StringKeyOf, StylePropertyRecord, THEOplayerAdDescription, THEOplayerError, TTMLCue, TTMLExtent, TargetQualityChangedEvent, TextTrack, TextTrackAddCueEvent, TextTrackCue, TextTrackCueChangeEvent, TextTrackCueEnterEvent, TextTrackCueEventMap, TextTrackCueExitEvent, TextTrackCueList, TextTrackCueUpdateEvent, TextTrackDescription, TextTrackEnterCueEvent, TextTrackError, TextTrackErrorCode, TextTrackErrorEvent, TextTrackEventMap, TextTrackExitCueEvent, TextTrackReadyState, TextTrackReadyStateChangeEvent, TextTrackRemoveCueEvent, TextTrackStyle, TextTrackStyleEventMap, TextTrackType, TextTrackTypeChangeEvent, TextTrackUpdateCueEvent, TextTracksList, TheoAdDescription, TheoAdsLayoutOverride, TheoLiveApi, TheoLiveApiEventMap, TheoLiveConfiguration, TheoLivePublication, TheoLiveSource, ThumbnailResolution, TimeRanges, TimeUpdateEvent, TitaniumDRMConfiguration, TitaniumIntegrationID, TokenBasedTitaniumDRMConfiguration, Track, TrackChangeEvent, TrackEventMap, TrackList, TrackListEventMap, TrackUpdateEvent, TypedSource, UIConfiguration, UILanguage, UIPlayerConfiguration, UIRelatedContent, UIRelatedContentEventMap, UniversalAdId, UpdateQualityEvent, UplynkDRMConfiguration, UplynkIntegrationID, UserActions, VPAIDMode, VR, VRConfiguration, VRDirection, VREventMap, VRPanoramaMode, VRPlayerConfiguration, VRState, VRStereoMode, VTTAlignSetting, VTTDirectionSetting, VTTLine, VTTLineAlignSetting, VTTPosition, VTTPositionAlignSetting, VTTScrollSetting, VendorCast, VendorCastEventMap, VerimatrixDRMConfiguration, VerimatrixIntegrationID, VerizonMedia, VerizonMediaAd, VerizonMediaAdBeginEvent, VerizonMediaAdBreak, VerizonMediaAdBreakBeginEvent, VerizonMediaAdBreakEndEvent, VerizonMediaAdBreakEventMap, VerizonMediaAdBreakList, VerizonMediaAdBreakListEventMap, VerizonMediaAdBreakSkipEvent, VerizonMediaAdCompleteEvent, VerizonMediaAdEndEvent, VerizonMediaAdEventMap, VerizonMediaAdFirstQuartileEvent, VerizonMediaAdList, VerizonMediaAdListEventMap, VerizonMediaAdMidpointEvent, VerizonMediaAdThirdQuartileEvent, VerizonMediaAddAdBreakEvent, VerizonMediaAddAssetEvent, VerizonMediaAds, VerizonMediaAsset, VerizonMediaAssetEventMap, VerizonMediaAssetId, VerizonMediaAssetInfoResponse, VerizonMediaAssetInfoResponseEvent, VerizonMediaAssetList, VerizonMediaAssetMovieRating, VerizonMediaAssetTvRating, VerizonMediaAssetType, VerizonMediaConfiguration, VerizonMediaEventMap, VerizonMediaExternalId, VerizonMediaPingConfiguration, VerizonMediaPingErrorEvent, VerizonMediaPingResponse, VerizonMediaPingResponseEvent, VerizonMediaPreplayBaseResponse, VerizonMediaPreplayLiveResponse, VerizonMediaPreplayResponse, VerizonMediaPreplayResponseEvent, VerizonMediaPreplayResponseType, VerizonMediaPreplayVodResponse, VerizonMediaRemoveAdBreakEvent, VerizonMediaRemoveAdEvent, VerizonMediaRemoveAssetEvent, VerizonMediaResponseDrm, VerizonMediaResponseLiveAd, VerizonMediaResponseLiveAdBreak, VerizonMediaResponseLiveAds, VerizonMediaResponseVodAd, VerizonMediaResponseVodAdBreak, VerizonMediaResponseVodAdBreakOffset, VerizonMediaResponseVodAdPlaceholder, VerizonMediaResponseVodAds, VerizonMediaSource, VerizonMediaUiConfiguration, VerizonMediaUpdateAdBreakEvent, VideoFrameCallbackMetadata, VideoFrameRequestCallback, VideoQuality, View, ViewChangeEvent, ViewPositionChangeEvent, VimondDRMConfiguration, VimondIntegrationID, Visibility, VisibilityObserver, VisibilityObserverCallback, VoidPromiseCallback, VolumeChangeEvent, VudrmDRMConfiguration, VudrmIntegrationID, WaitUntilCallback, WaitingEvent, WebAudio, WebVTTCue, WebVTTRegion, WidevineKeySystemConfiguration, XstreamDRMConfiguration, XstreamIntegrationID, YospaceId, YouboraAnalyticsIntegrationID, YouboraOptions, cache, cast, features, playerSuiteVersion, players, registerContentProtectionIntegration, utils, version, videojs };
+export { ABRConfiguration, ABRMetadata, ABRStrategy, ABRStrategyConfiguration, ABRStrategyType, AES128KeySystemConfiguration, AccessibilityRole, Ad, AdBreak, AdBreakEvent, AdBreakInit, AdBufferingEvent, AdDescription, AdEvent, AdInit, AdIntegrationKind, AdMetadataEvent, AdPreloadType, AdReadyState, AdSkipEvent, AdSource, AdSourceType, AdType, AddCachingTaskEvent, AddTrackEvent, AddViewEvent, Ads, AdsConfiguration, AdsEventMap, AdsManagerLoadedEvent, AgamaAnalyticsIntegrationID, AgamaConfiguration, AgamaLogLevelType, AgamaPlayerConfiguration, AgamaServiceName, AgamaSourceConfiguration, AgamaStreamType, AirPlay, AnalyticsDescription, AnalyticsIntegrationID, AudioQuality, AxinomDRMConfiguration, AxinomIntegrationID, AzureDRMConfiguration, AzureIntegrationID, Base64Util, BaseSource, Boundary, BoundaryC3, BoundaryC7, BoundaryHalftime, BoundaryInfo, BufferSource, BufferedSegments, Cache, CacheEventMap, CacheStatus, CacheTaskStatus, CachingTask, CachingTaskEventMap, CachingTaskLicense, CachingTaskList, CachingTaskListEventMap, CachingTaskParameters, CanPlayEvent, CanPlayThroughEvent, Canvas, Cast, CastConfiguration, CastEventMap, CastState, CastStateChangeEvent, CertificateRequest, CertificateResponse, Chromecast, ChromecastConfiguration, ChromecastConnectionCallback, ChromecastError, ChromecastErrorCode, ChromecastErrorEvent, ChromecastEventMap, ChromecastMetadataDescription, ChromecastMetadataImage, ChromecastMetadataType, ChromelessPlayer, ClearkeyDecryptionKey, ClearkeyKeySystemConfiguration, Clip, ClipEventMap, ComcastDRMConfiguration, ComcastIntegrationID, CommonUtils, CompanionAd, ConaxDRMConfiguration, ConaxIntegrationID, ContentProtectionError, ContentProtectionErrorCode, ContentProtectionErrorEvent, ContentProtectionIntegration, ContentProtectionIntegrationFactory, ContentProtectionRequest, ContentProtectionRequestSubType, ContentProtectionResponse, CrossOriginSetting, CsaiAdDescription, CurrentSourceChangeEvent, CustomAdIntegrationKind, CustomTextTrackMap, CustomTextTrackOptions, CustomWebVTTTextTrack, DAIAvailabilityType, DRMConfiguration, DRMTodayDRMConfiguration, DRMTodayIntegrationID, DashPlaybackConfiguration, DateRangeCue, DeliveryType, DeviceBasedTitaniumDRMConfiguration, DimensionChangeEvent, DirectionChangeEvent, DurationChangeEvent, EdgeStyle, EmptiedEvent, EmsgCue, EncryptedEvent, EndedEvent, EnterBadNetworkModeEvent, ErrorCategory, ErrorCode, ErrorEvent, Event, EventDispatcher, EventListener, EventMap, EventStreamCue, EventedList, ExitBadNetworkModeEvent, ExpressPlayDRMConfiguration, ExpressPlayIntegrationID, EzdrmDRMConfiguration, EzdrmIntegrationID, FairPlayKeySystemConfiguration, FreeWheelAdDescription, FreeWheelAdUnitType, FreeWheelCue, FullscreenOptions$1 as FullscreenOptions, Geo, GlobalCast, GlobalChromecast, GoogleDAI, GoogleDAIConfiguration, GoogleDAILiveConfiguration, GoogleDAISSAIIntegrationID, GoogleDAITypedSource, GoogleDAIVodConfiguration, GoogleImaAd, GoogleImaConfiguration, HTTPHeaders, HespApi, HespApiEventMap, HespMediaType, HespSourceConfiguration, HespTypedSource, HlsDiscontinuityAlignment, HlsPlaybackConfiguration, ID3AttachedPicture, ID3BaseFrame, ID3Comments, ID3CommercialFrame, ID3Cue, ID3Frame, ID3GenericEncapsulatedObject, ID3InvolvedPeopleList, ID3PositionSynchronisationFrame, ID3PrivateFrame, ID3SynchronizedLyricsText, ID3TermsOfUse, ID3Text, ID3UniqueFileIdentifier, ID3Unknown, ID3UnsynchronisedLyricsTextTranscription, ID3UrlLink, ID3UserDefinedText, ID3UserDefinedUrlLink, ID3Yospace, IMAAdDescription, Imagine, ImagineEventMap, ImagineSSAIIntegrationID, ImagineServerSideAdInsertionConfiguration, ImagineTrackingEvent, ImagineTypedSource, IntentToFallbackEvent, InterceptableRequest, InterceptableResponse, IrdetoDRMConfiguration, IrdetoIntegrationID, JoinStrategy, KeyOSDRMConfiguration, KeyOSFairplayKeySystemConfiguration, KeyOSIntegrationID, KeyOSKeySystemConfiguration, KeySystemConfiguration, KeySystemId, Latencies, LatencyConfiguration, LatencyManager, LayoutChangeEvent, LicenseRequest, LicenseResponse, LicenseType, LinearAd, List, LoadedDataEvent, LoadedMetadataEvent, MaybeAsync, MeasurableNetworkEstimator, MediaError, MediaErrorCode, MediaFile, MediaMelonConfiguration, MediaTailorSource, MediaTrack, MediaTrackEventMap, MediaTrackList, MediaType, MetadataDescription, Metrics, MillicastSource, MoatAnalyticsIntegrationID, MoatConfiguration, MultiViewPlayer, MultiViewPlayerEventMap, MultiViewPlayerLayout, MutedAutoplayConfiguration, Network, NetworkEstimator, NetworkEstimatorController, NetworkEventMap, NetworkInterceptorController, NodeStyleVoidCallback, NonLinearAd, PauseEvent, PiPConfiguration, PiPPosition, PlayEvent, PlayReadyKeySystemConfiguration, PlayerConfiguration, PlayerEventMap, PlayerList, PlayingEvent, PreloadType, Presentation, PresentationEventMap, PresentationMode, PresentationModeChangeEvent, ProgressEvent, PublicationLoadStartEvent, PublicationLoadedEvent, PublicationOfflineEvent, Quality, QualityEvent, QualityEventMap, QualityList, RateChangeEvent, ReadyStateChangeEvent, RelatedChangeEvent, RelatedContent, RelatedContentEventMap, RelatedContentSource, RelatedHideEvent, RelatedShowEvent, RemoveCachingTaskEvent, RemoveTrackEvent, RemoveViewEvent, Representation, RepresentationChangeEvent, Request, RequestBody, RequestInit, RequestInterceptor, RequestLike, RequestMeasurer, RequestMethod, RequestSubType, RequestType, ResponseBody, ResponseInit, ResponseInterceptor, ResponseLike, ResponseType, RetryConfiguration, SSAIIntegrationId, SeamlessPeriodSwitchStrategy, SeamlessSwitchStrategy, SeekedEvent, SeekingEvent, ServerSideAdInsertionConfiguration, ServerSideAdIntegrationController, ServerSideAdIntegrationFactory, ServerSideAdIntegrationHandler, SkippedAdStrategy, SmartSightConfiguration, SmartSightIntegrationID, Source, SourceAbrConfiguration, SourceChangeEvent, SourceConfiguration, SourceDescription, SourceIntegrationId, SourceLatencyConfiguration, Sources, SpotXAdDescription, SpotxData, SpotxQueryParameter, StateChangeEvent, StereoChangeEvent, StreamOneAnalyticsIntegrationID, StreamOneConfiguration, StreamType, StringKeyOf, StylePropertyRecord, SupportedCustomTextTrackCueTypes, THEOplayerAdDescription, THEOplayerError, TTMLCue, TTMLExtent, TargetQualityChangedEvent, TextTrack, TextTrackAddCueEvent, TextTrackCue, TextTrackCueChangeEvent, TextTrackCueEnterEvent, TextTrackCueEventMap, TextTrackCueExitEvent, TextTrackCueList, TextTrackCueUpdateEvent, TextTrackDescription, TextTrackEnterCueEvent, TextTrackError, TextTrackErrorCode, TextTrackErrorEvent, TextTrackEventMap, TextTrackExitCueEvent, TextTrackReadyState, TextTrackReadyStateChangeEvent, TextTrackRemoveCueEvent, TextTrackStyle, TextTrackStyleEventMap, TextTrackType, TextTrackTypeChangeEvent, TextTrackUpdateCueEvent, TextTracksList, TheoAdDescription, TheoAdsLayoutOverride, TheoLiveApi, TheoLiveApiEventMap, TheoLiveConfiguration, TheoLivePublication, TheoLiveSource, ThumbnailResolution, TimeRanges, TimeUpdateEvent, TitaniumDRMConfiguration, TitaniumIntegrationID, TokenBasedTitaniumDRMConfiguration, Track, TrackChangeEvent, TrackEventMap, TrackList, TrackListEventMap, TrackUpdateEvent, TypedSource, UIConfiguration, UILanguage, UIPlayerConfiguration, UIRelatedContent, UIRelatedContentEventMap, UniversalAdId, UpdateQualityEvent, UplynkDRMConfiguration, UplynkIntegrationID, UserActions, VPAIDMode, VR, VRConfiguration, VRDirection, VREventMap, VRPanoramaMode, VRPlayerConfiguration, VRState, VRStereoMode, VTTAlignSetting, VTTDirectionSetting, VTTLine, VTTLineAlignSetting, VTTPosition, VTTPositionAlignSetting, VTTScrollSetting, VendorCast, VendorCastEventMap, VerimatrixDRMConfiguration, VerimatrixIntegrationID, VerizonMedia, VerizonMediaAd, VerizonMediaAdBeginEvent, VerizonMediaAdBreak, VerizonMediaAdBreakBeginEvent, VerizonMediaAdBreakEndEvent, VerizonMediaAdBreakEventMap, VerizonMediaAdBreakList, VerizonMediaAdBreakListEventMap, VerizonMediaAdBreakSkipEvent, VerizonMediaAdCompleteEvent, VerizonMediaAdEndEvent, VerizonMediaAdEventMap, VerizonMediaAdFirstQuartileEvent, VerizonMediaAdList, VerizonMediaAdListEventMap, VerizonMediaAdMidpointEvent, VerizonMediaAdThirdQuartileEvent, VerizonMediaAddAdBreakEvent, VerizonMediaAddAssetEvent, VerizonMediaAds, VerizonMediaAsset, VerizonMediaAssetEventMap, VerizonMediaAssetId, VerizonMediaAssetInfoResponse, VerizonMediaAssetInfoResponseEvent, VerizonMediaAssetList, VerizonMediaAssetMovieRating, VerizonMediaAssetTvRating, VerizonMediaAssetType, VerizonMediaConfiguration, VerizonMediaEventMap, VerizonMediaExternalId, VerizonMediaPingConfiguration, VerizonMediaPingErrorEvent, VerizonMediaPingResponse, VerizonMediaPingResponseEvent, VerizonMediaPreplayBaseResponse, VerizonMediaPreplayLiveResponse, VerizonMediaPreplayResponse, VerizonMediaPreplayResponseEvent, VerizonMediaPreplayResponseType, VerizonMediaPreplayVodResponse, VerizonMediaRemoveAdBreakEvent, VerizonMediaRemoveAdEvent, VerizonMediaRemoveAssetEvent, VerizonMediaResponseDrm, VerizonMediaResponseLiveAd, VerizonMediaResponseLiveAdBreak, VerizonMediaResponseLiveAds, VerizonMediaResponseVodAd, VerizonMediaResponseVodAdBreak, VerizonMediaResponseVodAdBreakOffset, VerizonMediaResponseVodAdPlaceholder, VerizonMediaResponseVodAds, VerizonMediaSource, VerizonMediaUiConfiguration, VerizonMediaUpdateAdBreakEvent, VideoFrameCallbackMetadata, VideoFrameRequestCallback, VideoQuality, View, ViewChangeEvent, ViewPositionChangeEvent, VimondDRMConfiguration, VimondIntegrationID, Visibility, VisibilityObserver, VisibilityObserverCallback, VoidPromiseCallback, VolumeChangeEvent, VudrmDRMConfiguration, VudrmIntegrationID, WaitUntilCallback, WaitingEvent, WebAudio, WebVTTCue, WebVTTRegion, WidevineKeySystemConfiguration, XstreamDRMConfiguration, XstreamIntegrationID, YospaceId, YouboraAnalyticsIntegrationID, YouboraOptions, cache, cast, features, playerSuiteVersion, players, registerContentProtectionIntegration, utils, version, videojs };
