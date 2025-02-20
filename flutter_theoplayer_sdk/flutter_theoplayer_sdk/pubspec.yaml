@@ -23,16 +23,6 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^2.0.0
 
-flutter:
-  plugin:
-    platforms:
-      android:
-        default_package: flutter_theoplayer_sdk_android
-      ios:
-        default_package: flutter_theoplayer_sdk_ios
-      web:
-        default_package: flutter_theoplayer_sdk_web
-
 topics:
   - theoplayer
   - video-player
