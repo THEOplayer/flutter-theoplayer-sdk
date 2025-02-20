@@ -25,6 +25,7 @@ dev_dependencies:
 
 flutter:
   plugin:
+    implements: theoplayer
     platforms:
       web:
         pluginClass: TheoplayerWeb
