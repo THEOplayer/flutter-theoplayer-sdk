@@ -1,3 +1,8 @@
+## 8.11.0
+
+* Updated THEOplayer to 8.11.0.
+* Added support for Flutter 3.29.0.
+
 ## 8.4.0
 
 * Updated THEOplayer to 8.4.0.
