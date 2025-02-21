@@ -25,14 +25,14 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
-def theoplayerVersion ='8.4.0'
+def theoplayerVersion ='8.11.0'
 
 android {
     if (project.android.hasProperty("namespace")) {
         namespace 'com.theoplayer.flutter'
     }
 
-    compileSdkVersion 33
+    compileSdkVersion 35
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
