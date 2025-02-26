@@ -483,6 +483,124 @@ class THEOplayerFlutterTextTracksAPI(private val binaryMessenger: BinaryMessenge
     }
   }
 }
+/** Generated interface from Pigeon that represents a handler of messages from Flutter. */
+interface THEOplayerNativeTHEOliveAPI {
+  fun goLive()
+  fun preloadChannels(channelIds: List<String>?)
+
+  companion object {
+    /** The codec used by THEOplayerNativeTHEOliveAPI. */
+    val codec: MessageCodec<Any?> by lazy {
+      StandardMessageCodec()
+    }
+    /** Sets up an instance of `THEOplayerNativeTHEOliveAPI` to handle messages through the `binaryMessenger`. */
+    @Suppress("UNCHECKED_CAST")
+    fun setUp(binaryMessenger: BinaryMessenger, api: THEOplayerNativeTHEOliveAPI?) {
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeTHEOliveAPI.goLive", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            var wrapped: List<Any?>
+            try {
+              api.goLive()
+              wrapped = listOf<Any?>(null)
+            } catch (exception: Throwable) {
+              wrapped = wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeTHEOliveAPI.preloadChannels", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val channelIdsArg = args[0] as List<String>?
+            var wrapped: List<Any?>
+            try {
+              api.preloadChannels(channelIdsArg)
+              wrapped = listOf<Any?>(null)
+            } catch (exception: Throwable) {
+              wrapped = wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+    }
+  }
+}
+/** Generated class from Pigeon that represents Flutter messages that can be called from Kotlin. */
+@Suppress("UNCHECKED_CAST")
+class THEOplayerFlutterTHEOliveAPI(private val binaryMessenger: BinaryMessenger) {
+  companion object {
+    /** The codec used by THEOplayerFlutterTHEOliveAPI. */
+    val codec: MessageCodec<Any?> by lazy {
+      StandardMessageCodec()
+    }
+  }
+  fun onPublicationLoadStartEvent(channelIdArg: String, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onPublicationLoadStartEvent", codec)
+    channel.send(listOf(channelIdArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
+        } else {
+          callback(Result.success(Unit));
+        }
+      } else {
+        callback(Result.failure(FlutterError("channel-error",  "Unable to establish connection on channel.", "")));
+      } 
+    }
+  }
+  fun onPublicationLoadedEvent(channelIdArg: String, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onPublicationLoadedEvent", codec)
+    channel.send(listOf(channelIdArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
+        } else {
+          callback(Result.success(Unit));
+        }
+      } else {
+        callback(Result.failure(FlutterError("channel-error",  "Unable to establish connection on channel.", "")));
+      } 
+    }
+  }
+  fun onPublicationOfflineEvent(channelIdArg: String, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onPublicationOfflineEvent", codec)
+    channel.send(listOf(channelIdArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
+        } else {
+          callback(Result.success(Unit));
+        }
+      } else {
+        callback(Result.failure(FlutterError("channel-error",  "Unable to establish connection on channel.", "")));
+      } 
+    }
+  }
+  fun onIntentToFallbackEvent(callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onIntentToFallbackEvent", codec)
+    channel.send(null) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
+        } else {
+          callback(Result.success(Unit));
+        }
+      } else {
+        callback(Result.failure(FlutterError("channel-error",  "Unable to establish connection on channel.", "")));
+      } 
+    }
+  }
+}
 @Suppress("UNCHECKED_CAST")
 private object THEOplayerNativeAPICodec : StandardMessageCodec() {
   override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {

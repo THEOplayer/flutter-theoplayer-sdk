@@ -358,6 +358,84 @@ class THEOplayerFlutterTextTracksAPI: THEOplayerFlutterTextTracksAPIProtocol {
     }
   }
 }
+/// Generated protocol from Pigeon that represents a handler of messages from Flutter.
+protocol THEOplayerNativeTHEOliveAPI {
+  func goLive() throws
+  func preloadChannels(channelIds: [String]?) throws
+}
+
+/// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
+class THEOplayerNativeTHEOliveAPISetup {
+  /// The codec used by THEOplayerNativeTHEOliveAPI.
+  /// Sets up an instance of `THEOplayerNativeTHEOliveAPI` to handle messages through the `binaryMessenger`.
+  static func setUp(binaryMessenger: FlutterBinaryMessenger, api: THEOplayerNativeTHEOliveAPI?) {
+    let goLiveChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeTHEOliveAPI.goLive", binaryMessenger: binaryMessenger)
+    if let api = api {
+      goLiveChannel.setMessageHandler { _, reply in
+        do {
+          try api.goLive()
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      goLiveChannel.setMessageHandler(nil)
+    }
+    let preloadChannelsChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeTHEOliveAPI.preloadChannels", binaryMessenger: binaryMessenger)
+    if let api = api {
+      preloadChannelsChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let channelIdsArg: [String]? = nilOrValue(args[0])
+        do {
+          try api.preloadChannels(channelIds: channelIdsArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      preloadChannelsChannel.setMessageHandler(nil)
+    }
+  }
+}
+/// Generated protocol from Pigeon that represents Flutter messages that can be called from Swift.
+protocol THEOplayerFlutterTHEOliveAPIProtocol {
+  func onPublicationLoadStartEvent(channelId channelIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onPublicationLoadedEvent(channelId channelIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onPublicationOfflineEvent(channelId channelIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onIntentToFallbackEvent(completion: @escaping (Result<Void, FlutterError>) -> Void) 
+}
+class THEOplayerFlutterTHEOliveAPI: THEOplayerFlutterTHEOliveAPIProtocol {
+  private let binaryMessenger: FlutterBinaryMessenger
+  init(binaryMessenger: FlutterBinaryMessenger){
+    self.binaryMessenger = binaryMessenger
+  }
+  func onPublicationLoadStartEvent(channelId channelIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onPublicationLoadStartEvent", binaryMessenger: binaryMessenger)
+    channel.sendMessage([channelIdArg] as [Any?]) { _ in
+      completion(.success(Void()))
+    }
+  }
+  func onPublicationLoadedEvent(channelId channelIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onPublicationLoadedEvent", binaryMessenger: binaryMessenger)
+    channel.sendMessage([channelIdArg] as [Any?]) { _ in
+      completion(.success(Void()))
+    }
+  }
+  func onPublicationOfflineEvent(channelId channelIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onPublicationOfflineEvent", binaryMessenger: binaryMessenger)
+    channel.sendMessage([channelIdArg] as [Any?]) { _ in
+      completion(.success(Void()))
+    }
+  }
+  func onIntentToFallbackEvent(completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onIntentToFallbackEvent", binaryMessenger: binaryMessenger)
+    channel.sendMessage(nil) { _ in
+      completion(.success(Void()))
+    }
+  }
+}
 private class THEOplayerNativeAPICodecReader: FlutterStandardReader {
   override func readValue(ofType type: UInt8) -> Any? {
     switch type {
