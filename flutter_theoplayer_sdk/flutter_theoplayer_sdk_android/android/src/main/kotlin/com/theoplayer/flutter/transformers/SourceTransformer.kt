@@ -5,6 +5,8 @@ import com.theoplayer.android.api.source.TypedSource
 import com.theoplayer.android.api.source.drm.DRMConfiguration
 import com.theoplayer.android.api.source.drm.FairPlayKeySystemConfiguration
 import com.theoplayer.android.api.source.drm.KeySystemConfiguration
+import com.theoplayer.android.api.theolive.TheoLiveSource
+import com.theoplayer.flutter.pigeon.SourceIntegrationId
 
 typealias FlutterSourceDescription = com.theoplayer.flutter.pigeon.SourceDescription
 typealias FlutterTypedSource = com.theoplayer.flutter.pigeon.TypedSource
@@ -33,7 +35,8 @@ object SourceTransformer {
             toFlutterDRMConfiguration(it)
         }
 
-        return FlutterTypedSource(typedSource.src, drm)
+        val integrationID = if (typedSource is TheoLiveSource) SourceIntegrationId.THEOLIVE else null
+        return FlutterTypedSource(typedSource.src, drm, integration = integrationID)
     }
 
     fun toFlutterDRMConfiguration(drmConfiguration: DRMConfiguration): FlutterDRMConfiguration {
@@ -83,13 +86,20 @@ object SourceTransformer {
             return null
         }
 
-        val typedSourceBuilder = TypedSource.Builder(flutterTypedSource.src)
+        when(flutterTypedSource.integration) {
+            SourceIntegrationId.THEOLIVE -> {
+                return TheoLiveSource(flutterTypedSource.src)
+            }
+            else -> {
+                val typedSourceBuilder = TypedSource.Builder(flutterTypedSource.src)
 
-        flutterTypedSource.drm?.let {
-            typedSourceBuilder.drm(toDRMConfiguration(it))
+                flutterTypedSource.drm?.let {
+                    typedSourceBuilder.drm(toDRMConfiguration(it))
+                }
+
+                return typedSourceBuilder.build()
+            }
         }
-
-        return typedSourceBuilder.build()
     }
 
     fun toDRMConfiguration(flutterDRMConfiguration: FlutterDRMConfiguration): DRMConfiguration {
