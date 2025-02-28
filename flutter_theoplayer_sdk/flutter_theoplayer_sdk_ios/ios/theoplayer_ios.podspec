@@ -23,5 +23,6 @@ THEOplayer Flutter iOS SDK
   s.swift_version = '5.0'
 
   s.dependency 'THEOplayerSDK-core', '8.11.0'
+  s.dependency 'THEOplayer-Integration-THEOlive', '8.11.0'
 
 end
