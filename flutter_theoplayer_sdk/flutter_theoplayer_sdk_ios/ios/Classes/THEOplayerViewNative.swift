@@ -2,6 +2,7 @@ import Foundation
 import Flutter
 import THEOplayerSDK
 import AVKit
+import THEOplayerTHEOliveIntegration
 
 //TODO: This extension of Error is required to do use FlutterError in any Swift code.
 //TODO: https://github.com/flutter/packages/blob/main/packages/pigeon/example/README.md#swift
@@ -16,6 +17,7 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
     private let _textTrackBridge: TextTrackBridge
     private let _audioTrackBridge: AudioTrackBridge
     private let _videoTrackBridge: VideoTrackBridge
+    private let _theoLiveBridge: THEOliveBridge
     private var _allowBackgroundPlayback = false
     private var _allowAutomaticPictureInPicture = true
 
@@ -36,6 +38,9 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
         let license = playerConfig?["license"] as? String
         let licenseUrl = playerConfig?["licenseUrl"] as? String
 
+        let theoLiveConfig = playerConfig?["theoLive"] as? [String: Any]
+        let theoLiveExternalSessionId = theoLiveConfig?["externalSessionId"] as? String
+        
         let pipConfig = PiPConfigurationBuilder()
         pipConfig.nativePictureInPicture = _allowAutomaticPictureInPicture;
         pipConfig.canStartPictureInPictureAutomaticallyFromInline = _allowAutomaticPictureInPicture;
@@ -46,7 +51,14 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
         //we need to enable pip on theoplayerConfig, otherwise theoplayer.pip will be not setup correctly
         theoConfig.pip = pipConfig.build()
         
+        theoConfig.autoIntegrations = false
+        
         _theoplayer = THEOplayer(configuration: theoConfig.build())
+        
+        let theoLiveIntegration = THEOliveIntegrationFactory.createIntegration(
+            with: THEOliveConfiguration(externalSessionId: theoLiveExternalSessionId)
+        )
+        _theoplayer.addIntegration(theoLiveIntegration)
         
         _theoplayer.frame = _view.bounds
         _theoplayer.autoresizingMask = [.flexibleHeight, .flexibleWidth]
@@ -66,6 +78,9 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
         
         _videoTrackBridge = VideoTrackBridge(theoplayer: _theoplayer, pigeonMessenger: _pigeonMessenger)
         _videoTrackBridge.attachListeners()
+        
+        _theoLiveBridge = THEOliveBridge(theoLive: theoLiveIntegration, pigeonMessenger: _pigeonMessenger)
+        _theoLiveBridge.attachListeners()
 
         super.init()
         
@@ -230,6 +245,7 @@ extension THEOplayerViewNative: THEOplayerNativeAPI {
         _textTrackBridge.removeListeners()
         _audioTrackBridge.removeListeners()
         _videoTrackBridge.removeListeners()
+        _theoLiveBridge.removeListeners()
         _theoplayer.destroy()
     }
     
