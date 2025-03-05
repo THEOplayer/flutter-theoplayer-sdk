@@ -25,14 +25,17 @@ void main() {
     await runBasicPlaybackTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
   });
 
-  testWidgets('Test basic THEOlive playback with HYBRID_COMPOSITION', (WidgetTester tester) async {
-    await runBasicTHEOlivePlaybackTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
-  });
+  //disabled for now only on WEB, we need to figure out the license
+  if (!kIsWeb) {
+    testWidgets('Test basic THEOlive playback with HYBRID_COMPOSITION', (WidgetTester tester) async {
+      await runBasicTHEOlivePlaybackTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
+    });
 
-  // the only difference is is on Android
-  testWidgets('Test basic THEOlive playback with SURFACE_TEXTURE', (WidgetTester tester) async {
-    await runBasicTHEOlivePlaybackTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
-  });
+    // the only difference is is on Android
+    testWidgets('Test basic THEOlive playback with SURFACE_TEXTURE', (WidgetTester tester) async {
+      await runBasicTHEOlivePlaybackTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
+    });
+  }
 
 }
 
