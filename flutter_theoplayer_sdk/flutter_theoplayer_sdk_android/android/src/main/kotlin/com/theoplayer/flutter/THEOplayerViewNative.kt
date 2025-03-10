@@ -11,11 +11,14 @@ import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.player.PlayerEventTypes
 import com.theoplayer.android.api.event.player.PlayingEvent
+import com.theoplayer.android.api.event.player.theolive.TheoLiveEventTypes
 import com.theoplayer.android.api.pip.PipConfiguration
 import com.theoplayer.android.api.player.Player
+import com.theoplayer.android.api.theolive.THEOLiveConfig
 import com.theoplayer.flutter.pigeon.THEOplayerFlutterAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeAPI.Companion.setUp
+import com.theoplayer.flutter.theolive.THEOliveBridge
 import com.theoplayer.flutter.transformers.PlayerEnumTransformer
 import com.theoplayer.flutter.transformers.SourceTransformer
 import com.theoplayer.flutter.transformers.TimeRangeTransformer
@@ -52,6 +55,7 @@ class THEOplayerViewNative(
     private val textTrackBridge: TextTrackBridge
     private val audioTrackBridge: AudioTrackBridge
     private val videoTrackBridge: VideoTrackBridge
+    private val theoLiveBridge: THEOliveBridge
 
     private var allowAutomaticPictureInPicture: Boolean = false;
 
@@ -89,10 +93,16 @@ class THEOplayerViewNative(
         useHybridComposition =
             (flutterPlayerConfig?.get("androidConfig") as? Map<*, *>)?.get("viewComposition") as? String == "HYBRID_COMPOSITION"
 
+        val theoLiveConfigExternalSessionId = (flutterPlayerConfig?.get("theoLive") as?  Map<*, *>)?.get("externalSessionId") as? String
+
         val playerConfigBuilder = THEOplayerConfig.Builder()
         license?.let { playerConfigBuilder.license(it) }
         licenseUrl?.let { playerConfigBuilder.licenseUrl(it) }
         playerConfigBuilder.pipConfiguration(PipConfiguration.Builder().build())
+
+        if (theoLiveConfigExternalSessionId != null) {
+            playerConfigBuilder.theoLiveConfiguration(THEOLiveConfig.Builder().externalSessionId(theoLiveConfigExternalSessionId).build())
+        }
 
         theoplayerWrapper = LinearLayout(context)
         theoplayerWrapper.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
@@ -122,6 +132,10 @@ class THEOplayerViewNative(
 
         videoTrackBridge = VideoTrackBridge(tpv.player, pigeonMessenger)
         videoTrackBridge.attachListeners()
+
+        theoLiveBridge = THEOliveBridge(tpv.player.theoLive, pigeonMessenger)
+        theoLiveBridge.attachListeners()
+
     }
 
     override fun getView(): View {
@@ -134,6 +148,7 @@ class THEOplayerViewNative(
         textTrackBridge.removeListeners()
         audioTrackBridge.removeListeners()
         videoTrackBridge.removeListeners()
+        theoLiveBridge.removeListeners()
         tpv.onDestroy()
         destroyListener?.onDestroyed();
     }
