@@ -878,6 +878,19 @@ class THEOplayer implements EventDispatcher {
     _playerState.eventManager.removeEventListener(eventType, listener);
   }
 
+  /// Add the given listener to all [PlayerEventTypes] type(s).
+  /// __Experimental API__!
+  /// Allows you to register a single [EventListener] and do a switch-case on the type of the event.
+  void addAllEventListener(EventListener<Event> listener) {
+    _playerState.eventManager.addAllEventListener(listener);
+  }
+
+  /// Remove the given listener to all [PlayerEventTypes] type(s).
+  /// __Experimental_ API__!
+  void removeAllEventListener(EventListener<Event> listener) {
+    _playerState.eventManager.removeAllEventListener(listener);
+  }
+
 }
 
 /// Platform listener that receives PiP-related events from native.
