@@ -26,6 +26,7 @@ class PlayerState {
   PreloadType preload = PreloadType.none;
   ReadyState readyState = ReadyState.have_nothing;
   bool isSeeking = false;
+  bool isWaiting = false;
   bool isEnded = false;
   int videoWidth = 0;
   int videoHeight = 0;
@@ -125,6 +126,7 @@ class PlayerState {
   }
 
   void _playingEventListener(Event event) {
+    isWaiting = false;
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
   }
@@ -136,6 +138,7 @@ class PlayerState {
   }
 
   void _waitingEventListener(Event event) {
+    isWaiting = true;
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
   }
@@ -201,6 +204,7 @@ class PlayerState {
   }
 
   void _endedEventListener(Event event) {
+    isWaiting = false;
     isEnded = true;
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
@@ -234,6 +238,7 @@ class PlayerState {
     volume = 1.0;
     readyState = ReadyState.have_nothing;
     isSeeking = false;
+    isWaiting = false;
     isEnded = false;
     videoWidth = 0;
     videoHeight = 0;
