@@ -7,6 +7,7 @@
 
 import Foundation
 import THEOplayerSDK
+import THEOplayerTHEOliveIntegration
 
 struct SourceTransformer {
     static func toFlutterSourceDescription(source: THEOplayerSDK.SourceDescription?) -> SourceDescription? {
@@ -82,12 +83,17 @@ struct SourceTransformer {
             return nil
         }
         
-        var drm = toDRMConfiguration(flutterDRMConfiguration: typedSource.drm)
-        
-        return THEOplayerSDK.TypedSource(
-            src: typedSource.src,
-            type: "",
-            drm: drm)
+        switch typedSource.integration {
+            case .theolive:
+                return TheoLiveSource(channelId: typedSource.src)
+            default:
+                let drm = toDRMConfiguration(flutterDRMConfiguration: typedSource.drm)
+                
+                return THEOplayerSDK.TypedSource(
+                    src: typedSource.src,
+                    type: "",
+                    drm: drm)
+        }
     }
     
     static func toDRMConfiguration(flutterDRMConfiguration: DRMConfiguration?) -> THEOplayerSDK.DRMConfiguration? {
