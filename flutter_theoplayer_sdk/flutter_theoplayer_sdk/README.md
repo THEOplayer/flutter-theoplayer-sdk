@@ -114,9 +114,7 @@ Note: If you use Texture-based rendering (SURFACE_TEXTURE and SURFACE_PRODUCER) 
 </tr>
 <tr>
 <td><strong><a href="https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/theolive.md">THEOlive</a></strong></td>
-<td>Coming soon… (Can not wait? <a href="https://github.com/THEOplayer/flutter-theolive-sdk">You can still use our THEOlive SDK</a>)</td>
-<td>Supported through <code>THEOliveSource</code> and <code>player.theolive</code> API</td>
-<td>Coming soon… (Can not wait? <a href="https://github.com/THEOplayer/flutter-theolive-sdk">You can still use our THEOlive SDK</a>)</td>
+<td colspan="3">Supported through <code>THEOliveSource</code> and <code>player.theolive</code> API</td>
 </tr>
 </tbody>
 </table>
