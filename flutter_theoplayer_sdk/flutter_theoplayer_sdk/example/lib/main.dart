@@ -222,7 +222,7 @@ class _MyAppState extends State<MyApp> {
                                     TheoLiveSource(src: "2vqqekesftg9zuvxu9tdme6kl"),
                                   ]);
                                 },
-                                child: const Text("THEOlive source (web-only)"),
+                                child: const Text("THEOlive source"),
                               ),
                               FilledButton(
                                 onPressed: () {
