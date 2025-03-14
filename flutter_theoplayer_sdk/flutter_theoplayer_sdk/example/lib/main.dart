@@ -216,10 +216,10 @@ class _MyAppState extends State<MyApp> {
                                   /**
                                    * preload channels for faster startup
                                    *
-                                   player.theoLive?.preloadChannels(["2vqqekesftg9zuvxu9tdme6kl"]);
+                                   player.theoLive?.preloadChannels(["38yyniscxeglzr8n0lbku57b0"]);
                                    */
                                   player.source = SourceDescription(sources: [
-                                    TheoLiveSource(src: "2vqqekesftg9zuvxu9tdme6kl"),
+                                    TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
                                   ]);
                                 },
                                 child: const Text("THEOlive source"),
