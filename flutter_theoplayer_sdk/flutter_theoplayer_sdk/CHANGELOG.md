@@ -1,6 +1,6 @@
-## 8.13.1
+## 8.13.2
 
-* Updated THEOplayer to 8.13.1.
+* Updated THEOplayer to 8.13.2.
 * Added [THEOlive support](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/theolive.md) for Android and iOS.
 * Added `THEOplayer.isWaiting` state.
 * Added experimental `THEOplayer.addAllEventListener(...)` to listen on all player events at once.
