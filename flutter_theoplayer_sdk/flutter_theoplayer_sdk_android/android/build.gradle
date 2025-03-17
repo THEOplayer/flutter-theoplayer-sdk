@@ -25,7 +25,7 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
-def theoplayerVersion ='8.11.0'
+def theoplayerVersion ='8.13.2'
 
 android {
     if (project.android.hasProperty("namespace")) {
@@ -73,5 +73,9 @@ android {
                showStandardStreams = true
             }
         }
+    }
+    
+    buildFeatures {
+        buildConfig = true
     }
 }

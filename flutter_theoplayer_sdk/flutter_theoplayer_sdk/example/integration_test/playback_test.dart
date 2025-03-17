@@ -25,8 +25,8 @@ void main() {
     await runBasicPlaybackTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
   });
 
-  //disabled for now, we need to figure out the license
-  if (false && kIsWeb) {
+  //disabled for now only on WEB, we need to figure out the license
+  if (!kIsWeb) {
     testWidgets('Test basic THEOlive playback with HYBRID_COMPOSITION', (WidgetTester tester) async {
       await runBasicTHEOlivePlaybackTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
     });
@@ -36,6 +36,7 @@ void main() {
       await runBasicTHEOlivePlaybackTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
     });
   }
+
 }
 
 Future<void> runBasicPlaybackTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {

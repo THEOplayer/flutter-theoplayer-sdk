@@ -56,6 +56,73 @@ To add THEOplayer Flutter SDK as a dependency, you can simply fetch it from [pub
 $ flutter pub add theoplayer
 ```
 
+##### Option 1/b (optional) Referencing a custom branch from the official THEOplayer Flutter SDK repository
+In certain scenarios (e.g. you would like to test an un-released feature), you can reference any commit/branch/tag from the [THEOplayer Flutter SDK repository](https://github.com/THEOplayer/flutter-theoplayer-sdk).
+
+In your `package.yaml` file you need to change the way you reference the `theoplayer` package with Dart's `dependency_override` feature:
+
+From:
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+
+  theoplayer: ^8.11.0
+```
+
+To:
+```yaml
+dependencies:
+  flutter:
+    sdk: flutter
+
+  theoplayer: ^8.11.0
+
+dependency_overrides:
+  theoplayer:
+    git:
+      url: https://github.com/THEOplayer/flutter-theoplayer-sdk.git
+      ref: feature/NEW_UNRELEASED_FEATURE
+      path: flutter_theoplayer_sdk/flutter_theoplayer_sdk
+
+  theoplayer_ios:
+    git:
+      url: https://github.com/THEOplayer/flutter-theoplayer-sdk.git
+      ref: feature/NEW_UNRELEASED_FEATURE
+      path: flutter_theoplayer_sdk/flutter_theoplayer_sdk_ios
+
+  theoplayer_android:
+    git:
+      url: https://github.com/THEOplayer/flutter-theoplayer-sdk.git
+      ref: feature/NEW_UNRELEASED_FEATURE
+      path: flutter_theoplayer_sdk/flutter_theoplayer_sdk_android
+
+  theoplayer_platform_interface:
+    git:
+      url: https://github.com/THEOplayer/flutter-theoplayer-sdk.git
+      ref: feature/NEW_UNRELEASED_FEATURE
+      path: flutter_theoplayer_sdk/flutter_theoplayer_sdk_platform_interface
+```
+
+As you can see, removing `theoplayer: ^8.11.0` is not necessary as `dependency_override` takes precedence over standard `dependencies`.
+
+You can even move this new piece into a separate `dependency_overrides.yaml` file too, if you wish. (and you can use it during development and not commit the file into the repository)
+
+Dependency override makes sure that `theoplayer` and its dependencies `theoplayer_ios`, `theoplayer_android`, and `theoplayer_platform_interface` are pulled from the correct branch.
+
+After running `pub get` you will see that the overrides are in place:
+
+```bash
+...
+! theoplayer 8.11.0 from git https://github.com/THEOplayer/flutter-theoplayer-sdk.git at d292cf in flutter_theoplayer_sdk/flutter_theoplayer_sdk (overridden)
+! theoplayer_android 8.11.0 from git https://github.com/THEOplayer/flutter-theoplayer-sdk.git at d292cf in flutter_theoplayer_sdk/flutter_theoplayer_sdk_android (overridden)
+! theoplayer_ios 8.11.0 from git https://github.com/THEOplayer/flutter-theoplayer-sdk.git at d292cf in flutter_theoplayer_sdk/flutter_theoplayer_sdk_ios (overridden)
+! theoplayer_platform_interface 8.11.0 from git https://github.com/THEOplayer/flutter-theoplayer-sdk.git at d292cf in flutter_theoplayer_sdk/flutter_theoplayer_sdk_platform_interface (overridden)
+  vm_service 14.3.0 (15.0.0 available)
+  web 1.1.0 (1.1.1 available)
+...
+```
+
 #### Option 2: Adding THEOplayer Flutter SDK as submodule
 As an alternative, you can add the SDK as a submodule in your git project.
 This can be useful if you are trying to fork the project to [contribute](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/CONTRIBUTING.md) with us.

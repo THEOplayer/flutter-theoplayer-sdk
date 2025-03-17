@@ -175,16 +175,6 @@ class THEOplayer implements EventDispatcher {
   }
   /// Set current source which describes desired playback of a media resource.
   set source(SourceDescription? source) {
-
-    if (!kIsWeb) {
-      TypedSource? theoLiveSource = source?.sources.firstWhere((typedSource) => typedSource?.integration == SourceIntegrationId.theolive, orElse: () => null);
-      if (theoLiveSource != null) {
-        printLog("Using THEOlive sources are not supported on ${defaultTargetPlatform.name}");
-        stop();
-        return;
-      }
-    }
-
     _playerState.resetState();
     _theoPlayerViewController?.setSource(source: source);
   }
@@ -477,6 +467,11 @@ class THEOplayer implements EventDispatcher {
   /// Whether the player is seeking.
   bool get isSeeking {
     return _playerState.isSeeking;
+  }
+
+  /// Whether the player is waiting state (buffering).
+  bool get isWaiting {
+    return _playerState.isWaiting;
   }
 
   /// Returns true, whenever a underlying native view is already initialized.
@@ -886,6 +881,19 @@ class THEOplayer implements EventDispatcher {
   @override
   void removeEventListener(String eventType, EventListener<Event> listener) {
     _playerState.eventManager.removeEventListener(eventType, listener);
+  }
+
+  /// Add the given listener to all [PlayerEventTypes] type(s).
+  /// __Experimental API__!
+  /// Allows you to register a single [EventListener] and do a switch-case on the type of the event.
+  void addAllEventListener(EventListener<Event> listener) {
+    _playerState.eventManager.addAllEventListener(listener);
+  }
+
+  /// Remove the given listener to all [PlayerEventTypes] type(s).
+  /// __Experimental_ API__!
+  void removeAllEventListener(EventListener<Event> listener) {
+    _playerState.eventManager.removeAllEventListener(listener);
   }
 
 }

@@ -21,7 +21,9 @@ update_theoplayer_ios() {
     echo "Updating THEOplayer iOS SDK to: ${IOS}"
 
     sed -i '' "s/s.dependency 'THEOplayerSDK-core', '.*/s.dependency 'THEOplayerSDK-core', '${IOS}'/g" flutter_theoplayer_sdk/flutter_theoplayer_sdk_ios/ios/theoplayer_ios.podspec
+    sed -i '' "s/s.dependency 'THEOplayer-Integration-THEOlive', '.*/s.dependency 'THEOplayer-Integration-THEOlive', '${IOS}'/g" flutter_theoplayer_sdk/flutter_theoplayer_sdk_ios/ios/theoplayer_ios.podspec
     pod update THEOplayerSDK-core --project-directory=flutter_theoplayer_sdk/flutter_theoplayer_sdk/example/ios
+    pod update THEOplayer-Integration-THEOlive --project-directory=flutter_theoplayer_sdk/flutter_theoplayer_sdk/example/ios
     pod install --repo-update --project-directory=flutter_theoplayer_sdk/flutter_theoplayer_sdk/example/ios
   fi
   echo ""
