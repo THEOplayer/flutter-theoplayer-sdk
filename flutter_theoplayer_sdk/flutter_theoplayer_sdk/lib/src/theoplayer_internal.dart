@@ -469,6 +469,11 @@ class THEOplayer implements EventDispatcher {
     return _playerState.isSeeking;
   }
 
+  /// Whether the player is waiting state (buffering).
+  bool get isWaiting {
+    return _playerState.isWaiting;
+  }
+
   /// Returns true, whenever a underlying native view is already initialized.
   bool get isInitialized {
     return _playerState.isInitialized;

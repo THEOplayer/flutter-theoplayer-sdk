@@ -722,16 +722,17 @@ interface AdsManagerLoadedEvent extends Event<'adsmanagerloaded'> {
  * @remarks
  * <br/> - Available since v8.2.0.
  *
+ * @deprecated Use {@link TheoAds.replaceAdTagParameters} instead
  * @category Ads
  * @public
  */
-interface TheoAds {
+interface LegacyTheoAds {
     /**
      * Replaces all the ad tag parameters used for upcoming ad requests for a live stream.
      *
      * @param adTagParameters - The new ad tag parameters.
      *
-     * @remark
+     * @remarks
      * <br/> - If set, this value overrides any parameters set on the {@link TheoAdDescription.adTagParameters}.
      */
     replaceAdTagParameters(adTagParameters?: Record<string, string>): void;
@@ -907,9 +908,10 @@ interface AdsConfiguration {
      * Allows configuring which mime types are allowed during ad playback.
      *
      * @remarks
-     * <br/> - This feature is only available for Google IMA.
      * <br/> - If set to an array, all ads with another mime types will be ignored.
-     * <br/> - If set to `undefined` the ad system will pick media based on the browser's capabilities.
+     * <br/> - If set to `undefined`:
+     *   - for Google IMA, the ad system will pick media based on the browser's capabilities.
+     *   - for the other integrations, the ad system will ignore all streaming ads.
      *
      * @defaultValue `undefined`
      */
@@ -1043,15 +1045,12 @@ interface NonLinearAd extends Ad {
  * <br/> - `'progressive'`: Delivered through progressive download protocols (e.g. HTTP).
  * <br/> - `'streaming'`: Delivered through streaming download protocols.
  *
- * @remarks
- * <br/> - `'streaming'` is currently not supported.
- *
  * @category Ads
  * @public
  */
 type DeliveryType = 'progressive' | 'streaming';
 /**
- * Represents metadata of an media file with ad content.
+ * Represents metadata of a media file with ad content.
  *
  * @remarks
  * <br/> - This metadata is retrieved from the VAST file.
@@ -1082,6 +1081,33 @@ interface MediaFile {
     contentURL: string;
 }
 /**
+ * Represents metadata of a closed caption for a media file with ad content.
+ *
+ * @remarks
+ * <br/> - This metadata is retrieved from the VAST file.
+ *
+ * @category Ads
+ * @public
+ */
+interface ClosedCaptionFile {
+    /**
+     * The MIME type for the file.
+     */
+    type: string;
+    /**
+     * The language of the Closed Caption file using ISO 631-1 codes. An optional locale
+     * suffix can also be provided.
+     *
+     * @example
+     * "en", "en-US", "zh-TW"
+     */
+    language: string;
+    /**
+     * The URI of the file providing Closed Caption info for the media file.
+     */
+    contentURL: string;
+}
+/**
  * Represents a linear ad in the VAST specification.
  *
  * @category Ads
@@ -1099,6 +1125,17 @@ interface LinearAd extends Ad {
      * List of media files which contain metadata about ad video files.
      */
     mediaFiles: MediaFile[];
+    /**
+     * The URL of the media file loaded for ad playback. Returns undefined if no URL is available yet.
+     *
+     * @remarks
+     * <br/> - Available when the ad break has started.
+     */
+    mediaUrl?: string;
+    /**
+     * List of closed caption files which contain metadata about the closed captions that accompany any media files.
+     */
+    closedCaptionFiles: ClosedCaptionFile[];
 }
 /**
  * Represents a Google IMA creative compliant to the VAST specification.
@@ -1424,10 +1461,6 @@ interface AdsEventMap {
      * <br/> - only available in the Google IMA integration.
      */
     adsmanagerloaded: AdsManagerLoadedEvent;
-    /**
-     * @internal
-     */
-    overlaybegin: Event<'overlaybegin'>;
 }
 /**
  * Base type for events related to a single ad.
@@ -1514,10 +1547,12 @@ interface Ads extends EventDispatcher<AdsEventMap> {
     /**
      * The THEOads API.
      *
+     * @deprecated use {@link TheoAds} instead.
+     *
      * @remarks
      * <br/> - Only available with the feature `'theoads'`.
      */
-    readonly theoads?: TheoAds;
+    readonly theoads?: LegacyTheoAds;
     /**
      * Add an ad break request.
      *
@@ -2583,6 +2618,7 @@ interface ChromecastConfiguration {
  * <br/> - `'play-last'`: Plays the last ad break skipped due to a seek.
  *
  * @category Verizon Media
+ * @category Uplynk
  * @public
  */
 type SkippedAdStrategy = 'play-all' | 'play-none' | 'play-last';
@@ -2591,8 +2627,24 @@ type SkippedAdStrategy = 'play-all' | 'play-none' | 'play-last';
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkConfiguration}
  */
-interface VerizonMediaConfiguration {
+interface VerizonMediaConfiguration extends UplynkConfiguration {
+    /**
+     * The Verizon Media UI configuration.
+     *
+     * @remarks
+     * Only available with the features `'verizon-media'` and `'ui'`.
+     */
+    ui?: VerizonMediaUiConfiguration;
+}
+/**
+ * Describes the configuration of the Uplynk integration.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkConfiguration {
     /**
      * The offset after which an ad break may be skipped, in seconds.
      *
@@ -2611,20 +2663,29 @@ interface VerizonMediaConfiguration {
      */
     onSeekOverAd?: SkippedAdStrategy;
     /**
-     * The Verizon Media UI configuration.
+     * The Uplynk UI configuration.
      *
      * @remarks
-     * Only available with the features `'verizonmedia'` and `'ui'`.
+     * Only available with the features `'uplynk'` and `'ui'`.
      */
-    ui?: VerizonMediaUiConfiguration;
+    ui?: UplynkUiConfiguration;
 }
 /**
  * Describes the UI configuration of the Verizon Media integration.
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkUiConfiguration}
  */
-interface VerizonMediaUiConfiguration {
+interface VerizonMediaUiConfiguration extends UplynkUiConfiguration {
+}
+/**
+ * Describes the UI configuration of the Uplynk integration.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkUiConfiguration {
     /**
      * Whether an up next content countdown is shown on the UI.
      *
@@ -2835,8 +2896,14 @@ interface PlayerConfiguration {
     cast?: CastConfiguration;
     /**
      * The Verizon Media configuration for the player.
+     *
+     * @deprecated Superseded by {@link uplynk}
      */
     verizonMedia?: VerizonMediaConfiguration;
+    /**
+     * The Uplynk configuration for the player.
+     */
+    uplynk?: UplynkConfiguration;
     /**
      * Whether `playbackRate` is retained across sources. When `false`, `playbackRate` will be reset to 1 on each source change.
      * Defaults to `false`.
@@ -3134,47 +3201,58 @@ interface ChromecastMetadataDescription extends MetadataDescription {
  * @category Source
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkSource}
  */
-interface VerizonMediaSource extends BaseSource {
+type VerizonMediaSource = UplynkSource;
+/**
+ * Represents a media resource which is found on the Uplynk Platform.
+ *
+ * @category Source
+ * @category Uplynk
+ * @public
+ */
+interface UplynkSource extends BaseSource {
     /**
-     * The integration ID of the source.
+     * The integration ID of the source, represented by a value from the following list:
+     * <br/> - `'uplynk'`: The source is an {@link UplynkSource}.
+     * <br/> - `'verizon-media'`: The source is a {@link VerizonMediaSource}. (Deprecated, superseded by `'uplynk'`)
      */
-    integration: 'verizon-media';
+    integration: 'uplynk' | 'verizon-media';
     /**
      * One or multiple asset identifiers for the source.
      *
      * @remarks
      * <br/> - The order of a list of asset identifiers is the order their corresponding assets will be played in.
      */
-    id: VerizonMediaAssetId | VerizonMediaAssetId[] | VerizonMediaExternalId;
+    id: UplynkAssetId | UplynkAssetId[] | UplynkExternalId;
     /**
-     * The prefix to use for Verizon Media Preplay API and Asset Info API requests.
+     * The prefix to use for Uplynk Preplay API and Asset Info API requests.
      *
      * @defaultValue `'https://content.uplynk.com'`
      */
     prefix?: string;
     /**
-     * The query string parameters added to Verizon Media Preplay requests.
+     * The query string parameters added to Uplynk Preplay requests.
      *
      * @remarks
      * Each entry contains the parameter name with associated value.
      *
      * Valid parameters:
-     * <br/> - {@link https://docs.vdms.com/video/#Develop/Preplayv2.htm | Uplynk Preplay parameters}
-     * <br/> - {@link https://docs.vdms.com/video/#AdIntegration/AOL-One-Video.htm | Uplynk ads with AOL One Video parameters}
-     * <br/> - {@link https://docs.vdms.com/video/#AdIntegration/DoubleClick.htm | Uplynk ads with Doubleclick parameters}
-     * <br/> - {@link https://docs.vdms.com/video/#AdIntegration/Freewheel.htm | Uplynk ads with FreeWheel parameters}
+     * <br/> - {@link https://api-docs.uplynk.com/index.html#Develop/Preplayv2.htm | Uplynk Preplay parameters}
+     * <br/> - {@link https://api-docs.uplynk.com/index.html#AdIntegration/AOL-One-Video.htm | Uplynk ads with Yahoo SSP (formerly AOL One Video) parameters}
+     * <br/> - {@link https://api-docs.uplynk.com/index.html#AdIntegration/DoubleClick.htm | Uplynk ads with Google Ad Manager (formerly known as DoubleClick for Publishers) parameters}
+     * <br/> - {@link https://api-docs.uplynk.com/index.html#AdIntegration/Freewheel.htm | Uplynk ads with FreeWheel parameters}
      */
     preplayParameters?: Record<string, string> | Array<[string, string]>;
     /**
-     * The query string parameters added to Verizon Media playback URL requests.
+     * The query string parameters added to Uplynk playback URL requests.
      *
      * @remarks
      * Each entry contains the parameter name with associated value.
      *
      * Valid parameters:
-     * <br/> - {@link https://docs.vdms.com/video/#Setup/Customizing-Playback.htm | Uplynk Playback Customization parameters}
-     * <br/> - {@link https://docs.vdms.com/video/#Setup/Playback-URLs.htm | Uplynk Tokens parameters}
+     * <br/> - {@link https://api-docs.uplynk.com/index.html#Setup/Customizing-Playback.htm | Uplynk Playback Customization parameters}
+     * <br/> - {@link https://api-docs.uplynk.com/index.html#Setup/Playback-URLs.htm | Uplynk Playback URLs}
      */
     playbackUrlParameters?: Record<string, string>;
     /**
@@ -3182,7 +3260,7 @@ interface VerizonMediaSource extends BaseSource {
      *
      * @defaultValue `'asset'`
      */
-    assetType?: VerizonMediaAssetType;
+    assetType?: UplynkAssetType;
     /**
      * Whether the assets of the source are content protected.
      *
@@ -3196,17 +3274,17 @@ interface VerizonMediaSource extends BaseSource {
      * <br/> - A configuration with all features disabled will prevent Ping requests being sent.
      *
      * @defaultValue
-     * A configuration with all features `false` except for `linearAdData`, which will be `true` if {@link VerizonMediaSource.assetType} is
+     * A configuration with all features `false` except for `linearAdData`, which will be `true` if {@link UplynkSource.assetType} is
      * `'channel'` or `'event'` and `false` otherwise.
      */
-    ping?: VerizonMediaPingConfiguration;
+    ping?: UplynkPingConfiguration;
     /**
      * Whether asset info will be fetched from the Verizon Media Asset Info API and exposed on the player API.
      *
      * @remarks
-     * <br/> - This feature is only available if {@link VerizonMediaSource.assetType} is `'asset'`
+     * <br/> - This feature is only available if {@link UplynkSource.assetType} is `'asset'`
      *
-     * @defaultValue `true` if {@link VerizonMediaSource.assetType} is `'asset'` and `false` otherwise
+     * @defaultValue `true` if {@link UplynkSource.assetType} is `'asset'` and `false` otherwise
      */
     assetInfo?: boolean;
 }
@@ -3219,8 +3297,20 @@ interface VerizonMediaSource extends BaseSource {
  * @category Source
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkAssetId}
  */
-type VerizonMediaAssetId = string;
+type VerizonMediaAssetId = UplynkAssetId;
+/**
+ * Represents a unique asset identifier for an Uplynk asset.
+ *
+ * @remarks
+ * <br/> - This asset identifier determines a unique asset on the Uplynk Platform.
+ *
+ * @category Source
+ * @category Uplynk
+ * @public
+ */
+type UplynkAssetId = string;
 /**
  * Represents a combination of user identifier and one or more external identifiers for Verizon Media assets.
  *
@@ -3230,8 +3320,20 @@ type VerizonMediaAssetId = string;
  * @category Source
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkExternalId}
  */
-interface VerizonMediaExternalId {
+type VerizonMediaExternalId = UplynkExternalId;
+/**
+ * Represents a combination of user identifier and one or more external identifiers for Uplynk assets.
+ *
+ * @remarks
+ * <br/> - Each combination of the user identifier and external identifier determines a unique asset on the Uplynk Platform.
+ *
+ * @category Source
+ * @category Uplynk
+ * @public
+ */
+interface UplynkExternalId {
     /**
      * The user identifier for the asset(s).
      */
@@ -3247,13 +3349,22 @@ interface VerizonMediaExternalId {
  * @category Source
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkPingConfiguration}
  */
-interface VerizonMediaPingConfiguration {
+type VerizonMediaPingConfiguration = UplynkPingConfiguration;
+/**
+ * Describes the configuration of Uplynk Ping features.
+ *
+ * @category Source
+ * @category Uplynk
+ * @public
+ */
+interface UplynkPingConfiguration {
     /**
      * Whether to increase the accuracy of ad events by passing the current playback time in Ping requests.
      *
      * @remarks
-     * <br/> - Only available when {@link VerizonMediaSource.assetType} is `'asset'`.
+     * <br/> - Only available when {@link UplynkSource.assetType} is `'asset'`.
      *
      * @defaultValue `false`
      *
@@ -3263,7 +3374,7 @@ interface VerizonMediaPingConfiguration {
      * Whether to enable FreeWheel's Video View by Callback feature to send content impressions to the FreeWheel server.
      *
      * @remarks
-     * <br/> - Only available when {@link VerizonMediaSource.assetType} is `'asset'`.
+     * <br/> - Only available when {@link UplynkSource.assetType} is `'asset'`.
      *
      * @defaultValue `false`
      */
@@ -3272,10 +3383,10 @@ interface VerizonMediaPingConfiguration {
      * Whether to request information about upcoming ad breaks in the Ping responses.
      *
      * @remarks
-     * <br/> - This feature will update the exposed ads found on {@link VerizonMedia.ads | player.verizonMedia.ads }.
-     * <br/> - Only available when {@link VerizonMediaSource.assetType} is `'event'` or `'channel'`.
+     * <br/> - This feature will update the exposed ads found on {@link Uplynk.ads | player.uplynk.ads }.
+     * <br/> - Only available when {@link UplynkSource.assetType} is `'event'` or `'channel'`.
      *
-     * @defaultValue `true` if {@link VerizonMediaSource.assetType} is `'event'` or `'channel'`, otherwise `false`.
+     * @defaultValue `true` if {@link UplynkSource.assetType} is `'event'` or `'channel'`, otherwise `false`.
      */
     linearAdData?: boolean;
 }
@@ -3288,8 +3399,20 @@ interface VerizonMediaPingConfiguration {
  * @category Source
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkAssetType}
  */
-type VerizonMediaAssetType = 'asset' | 'channel' | 'event';
+type VerizonMediaAssetType = UplynkAssetType;
+/**
+ * The type of an asset on the Uplynk Platform, represented by a value from the following list:
+ * <br/> - `'asset'`: A Video-on-demand content asset.
+ * <br/> - `'channel'`: A Live content channel.
+ * <br/> - `'event'`: A Live event.
+ *
+ * @category Source
+ * @category Uplynk
+ * @public
+ */
+type UplynkAssetType = 'asset' | 'channel' | 'event';
 
 /**
  * The strategy for period switches (see {@link DashPlaybackConfiguration.useSeamlessPeriodSwitch}), represented by a value from the following list:
@@ -3821,12 +3944,13 @@ interface TextTrackError extends THEOplayerError {
  * <br/> - `'id3'`: The track contains ID3 content.
  * <br/> - `'cea608'`: The track contains CEA608 content.
  * <br/> - `'daterange'`: The track contains HLS EXT-X-DATERANGE content.
+ * <br/> - `'millicast'`: The track contains Millicast metadata content.
  * <br/> - `''`: The type of the track contents is unknown.
  *
  * @category Media and Text Tracks
  * @public
  */
-type TextTrackType = 'srt' | 'ttml' | 'webvtt' | 'emsg' | 'eventstream' | 'id3' | 'cea608' | 'daterange' | '';
+type TextTrackType = 'srt' | 'ttml' | 'webvtt' | 'emsg' | 'eventstream' | 'id3' | 'cea608' | 'daterange' | 'millicast' | '';
 /**
  * The ready state of a text track, represented by a value from the following list:
  * <br/> - `0`: Indicates that the text track's cues have not been obtained.
@@ -4169,6 +4293,12 @@ interface MillicastSource extends TypedSource {
      * @see https://millicast.github.io/millicast-sdk/View.html#connect
      */
     connectOptions?: Record<string, any>;
+    /**
+     * The URL of the API endpoint that the SDK communicates with for authentication.
+     *
+     * @see https://millicast.github.io/millicast-sdk/module-Director.html#~setEndpoint
+     */
+    apiUrl?: string;
 }
 
 /**
@@ -4236,12 +4366,12 @@ interface SourceLatencyConfiguration {
  * Represents a media resource.
  *
  * @remarks
- * <br/> - Can be a string value representing the URL of a media resource, a {@link TypedSource} or a {@link VerizonMediaSource}.
+ * <br/> - Can be a string value representing the URL of a media resource, a {@link TypedSource} or an {@link UplynkSource}.
  *
  * @category Source
  * @public
  */
-type Source = string | TypedSource | VerizonMediaSource | TheoLiveSource | MillicastSource;
+type Source = string | TypedSource | UplynkSource | TheoLiveSource | MillicastSource;
 /**
  * A media resource or list of media resources.
  *
@@ -4456,18 +4586,15 @@ interface TextTrackDescription {
     kind?: string;
     /**
      * The format of the track, represented by a value from the following list:
-     * <br/> - `'srt'`
-     * <br/> - `'ttml'`
-     * <br/> - `'webvtt'`
-     * <br/> - `'emsg'`
-     * <br/> - `'eventstream'`
-     * <br/> - `'id3'`
-     * <br/> - `'cea608'`
-     * <br/> - `'daterange'`
+     * <br/> - `'srt'`: The track contains SRT (SubRip Text) content.
+     * <br/> - `'ttml'`: The track contains TTML (Timed Text Markup Language) content.
+     * <br/> - `'webvtt'`: The track contains WebVTT (Web Video Text Tracks) content.
+     * <br/> - `''` (default): The format is auto-detected based on its content.
      *
      * @defaultValue `''`
+     * @see {@link TextTrackType}
      */
-    format?: string;
+    format?: '' | 'srt' | 'ttml' | 'webvtt';
     /**
      * The source URL of the text track.
      */
@@ -4767,14 +4894,15 @@ interface TypedSource extends BaseSource {
 type StreamType = 'live' | 'dvr' | 'vod';
 /**
  * The integration identifier of a source specific to a pre-integration, represented by a value from the following list:
- * <br/> - `'verizon-media'`: The source is a {@link VerizonMediaSource}
- * <br/> - `'mediatailor'`: The source contains the MediaTailor initialization url
+ * <br/> - `'verizon-media'`: The source is a {@link VerizonMediaSource}. (Deprecated, superseded by `'uplynk'`)
+ * <br/> - `'mediatailor'`: The source contains the MediaTailor initialization url.
  * <br/> - `'theolive'`: The source is a {@link TheoLiveSource}. (Deprecated, see {@link TheoLiveSource.integration})
+ * <br/> - `'uplynk'`: The source is an {@link UplynkSource}.
  *
  * @category Source
  * @public
  */
-type SourceIntegrationId = 'verizon-media' | 'mediatailor' | 'theolive';
+type SourceIntegrationId = 'verizon-media' | 'mediatailor' | 'theolive' | 'uplynk';
 /**
  * The integration identifier of an analytics description, represented by a value from the following list:
  * <br/> - `'agama'`: The description is an {@link AgamaConfiguration}
@@ -7143,12 +7271,21 @@ interface Imagine extends EventDispatcher<ImagineEventMap> {
  * @category Verizon Media
  * @category Events
  * @public
+ * @deprecated Superseded by {@link UplynkAdBreakBeginEvent}
  */
-interface VerizonMediaAdBreakBeginEvent extends Event<'adbreakbegin'> {
+type VerizonMediaAdBreakBeginEvent = UplynkAdBreakBeginEvent;
+/**
+ * Fired when the ad break begins.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAdBreakBeginEvent extends Event<'adbreakbegin'> {
     /**
      * The ad break which began.
      */
-    readonly adBreak: VerizonMediaAdBreak;
+    readonly adBreak: UplynkAdBreak;
 }
 
 /**
@@ -7157,12 +7294,21 @@ interface VerizonMediaAdBreakBeginEvent extends Event<'adbreakbegin'> {
  * @category Verizon Media
  * @category Events
  * @public
+ * @deprecated Superseded by {@link UplynkAdBreakEndEvent}
  */
-interface VerizonMediaAdBreakEndEvent extends Event<'adbreakend'> {
+type VerizonMediaAdBreakEndEvent = UplynkAdBreakEndEvent;
+/**
+ * Fired when the ad break ends.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAdBreakEndEvent extends Event<'adbreakend'> {
     /**
      * The ad break which ended.
      */
-    readonly adBreak: VerizonMediaAdBreak;
+    readonly adBreak: UplynkAdBreak;
 }
 
 /**
@@ -7171,12 +7317,21 @@ interface VerizonMediaAdBreakEndEvent extends Event<'adbreakend'> {
  * @category Verizon Media
  * @category Events
  * @public
+ * @deprecated Superseded by {@link UplynkAdBreakSkipEvent}
  */
-interface VerizonMediaAdBreakSkipEvent extends Event<'adbreakskip'> {
+type VerizonMediaAdBreakSkipEvent = UplynkAdBreakSkipEvent;
+/**
+ * Fired when the ad break is skipped.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAdBreakSkipEvent extends Event<'adbreakskip'> {
     /**
      * The ad break which has been skipped.
      */
-    readonly adBreak: VerizonMediaAdBreak;
+    readonly adBreak: UplynkAdBreak;
 }
 
 /**
@@ -7185,12 +7340,21 @@ interface VerizonMediaAdBreakSkipEvent extends Event<'adbreakskip'> {
  * @category Verizon Media
  * @category Events
  * @public
+ * @deprecated Superseded by {@link UplynkUpdateAdBreakEvent}
  */
-interface VerizonMediaUpdateAdBreakEvent extends Event<'updateadbreak'> {
+type VerizonMediaUpdateAdBreakEvent = UplynkUpdateAdBreakEvent;
+/**
+ * Fired when the ad break is updated.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkUpdateAdBreakEvent extends Event<'updateadbreak'> {
     /**
      * The ad break which has been updated.
      */
-    readonly adBreak: VerizonMediaAdBreak;
+    readonly adBreak: UplynkAdBreak;
 }
 
 /**
@@ -7227,12 +7391,21 @@ interface EventedList<T, M extends EventMap<StringKeyOf<M>>> extends List<T>, Ev
  * @category Verizon Media
  * @category Events
  * @public
+ * @deprecated Superseded by {@link UplynkAdBeginEvent}
  */
-interface VerizonMediaAdBeginEvent extends Event<'adbegin'> {
+type VerizonMediaAdBeginEvent = UplynkAdBeginEvent;
+/**
+ * Fired when an ad begins.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAdBeginEvent extends Event<'adbegin'> {
     /**
      * The ad which began.
      */
-    readonly ad: VerizonMediaAd;
+    readonly ad: UplynkAd;
 }
 
 /**
@@ -7241,12 +7414,21 @@ interface VerizonMediaAdBeginEvent extends Event<'adbegin'> {
  * @category Verizon Media
  * @category Events
  * @public
+ * @deprecated Superseded by {@link UplynkAdEndEvent}
  */
-interface VerizonMediaAdEndEvent extends Event<'adend'> {
+type VerizonMediaAdEndEvent = UplynkAdEndEvent;
+/**
+ * Fired when the ad ends.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAdEndEvent extends Event<'adend'> {
     /**
      * The ad which has ended.
      */
-    readonly ad: VerizonMediaAd;
+    readonly ad: UplynkAd;
 }
 
 /**
@@ -7255,12 +7437,21 @@ interface VerizonMediaAdEndEvent extends Event<'adend'> {
  * @category Verizon Media
  * @category Events
  * @public
+ * @deprecated Superseded by {@link UplynkAdFirstQuartileEvent}
  */
-interface VerizonMediaAdFirstQuartileEvent extends Event<'adfirstquartile'> {
+type VerizonMediaAdFirstQuartileEvent = UplynkAdFirstQuartileEvent;
+/**
+ * Fired when the ad reaches the first quartile.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAdFirstQuartileEvent extends Event<'adfirstquartile'> {
     /**
      * The ad which has progressed.
      */
-    readonly ad: VerizonMediaAd;
+    readonly ad: UplynkAd;
 }
 /**
  * Fired when the ad reaches the mid point.
@@ -7268,12 +7459,21 @@ interface VerizonMediaAdFirstQuartileEvent extends Event<'adfirstquartile'> {
  * @category Verizon Media
  * @category Events
  * @public
+ * @deprecated Superseded by {@link UplynkAdMidpointEvent}
  */
-interface VerizonMediaAdMidpointEvent extends Event<'admidpoint'> {
+type VerizonMediaAdMidpointEvent = UplynkAdMidpointEvent;
+/**
+ * Fired when the ad reaches the mid point.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAdMidpointEvent extends Event<'admidpoint'> {
     /**
      * The ad which has progressed.
      */
-    readonly ad: VerizonMediaAd;
+    readonly ad: UplynkAd;
 }
 /**
  * Fired when the ad reaches the third quartile.
@@ -7281,12 +7481,21 @@ interface VerizonMediaAdMidpointEvent extends Event<'admidpoint'> {
  * @category Verizon Media
  * @category Events
  * @public
+ * @deprecated Superseded by {@link UplynkAdThirdQuartileEvent}
  */
-interface VerizonMediaAdThirdQuartileEvent extends Event<'adthirdquartile'> {
+type VerizonMediaAdThirdQuartileEvent = UplynkAdThirdQuartileEvent;
+/**
+ * Fired when the ad reaches the third quartile.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAdThirdQuartileEvent extends Event<'adthirdquartile'> {
     /**
      * The ad which has progressed.
      */
-    readonly ad: VerizonMediaAd;
+    readonly ad: UplynkAd;
 }
 /**
  * Fired when the ad is completed.
@@ -7294,12 +7503,21 @@ interface VerizonMediaAdThirdQuartileEvent extends Event<'adthirdquartile'> {
  * @category Verizon Media
  * @category Events
  * @public
+ * @deprecated Superseded by {@link UplynkAdCompleteEvent}
  */
-interface VerizonMediaAdCompleteEvent extends Event<'adcomplete'> {
+type VerizonMediaAdCompleteEvent = UplynkAdCompleteEvent;
+/**
+ * Fired when the ad is completed.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAdCompleteEvent extends Event<'adcomplete'> {
     /**
      * The ad which has progressed.
      */
-    readonly ad: VerizonMediaAd;
+    readonly ad: UplynkAd;
 }
 
 /**
@@ -7307,40 +7525,56 @@ interface VerizonMediaAdCompleteEvent extends Event<'adcomplete'> {
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkAdEventMap}
  */
-interface VerizonMediaAdEventMap {
+type VerizonMediaAdEventMap = UplynkAdEventMap;
+/**
+ * The events fired by the {@link UplynkAd}.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAdEventMap {
     /**
-     * {@inheritDoc VerizonMediaAdBeginEvent}
+     * {@inheritDoc UplynkAdBeginEvent}
      */
-    adbegin: VerizonMediaAdBeginEvent;
+    adbegin: UplynkAdBeginEvent;
     /**
-     * {@inheritDoc VerizonMediaAdEndEvent}
+     * {@inheritDoc UplynkAdEndEvent}
      */
-    adend: VerizonMediaAdEndEvent;
+    adend: UplynkAdEndEvent;
     /**
-     * {@inheritDoc VerizonMediaAdFirstQuartileEvent}
+     * {@inheritDoc UplynkAdFirstQuartileEvent}
      */
-    adfirstquartile: VerizonMediaAdFirstQuartileEvent;
+    adfirstquartile: UplynkAdFirstQuartileEvent;
     /**
-     * {@inheritDoc VerizonMediaAdMidpointEvent}
+     * {@inheritDoc UplynkAdMidpointEvent}
      */
-    admidpoint: VerizonMediaAdMidpointEvent;
+    admidpoint: UplynkAdMidpointEvent;
     /**
-     * {@inheritDoc VerizonMediaAdThirdQuartileEvent}
+     * {@inheritDoc UplynkAdThirdQuartileEvent}
      */
-    adthirdquartile: VerizonMediaAdThirdQuartileEvent;
+    adthirdquartile: UplynkAdThirdQuartileEvent;
     /**
-     * {@inheritDoc VerizonMediaAdCompleteEvent}
+     * {@inheritDoc UplynkAdCompleteEvent}
      */
-    adcomplete: VerizonMediaAdCompleteEvent;
+    adcomplete: UplynkAdCompleteEvent;
 }
 /**
  * Represents a Verizon Media ad.
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkAd}
  */
-interface VerizonMediaAd extends EventDispatcher<VerizonMediaAdEventMap> {
+type VerizonMediaAd = UplynkAd;
+/**
+ * Represents an Uplynk ad.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAd extends EventDispatcher<UplynkAdEventMap> {
     /**
      * The start time of the ad, in seconds.
      */
@@ -7399,7 +7633,7 @@ interface VerizonMediaAd extends EventDispatcher<VerizonMediaAdEventMap> {
     /**
      * List of companion ads of the ad.
      */
-    readonly companions: ReadonlyArray<VerizonMediaAd>;
+    readonly companions: ReadonlyArray<UplynkAd>;
     /**
      * List of VAST extensions returned by the ad server.
      */
@@ -7415,10 +7649,20 @@ interface VerizonMediaAd extends EventDispatcher<VerizonMediaAdEventMap> {
  * Fired when the ad is removed.
  *
  * @category Verizon Media
+ * @category Events
+ * @public
+ * @deprecated Superseded by {@link UplynkRemoveAdEvent}
+ */
+type VerizonMediaRemoveAdEvent = UplynkRemoveAdEvent;
+/**
+ * Fired when the ad is removed.
+ *
+ * @category Uplynk
+ * @category Events
  * @public
  */
-interface VerizonMediaRemoveAdEvent extends Event<'removead'> {
-    readonly ad: VerizonMediaAd;
+interface UplynkRemoveAdEvent extends Event<'removead'> {
+    readonly ad: UplynkAd;
 }
 
 /**
@@ -7426,20 +7670,36 @@ interface VerizonMediaRemoveAdEvent extends Event<'removead'> {
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkAdListEventMap}
  */
-interface VerizonMediaAdListEventMap {
+type VerizonMediaAdListEventMap = UplynkAdListEventMap;
+/**
+ * Events fired by the {@link UplynkAdList}.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAdListEventMap {
     /**
-     *{@inheritDoc VerizonMediaRemoveAdEvent}
+     *{@inheritDoc UplynkRemoveAdEvent}
      */
-    removead: VerizonMediaRemoveAdEvent;
+    removead: UplynkRemoveAdEvent;
 }
 /**
  * List of Verizon Media ads.
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkAdList}
  */
-interface VerizonMediaAdList extends EventedList<VerizonMediaAd, VerizonMediaAdListEventMap> {
+type VerizonMediaAdList = UplynkAdList;
+/**
+ * List of Uplynk ads.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAdList extends EventedList<UplynkAd, UplynkAdListEventMap> {
 }
 
 /**
@@ -7447,32 +7707,48 @@ interface VerizonMediaAdList extends EventedList<VerizonMediaAd, VerizonMediaAdL
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkAdBreakEventMap}
  */
-interface VerizonMediaAdBreakEventMap {
+type VerizonMediaAdBreakEventMap = UplynkAdBreakEventMap;
+/**
+ * The events fired by the {@link UplynkAdBreak}.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAdBreakEventMap {
     /**
-     * {@inheritDoc VerizonMediaAdBreakBeginEvent}
+     * {@inheritDoc UplynkAdBreakBeginEvent}
      */
-    adbreakbegin: VerizonMediaAdBreakBeginEvent;
+    adbreakbegin: UplynkAdBreakBeginEvent;
     /**
-     * {@inheritDoc VerizonMediaAdBreakEndEvent}
+     * {@inheritDoc UplynkAdBreakEndEvent}
      */
-    adbreakend: VerizonMediaAdBreakEndEvent;
+    adbreakend: UplynkAdBreakEndEvent;
     /**
-     * {@inheritDoc VerizonMediaAdBreakSkipEvent}
+     * {@inheritDoc UplynkAdBreakSkipEvent}
      */
-    adbreakskip: VerizonMediaAdBreakSkipEvent;
+    adbreakskip: UplynkAdBreakSkipEvent;
     /**
-     * {@inheritDoc VerizonMediaUpdateAdBreakEvent}
+     * {@inheritDoc UplynkUpdateAdBreakEvent}
      */
-    updateadbreak: VerizonMediaUpdateAdBreakEvent;
+    updateadbreak: UplynkUpdateAdBreakEvent;
 }
 /**
- * Represents a Verizon Media ad.
+ * Represents a Verizon Media ad break.
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkAdBreak}
  */
-interface VerizonMediaAdBreak extends EventDispatcher<VerizonMediaAdBreakEventMap> {
+type VerizonMediaAdBreak = UplynkAdBreak;
+/**
+ * Represents an Uplynk ad break.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAdBreak extends EventDispatcher<UplynkAdBreakEventMap> {
     /**
      * The start time of the ad break, in seconds.
      */
@@ -7494,14 +7770,14 @@ interface VerizonMediaAdBreak extends EventDispatcher<VerizonMediaAdBreakEventMa
     /**
      * List of ads in the ad break.
      */
-    readonly ads: VerizonMediaAdList;
+    readonly ads: UplynkAdList;
     /**
      * Offset after which the ad break may be skipped, in seconds.
      *
      * @remarks
      * If the offset is -1, the ad is unskippable.
      * If the offset is 0, the ad is immediately skippable.
-     * Otherwise it must be a positive number indicating the offset.
+     * Otherwise, it must be a positive number indicating the offset.
      * Skipping the ad in live streams is unsupported.
      *
      * @example
@@ -7518,12 +7794,21 @@ interface VerizonMediaAdBreak extends EventDispatcher<VerizonMediaAdBreakEventMa
  * @category Verizon Media
  * @category Events
  * @public
+ * @deprecated Superseded by {@link UplynkAddAdBreakEvent}
  */
-interface VerizonMediaAddAdBreakEvent extends Event<'addadbreak'> {
+type VerizonMediaAddAdBreakEvent = UplynkAddAdBreakEvent;
+/**
+ * Fired when the ad break is added.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAddAdBreakEvent extends Event<'addadbreak'> {
     /**
      * The ad break which has been added.
      */
-    readonly adBreak: VerizonMediaAdBreak;
+    readonly adBreak: UplynkAdBreak;
 }
 
 /**
@@ -7532,12 +7817,21 @@ interface VerizonMediaAddAdBreakEvent extends Event<'addadbreak'> {
  * @category Verizon Media
  * @category Events
  * @public
+ * @deprecated Superseded by {@link UplynkRemoveAdBreakEvent}
  */
-interface VerizonMediaRemoveAdBreakEvent extends Event<'removeadbreak'> {
+type VerizonMediaRemoveAdBreakEvent = UplynkRemoveAdBreakEvent;
+/**
+ * Fired when the ad break is removed.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkRemoveAdBreakEvent extends Event<'removeadbreak'> {
     /**
      * The ad break which has been removed.
      */
-    readonly adBreak: VerizonMediaAdBreak;
+    readonly adBreak: UplynkAdBreak;
 }
 
 /**
@@ -7545,24 +7839,40 @@ interface VerizonMediaRemoveAdBreakEvent extends Event<'removeadbreak'> {
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkAdBreakListEventMap}
  */
-interface VerizonMediaAdBreakListEventMap {
+type VerizonMediaAdBreakListEventMap = UplynkAdBreakListEventMap;
+/**
+ * The events fired by the {@link UplynkAdBreakList}.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAdBreakListEventMap {
     /**
-     * {@inheritDoc VerizonMediaAddAdBreakEvent}
+     * {@inheritDoc UplynkAddAdBreakEvent}
      */
-    addadbreak: VerizonMediaAddAdBreakEvent;
+    addadbreak: UplynkAddAdBreakEvent;
     /**
-     * {@inheritDoc VerizonMediaRemoveAdBreakEvent}
+     * {@inheritDoc UplynkRemoveAdBreakEvent}
      */
-    removeadbreak: VerizonMediaRemoveAdBreakEvent;
+    removeadbreak: UplynkRemoveAdBreakEvent;
 }
 /**
  * List with Verizon Media ad breaks.
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkAdBreakList}
  */
-interface VerizonMediaAdBreakList extends EventedList<VerizonMediaAdBreak, VerizonMediaAdBreakListEventMap> {
+type VerizonMediaAdBreakList = UplynkAdBreakList;
+/**
+ * List with Uplynk ad breaks.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAdBreakList extends EventedList<UplynkAdBreak, UplynkAdBreakListEventMap> {
 }
 
 /**
@@ -7570,23 +7880,31 @@ interface VerizonMediaAdBreakList extends EventedList<VerizonMediaAdBreak, Veriz
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkAds}
  */
-interface VerizonMediaAds {
+type VerizonMediaAds = UplynkAds;
+/**
+ * The Uplynk ads API.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAds {
     /**
      * List of ad breaks.
      */
-    readonly adBreaks: VerizonMediaAdBreakList;
+    readonly adBreaks: UplynkAdBreakList;
     /**
      * The currently playing ad break.
      */
-    readonly currentAdBreak: VerizonMediaAdBreak | undefined;
+    readonly currentAdBreak: UplynkAdBreak | undefined;
     /**
      * The currently playing ads.
      *
      * @remarks
-     * <br/> - These will always be part of the {@link VerizonMediaAds.currentAdBreak | current ad break}.
+     * <br/> - These will always be part of the {@link UplynkAds.currentAdBreak | current ad break}.
      */
-    readonly currentAds: VerizonMediaAdList;
+    readonly currentAds: UplynkAdList;
     /**
      * Seek to the end of the ad if it is skippable.
      *
@@ -7601,31 +7919,47 @@ interface VerizonMediaAds {
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkResponseVodAds}
  */
-interface VerizonMediaResponseVodAds {
+type VerizonMediaResponseVodAds = UplynkResponseVodAds;
+/**
+ * Represents an Uplynk response with advertisement information for VOD assets.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkResponseVodAds {
     /**
      * List of ad break information.
      *
      * @remarks
      * <br/> - This includes both linear and non-linear ads.
      */
-    breaks: VerizonMediaResponseVodAdBreak[];
+    breaks: UplynkResponseVodAdBreak[];
     /**
      * List of ad break offset information.
      */
-    breakOffsets: VerizonMediaResponseVodAdBreakOffset[];
+    breakOffsets?: UplynkResponseVodAdBreakOffset[];
     /**
      * List of placeholder offset information.
      */
-    placeholderOffsets: VerizonMediaResponseVodAdPlaceholder[];
+    placeholderOffsets?: UplynkResponseVodAdPlaceholder[];
 }
 /**
  * Represents a Verizon Media response with ad break information for VOD assets.
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkResponseVodAdBreak}
  */
-interface VerizonMediaResponseVodAdBreak {
+type VerizonMediaResponseVodAdBreak = UplynkResponseVodAdBreak;
+/**
+ * Represents an Uplynk response with ad break information for VOD assets.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkResponseVodAdBreak {
     /**
      * The type of the ad break.
      */
@@ -7651,7 +7985,7 @@ interface VerizonMediaResponseVodAdBreak {
     /**
      * List of ad information.
      */
-    ads: VerizonMediaResponseVodAd[];
+    ads: UplynkResponseVodAd[];
     /**
      * A record of all VAST 3.0 tracking events for the ad break.
      * Each entry contains an event name with associated tracking URLs.
@@ -7663,8 +7997,16 @@ interface VerizonMediaResponseVodAdBreak {
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkResponseVodAd}
  */
-interface VerizonMediaResponseVodAd {
+type VerizonMediaResponseVodAd = UplynkResponseVodAd;
+/**
+ * The Uplynk response with ad information for VOD assets.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkResponseVodAd {
     /**
      * The duration of the ad, in seconds.
      */
@@ -7710,7 +8052,7 @@ interface VerizonMediaResponseVodAd {
     /**
      * List of companion ads of the ad.
      */
-    companions: VerizonMediaResponseVodAd[];
+    companions: UplynkResponseVodAd[];
     /**
      * List of VAST extensions returned by the ad server.
      */
@@ -7731,8 +8073,16 @@ interface VerizonMediaResponseVodAd {
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkResponseVodAdBreakOffset}
  */
-interface VerizonMediaResponseVodAdBreakOffset {
+type VerizonMediaResponseVodAdBreakOffset = UplynkResponseVodAdBreakOffset;
+/**
+ * Represents the offset of an Uplynk ad break.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkResponseVodAdBreakOffset {
     /**
      * The index of the ad break in the ads.breaks array.
      */
@@ -7752,8 +8102,21 @@ interface VerizonMediaResponseVodAdBreakOffset {
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkResponseVodAdPlaceholder}
  */
-interface VerizonMediaResponseVodAdPlaceholder {
+type VerizonMediaResponseVodAdPlaceholder = UplynkResponseVodAdPlaceholder;
+/**
+ * Represents an Uplynk response with a placeholder for an ad for VOD assets.
+ *
+ * @remarks
+ * A placeholder is an ad which
+ * <br/> - is a short blank video for non-video ads (e.g. VPAID ads).
+ * <br/> - is a system asset which is potentially subject to change.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkResponseVodAdPlaceholder {
     /**
      * The index of the placeholder's ad break in the `ads.breaks` array.
      */
@@ -7779,26 +8142,52 @@ interface VerizonMediaResponseVodAdPlaceholder {
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkPreplayResponseType}
  */
-type VerizonMediaPreplayResponseType = 'vod' | 'live';
+type VerizonMediaPreplayResponseType = UplynkPreplayResponseType;
+/**
+ * The response type of the Uplynk Preplay request, represented by a value from the following list:
+ * <br/> - `'vod'`
+ * <br/> - `'live'`
+ *
+ * @category Uplynk
+ * @public
+ */
+type UplynkPreplayResponseType = 'vod' | 'live';
 /**
  * Type of a Verizon Media Preplay response.
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkPreplayResponse}
  */
-type VerizonMediaPreplayResponse = VerizonMediaPreplayVodResponse | VerizonMediaPreplayLiveResponse;
+type VerizonMediaPreplayResponse = UplynkPreplayResponse;
+/**
+ * Type of an Uplynk Preplay response.
+ *
+ * @category Uplynk
+ * @public
+ */
+type UplynkPreplayResponse = UplynkPreplayVodResponse | UplynkPreplayLiveResponse;
 /**
  * Represents a Verizon Media Preplay base response.
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkPreplayBaseResponse}
  */
-interface VerizonMediaPreplayBaseResponse {
+type VerizonMediaPreplayBaseResponse = UplynkPreplayBaseResponse;
+/**
+ * Represents an Uplynk Preplay base response.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkPreplayBaseResponse {
     /**
      * The response type of the request.
      */
-    type: VerizonMediaPreplayResponseType;
+    type: UplynkPreplayResponseType;
     /**
      * The manifest's URL.
      */
@@ -7825,15 +8214,27 @@ interface VerizonMediaPreplayBaseResponse {
      * <br/> - Widevine will default to 'https://content.uplynk.com/wv'.
      * <br/> - Playready will default to 'https://content.uplynk.com/pr'.
      */
-    drm?: VerizonMediaResponseDrm;
+    drm?: UplynkResponseDrm;
 }
 /**
  * Represents a Verizon Media DRM response.
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkResponseDrm}
  */
-interface VerizonMediaResponseDrm {
+type VerizonMediaResponseDrm = UplynkResponseDrm;
+/**
+ * Represents an Uplynk DRM response.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkResponseDrm {
+    /**
+     * Indicates whether {@link https://api-docs.uplynk.com/#Develop/Studio-DRM-API.htm%3FTocPath%3D_____11 | Studio DRM} is required for playback.
+     */
+    required?: boolean;
     /**
      * The Fairplay certificate URL.
      */
@@ -7852,8 +8253,16 @@ interface VerizonMediaResponseDrm {
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkPreplayVodResponse}
  */
-interface VerizonMediaPreplayVodResponse extends VerizonMediaPreplayBaseResponse {
+type VerizonMediaPreplayVodResponse = UplynkPreplayVodResponse;
+/**
+ * Represents an Uplynk Preplay response for VOD assets.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkPreplayVodResponse extends UplynkPreplayBaseResponse {
     /**
      * The response type of the request.
      */
@@ -7861,12 +8270,12 @@ interface VerizonMediaPreplayVodResponse extends VerizonMediaPreplayBaseResponse
     /**
      * The advertisement information.
      */
-    ads: VerizonMediaResponseVodAds;
+    ads: UplynkResponseVodAds;
     /**
      * The URL to the interstitial information
      *
      * @remarks
-     * <br/> - This file is a XML.
+     * <br/> - This is an XML file.
      * <br/> - This parameter reports `null` when ads are not found.
      * <br/> - It should only be used on Apple TV.
      */
@@ -7877,8 +8286,16 @@ interface VerizonMediaPreplayVodResponse extends VerizonMediaPreplayBaseResponse
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkPreplayLiveResponse}
  */
-interface VerizonMediaPreplayLiveResponse extends VerizonMediaPreplayBaseResponse {
+type VerizonMediaPreplayLiveResponse = UplynkPreplayLiveResponse;
+/**
+ * Represents an Uplynk Preplay response for live assets.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkPreplayLiveResponse extends UplynkPreplayBaseResponse {
     /**
      * The response type of the request.
      */
@@ -7890,12 +8307,20 @@ interface VerizonMediaPreplayLiveResponse extends VerizonMediaPreplayBaseRespons
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkPreplayResponseEvent}
  */
-interface VerizonMediaPreplayResponseEvent extends Event<'preplayresponse'> {
+type VerizonMediaPreplayResponseEvent = UplynkPreplayResponseEvent;
+/**
+ * Fired when a Preplay response is received.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkPreplayResponseEvent extends Event<'preplayresponse'> {
     /**
      * The response which has been received.
      */
-    readonly response: VerizonMediaPreplayResponse;
+    readonly response: UplynkPreplayResponse;
 }
 
 /**
@@ -7906,10 +8331,24 @@ interface VerizonMediaPreplayResponseEvent extends Event<'preplayresponse'> {
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkAssetInfoResponse}
  */
-interface VerizonMediaAssetInfoResponse {
+type VerizonMediaAssetInfoResponse = UplynkAssetInfoResponse;
+/**
+ * Represents an Uplynk Asset Info Response.
+ *
+ * @remarks
+ * <br/> - See {@link https://api-docs.uplynk.com/#Develop/AssetInfo.htm | Asset Info}.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAssetInfoResponse {
     /**
-     * A flag indicating if the asset is audio only.
+     * Returns 1 when the asset is audio only.
+     *
+     * @remarks
+     * Valid values are: `0` | `1`.
      */
     audio_only: number;
     /**
@@ -7917,14 +8356,14 @@ interface VerizonMediaAssetInfoResponse {
      */
     boundary_details: Boundary[] | undefined;
     /**
-     * Whether an error occurred.
+     * Returns 1 when an error occurred with the asset.
      *
      * @remarks
-     * <br/> - False if `0`, true otherwise.
+     * Valid values are: `0` | `1`.
      */
     error: number;
     /**
-     * The tv-rating of the asset, represented by a value from the following list:
+     * The TV rating of the asset, represented by a value from the following list:
      * <br/> - `-1`: Not Available.
      * <br/> - `0`: Not Rated.
      * <br/> - `1`: TV-Y.
@@ -7935,17 +8374,17 @@ interface VerizonMediaAssetInfoResponse {
      * <br/> - `6`: TV-MA.
      * <br/> - `7`: Not Rated.
      */
-    tv_rating: VerizonMediaAssetTvRating;
+    tv_rating: UplynkAssetTvRating;
     /**
      * The number of slices available for the asset.
      */
     max_slice: number;
     /**
-     * The prefix URL to the thumbnails.
+     * The base URL to the {@link https://api-docs.uplynk.com/Content/Develop/AssetInfo.htm#Thumbnails | thumbnails}.
      */
     thumb_prefix: string;
     /**
-     * The average slice duration.
+     * The average slice duration, in seconds.
      */
     slice_dur: number;
     /**
@@ -7960,7 +8399,7 @@ interface VerizonMediaAssetInfoResponse {
      * <br/> - `6`: X.
      * <br/> - `7`: Not Rated.
      */
-    movie_rating: VerizonMediaAssetMovieRating;
+    movie_rating: UplynkAssetMovieRating;
     /**
      * The identifier of the owner.
      */
@@ -7985,7 +8424,7 @@ interface VerizonMediaAssetInfoResponse {
      */
     poster_url: string;
     /**
-     * The duration of the asset.
+     * The duration of the asset, in seconds.
      */
     duration: number;
     /**
@@ -8001,18 +8440,18 @@ interface VerizonMediaAssetInfoResponse {
      *
      * @remarks
      * These available flags are the following:
-     * <br/> - D: Drug-related themes are present
-     * <br/> - V: Violence is present
-     * <br/> - S: Sexual situations are present
-     * <br/> - L: Adult Language is present
+     * - D: Drug-related themes are present
+     * - V: Violence is present
+     * - S: Sexual situations are present
+     * - L: Adult Language is present
      *
      * This number is a bitwise number to indicate if one or more of these values are present.
-     * <br/> - [D][V][S][L] - 0: No rating flag.
-     * <br/> - [D][V][S][L] - 1: Language flag.
-     * <br/> - [D][V][S][L] - 2: Sex flag.
-     * <br/> - [D][V][S][L] - 4: Violence flag.
-     * <br/> - [D][V][S][L] - 8: Drugs flag.
-     * <br/> - [D][V][S][L] - 15: All flags are on.
+     * - [&nbsp;&nbsp;][&nbsp;&nbsp;][&nbsp;&nbsp;][&nbsp;&nbsp;] - 0: No rating flag.
+     * - [&nbsp;&nbsp;][&nbsp;&nbsp;][&nbsp;&nbsp;][L] - 1: Language flag.
+     * - [&nbsp;&nbsp;][&nbsp;&nbsp;][S][&nbsp;&nbsp;] - 2: Sex flag.
+     * - [&nbsp;&nbsp;][V][&nbsp;&nbsp;][&nbsp;&nbsp;] - 4: Violence flag.
+     * - [D][&nbsp;&nbsp;][&nbsp;&nbsp;][&nbsp;&nbsp;] - 8: Drugs flag.
+     * - [D][V][S][L] - 15: All flags are on.
      */
     rating_flags: number;
     /**
@@ -8020,10 +8459,10 @@ interface VerizonMediaAssetInfoResponse {
      */
     external_id: string;
     /**
-     * Whether the asset is an ad.
+     * Returns 1 when asset is an ad.
      *
      * @remarks
-     * <br/> - False if `0`, true otherwise
+     * Valid values are: `0` | `1`.
      */
     is_ad: number;
     /**
@@ -8033,14 +8472,15 @@ interface VerizonMediaAssetInfoResponse {
 }
 /**
  * A boundary can be one of 3 possible types:
- * <br/> - c3: An ad that is relevant for up to 3 days after the original airing.
- * <br/> - c7: An ad that is relevant for up to 7 days after the original airing.
- * <br/> - halftime: Identifies special content.
+ * - `c3`: An ad that is relevant for up to 3 days after the original airing.
+ * - `c7`: An ad that is relevant for up to 7 days after the original airing.
+ * - `halftime`: Identifies special content.
  *
  * @remarks
- * <br/> - See {@link https://docs.vdms.com/video/#Setup/Boundaries-Setup-Playback.htm | Boundaries }
+ * <br/> - See {@link https://api-docs.uplynk.com/index.html#Setup/Boundaries-Setup-Playback.htm | Boundaries }
  *
  * @category Verizon Media
+ * @category Uplynk
  * @public
  */
 type Boundary = BoundaryC3 | BoundaryC7 | BoundaryHalftime;
@@ -8048,6 +8488,7 @@ type Boundary = BoundaryC3 | BoundaryC7 | BoundaryHalftime;
  * Represents the information of an ad boundary.
  *
  * @category Verizon Media
+ * @category Uplynk
  * @public
  */
 interface BoundaryInfo {
@@ -8064,6 +8505,7 @@ interface BoundaryInfo {
  * Represents the boundary of an ad that is relevant for up to three days after the original airing.
  *
  * @category Verizon Media
+ * @category Uplynk
  * @public
  */
 interface BoundaryC3 {
@@ -8073,6 +8515,7 @@ interface BoundaryC3 {
  * Represents the boundary of an ad that is relevant for up to seven days after the original airing.
  *
  * @category Verizon Media
+ * @category Uplynk
  * @public
  */
 interface BoundaryC7 {
@@ -8082,15 +8525,17 @@ interface BoundaryC7 {
  * Represents the boundary that identifies special content.
  *
  * @category Verizon Media
+ * @category Uplynk
  * @public
  */
 interface BoundaryHalftime {
     halftime: BoundaryInfo;
 }
 /**
- * Represents the resolution of a Verizon Media thumbnail.
+ * Represents the resolution of an Uplynk thumbnail.
  *
  * @category Verizon Media
+ * @category Uplynk
  * @public
  */
 interface ThumbnailResolution {
@@ -8139,8 +8584,29 @@ interface ThumbnailResolution {
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkAssetTvRating}
  */
-type VerizonMediaAssetTvRating = -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+type VerizonMediaAssetTvRating = UplynkAssetTvRating;
+/**
+ * The TV rating of an asset, represented by a value from the following list:
+ * <br/> - `-1` (NOT_AVAILABLE)
+ * <br/> - `0` (NOT_APPLICABLE)
+ * <br/> - `1` (TV_Y)
+ * <br/> - `2` (TV_Y7)
+ * <br/> - `3` (TV_G)
+ * <br/> - `4` (TV_PG)
+ * <br/> - `5` (TV_14)
+ * <br/> - `6` (TV_MA)
+ * <br/> - `7` (NOT_RATED)
+ *
+ * @remarks
+ * In the online documentation the value for 0 is also "NOT RATED". Since this is counter-intuitive, we have assumed
+ * this to be erronous and have modeled this according to the Movie Ratings, with 0 being "NOT APPLICABLE".
+ *
+ * @category Uplynk
+ * @public
+ */
+type UplynkAssetTvRating = -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 /**
  * The movie rating of an asset, represented by a value from the following list:
  * <br/> - `-1` (NOT_AVAILABLE)
@@ -8155,8 +8621,25 @@ type VerizonMediaAssetTvRating = -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkAssetMovieRating}
  */
-type VerizonMediaAssetMovieRating = -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+type VerizonMediaAssetMovieRating = UplynkAssetMovieRating;
+/**
+ * The movie rating of an asset, represented by a value from the following list:
+ * <br/> - `-1` (NOT_AVAILABLE)
+ * <br/> - `0` (NOT_APPLICABLE)
+ * <br/> - `1` (G)
+ * <br/> - `2` (PG)
+ * <br/> - `3` (PG_13)
+ * <br/> - `4` (R)
+ * <br/> - `5` (NC_17)
+ * <br/> - `6` (X)
+ * <br/> - `7` (NOT_RATED)
+ *
+ * @category Uplynk
+ * @public
+ */
+type UplynkAssetMovieRating = -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
 /**
  * Fired when an asset info response is received.
@@ -8164,12 +8647,21 @@ type VerizonMediaAssetMovieRating = -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
  * @category Verizon Media
  * @category Events
  * @public
+ * @deprecated Superseded by {@link UplynkAssetInfoResponseEvent}
  */
-interface VerizonMediaAssetInfoResponseEvent extends Event<'assetinforesponse'> {
+type VerizonMediaAssetInfoResponseEvent = UplynkAssetInfoResponseEvent;
+/**
+ * Fired when an asset info response is received.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAssetInfoResponseEvent extends Event<'assetinforesponse'> {
     /**
      * The response which has been received.
      */
-    readonly response: VerizonMediaAssetInfoResponse;
+    readonly response: UplynkAssetInfoResponse;
 }
 
 /**
@@ -8177,23 +8669,39 @@ interface VerizonMediaAssetInfoResponseEvent extends Event<'assetinforesponse'> 
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkResponseLiveAds}
  */
-interface VerizonMediaResponseLiveAds {
+type VerizonMediaResponseLiveAds = UplynkResponseLiveAds;
+/**
+ * Represents an Uplynk response with advertisement information for live assets.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkResponseLiveAds {
     /**
      * List of ad break information.
      *
      * @remarks
      * <br/> - This includes both linear and non-linear ads.
      */
-    breaks: VerizonMediaResponseLiveAdBreak[];
+    breaks: UplynkResponseLiveAdBreak[];
 }
 /**
  * Represents a Verizon Media response for live ad breaks.
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkResponseLiveAdBreak}
  */
-interface VerizonMediaResponseLiveAdBreak {
+type VerizonMediaResponseLiveAdBreak = UplynkResponseLiveAdBreak;
+/**
+ * Represents an Uplynk response for live ad breaks.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkResponseLiveAdBreak {
     /**
      * The identifier of the ad break.
      */
@@ -8201,7 +8709,7 @@ interface VerizonMediaResponseLiveAdBreak {
     /**
      * List of ad information.
      */
-    ads: VerizonMediaResponseLiveAd[];
+    ads: UplynkResponseLiveAd[];
     /**
      * The type of the ad break.
      */
@@ -8249,8 +8757,16 @@ interface VerizonMediaResponseLiveAdBreak {
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkResponseLiveAd}
  */
-interface VerizonMediaResponseLiveAd {
+type VerizonMediaResponseLiveAd = UplynkResponseLiveAd;
+/**
+ * Represents an Uplynk response with live ads.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkResponseLiveAd {
     /**
      * Identifier for the ad.
      */
@@ -8266,7 +8782,7 @@ interface VerizonMediaResponseLiveAd {
     /**
      * List of companion ads of the ad.
      */
-    companions: VerizonMediaResponseLiveAd[];
+    companions: UplynkResponseLiveAd[];
     /**
      * The creative identifier.
      *
@@ -8320,8 +8836,19 @@ interface VerizonMediaResponseLiveAd {
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkPingResponse}
  */
-interface VerizonMediaPingResponse {
+type VerizonMediaPingResponse = UplynkPingResponse;
+/**
+ * Represents an Uplynk Ping response.
+ *
+ * @remarks
+ * <br/> - See {@link https://api-docs.uplynk.com/#Develop/Pingv2.htm%3FTocPath%3DClient%2520(Media%2520Player)%7C_____3 | Ping API (Version 2)}.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkPingResponse {
     /**
      * The playback position at which the next ping request must be made, in seconds.
      *
@@ -8332,9 +8859,9 @@ interface VerizonMediaPingResponse {
     /**
      * The live ad information.
      */
-    ads?: VerizonMediaResponseLiveAds;
+    ads?: UplynkResponseLiveAds;
     /**
-     * Whether {@link VerizonMediaAds.currentAdBreak} is ending.
+     * Whether {@link UplynkAds.currentAdBreak} is ending.
      *
      * @remarks
      * <br/> - False if `0`, true otherwise.
@@ -8356,12 +8883,21 @@ interface VerizonMediaPingResponse {
  * @category Verizon Media
  * @category Events
  * @public
+ * @deprecated Superseded by {@link UplynkPingResponseEvent}
  */
-interface VerizonMediaPingResponseEvent extends Event<'pingresponse'> {
+type VerizonMediaPingResponseEvent = UplynkPingResponseEvent;
+/**
+ * Fired when a Ping response is received.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkPingResponseEvent extends Event<'pingresponse'> {
     /**
      * The response which has been received.
      */
-    readonly response: VerizonMediaPingResponse;
+    readonly response: UplynkPingResponse;
 }
 
 /**
@@ -8370,8 +8906,17 @@ interface VerizonMediaPingResponseEvent extends Event<'pingresponse'> {
  * @category Verizon Media
  * @category Events
  * @public
+ * @deprecated Superseded by {@link UplynkPingErrorEvent}
  */
-interface VerizonMediaPingErrorEvent extends Event<'pingerror'> {
+type VerizonMediaPingErrorEvent = UplynkPingErrorEvent;
+/**
+ * Fired when an error or invalid response is received from the Ping API.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkPingErrorEvent extends Event<'pingerror'> {
     /**
      * The error message.
      */
@@ -8383,8 +8928,16 @@ interface VerizonMediaPingErrorEvent extends Event<'pingerror'> {
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkAsset}
  */
-interface VerizonMediaAsset {
+type VerizonMediaAsset = UplynkAsset;
+/**
+ * Represents an Uplynk asset.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAsset {
     /**
      * The start time of the asset, in seconds.
      */
@@ -8393,7 +8946,7 @@ interface VerizonMediaAsset {
      * The end time of the asset, in seconds.
      *
      * @remarks
-     * <br> - The end time is the sum of {@link VerizonMediaAsset.startTime}, {@link VerizonMediaAsset.duration} and the {@link VerizonMediaAdBreak.duration} of the ad breaks scheduled during the asset.
+     * <br> - The end time is the sum of {@link UplynkAsset.startTime}, {@link UplynkAsset.duration} and the {@link UplynkAdBreak.duration} of the ad breaks scheduled during the asset.
      */
     endTime: number;
     /**
@@ -8408,7 +8961,7 @@ interface VerizonMediaAsset {
      * List of boundaries of the asset.
      *
      * @remarks
-     * <br/> - See {@link https://docs.vdms.com/video/#Setup/Boundaries-Setup-Playback.htm | Boundaries}
+     * <br/> - See {@link https://api-docs.uplynk.com/index.html#Setup/Boundaries-Setup-Playback.htm | Boundaries}
      */
     boundaryDetails: Boundary[] | undefined;
     /**
@@ -8520,12 +9073,21 @@ interface VerizonMediaAsset {
  * @category Verizon Media
  * @category Events
  * @public
+ * @deprecated Superseded by {@link UplynkAddAssetEvent}
  */
-interface VerizonMediaAddAssetEvent extends Event<'addasset'> {
+type VerizonMediaAddAssetEvent = UplynkAddAssetEvent;
+/**
+ * Fired when an asset is added.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAddAssetEvent extends Event<'addasset'> {
     /**
      * The asset which has been added.
      */
-    readonly asset: VerizonMediaAsset;
+    readonly asset: UplynkAsset;
 }
 
 /**
@@ -8534,12 +9096,21 @@ interface VerizonMediaAddAssetEvent extends Event<'addasset'> {
  * @category Verizon Media
  * @category Events
  * @public
+ * @deprecated Superseded by {@link UplynkRemoveAssetEvent}
  */
-interface VerizonMediaRemoveAssetEvent extends Event<'removeasset'> {
+type VerizonMediaRemoveAssetEvent = UplynkRemoveAssetEvent;
+/**
+ * Fired when an asset is removed.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkRemoveAssetEvent extends Event<'removeasset'> {
     /**
      * The asset which has been removed.
      */
-    readonly asset: VerizonMediaAsset;
+    readonly asset: UplynkAsset;
 }
 
 /**
@@ -8547,24 +9118,40 @@ interface VerizonMediaRemoveAssetEvent extends Event<'removeasset'> {
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkAssetEventMap}
  */
-interface VerizonMediaAssetEventMap {
+type VerizonMediaAssetEventMap = UplynkAssetEventMap;
+/**
+ * The events fired by the {@link UplynkAssetList}.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAssetEventMap {
     /**
-     * {@inheritDoc VerizonMediaAddAssetEvent}
+     * {@inheritDoc UplynkAddAssetEvent}
      */
-    addasset: VerizonMediaAddAssetEvent;
+    addasset: UplynkAddAssetEvent;
     /**
-     * {@inheritDoc VerizonMediaRemoveAssetEvent}
+     * {@inheritDoc UplynkRemoveAssetEvent}
      */
-    removeasset: VerizonMediaRemoveAssetEvent;
+    removeasset: UplynkRemoveAssetEvent;
 }
 /**
  * List of Verizon Media assets.
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkAssetList}
  */
-interface VerizonMediaAssetList extends EventedList<VerizonMediaAsset, VerizonMediaAssetEventMap> {
+type VerizonMediaAssetList = UplynkAssetList;
+/**
+ * List of Uplynk assets.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAssetList extends EventedList<UplynkAsset, UplynkAssetEventMap> {
 }
 
 /**
@@ -8572,24 +9159,32 @@ interface VerizonMediaAssetList extends EventedList<VerizonMediaAsset, VerizonMe
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link UplynkEventMap}.
  */
-interface VerizonMediaEventMap {
+type VerizonMediaEventMap = UplynkEventMap;
+/**
+ * The events fired by the {@link Uplynk | Uplynk API}.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkEventMap {
     /**
-     * {@inheritDoc VerizonMediaPreplayResponseEvent}
+     * {@inheritDoc UplynkPreplayResponseEvent}
      */
-    preplayresponse: VerizonMediaPreplayResponseEvent;
+    preplayresponse: UplynkPreplayResponseEvent;
     /**
-     * {@inheritDoc VerizonMediaAssetInfoResponseEvent}
+     * {@inheritDoc UplynkAssetInfoResponseEvent}
      */
-    assetinforesponse: VerizonMediaAssetInfoResponseEvent;
+    assetinforesponse: UplynkAssetInfoResponseEvent;
     /**
-     * {@inheritDoc VerizonMediaPingResponseEvent}
+     * {@inheritDoc UplynkPingResponseEvent}
      */
-    pingresponse: VerizonMediaPingResponseEvent;
+    pingresponse: UplynkPingResponseEvent;
     /**
-     * {@inheritDoc VerizonMediaPingErrorEvent}
+     * {@inheritDoc UplynkPingErrorEvent}
      */
-    pingerror: VerizonMediaPingErrorEvent;
+    pingerror: UplynkPingErrorEvent;
 }
 /**
  * The Verizon Media API.
@@ -8599,16 +9194,27 @@ interface VerizonMediaEventMap {
  *
  * @category Verizon Media
  * @public
+ * @deprecated Superseded by {@link Uplynk}.
  */
-interface VerizonMedia extends EventDispatcher<VerizonMediaEventMap> {
+type VerizonMedia = Uplynk;
+/**
+ * The Uplynk API.
+ *
+ * @remarks
+ * <br/> - Only available with the feature 'uplynk'.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface Uplynk extends EventDispatcher<UplynkEventMap> {
     /**
-     * The Verizon Media SSAI API.
+     * The Uplynk SSAI API.
      */
-    readonly ads: VerizonMediaAds;
+    readonly ads: UplynkAds;
     /**
-     * List of Verizon Media assets.
+     * List of Uplynk assets.
      */
-    readonly assets: VerizonMediaAssetList;
+    readonly assets: UplynkAssetList;
 }
 
 /**
@@ -9623,6 +10229,186 @@ interface CustomTextTrackMap {
 }
 
 /**
+ * The THEOads API.
+ *
+ * @remarks
+ * <br/> - Available since v8.12.0.
+ *
+ * @category THEOads
+ * @public
+ */
+interface TheoAds extends EventDispatcher<TheoAdsEventsMap> {
+    /**
+     * The currently playing interstitials.
+     */
+    currentInterstitials: readonly Interstitial[];
+    /**
+     * List of interstitials which still need to be played.
+     */
+    scheduledInterstitials: readonly Interstitial[];
+    /**
+     * Replaces all the ad tag parameters used for upcoming ad requests for a live stream.
+     *
+     * @param adTagParameters - The new ad tag parameters.
+     *
+     * @remarks
+     * <br/> - If set, this value overrides any parameters set on the {@link TheoAdDescription.adTagParameters}.
+     */
+    replaceAdTagParameters(adTagParameters?: Record<string, string>): void;
+}
+/**
+ * The events fired by the {@link TheoAds | THEOads API}.
+ *
+ * @category THEOads
+ * @public
+ */
+interface TheoAdsEventsMap {
+    /**
+     * Fired when an interstitial is added.
+     */
+    addinterstitial: InterstitialEvent<'addinterstitial'>;
+    /**
+     * Fired when an interstitial begins.
+     */
+    interstitialbegin: InterstitialEvent<'interstitialbegin'>;
+    /**
+     * Fired when an interstitial ends.
+     */
+    interstitialend: InterstitialEvent<'interstitialend'>;
+    /**
+     * Fired when an interstitial is updated.
+     */
+    interstitialupdate: InterstitialEvent<'interstitialupdate'>;
+    /**
+     * Fired when an interstitial has errored.
+     */
+    interstitialerror: InterstitialEvent<'interstitialerror'>;
+}
+/**
+ * Base type for events related to an interstitial.
+ *
+ * @category THEOads
+ * @category Events
+ * @public
+ */
+interface InterstitialEvent<TType extends string> extends Event<TType> {
+    /**
+     * The interstitial.
+     */
+    readonly interstitial: Interstitial;
+}
+/**
+ * The type of the interstitial.
+ *
+ * @category THEOads
+ * @public
+ */
+type InterstitialType = 'adbreak' | 'overlay';
+/**
+ * The THEOads interstitial.
+ *
+ * @category THEOads
+ * @public
+ */
+interface Interstitial {
+    /**
+     * The type of the interstitial.
+     */
+    type: InterstitialType;
+    /**
+     * The identifier of the interstitial.
+     */
+    id: string;
+    /**
+     * The start time at which the interstitial will start.
+     */
+    startTime: number;
+    /**
+     * The duration of the interstitial, in seconds.
+     *
+     */
+    duration: number | undefined;
+}
+/**
+ *  The layout of the THEOad.
+ */
+type TheoAdsLayout = 'single' | 'l-shape' | 'double';
+/**
+ * The THEOads interstitial that corresponds with ad playback.
+ *
+ * @category THEOads
+ * @public
+ */
+interface AdBreakInterstitial extends Interstitial {
+    type: 'adbreak';
+    /**
+     * The layout which is used to play the ads of the interstitial.
+     */
+    layout: TheoAdsLayout;
+    /**
+     * The background when playing an ad.
+     *
+     * @remarks
+     * - <br/> This is only available when playing in double or l-shape layout.
+     */
+    backdropUri: string | undefined;
+    /**
+     * The ads that are part of the interstitial.
+     *
+     * @remarks
+     * - <br/> - Only available during ad playback.
+     */
+    ads: readonly Ad[];
+}
+/**
+ * The THEOads interstitial that corresponds with overlay playback.
+ *
+ * @category THEOads
+ * @public
+ */
+interface OverlayInterstitial extends Interstitial {
+    type: 'overlay';
+    /**
+     * The url of the image of the overlay.
+     */
+    imageUrl: string | undefined;
+    /**
+     * The clickThrough url of the overlay.
+     */
+    clickThrough: string | undefined;
+    /**
+     * The position of the overlay.
+     */
+    position: OverlayPosition;
+    /**
+     * The size of the overlay.
+     */
+    size: OverlaySize;
+}
+/**
+ * The position information of the overlay.
+ *
+ * @category THEOads
+ * @public
+ */
+interface OverlayPosition {
+    left?: number;
+    right?: number;
+    top?: number;
+    bottom?: number;
+}
+/**
+ * The size information of the overlay.
+ *
+ * @category THEOads
+ * @public
+ */
+interface OverlaySize {
+    width?: number;
+    height?: number;
+}
+
+/**
  * The events fired by the {@link ChromelessPlayer}.
  *
  * @category Player
@@ -10150,8 +10936,16 @@ declare class ChromelessPlayer implements EventDispatcher<PlayerEventMap> {
      *
      * @remarks
      * <br/> - Only available with the feature `'verizonmedia'`.
+     * @deprecated Superseded by `uplynk`.
      */
     readonly verizonMedia?: VerizonMedia;
+    /**
+     * The Uplynk API.
+     *
+     * @remarks
+     * <br/> - Only available with the feature `'uplynk'`.
+     */
+    readonly uplynk?: Uplynk;
     /**
      * The HESP API.
      * @remarks
@@ -10159,6 +10953,13 @@ declare class ChromelessPlayer implements EventDispatcher<PlayerEventMap> {
      * <br/> - Only available with the feature `'hesp'`.
      */
     readonly hesp?: HespApi;
+    /**
+     * The THEOads API.
+     *
+     * @remarks
+     * <br/> - Only available with the feature `'theoads''`.
+     */
+    readonly theoads?: TheoAds;
 }
 
 /**
@@ -12357,6 +13158,48 @@ interface TTMLCue extends TextTrackCue {
 }
 
 /**
+ * Represents a metadata cue of a Millicast source.
+ *
+ * @remarks
+ * In order to receive Millicast metadata, you must set `metadata` to `true` in {@link MillicastSource.connectOptions}.
+ *
+ * @see https://docs.dolby.io/streaming-apis/docs/frame-metadata
+ *
+ * @category Media and Text Tracks
+ * @category Millicast
+ * @public
+ */
+interface MillicastMetadataCue extends TextTrackCue {
+    /**
+     * Unused.
+     *
+     * @remarks
+     * <br/> - Use {@link timecode} and/or {@link unregistered} to retrieve the contents of the Millicast metadata.
+     */
+    readonly content: undefined;
+    /**
+     * The media identifier of the track that contains the metadata.
+     */
+    readonly mid: string;
+    /**
+     * The UUID of the metadata.
+     */
+    readonly uuid: string | undefined;
+    /**
+     * Timecode of when the metadata was generated.
+     */
+    readonly timecode: Date | undefined;
+    /**
+     * Unregistered data.
+     *
+     * @remarks
+     * <br/> - If the metadata content is valid JSON, then this is the parsed JSON object.
+     *         Otherwise, it's the raw data as a {@link Uint8Array}.
+     */
+    readonly unregistered: object | Uint8Array | undefined;
+}
+
+/**
  * Describes a THEOads ad break request.
  *
  * @remarks
@@ -12378,7 +13221,7 @@ interface TheoAdDescription extends AdDescription {
      */
     sources?: string;
     /**
-     * Default network code to use for ad requests.
+     * Default GAM network code to use for ad requests.
      *
      * @remarks
      * <br/> - This will be overridden by network codes parsed from THEOads ad markers.
@@ -12386,7 +13229,7 @@ interface TheoAdDescription extends AdDescription {
      */
     networkCode?: string;
     /**
-     * Default custom asset key to use for ad requests.
+     * Default GAM custom asset key to use for ad requests.
      *
      * @remarks
      * <br/> - This will be overridden by custom asset keys parsed from THEOads ad markers.
@@ -12423,13 +13266,17 @@ interface TheoAdDescription extends AdDescription {
      */
     overrideAdSrc?: string;
     /**
-     * The ad tag parameters added to stream request.
+     * The ad tag parameters added to the GAM stream request.
      *
      * @remarks
      * <br/> - Each entry contains the parameter name with associated value.
      * <br/> - Values added must be strings.
      */
     adTagParameters?: Record<string, string>;
+    /**
+     * The streamActivityMonitorId added to the GAM Pod stream request.
+     */
+    streamActivityMonitorId?: string;
     /**
      * Whether to use the Id3 based operating mode.
      *
@@ -12449,6 +13296,15 @@ interface TheoAdDescription extends AdDescription {
      * @internal
      */
     retrievePodIdURI?: string;
+    /**
+     * The endpoint from where to retrieve the server-sent events.
+     *
+     * @remarks
+     * <br/> - If configured through THEOlive the configured value is used automatically unless it is defined in the ad source here.
+     *
+     * @internal
+     */
+    sseEndpoint?: string;
 }
 /**
  * Describes how and when the layout of a THEOads ad break should be overridden:
@@ -12459,7 +13315,7 @@ interface TheoAdDescription extends AdDescription {
  *
  * @category Ads
  */
-type TheoAdsLayoutOverride = 'single' | 'l-shape' | 'double' | 'single-if-mobile';
+type TheoAdsLayoutOverride = TheoAdsLayout | 'single-if-mobile';
 
 /**
  * @category HESP
@@ -13396,4 +14252,4 @@ declare function registerContentProtectionIntegration(integrationId: string, key
  */
 declare const utils: CommonUtils;
 
-export { ABRConfiguration, ABRMetadata, ABRStrategy, ABRStrategyConfiguration, ABRStrategyType, AES128KeySystemConfiguration, AccessibilityRole, Ad, AdBreak, AdBreakEvent, AdBreakInit, AdBufferingEvent, AdDescription, AdEvent, AdInit, AdIntegrationKind, AdMetadataEvent, AdPreloadType, AdReadyState, AdSkipEvent, AdSource, AdSourceType, AdType, AddCachingTaskEvent, AddTrackEvent, AddViewEvent, Ads, AdsConfiguration, AdsEventMap, AdsManagerLoadedEvent, AgamaAnalyticsIntegrationID, AgamaConfiguration, AgamaLogLevelType, AgamaPlayerConfiguration, AgamaServiceName, AgamaSourceConfiguration, AgamaStreamType, AirPlay, AnalyticsDescription, AnalyticsIntegrationID, AudioQuality, AxinomDRMConfiguration, AxinomIntegrationID, AzureDRMConfiguration, AzureIntegrationID, Base64Util, BaseSource, Boundary, BoundaryC3, BoundaryC7, BoundaryHalftime, BoundaryInfo, BufferSource, BufferedSegments, Cache, CacheEventMap, CacheStatus, CacheTaskStatus, CachingTask, CachingTaskEventMap, CachingTaskLicense, CachingTaskList, CachingTaskListEventMap, CachingTaskParameters, CanPlayEvent, CanPlayThroughEvent, Canvas, Cast, CastConfiguration, CastEventMap, CastState, CastStateChangeEvent, CertificateRequest, CertificateResponse, Chromecast, ChromecastConfiguration, ChromecastConnectionCallback, ChromecastError, ChromecastErrorCode, ChromecastErrorEvent, ChromecastEventMap, ChromecastMetadataDescription, ChromecastMetadataImage, ChromecastMetadataType, ChromelessPlayer, ClearkeyDecryptionKey, ClearkeyKeySystemConfiguration, Clip, ClipEventMap, ComcastDRMConfiguration, ComcastIntegrationID, CommonUtils, CompanionAd, ConaxDRMConfiguration, ConaxIntegrationID, ContentProtectionError, ContentProtectionErrorCode, ContentProtectionErrorEvent, ContentProtectionIntegration, ContentProtectionIntegrationFactory, ContentProtectionRequest, ContentProtectionRequestSubType, ContentProtectionResponse, CrossOriginSetting, CsaiAdDescription, CurrentSourceChangeEvent, CustomAdIntegrationKind, CustomTextTrackMap, CustomTextTrackOptions, CustomWebVTTTextTrack, DAIAvailabilityType, DRMConfiguration, DRMTodayDRMConfiguration, DRMTodayIntegrationID, DashPlaybackConfiguration, DateRangeCue, DeliveryType, DeviceBasedTitaniumDRMConfiguration, DimensionChangeEvent, DirectionChangeEvent, DurationChangeEvent, EdgeStyle, EmptiedEvent, EmsgCue, EncryptedEvent, EndedEvent, EnterBadNetworkModeEvent, ErrorCategory, ErrorCode, ErrorEvent, Event, EventDispatcher, EventListener, EventMap, EventStreamCue, EventedList, ExitBadNetworkModeEvent, ExpressPlayDRMConfiguration, ExpressPlayIntegrationID, EzdrmDRMConfiguration, EzdrmIntegrationID, FairPlayKeySystemConfiguration, FreeWheelAdDescription, FreeWheelAdUnitType, FreeWheelCue, FullscreenOptions$1 as FullscreenOptions, Geo, GlobalCast, GlobalChromecast, GoogleDAI, GoogleDAIConfiguration, GoogleDAILiveConfiguration, GoogleDAISSAIIntegrationID, GoogleDAITypedSource, GoogleDAIVodConfiguration, GoogleImaAd, GoogleImaConfiguration, HTTPHeaders, HespApi, HespApiEventMap, HespMediaType, HespSourceConfiguration, HespTypedSource, HlsDiscontinuityAlignment, HlsPlaybackConfiguration, ID3AttachedPicture, ID3BaseFrame, ID3Comments, ID3CommercialFrame, ID3Cue, ID3Frame, ID3GenericEncapsulatedObject, ID3InvolvedPeopleList, ID3PositionSynchronisationFrame, ID3PrivateFrame, ID3SynchronizedLyricsText, ID3TermsOfUse, ID3Text, ID3UniqueFileIdentifier, ID3Unknown, ID3UnsynchronisedLyricsTextTranscription, ID3UrlLink, ID3UserDefinedText, ID3UserDefinedUrlLink, ID3Yospace, IMAAdDescription, Imagine, ImagineEventMap, ImagineSSAIIntegrationID, ImagineServerSideAdInsertionConfiguration, ImagineTrackingEvent, ImagineTypedSource, IntentToFallbackEvent, InterceptableRequest, InterceptableResponse, IrdetoDRMConfiguration, IrdetoIntegrationID, JoinStrategy, KeyOSDRMConfiguration, KeyOSFairplayKeySystemConfiguration, KeyOSIntegrationID, KeyOSKeySystemConfiguration, KeySystemConfiguration, KeySystemId, Latencies, LatencyConfiguration, LatencyManager, LayoutChangeEvent, LicenseRequest, LicenseResponse, LicenseType, LinearAd, List, LoadedDataEvent, LoadedMetadataEvent, MaybeAsync, MeasurableNetworkEstimator, MediaError, MediaErrorCode, MediaFile, MediaMelonConfiguration, MediaTailorSource, MediaTrack, MediaTrackEventMap, MediaTrackList, MediaType, MetadataDescription, Metrics, MillicastSource, MoatAnalyticsIntegrationID, MoatConfiguration, MultiViewPlayer, MultiViewPlayerEventMap, MultiViewPlayerLayout, MutedAutoplayConfiguration, Network, NetworkEstimator, NetworkEstimatorController, NetworkEventMap, NetworkInterceptorController, NodeStyleVoidCallback, NonLinearAd, PauseEvent, PiPConfiguration, PiPPosition, PlayEvent, PlayReadyKeySystemConfiguration, PlayerConfiguration, PlayerEventMap, PlayerList, PlayingEvent, PreloadType, Presentation, PresentationEventMap, PresentationMode, PresentationModeChangeEvent, ProgressEvent, PublicationLoadStartEvent, PublicationLoadedEvent, PublicationOfflineEvent, Quality, QualityEvent, QualityEventMap, QualityList, RateChangeEvent, ReadyStateChangeEvent, RelatedChangeEvent, RelatedContent, RelatedContentEventMap, RelatedContentSource, RelatedHideEvent, RelatedShowEvent, RemoveCachingTaskEvent, RemoveTrackEvent, RemoveViewEvent, Representation, RepresentationChangeEvent, Request, RequestBody, RequestInit, RequestInterceptor, RequestLike, RequestMeasurer, RequestMethod, RequestSubType, RequestType, ResponseBody, ResponseInit, ResponseInterceptor, ResponseLike, ResponseType, RetryConfiguration, SSAIIntegrationId, SeamlessPeriodSwitchStrategy, SeamlessSwitchStrategy, SeekedEvent, SeekingEvent, ServerSideAdInsertionConfiguration, ServerSideAdIntegrationController, ServerSideAdIntegrationFactory, ServerSideAdIntegrationHandler, SkippedAdStrategy, SmartSightConfiguration, SmartSightIntegrationID, Source, SourceAbrConfiguration, SourceChangeEvent, SourceConfiguration, SourceDescription, SourceIntegrationId, SourceLatencyConfiguration, Sources, SpotXAdDescription, SpotxData, SpotxQueryParameter, StateChangeEvent, StereoChangeEvent, StreamOneAnalyticsIntegrationID, StreamOneConfiguration, StreamType, StringKeyOf, StylePropertyRecord, SupportedCustomTextTrackCueTypes, THEOplayerAdDescription, THEOplayerError, TTMLCue, TTMLExtent, TargetQualityChangedEvent, TextTrack, TextTrackAddCueEvent, TextTrackCue, TextTrackCueChangeEvent, TextTrackCueEnterEvent, TextTrackCueEventMap, TextTrackCueExitEvent, TextTrackCueList, TextTrackCueUpdateEvent, TextTrackDescription, TextTrackEnterCueEvent, TextTrackError, TextTrackErrorCode, TextTrackErrorEvent, TextTrackEventMap, TextTrackExitCueEvent, TextTrackReadyState, TextTrackReadyStateChangeEvent, TextTrackRemoveCueEvent, TextTrackStyle, TextTrackStyleEventMap, TextTrackType, TextTrackTypeChangeEvent, TextTrackUpdateCueEvent, TextTracksList, TheoAdDescription, TheoAdsLayoutOverride, TheoLiveApi, TheoLiveApiEventMap, TheoLiveConfiguration, TheoLivePublication, TheoLiveSource, ThumbnailResolution, TimeRanges, TimeUpdateEvent, TitaniumDRMConfiguration, TitaniumIntegrationID, TokenBasedTitaniumDRMConfiguration, Track, TrackChangeEvent, TrackEventMap, TrackList, TrackListEventMap, TrackUpdateEvent, TypedSource, UIConfiguration, UILanguage, UIPlayerConfiguration, UIRelatedContent, UIRelatedContentEventMap, UniversalAdId, UpdateQualityEvent, UplynkDRMConfiguration, UplynkIntegrationID, UserActions, VPAIDMode, VR, VRConfiguration, VRDirection, VREventMap, VRPanoramaMode, VRPlayerConfiguration, VRState, VRStereoMode, VTTAlignSetting, VTTDirectionSetting, VTTLine, VTTLineAlignSetting, VTTPosition, VTTPositionAlignSetting, VTTScrollSetting, VendorCast, VendorCastEventMap, VerimatrixDRMConfiguration, VerimatrixIntegrationID, VerizonMedia, VerizonMediaAd, VerizonMediaAdBeginEvent, VerizonMediaAdBreak, VerizonMediaAdBreakBeginEvent, VerizonMediaAdBreakEndEvent, VerizonMediaAdBreakEventMap, VerizonMediaAdBreakList, VerizonMediaAdBreakListEventMap, VerizonMediaAdBreakSkipEvent, VerizonMediaAdCompleteEvent, VerizonMediaAdEndEvent, VerizonMediaAdEventMap, VerizonMediaAdFirstQuartileEvent, VerizonMediaAdList, VerizonMediaAdListEventMap, VerizonMediaAdMidpointEvent, VerizonMediaAdThirdQuartileEvent, VerizonMediaAddAdBreakEvent, VerizonMediaAddAssetEvent, VerizonMediaAds, VerizonMediaAsset, VerizonMediaAssetEventMap, VerizonMediaAssetId, VerizonMediaAssetInfoResponse, VerizonMediaAssetInfoResponseEvent, VerizonMediaAssetList, VerizonMediaAssetMovieRating, VerizonMediaAssetTvRating, VerizonMediaAssetType, VerizonMediaConfiguration, VerizonMediaEventMap, VerizonMediaExternalId, VerizonMediaPingConfiguration, VerizonMediaPingErrorEvent, VerizonMediaPingResponse, VerizonMediaPingResponseEvent, VerizonMediaPreplayBaseResponse, VerizonMediaPreplayLiveResponse, VerizonMediaPreplayResponse, VerizonMediaPreplayResponseEvent, VerizonMediaPreplayResponseType, VerizonMediaPreplayVodResponse, VerizonMediaRemoveAdBreakEvent, VerizonMediaRemoveAdEvent, VerizonMediaRemoveAssetEvent, VerizonMediaResponseDrm, VerizonMediaResponseLiveAd, VerizonMediaResponseLiveAdBreak, VerizonMediaResponseLiveAds, VerizonMediaResponseVodAd, VerizonMediaResponseVodAdBreak, VerizonMediaResponseVodAdBreakOffset, VerizonMediaResponseVodAdPlaceholder, VerizonMediaResponseVodAds, VerizonMediaSource, VerizonMediaUiConfiguration, VerizonMediaUpdateAdBreakEvent, VideoFrameCallbackMetadata, VideoFrameRequestCallback, VideoQuality, View, ViewChangeEvent, ViewPositionChangeEvent, VimondDRMConfiguration, VimondIntegrationID, Visibility, VisibilityObserver, VisibilityObserverCallback, VoidPromiseCallback, VolumeChangeEvent, VudrmDRMConfiguration, VudrmIntegrationID, WaitUntilCallback, WaitingEvent, WebAudio, WebVTTCue, WebVTTRegion, WidevineKeySystemConfiguration, XstreamDRMConfiguration, XstreamIntegrationID, YospaceId, YouboraAnalyticsIntegrationID, YouboraOptions, cache, cast, features, playerSuiteVersion, players, registerContentProtectionIntegration, utils, version, videojs };
+export { ABRConfiguration, ABRMetadata, ABRStrategy, ABRStrategyConfiguration, ABRStrategyType, AES128KeySystemConfiguration, AccessibilityRole, Ad, AdBreak, AdBreakEvent, AdBreakInit, AdBreakInterstitial, AdBufferingEvent, AdDescription, AdEvent, AdInit, AdIntegrationKind, AdMetadataEvent, AdPreloadType, AdReadyState, AdSkipEvent, AdSource, AdSourceType, AdType, AddCachingTaskEvent, AddTrackEvent, AddViewEvent, Ads, AdsConfiguration, AdsEventMap, AdsManagerLoadedEvent, AgamaAnalyticsIntegrationID, AgamaConfiguration, AgamaLogLevelType, AgamaPlayerConfiguration, AgamaServiceName, AgamaSourceConfiguration, AgamaStreamType, AirPlay, AnalyticsDescription, AnalyticsIntegrationID, AudioQuality, AxinomDRMConfiguration, AxinomIntegrationID, AzureDRMConfiguration, AzureIntegrationID, Base64Util, BaseSource, Boundary, BoundaryC3, BoundaryC7, BoundaryHalftime, BoundaryInfo, BufferSource, BufferedSegments, Cache, CacheEventMap, CacheStatus, CacheTaskStatus, CachingTask, CachingTaskEventMap, CachingTaskLicense, CachingTaskList, CachingTaskListEventMap, CachingTaskParameters, CanPlayEvent, CanPlayThroughEvent, Canvas, Cast, CastConfiguration, CastEventMap, CastState, CastStateChangeEvent, CertificateRequest, CertificateResponse, Chromecast, ChromecastConfiguration, ChromecastConnectionCallback, ChromecastError, ChromecastErrorCode, ChromecastErrorEvent, ChromecastEventMap, ChromecastMetadataDescription, ChromecastMetadataImage, ChromecastMetadataType, ChromelessPlayer, ClearkeyDecryptionKey, ClearkeyKeySystemConfiguration, Clip, ClipEventMap, ClosedCaptionFile, ComcastDRMConfiguration, ComcastIntegrationID, CommonUtils, CompanionAd, ConaxDRMConfiguration, ConaxIntegrationID, ContentProtectionError, ContentProtectionErrorCode, ContentProtectionErrorEvent, ContentProtectionIntegration, ContentProtectionIntegrationFactory, ContentProtectionRequest, ContentProtectionRequestSubType, ContentProtectionResponse, CrossOriginSetting, CsaiAdDescription, CurrentSourceChangeEvent, CustomAdIntegrationKind, CustomTextTrackMap, CustomTextTrackOptions, CustomWebVTTTextTrack, DAIAvailabilityType, DRMConfiguration, DRMTodayDRMConfiguration, DRMTodayIntegrationID, DashPlaybackConfiguration, DateRangeCue, DeliveryType, DeviceBasedTitaniumDRMConfiguration, DimensionChangeEvent, DirectionChangeEvent, DurationChangeEvent, EdgeStyle, EmptiedEvent, EmsgCue, EncryptedEvent, EndedEvent, EnterBadNetworkModeEvent, ErrorCategory, ErrorCode, ErrorEvent, Event, EventDispatcher, EventListener, EventMap, EventStreamCue, EventedList, ExitBadNetworkModeEvent, ExpressPlayDRMConfiguration, ExpressPlayIntegrationID, EzdrmDRMConfiguration, EzdrmIntegrationID, FairPlayKeySystemConfiguration, FreeWheelAdDescription, FreeWheelAdUnitType, FreeWheelCue, FullscreenOptions$1 as FullscreenOptions, Geo, GlobalCast, GlobalChromecast, GoogleDAI, GoogleDAIConfiguration, GoogleDAILiveConfiguration, GoogleDAISSAIIntegrationID, GoogleDAITypedSource, GoogleDAIVodConfiguration, GoogleImaAd, GoogleImaConfiguration, HTTPHeaders, HespApi, HespApiEventMap, HespMediaType, HespSourceConfiguration, HespTypedSource, HlsDiscontinuityAlignment, HlsPlaybackConfiguration, ID3AttachedPicture, ID3BaseFrame, ID3Comments, ID3CommercialFrame, ID3Cue, ID3Frame, ID3GenericEncapsulatedObject, ID3InvolvedPeopleList, ID3PositionSynchronisationFrame, ID3PrivateFrame, ID3SynchronizedLyricsText, ID3TermsOfUse, ID3Text, ID3UniqueFileIdentifier, ID3Unknown, ID3UnsynchronisedLyricsTextTranscription, ID3UrlLink, ID3UserDefinedText, ID3UserDefinedUrlLink, ID3Yospace, IMAAdDescription, Imagine, ImagineEventMap, ImagineSSAIIntegrationID, ImagineServerSideAdInsertionConfiguration, ImagineTrackingEvent, ImagineTypedSource, IntentToFallbackEvent, InterceptableRequest, InterceptableResponse, Interstitial, InterstitialEvent, InterstitialType, IrdetoDRMConfiguration, IrdetoIntegrationID, JoinStrategy, KeyOSDRMConfiguration, KeyOSFairplayKeySystemConfiguration, KeyOSIntegrationID, KeyOSKeySystemConfiguration, KeySystemConfiguration, KeySystemId, Latencies, LatencyConfiguration, LatencyManager, LayoutChangeEvent, LegacyTheoAds, LicenseRequest, LicenseResponse, LicenseType, LinearAd, List, LoadedDataEvent, LoadedMetadataEvent, MaybeAsync, MeasurableNetworkEstimator, MediaError, MediaErrorCode, MediaFile, MediaMelonConfiguration, MediaTailorSource, MediaTrack, MediaTrackEventMap, MediaTrackList, MediaType, MetadataDescription, Metrics, MillicastMetadataCue, MillicastSource, MoatAnalyticsIntegrationID, MoatConfiguration, MultiViewPlayer, MultiViewPlayerEventMap, MultiViewPlayerLayout, MutedAutoplayConfiguration, Network, NetworkEstimator, NetworkEstimatorController, NetworkEventMap, NetworkInterceptorController, NodeStyleVoidCallback, NonLinearAd, OverlayInterstitial, OverlayPosition, OverlaySize, PauseEvent, PiPConfiguration, PiPPosition, PlayEvent, PlayReadyKeySystemConfiguration, PlayerConfiguration, PlayerEventMap, PlayerList, PlayingEvent, PreloadType, Presentation, PresentationEventMap, PresentationMode, PresentationModeChangeEvent, ProgressEvent, PublicationLoadStartEvent, PublicationLoadedEvent, PublicationOfflineEvent, Quality, QualityEvent, QualityEventMap, QualityList, RateChangeEvent, ReadyStateChangeEvent, RelatedChangeEvent, RelatedContent, RelatedContentEventMap, RelatedContentSource, RelatedHideEvent, RelatedShowEvent, RemoveCachingTaskEvent, RemoveTrackEvent, RemoveViewEvent, Representation, RepresentationChangeEvent, Request, RequestBody, RequestInit, RequestInterceptor, RequestLike, RequestMeasurer, RequestMethod, RequestSubType, RequestType, ResponseBody, ResponseInit, ResponseInterceptor, ResponseLike, ResponseType, RetryConfiguration, SSAIIntegrationId, SeamlessPeriodSwitchStrategy, SeamlessSwitchStrategy, SeekedEvent, SeekingEvent, ServerSideAdInsertionConfiguration, ServerSideAdIntegrationController, ServerSideAdIntegrationFactory, ServerSideAdIntegrationHandler, SkippedAdStrategy, SmartSightConfiguration, SmartSightIntegrationID, Source, SourceAbrConfiguration, SourceChangeEvent, SourceConfiguration, SourceDescription, SourceIntegrationId, SourceLatencyConfiguration, Sources, SpotXAdDescription, SpotxData, SpotxQueryParameter, StateChangeEvent, StereoChangeEvent, StreamOneAnalyticsIntegrationID, StreamOneConfiguration, StreamType, StringKeyOf, StylePropertyRecord, SupportedCustomTextTrackCueTypes, THEOplayerAdDescription, THEOplayerError, TTMLCue, TTMLExtent, TargetQualityChangedEvent, TextTrack, TextTrackAddCueEvent, TextTrackCue, TextTrackCueChangeEvent, TextTrackCueEnterEvent, TextTrackCueEventMap, TextTrackCueExitEvent, TextTrackCueList, TextTrackCueUpdateEvent, TextTrackDescription, TextTrackEnterCueEvent, TextTrackError, TextTrackErrorCode, TextTrackErrorEvent, TextTrackEventMap, TextTrackExitCueEvent, TextTrackReadyState, TextTrackReadyStateChangeEvent, TextTrackRemoveCueEvent, TextTrackStyle, TextTrackStyleEventMap, TextTrackType, TextTrackTypeChangeEvent, TextTrackUpdateCueEvent, TextTracksList, TheoAdDescription, TheoAds, TheoAdsEventsMap, TheoAdsLayout, TheoAdsLayoutOverride, TheoLiveApi, TheoLiveApiEventMap, TheoLiveConfiguration, TheoLivePublication, TheoLiveSource, ThumbnailResolution, TimeRanges, TimeUpdateEvent, TitaniumDRMConfiguration, TitaniumIntegrationID, TokenBasedTitaniumDRMConfiguration, Track, TrackChangeEvent, TrackEventMap, TrackList, TrackListEventMap, TrackUpdateEvent, TypedSource, UIConfiguration, UILanguage, UIPlayerConfiguration, UIRelatedContent, UIRelatedContentEventMap, UniversalAdId, UpdateQualityEvent, Uplynk, UplynkAd, UplynkAdBeginEvent, UplynkAdBreak, UplynkAdBreakBeginEvent, UplynkAdBreakEndEvent, UplynkAdBreakEventMap, UplynkAdBreakList, UplynkAdBreakListEventMap, UplynkAdBreakSkipEvent, UplynkAdCompleteEvent, UplynkAdEndEvent, UplynkAdEventMap, UplynkAdFirstQuartileEvent, UplynkAdList, UplynkAdListEventMap, UplynkAdMidpointEvent, UplynkAdThirdQuartileEvent, UplynkAddAdBreakEvent, UplynkAddAssetEvent, UplynkAds, UplynkAsset, UplynkAssetEventMap, UplynkAssetId, UplynkAssetInfoResponse, UplynkAssetInfoResponseEvent, UplynkAssetList, UplynkAssetMovieRating, UplynkAssetTvRating, UplynkAssetType, UplynkConfiguration, UplynkDRMConfiguration, UplynkEventMap, UplynkExternalId, UplynkIntegrationID, UplynkPingConfiguration, UplynkPingErrorEvent, UplynkPingResponse, UplynkPingResponseEvent, UplynkPreplayBaseResponse, UplynkPreplayLiveResponse, UplynkPreplayResponse, UplynkPreplayResponseEvent, UplynkPreplayResponseType, UplynkPreplayVodResponse, UplynkRemoveAdBreakEvent, UplynkRemoveAdEvent, UplynkRemoveAssetEvent, UplynkResponseDrm, UplynkResponseLiveAd, UplynkResponseLiveAdBreak, UplynkResponseLiveAds, UplynkResponseVodAd, UplynkResponseVodAdBreak, UplynkResponseVodAdBreakOffset, UplynkResponseVodAdPlaceholder, UplynkResponseVodAds, UplynkSource, UplynkUiConfiguration, UplynkUpdateAdBreakEvent, UserActions, VPAIDMode, VR, VRConfiguration, VRDirection, VREventMap, VRPanoramaMode, VRPlayerConfiguration, VRState, VRStereoMode, VTTAlignSetting, VTTDirectionSetting, VTTLine, VTTLineAlignSetting, VTTPosition, VTTPositionAlignSetting, VTTScrollSetting, VendorCast, VendorCastEventMap, VerimatrixDRMConfiguration, VerimatrixIntegrationID, VerizonMedia, VerizonMediaAd, VerizonMediaAdBeginEvent, VerizonMediaAdBreak, VerizonMediaAdBreakBeginEvent, VerizonMediaAdBreakEndEvent, VerizonMediaAdBreakEventMap, VerizonMediaAdBreakList, VerizonMediaAdBreakListEventMap, VerizonMediaAdBreakSkipEvent, VerizonMediaAdCompleteEvent, VerizonMediaAdEndEvent, VerizonMediaAdEventMap, VerizonMediaAdFirstQuartileEvent, VerizonMediaAdList, VerizonMediaAdListEventMap, VerizonMediaAdMidpointEvent, VerizonMediaAdThirdQuartileEvent, VerizonMediaAddAdBreakEvent, VerizonMediaAddAssetEvent, VerizonMediaAds, VerizonMediaAsset, VerizonMediaAssetEventMap, VerizonMediaAssetId, VerizonMediaAssetInfoResponse, VerizonMediaAssetInfoResponseEvent, VerizonMediaAssetList, VerizonMediaAssetMovieRating, VerizonMediaAssetTvRating, VerizonMediaAssetType, VerizonMediaConfiguration, VerizonMediaEventMap, VerizonMediaExternalId, VerizonMediaPingConfiguration, VerizonMediaPingErrorEvent, VerizonMediaPingResponse, VerizonMediaPingResponseEvent, VerizonMediaPreplayBaseResponse, VerizonMediaPreplayLiveResponse, VerizonMediaPreplayResponse, VerizonMediaPreplayResponseEvent, VerizonMediaPreplayResponseType, VerizonMediaPreplayVodResponse, VerizonMediaRemoveAdBreakEvent, VerizonMediaRemoveAdEvent, VerizonMediaRemoveAssetEvent, VerizonMediaResponseDrm, VerizonMediaResponseLiveAd, VerizonMediaResponseLiveAdBreak, VerizonMediaResponseLiveAds, VerizonMediaResponseVodAd, VerizonMediaResponseVodAdBreak, VerizonMediaResponseVodAdBreakOffset, VerizonMediaResponseVodAdPlaceholder, VerizonMediaResponseVodAds, VerizonMediaSource, VerizonMediaUiConfiguration, VerizonMediaUpdateAdBreakEvent, VideoFrameCallbackMetadata, VideoFrameRequestCallback, VideoQuality, View, ViewChangeEvent, ViewPositionChangeEvent, VimondDRMConfiguration, VimondIntegrationID, Visibility, VisibilityObserver, VisibilityObserverCallback, VoidPromiseCallback, VolumeChangeEvent, VudrmDRMConfiguration, VudrmIntegrationID, WaitUntilCallback, WaitingEvent, WebAudio, WebVTTCue, WebVTTRegion, WidevineKeySystemConfiguration, XstreamDRMConfiguration, XstreamIntegrationID, YospaceId, YouboraAnalyticsIntegrationID, YouboraOptions, cache, cast, features, playerSuiteVersion, players, registerContentProtectionIntegration, utils, version, videojs };
