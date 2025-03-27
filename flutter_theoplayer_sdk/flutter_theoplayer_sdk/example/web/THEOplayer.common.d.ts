@@ -3528,6 +3528,17 @@ interface DashPlaybackConfiguration {
      *  @defaultValue `true`
      */
     segmentRelativeVttTiming?: boolean;
+    /**
+     * A flag to force re-creation of the MediaSource when switching audio tracks.
+     *
+     * @remarks
+     * <br/> - Available since v8.14.0.
+     *
+     *  @defaultValue `false`
+     *
+     *  @internal
+     */
+    forceRecreateMediaSourceOnAudioSwitch?: boolean;
 }
 
 /**
@@ -13290,10 +13301,6 @@ interface TheoAdDescription extends AdDescription {
     /**
      * The URI from where to retrieve the PodID's as returned from the EABN service from Google.
      *
-     * @remarks
-     * <br/> - This is specific for our NFL integration at the moment, so it's marked internal.
-     *
-     * @internal
      */
     retrievePodIdURI?: string;
     /**
@@ -13301,8 +13308,6 @@ interface TheoAdDescription extends AdDescription {
      *
      * @remarks
      * <br/> - If configured through THEOlive the configured value is used automatically unless it is defined in the ad source here.
-     *
-     * @internal
      */
     sseEndpoint?: string;
 }
