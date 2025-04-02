@@ -1,18 +1,22 @@
 package com.theoplayer.flutter.transformers
 
+import com.theoplayer.android.api.source.PlaybackPipeline
 import com.theoplayer.android.api.source.SourceDescription
 import com.theoplayer.android.api.source.TypedSource
 import com.theoplayer.android.api.source.drm.DRMConfiguration
 import com.theoplayer.android.api.source.drm.FairPlayKeySystemConfiguration
 import com.theoplayer.android.api.source.drm.KeySystemConfiguration
 import com.theoplayer.android.api.theolive.TheoLiveSource
+import com.theoplayer.flutter.pigeon.FairPlayDRMConfiguration
 import com.theoplayer.flutter.pigeon.SourceIntegrationId
+import com.theoplayer.flutter.pigeon.WidevineDRMConfiguration
 
 typealias FlutterSourceDescription = com.theoplayer.flutter.pigeon.SourceDescription
-typealias FlutterTypedSource = com.theoplayer.flutter.pigeon.TypedSource
+typealias FlutterTypedSource = com.theoplayer.flutter.pigeon.PigeonTypedSource
 typealias FlutterDRMConfiguration = com.theoplayer.flutter.pigeon.DRMConfiguration
-typealias FlutterWidevineDRMConfiguration = com.theoplayer.flutter.pigeon.WidevineDRMConfiguration
-typealias FlutterFairPlayDRMConfiguration = com.theoplayer.flutter.pigeon.FairPlayDRMConfiguration
+typealias FlutterWidevineDRMConfiguration = WidevineDRMConfiguration
+typealias FlutterFairPlayDRMConfiguration = FairPlayDRMConfiguration
+typealias FlutterPlaybackPipeline = com.theoplayer.flutter.pigeon.PlaybackPipeline
 
 object SourceTransformer {
 
@@ -36,7 +40,12 @@ object SourceTransformer {
         }
 
         val integrationID = if (typedSource is TheoLiveSource) SourceIntegrationId.THEOLIVE else null
-        return FlutterTypedSource(typedSource.src, drm, integration = integrationID)
+        val playbackPipeline = if (typedSource.playbackPipeline == PlaybackPipeline.LEGACY) FlutterPlaybackPipeline.LEGACY else FlutterPlaybackPipeline.MEDIA3
+
+        return FlutterTypedSource(
+            typedSource.src, drm, integration = integrationID,
+            playbackPipeline = playbackPipeline
+        )
     }
 
     fun toFlutterDRMConfiguration(drmConfiguration: DRMConfiguration): FlutterDRMConfiguration {
@@ -92,13 +101,20 @@ object SourceTransformer {
             }
             else -> {
                 val typedSourceBuilder = TypedSource.Builder(flutterTypedSource.src)
-
+                typedSourceBuilder.playbackPipeline(toPlaybackPipeline(flutterTypedSource.playbackPipeline));
                 flutterTypedSource.drm?.let {
                     typedSourceBuilder.drm(toDRMConfiguration(it))
                 }
 
                 return typedSourceBuilder.build()
             }
+        }
+    }
+
+    private fun toPlaybackPipeline(playbackPipeline: FlutterPlaybackPipeline): PlaybackPipeline {
+        return when(playbackPipeline) {
+            FlutterPlaybackPipeline.LEGACY -> PlaybackPipeline.LEGACY
+            else -> PlaybackPipeline.MEDIA3
         }
     }
 
