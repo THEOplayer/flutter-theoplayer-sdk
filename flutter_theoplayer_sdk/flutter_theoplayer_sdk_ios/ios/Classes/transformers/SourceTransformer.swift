@@ -32,7 +32,7 @@ struct SourceTransformer {
             flutterDRMConfiguration = toFlutterDRMConfiguration(drmConfiguration: drmConfiguration)
         }
         
-        return PigeonTypedSource(src: typedSource.src.absoluteString, drm: flutterDRMConfiguration, playbackPipeline: PlaybackPipeline.legacy)
+        return PigeonTypedSource(src: typedSource.src, drm: flutterDRMConfiguration, playbackPipeline: PlaybackPipeline.legacy)
     }
     
     
