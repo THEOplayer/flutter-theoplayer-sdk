@@ -62,17 +62,23 @@ enum PreloadType {
 }
 
 class SourceDescription {
-  final List<TypedSource?> sources;
+  final List<PigeonTypedSource?> sources;
 
   const SourceDescription({required this.sources});
 }
 
-class TypedSource {
+///
+/// Internal TypedSource Pigeon for Android/iOS communication
+/// Remarks:
+/// * Internal type, don't use it, it will be removed.
+///
+class PigeonTypedSource {
   final String src;
   final DRMConfiguration? drm;
   final SourceIntegrationId? integration;
+  final PlaybackPipeline playbackPipeline;
 
-  const TypedSource({required this.src, this.drm, this.integration});
+  const PigeonTypedSource({required this.src, this.drm, this.integration, this.playbackPipeline = PlaybackPipeline.media3});
 }
 
 enum SourceIntegrationId {
@@ -103,6 +109,9 @@ class FairPlayDRMConfiguration {
   FairPlayDRMConfiguration({required this.licenseAcquisitionURL, required this.certificateURL, this.headers});
 }
 
+enum PlaybackPipeline {
+  media3, legacy,
+}
 
 
 
