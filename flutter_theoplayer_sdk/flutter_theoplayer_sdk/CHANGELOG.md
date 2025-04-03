@@ -1,3 +1,15 @@
+## 9.0.0
+
+* Updated THEOplayer to 9.0.0.
+* Added `TypedSource.androidSourceConfiguration` to change playback pipelines on Android (legacy/media3)
+* Changed default media playback pipeline on Android (**Breaking change**)
+	- Starting from THEOplayer 9.0, the new Media3 Playback pipeline is now the default for all [Android SDK playback](https://www.theoplayer.com/docs/theoplayer/changelog/#-900-20250403).
+	- The legacy playback pipeline from version 8.x is still available, and can be activated by setting `TypedSource.androidSourceConfiguration.playbackPipeline` to `PlaybackPipeline.LEGACY`.
+	- The legacy playback pipeline is scheduled to be removed in version 10.
+* Known issues:
+	- Combining `AndroidViewComposition.SURFACE_PRODUCER` or `AndroidViewComposition.SURFACE_TEXTURE` with the new default pipeline doesn't play DRM (content protected) sources.
+	- As a workaround please use `PlaybackPipeline.LEGACY` with these rendering engines, or `AndroidViewComposition.HYBRID_COMPOSITION` with `PlaybackPipeline.MEDIA3`.
+
 ## 8.14.0
 
 * Updated THEOplayer to 8.14.0.
