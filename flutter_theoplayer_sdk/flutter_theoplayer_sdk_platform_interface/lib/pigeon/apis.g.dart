@@ -60,6 +60,11 @@ enum SourceIntegrationId {
   theolive,
 }
 
+enum PlaybackPipeline {
+  media3,
+  legacy,
+}
+
 class TimeRange {
   TimeRange({
     required this.start,
@@ -91,7 +96,7 @@ class SourceDescription {
     required this.sources,
   });
 
-  List<TypedSource?> sources;
+  List<PigeonTypedSource?> sources;
 
   Object encode() {
     return <Object?>[
@@ -102,16 +107,22 @@ class SourceDescription {
   static SourceDescription decode(Object result) {
     result as List<Object?>;
     return SourceDescription(
-      sources: (result[0] as List<Object?>?)!.cast<TypedSource?>(),
+      sources: (result[0] as List<Object?>?)!.cast<PigeonTypedSource?>(),
     );
   }
 }
 
-class TypedSource {
-  TypedSource({
+///
+/// Internal TypedSource Pigeon for Android/iOS communication
+/// Remarks:
+/// * Internal type, don't use it, it will be removed.
+///
+class PigeonTypedSource {
+  PigeonTypedSource({
     required this.src,
     this.drm,
     this.integration,
+    required this.playbackPipeline,
   });
 
   String src;
@@ -120,17 +131,20 @@ class TypedSource {
 
   SourceIntegrationId? integration;
 
+  PlaybackPipeline playbackPipeline;
+
   Object encode() {
     return <Object?>[
       src,
       drm?.encode(),
       integration?.index,
+      playbackPipeline.index,
     ];
   }
 
-  static TypedSource decode(Object result) {
+  static PigeonTypedSource decode(Object result) {
     result as List<Object?>;
-    return TypedSource(
+    return PigeonTypedSource(
       src: result[0]! as String,
       drm: result[1] != null
           ? DRMConfiguration.decode(result[1]! as List<Object?>)
@@ -138,6 +152,7 @@ class TypedSource {
       integration: result[2] != null
           ? SourceIntegrationId.values[result[2]! as int]
           : null,
+      playbackPipeline: PlaybackPipeline.values[result[3]! as int],
     );
   }
 }
@@ -834,13 +849,13 @@ class _THEOplayerNativeAPICodec extends StandardMessageCodec {
     } else if (value is FairPlayDRMConfiguration) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
-    } else if (value is SourceDescription) {
+    } else if (value is PigeonTypedSource) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
-    } else if (value is TimeRange) {
+    } else if (value is SourceDescription) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
-    } else if (value is TypedSource) {
+    } else if (value is TimeRange) {
       buffer.putUint8(132);
       writeValue(buffer, value.encode());
     } else if (value is WidevineDRMConfiguration) {
@@ -859,11 +874,11 @@ class _THEOplayerNativeAPICodec extends StandardMessageCodec {
       case 129: 
         return FairPlayDRMConfiguration.decode(readValue(buffer)!);
       case 130: 
-        return SourceDescription.decode(readValue(buffer)!);
+        return PigeonTypedSource.decode(readValue(buffer)!);
       case 131: 
-        return TimeRange.decode(readValue(buffer)!);
+        return SourceDescription.decode(readValue(buffer)!);
       case 132: 
-        return TypedSource.decode(readValue(buffer)!);
+        return TimeRange.decode(readValue(buffer)!);
       case 133: 
         return WidevineDRMConfiguration.decode(readValue(buffer)!);
       default:
@@ -1819,10 +1834,10 @@ class _THEOplayerFlutterAPICodec extends StandardMessageCodec {
     } else if (value is FairPlayDRMConfiguration) {
       buffer.putUint8(129);
       writeValue(buffer, value.encode());
-    } else if (value is SourceDescription) {
+    } else if (value is PigeonTypedSource) {
       buffer.putUint8(130);
       writeValue(buffer, value.encode());
-    } else if (value is TypedSource) {
+    } else if (value is SourceDescription) {
       buffer.putUint8(131);
       writeValue(buffer, value.encode());
     } else if (value is WidevineDRMConfiguration) {
@@ -1841,9 +1856,9 @@ class _THEOplayerFlutterAPICodec extends StandardMessageCodec {
       case 129: 
         return FairPlayDRMConfiguration.decode(readValue(buffer)!);
       case 130: 
-        return SourceDescription.decode(readValue(buffer)!);
+        return PigeonTypedSource.decode(readValue(buffer)!);
       case 131: 
-        return TypedSource.decode(readValue(buffer)!);
+        return SourceDescription.decode(readValue(buffer)!);
       case 132: 
         return WidevineDRMConfiguration.decode(readValue(buffer)!);
       default:
