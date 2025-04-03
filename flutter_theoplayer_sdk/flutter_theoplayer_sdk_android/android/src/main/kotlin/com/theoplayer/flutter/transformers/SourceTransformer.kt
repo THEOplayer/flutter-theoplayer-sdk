@@ -43,7 +43,9 @@ object SourceTransformer {
         val playbackPipeline = if (typedSource.playbackPipeline == PlaybackPipeline.LEGACY) FlutterPlaybackPipeline.LEGACY else FlutterPlaybackPipeline.MEDIA3
 
         return FlutterTypedSource(
-            typedSource.src, drm, integration = integrationID,
+            src = typedSource.src,
+            drm = drm,
+            integration = integrationID,
             playbackPipeline = playbackPipeline
         )
     }
