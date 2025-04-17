@@ -81,6 +81,11 @@ enum SourceIntegrationId: Int {
   case theolive = 0
 }
 
+enum PlaybackPipeline: Int {
+  case media3 = 0
+  case legacy = 1
+}
+
 /// Generated class from Pigeon that represents data sent in messages.
 struct TimeRange {
   var start: Double
@@ -105,10 +110,10 @@ struct TimeRange {
 
 /// Generated class from Pigeon that represents data sent in messages.
 struct SourceDescription {
-  var sources: [TypedSource?]
+  var sources: [PigeonTypedSource?]
 
   static func fromList(_ list: [Any?]) -> SourceDescription? {
-    let sources = list[0] as! [TypedSource?]
+    let sources = list[0] as! [PigeonTypedSource?]
 
     return SourceDescription(
       sources: sources
@@ -121,13 +126,20 @@ struct SourceDescription {
   }
 }
 
+///
+/// Internal TypedSource Pigeon for Android/iOS communication
+/// Remarks:
+/// * Internal type, don't use it, it will be removed.
+///
+///
 /// Generated class from Pigeon that represents data sent in messages.
-struct TypedSource {
+struct PigeonTypedSource {
   var src: String
   var drm: DRMConfiguration? = nil
   var integration: SourceIntegrationId? = nil
+  var playbackPipeline: PlaybackPipeline
 
-  static func fromList(_ list: [Any?]) -> TypedSource? {
+  static func fromList(_ list: [Any?]) -> PigeonTypedSource? {
     let src = list[0] as! String
     var drm: DRMConfiguration? = nil
     if let drmList: [Any?] = nilOrValue(list[1]) {
@@ -138,11 +150,13 @@ struct TypedSource {
     if let integrationRawValue = integrationEnumVal {
       integration = SourceIntegrationId(rawValue: integrationRawValue)!
     }
+    let playbackPipeline = PlaybackPipeline(rawValue: list[3] as! Int)!
 
-    return TypedSource(
+    return PigeonTypedSource(
       src: src,
       drm: drm,
-      integration: integration
+      integration: integration,
+      playbackPipeline: playbackPipeline
     )
   }
   func toList() -> [Any?] {
@@ -150,6 +164,7 @@ struct TypedSource {
       src,
       drm?.toList(),
       integration?.rawValue,
+      playbackPipeline.rawValue,
     ]
   }
 }
@@ -444,11 +459,11 @@ private class THEOplayerNativeAPICodecReader: FlutterStandardReader {
       case 129:
         return FairPlayDRMConfiguration.fromList(self.readValue() as! [Any?])
       case 130:
-        return SourceDescription.fromList(self.readValue() as! [Any?])
+        return PigeonTypedSource.fromList(self.readValue() as! [Any?])
       case 131:
-        return TimeRange.fromList(self.readValue() as! [Any?])
+        return SourceDescription.fromList(self.readValue() as! [Any?])
       case 132:
-        return TypedSource.fromList(self.readValue() as! [Any?])
+        return TimeRange.fromList(self.readValue() as! [Any?])
       case 133:
         return WidevineDRMConfiguration.fromList(self.readValue() as! [Any?])
       default:
@@ -465,13 +480,13 @@ private class THEOplayerNativeAPICodecWriter: FlutterStandardWriter {
     } else if let value = value as? FairPlayDRMConfiguration {
       super.writeByte(129)
       super.writeValue(value.toList())
-    } else if let value = value as? SourceDescription {
+    } else if let value = value as? PigeonTypedSource {
       super.writeByte(130)
       super.writeValue(value.toList())
-    } else if let value = value as? TimeRange {
+    } else if let value = value as? SourceDescription {
       super.writeByte(131)
       super.writeValue(value.toList())
-    } else if let value = value as? TypedSource {
+    } else if let value = value as? TimeRange {
       super.writeByte(132)
       super.writeValue(value.toList())
     } else if let value = value as? WidevineDRMConfiguration {
@@ -1073,9 +1088,9 @@ private class THEOplayerFlutterAPICodecReader: FlutterStandardReader {
       case 129:
         return FairPlayDRMConfiguration.fromList(self.readValue() as! [Any?])
       case 130:
-        return SourceDescription.fromList(self.readValue() as! [Any?])
+        return PigeonTypedSource.fromList(self.readValue() as! [Any?])
       case 131:
-        return TypedSource.fromList(self.readValue() as! [Any?])
+        return SourceDescription.fromList(self.readValue() as! [Any?])
       case 132:
         return WidevineDRMConfiguration.fromList(self.readValue() as! [Any?])
       default:
@@ -1092,10 +1107,10 @@ private class THEOplayerFlutterAPICodecWriter: FlutterStandardWriter {
     } else if let value = value as? FairPlayDRMConfiguration {
       super.writeByte(129)
       super.writeValue(value.toList())
-    } else if let value = value as? SourceDescription {
+    } else if let value = value as? PigeonTypedSource {
       super.writeByte(130)
       super.writeValue(value.toList())
-    } else if let value = value as? TypedSource {
+    } else if let value = value as? SourceDescription {
       super.writeByte(131)
       super.writeValue(value.toList())
     } else if let value = value as? WidevineDRMConfiguration {

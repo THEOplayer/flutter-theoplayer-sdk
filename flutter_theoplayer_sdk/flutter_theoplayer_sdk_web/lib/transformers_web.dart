@@ -31,7 +31,7 @@ PlatformInterface.SourceDescription? toFlutterSourceDescription(SourceDescriptio
     return null;
   }
 
-  List<PlatformInterface.TypedSource> typedSources = [];
+  List<PlatformInterface.PigeonTypedSource> typedSources = [];
   for (var typedSource in sourceDescription.sources) {
     PlatformInterface.FairPlayDRMConfiguration? fairPlayDRMConfiguration;
     FairplayContentProtectionConfiguration? fairplay = typedSource.contentProtection?.fairplay;
@@ -45,7 +45,13 @@ PlatformInterface.SourceDescription? toFlutterSourceDescription(SourceDescriptio
       widevineDRMConfiguration = PlatformInterface.WidevineDRMConfiguration(licenseAcquisitionURL: widevine.licenseAcquisitionURL);
     }
 
-    typedSources.add(PlatformInterface.TypedSource(src: typedSource.src, drm: PlatformInterface.DRMConfiguration(fairplay: fairPlayDRMConfiguration, widevine: widevineDRMConfiguration)));
+    typedSources.add(
+        PlatformInterface.PigeonTypedSource(
+            src: typedSource.src,
+            drm: PlatformInterface.DRMConfiguration(fairplay: fairPlayDRMConfiguration, widevine: widevineDRMConfiguration),
+            playbackPipeline: PlatformInterface.PlaybackPipeline.legacy
+        )
+    );
   }
 
   return PlatformInterface.SourceDescription(sources: typedSources);

@@ -122,6 +122,17 @@ enum class SourceIntegrationId(val raw: Int) {
   }
 }
 
+enum class PlaybackPipeline(val raw: Int) {
+  MEDIA3(0),
+  LEGACY(1);
+
+  companion object {
+    fun ofRaw(raw: Int): PlaybackPipeline? {
+      return values().firstOrNull { it.raw == raw }
+    }
+  }
+}
+
 /** Generated class from Pigeon that represents data sent in messages. */
 data class TimeRange (
   val start: Double,
@@ -146,13 +157,13 @@ data class TimeRange (
 
 /** Generated class from Pigeon that represents data sent in messages. */
 data class SourceDescription (
-  val sources: List<TypedSource?>
+  val sources: List<PigeonTypedSource?>
 
 ) {
   companion object {
     @Suppress("UNCHECKED_CAST")
     fun fromList(list: List<Any?>): SourceDescription {
-      val sources = list[0] as List<TypedSource?>
+      val sources = list[0] as List<PigeonTypedSource?>
       return SourceDescription(sources)
     }
   }
@@ -163,16 +174,25 @@ data class SourceDescription (
   }
 }
 
-/** Generated class from Pigeon that represents data sent in messages. */
-data class TypedSource (
+/**
+ *
+ * Internal TypedSource Pigeon for Android/iOS communication
+ * Remarks:
+ * * Internal type, don't use it, it will be removed.
+ *
+ *
+ * Generated class from Pigeon that represents data sent in messages.
+ */
+data class PigeonTypedSource (
   val src: String,
   val drm: DRMConfiguration? = null,
-  val integration: SourceIntegrationId? = null
+  val integration: SourceIntegrationId? = null,
+  val playbackPipeline: PlaybackPipeline
 
 ) {
   companion object {
     @Suppress("UNCHECKED_CAST")
-    fun fromList(list: List<Any?>): TypedSource {
+    fun fromList(list: List<Any?>): PigeonTypedSource {
       val src = list[0] as String
       val drm: DRMConfiguration? = (list[1] as List<Any?>?)?.let {
         DRMConfiguration.fromList(it)
@@ -180,7 +200,8 @@ data class TypedSource (
       val integration: SourceIntegrationId? = (list[2] as Int?)?.let {
         SourceIntegrationId.ofRaw(it)
       }
-      return TypedSource(src, drm, integration)
+      val playbackPipeline = PlaybackPipeline.ofRaw(list[3] as Int)!!
+      return PigeonTypedSource(src, drm, integration, playbackPipeline)
     }
   }
   fun toList(): List<Any?> {
@@ -188,6 +209,7 @@ data class TypedSource (
       src,
       drm?.toList(),
       integration?.raw,
+      playbackPipeline.raw,
     )
   }
 }
@@ -617,17 +639,17 @@ private object THEOplayerNativeAPICodec : StandardMessageCodec() {
       }
       130.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          SourceDescription.fromList(it)
+          PigeonTypedSource.fromList(it)
         }
       }
       131.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          TimeRange.fromList(it)
+          SourceDescription.fromList(it)
         }
       }
       132.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          TypedSource.fromList(it)
+          TimeRange.fromList(it)
         }
       }
       133.toByte() -> {
@@ -648,15 +670,15 @@ private object THEOplayerNativeAPICodec : StandardMessageCodec() {
         stream.write(129)
         writeValue(stream, value.toList())
       }
-      is SourceDescription -> {
+      is PigeonTypedSource -> {
         stream.write(130)
         writeValue(stream, value.toList())
       }
-      is TimeRange -> {
+      is SourceDescription -> {
         stream.write(131)
         writeValue(stream, value.toList())
       }
-      is TypedSource -> {
+      is TimeRange -> {
         stream.write(132)
         writeValue(stream, value.toList())
       }
@@ -1386,12 +1408,12 @@ private object THEOplayerFlutterAPICodec : StandardMessageCodec() {
       }
       130.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          SourceDescription.fromList(it)
+          PigeonTypedSource.fromList(it)
         }
       }
       131.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          TypedSource.fromList(it)
+          SourceDescription.fromList(it)
         }
       }
       132.toByte() -> {
@@ -1412,11 +1434,11 @@ private object THEOplayerFlutterAPICodec : StandardMessageCodec() {
         stream.write(129)
         writeValue(stream, value.toList())
       }
-      is SourceDescription -> {
+      is PigeonTypedSource -> {
         stream.write(130)
         writeValue(stream, value.toList())
       }
-      is TypedSource -> {
+      is SourceDescription -> {
         stream.write(131)
         writeValue(stream, value.toList())
       }
