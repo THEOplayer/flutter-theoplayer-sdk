@@ -10,12 +10,14 @@ class AndroidTypedSourceConfiguration {
 /// TypedSource
 class TypedSource extends PigeonTypedSource {
   final AndroidTypedSourceConfiguration? androidSourceConfiguration;
+  final Map<String, String>? headers;
 
   TypedSource({
     required super.src,
     super.drm,
     super.integration,
     this.androidSourceConfiguration,
+    this.headers
   }) : super(playbackPipeline: androidSourceConfiguration?.playbackPipeline ?? PlaybackPipeline.media3);
 }
 /// THEOlive TypedSource
