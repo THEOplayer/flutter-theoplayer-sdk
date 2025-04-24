@@ -10,6 +10,14 @@ class AndroidTypedSourceConfiguration {
 /// TypedSource
 class TypedSource extends PigeonTypedSource {
   final AndroidTypedSourceConfiguration? androidSourceConfiguration;
+
+  /// Sets the headers to be added to all requests associated with this source,
+  /// this includes: master playlist, media playlist and segment requests
+  ///
+  /// Note:
+  /// - Only works on iOS and Android (PlaybackPipeline.media3)
+  /// - Web is not supported
+
   final Map<String, String>? headers;
 
   TypedSource({
