@@ -46,7 +46,8 @@ object SourceTransformer {
             src = typedSource.src,
             drm = drm,
             integration = integrationID,
-            playbackPipeline = playbackPipeline
+            playbackPipeline = playbackPipeline,
+            headers = typedSource.headers as Map<String?, String?>?
         )
     }
 
@@ -107,6 +108,16 @@ object SourceTransformer {
                 flutterTypedSource.drm?.let {
                     typedSourceBuilder.drm(toDRMConfiguration(it))
                 }
+
+                //clean headers
+                flutterTypedSource.headers
+                    ?.filter { it.key != null && it.value != null }
+                    ?.map { it.key!! to it.value!! }
+                    ?.toMap()
+                    ?.let {
+                        typedSourceBuilder.headers(it)
+                    }
+
 
                 return typedSourceBuilder.build()
             }
