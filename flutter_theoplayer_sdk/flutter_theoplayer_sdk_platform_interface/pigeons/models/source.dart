@@ -14,8 +14,9 @@ class PigeonTypedSource {
   final DRMConfiguration? drm;
   final SourceIntegrationId? integration;
   final PlaybackPipeline playbackPipeline;
+  final Map<String?, String?>? headers;
 
-  const PigeonTypedSource({required this.src, this.drm, this.integration, this.playbackPipeline = PlaybackPipeline.media3});
+  const PigeonTypedSource({required this.src, this.drm, this.integration, this.playbackPipeline = PlaybackPipeline.media3, this.headers});
 }
 
 enum SourceIntegrationId {

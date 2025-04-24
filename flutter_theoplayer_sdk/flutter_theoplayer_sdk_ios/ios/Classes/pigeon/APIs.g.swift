@@ -138,6 +138,7 @@ struct PigeonTypedSource {
   var drm: DRMConfiguration? = nil
   var integration: SourceIntegrationId? = nil
   var playbackPipeline: PlaybackPipeline
+  var headers: [String?: String?]? = nil
 
   static func fromList(_ list: [Any?]) -> PigeonTypedSource? {
     let src = list[0] as! String
@@ -151,12 +152,14 @@ struct PigeonTypedSource {
       integration = SourceIntegrationId(rawValue: integrationRawValue)!
     }
     let playbackPipeline = PlaybackPipeline(rawValue: list[3] as! Int)!
+    let headers: [String?: String?]? = nilOrValue(list[4])
 
     return PigeonTypedSource(
       src: src,
       drm: drm,
       integration: integration,
-      playbackPipeline: playbackPipeline
+      playbackPipeline: playbackPipeline,
+      headers: headers
     )
   }
   func toList() -> [Any?] {
@@ -165,6 +168,7 @@ struct PigeonTypedSource {
       drm?.toList(),
       integration?.rawValue,
       playbackPipeline.rawValue,
+      headers,
     ]
   }
 }
