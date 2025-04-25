@@ -41,6 +41,7 @@ enum TextTrackType {
   id3,
   cea608,
   daterange,
+  timecode,
 }
 
 enum TextTrackReadyState {

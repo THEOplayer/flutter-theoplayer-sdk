@@ -13,7 +13,8 @@ enum TextTrackType {
   eventstream,
   id3,
   cea608,
-  daterange;
+  daterange,
+  timecode;
 }
 
 enum TextTrackReadyState {
