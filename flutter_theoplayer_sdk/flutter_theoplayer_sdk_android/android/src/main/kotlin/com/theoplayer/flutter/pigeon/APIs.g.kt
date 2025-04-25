@@ -78,7 +78,8 @@ enum class TextTrackType(val raw: Int) {
   EVENTSTREAM(5),
   ID3(6),
   CEA608(7),
-  DATERANGE(8);
+  DATERANGE(8),
+  TIMECODE(9);
 
   companion object {
     fun ofRaw(raw: Int): TextTrackType? {
