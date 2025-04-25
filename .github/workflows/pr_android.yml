@@ -61,6 +61,8 @@ jobs:
         path: |
           ~/.android/avd/*
           ~/.android/adb*
+          /usr/local/lib/android/sdk/ndk/*
+          /usr/local/lib/android/sdk/cmake/*
         key: avd-34
 
     - name: create AVD and generate snapshot for caching
