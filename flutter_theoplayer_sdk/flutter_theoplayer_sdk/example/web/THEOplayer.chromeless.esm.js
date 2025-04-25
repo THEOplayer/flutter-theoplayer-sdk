@@ -34,7 +34,7 @@
  THEOplayer is based on patented technology developed by
  THEO Technologies (https://www.theoplayer.com).
 
- Version: 9.0.0
- Created: 2025-04-03T12:55:51.582Z
+ Version: 9.2.0
+ Created: 2025-04-24T12:23:58.424Z
  */
 var a="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof self?self:void 0!==s?s:"undefined"!=typeof global?global:this,s=a.window;a.document,a.location,a.navigator,a.setTimeout,a.clearTimeout,a.setInterval,a.clearInterval,a.Error,a.TypeError,a.SyntaxError,a.Object,a.Math,a.parseInt,a.parseFloat,a.isNaN,a.Uint8Array,a.Worker,a.WorkerGlobalScope,a.XMLHttpRequest;import{N as e,O as o,Ra as r,Sa as t,Ta as l,Ua as i,Va as n,Wa as f,ab as d,c as y,cb as c}from"./THEOplayer.common.esm.js";y(),y();export{r as ChromelessPlayer,o as ErrorCategory,e as ErrorCode,r as Player,c as cache,d as cast,l as features,n as players,f as registerContentProtectionIntegration,t as utils,i as version};

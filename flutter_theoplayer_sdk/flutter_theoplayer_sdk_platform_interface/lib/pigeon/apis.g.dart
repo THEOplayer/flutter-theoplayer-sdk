@@ -41,6 +41,7 @@ enum TextTrackType {
   id3,
   cea608,
   daterange,
+  timecode,
 }
 
 enum TextTrackReadyState {
@@ -123,6 +124,7 @@ class PigeonTypedSource {
     this.drm,
     this.integration,
     required this.playbackPipeline,
+    this.headers,
   });
 
   String src;
@@ -133,12 +135,15 @@ class PigeonTypedSource {
 
   PlaybackPipeline playbackPipeline;
 
+  Map<String?, String?>? headers;
+
   Object encode() {
     return <Object?>[
       src,
       drm?.encode(),
       integration?.index,
       playbackPipeline.index,
+      headers,
     ];
   }
 
@@ -153,6 +158,7 @@ class PigeonTypedSource {
           ? SourceIntegrationId.values[result[2]! as int]
           : null,
       playbackPipeline: PlaybackPipeline.values[result[3]! as int],
+      headers: (result[4] as Map<Object?, Object?>?)?.cast<String?, String?>(),
     );
   }
 }

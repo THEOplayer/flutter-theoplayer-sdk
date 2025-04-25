@@ -78,7 +78,8 @@ enum class TextTrackType(val raw: Int) {
   EVENTSTREAM(5),
   ID3(6),
   CEA608(7),
-  DATERANGE(8);
+  DATERANGE(8),
+  TIMECODE(9);
 
   companion object {
     fun ofRaw(raw: Int): TextTrackType? {
@@ -187,7 +188,8 @@ data class PigeonTypedSource (
   val src: String,
   val drm: DRMConfiguration? = null,
   val integration: SourceIntegrationId? = null,
-  val playbackPipeline: PlaybackPipeline
+  val playbackPipeline: PlaybackPipeline,
+  val headers: Map<String?, String?>? = null
 
 ) {
   companion object {
@@ -201,7 +203,8 @@ data class PigeonTypedSource (
         SourceIntegrationId.ofRaw(it)
       }
       val playbackPipeline = PlaybackPipeline.ofRaw(list[3] as Int)!!
-      return PigeonTypedSource(src, drm, integration, playbackPipeline)
+      val headers = list[4] as Map<String?, String?>?
+      return PigeonTypedSource(src, drm, integration, playbackPipeline, headers)
     }
   }
   fun toList(): List<Any?> {
@@ -210,6 +213,7 @@ data class PigeonTypedSource (
       drm?.toList(),
       integration?.raw,
       playbackPipeline.raw,
+      headers,
     )
   }
 }
