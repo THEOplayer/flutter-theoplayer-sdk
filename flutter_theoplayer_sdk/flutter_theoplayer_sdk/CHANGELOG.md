@@ -1,3 +1,10 @@
+## 9.2.0
+
+* Updated THEOplayer to 9.2.0.
+* Added `TypedSource.headers` to set custom headers for requests (Applied on master playlist, media playlist and segment requests).
+	- Supported only on Android (PlaybackPipeline.MEDIA3) and iOS.
+* Fixed an issue where calling `player.dispose()` would not release resources properly on iOS.
+
 ## 9.0.0
 
 * Updated THEOplayer to 9.0.0.

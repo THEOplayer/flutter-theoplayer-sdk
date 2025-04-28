@@ -37,6 +37,7 @@ object TrackTransformer {
             TextTrackType.ID3 -> FlutterTextTrackType.ID3
             TextTrackType.CEA608 -> FlutterTextTrackType.CEA608
             TextTrackType.DATERANGE -> FlutterTextTrackType.DATERANGE
+            TextTrackType.TIMECODE -> FlutterTextTrackType.TIMECODE
         }
     }
 

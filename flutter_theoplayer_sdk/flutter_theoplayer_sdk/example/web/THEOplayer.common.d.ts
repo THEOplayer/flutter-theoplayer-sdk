@@ -988,6 +988,15 @@ interface GoogleImaConfiguration {
      * <br/> - Available since v6.13.0.
      */
     uiElements?: string[];
+    /**
+     * A flag to enable seeking during an ad break in a DAI stream.
+     *
+     * @remarks
+     * <br/> - Available since v9.2.0
+     *
+     * @defaultValue false
+     */
+    allowSeekingForGoogleDai?: boolean;
 }
 /**
  * Represents a non-linear ad in the VAST specification.
@@ -2340,6 +2349,15 @@ interface GoogleDAIConfiguration extends ServerSideAdInsertionConfiguration {
      *         for more information.
      */
     omidAccessModeRules?: Record<number, string>;
+    /**
+     * A flag to indicate that the DAI SDK should send an encrypted nonce to the DAI servers.
+     *
+     * @remarks
+     * <br/> - See {@link https://developers.google.com/ad-manager/dynamic-ad-insertion/sdk/html5/sending-ad-signals-through-third-party-servers}
+     *         for more information.
+     * <br/> - Available since 9.2.0.
+     */
+    enableNonce?: boolean;
 }
 /**
  * Represents a configuration for server-side ad insertion with the Google DAI pre-integration for a Live media stream.

@@ -62,6 +62,7 @@ enum TextTrackType: Int {
   case id3 = 6
   case cea608 = 7
   case daterange = 8
+  case timecode = 9
 }
 
 enum TextTrackReadyState: Int {
