@@ -8726,6 +8726,11 @@ interface HespApi extends EventDispatcher<HespApiEventMap> {
  * @public
  */
 interface HespSourceConfiguration {
+    /**
+     * The maximum bitrate to choose from during ABR for mobile devices
+     * @internal
+     */
+    maxMobileBitrate?: number;
 }
 /**
  * Specific {@link TypedSource} variant for an HESP media resource.
