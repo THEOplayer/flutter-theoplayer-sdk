@@ -2,18 +2,14 @@ PODS:
   - Flutter (1.0.0)
   - integration_test (0.0.1):
     - Flutter
-  - THEOliveSDK (3.18.10)
-  - THEOplayer-Integration-THEOlive (9.2.0):
-    - THEOplayer-Integration-THEOlive/Base (= 9.2.0)
-    - THEOplayer-Integration-THEOlive/Dependencies (= 9.2.0)
-  - THEOplayer-Integration-THEOlive/Base (9.2.0)
-  - THEOplayer-Integration-THEOlive/Dependencies (9.2.0):
-    - THEOliveSDK (= 3.18.10)
+  - THEOplayer-Integration-THEOlive (9.3.0):
+    - THEOplayer-Integration-THEOlive/Base (= 9.3.0)
+  - THEOplayer-Integration-THEOlive/Base (9.3.0)
   - theoplayer_ios (1.0.3):
     - Flutter
-    - THEOplayer-Integration-THEOlive (= 9.2.0)
-    - THEOplayerSDK-core (= 9.2.0)
-  - THEOplayerSDK-core (9.2.0)
+    - THEOplayer-Integration-THEOlive (= 9.3.0)
+    - THEOplayerSDK-core (= 9.3.0)
+  - THEOplayerSDK-core (9.3.0)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
@@ -22,7 +18,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - THEOliveSDK
     - THEOplayer-Integration-THEOlive
     - THEOplayerSDK-core
 
@@ -37,10 +32,9 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   integration_test: 4a889634ef21a45d28d50d622cf412dc6d9f586e
-  THEOliveSDK: 61479e7ad8164340a8aaccc211493e2606d4381d
-  THEOplayer-Integration-THEOlive: c375519be02a2343f90cca3a321ae05b2953add3
-  theoplayer_ios: a72ab291df7c6e0dbe7ed5de5bd841f43fd46a4e
-  THEOplayerSDK-core: 7e94ff8c486d8ed2748e696cba25e885083947a8
+  THEOplayer-Integration-THEOlive: 518280fffbfed6dcbf991975dde661e290a8d727
+  theoplayer_ios: 536c3546d3a0ffc6b7a428e9b33ec64153f79098
+  THEOplayerSDK-core: b60aa2d5ecaa8b5fc69728c204fc5878b89d1c23
 
 PODFILE CHECKSUM: a57f30d18f102dd3ce366b1d62a55ecbef2158e5
 
