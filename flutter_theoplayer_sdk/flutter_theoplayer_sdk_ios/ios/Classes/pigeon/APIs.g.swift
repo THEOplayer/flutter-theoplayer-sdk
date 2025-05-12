@@ -425,6 +425,8 @@ protocol THEOplayerFlutterTHEOliveAPIProtocol {
   func onPublicationLoadedEvent(channelId channelIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void) 
   func onPublicationOfflineEvent(channelId channelIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void) 
   func onIntentToFallbackEvent(completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onSeeking(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onSeeked(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) 
 }
 class THEOplayerFlutterTHEOliveAPI: THEOplayerFlutterTHEOliveAPIProtocol {
   private let binaryMessenger: FlutterBinaryMessenger
@@ -452,6 +454,18 @@ class THEOplayerFlutterTHEOliveAPI: THEOplayerFlutterTHEOliveAPIProtocol {
   func onIntentToFallbackEvent(completion: @escaping (Result<Void, FlutterError>) -> Void)  {
     let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onIntentToFallbackEvent", binaryMessenger: binaryMessenger)
     channel.sendMessage(nil) { _ in
+      completion(.success(Void()))
+    }
+  }
+  func onSeeking(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onSeeking", binaryMessenger: binaryMessenger)
+    channel.sendMessage([currentTimeArg] as [Any?]) { _ in
+      completion(.success(Void()))
+    }
+  }
+  func onSeeked(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onSeeked", binaryMessenger: binaryMessenger)
+    channel.sendMessage([currentTimeArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
