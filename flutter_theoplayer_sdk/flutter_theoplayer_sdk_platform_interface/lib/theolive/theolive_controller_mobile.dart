@@ -73,13 +73,17 @@ class THEOplayerTHEOliveControllerMobile extends THEOliveInternalInterface imple
     _eventManager.dispatchEvent(PublicationLoadedEvent(publicationId: channelId));
   }
 
+  /// Experimental API
   @override
-  void onSeeking() {
-    _eventManager.dispatchEvent(SeekingEvent(currentTime: 0));
+  void onSeeking(double currentTime) {
+    // current time is not used
+    _eventManager.dispatchEvent(SeekingEvent(currentTime: currentTime));
   }
 
+  /// Experimental API
   @override
-  void onSeeked() {
-    _eventManager.dispatchEvent(SeekingEvent(currentTime: 0));
+  void onSeeked(double currentTime) {
+    // current time is not used
+    _eventManager.dispatchEvent(SeekedEvent(currentTime: currentTime));
   }
 }
