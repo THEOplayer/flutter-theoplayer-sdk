@@ -1,3 +1,8 @@
+## 9.3.0
+
+* Updated THEOplayer to 9.3.0.
+  - Fixed an issue where `THEOplayer.allowAutomaticPictureInPicture` was not respected after setting a source.
+
 ## 9.2.0
 
 * Updated THEOplayer to 9.2.0.
