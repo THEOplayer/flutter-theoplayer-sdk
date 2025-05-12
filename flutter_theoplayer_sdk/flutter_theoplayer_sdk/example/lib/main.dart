@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:theoplayer/theoplayer.dart';
+import 'package:theoplayer_example/helpers/debouncer.dart';
 import 'package:theoplayer_example/player_widgets/current_time_widget.dart';
 import 'package:theoplayer_example/player_widgets/player_ui_widget.dart';
 import 'package:theoplayer_example/player_widgets/texture_widgets/aspect_ratio_chromeless_widget.dart';
@@ -27,6 +30,8 @@ class _MyAppState extends State<MyApp> {
   late THEOplayer player;
 
   final _messengerKey = GlobalKey<ScaffoldMessengerState>();
+
+  DebounceManager? _debounceManager;
 
   @override
   void initState() {
@@ -59,6 +64,12 @@ class _MyAppState extends State<MyApp> {
         ),
         onCreate: () {
           print("main - THEOplayer - onCreate");
+
+          if (!kIsWeb && Platform.isIOS) {
+            _debounceManager = DebounceManager(player: player);
+            _debounceManager!.initialize();
+          }
+
           player.autoplay = true;
           player.allowBackgroundPlayback = true;
           player.allowAutomaticPictureInPicture = true;
@@ -90,6 +101,7 @@ class _MyAppState extends State<MyApp> {
 
   @override
   void dispose() {
+    _debounceManager?.dispose();
     player.dispose();
     super.dispose();
   }
