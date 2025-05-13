@@ -747,6 +747,10 @@ abstract class THEOplayerFlutterTHEOliveAPI {
 
   void onIntentToFallbackEvent();
 
+  void onSeeking(double currentTime);
+
+  void onSeeked(double currentTime);
+
   static void setup(THEOplayerFlutterTHEOliveAPI? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
@@ -833,6 +837,56 @@ abstract class THEOplayerFlutterTHEOliveAPI {
         channel.setMessageHandler((Object? message) async {
           try {
             api.onIntentToFallbackEvent();
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onSeeking', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onSeeking was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final double? arg_currentTime = (args[0] as double?);
+          assert(arg_currentTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onSeeking was null, expected non-null double.');
+          try {
+            api.onSeeking(arg_currentTime!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onSeeked', codec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        channel.setMessageHandler(null);
+      } else {
+        channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onSeeked was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final double? arg_currentTime = (args[0] as double?);
+          assert(arg_currentTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onSeeked was null, expected non-null double.');
+          try {
+            api.onSeeked(arg_currentTime!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);

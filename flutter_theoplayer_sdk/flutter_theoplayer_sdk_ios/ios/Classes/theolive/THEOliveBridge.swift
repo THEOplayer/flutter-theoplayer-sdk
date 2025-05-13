@@ -21,6 +21,10 @@ class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
     private var publicationOfflineListener: EventListener?
     private var intentToFallbackListener: EventListener?
     
+    //experimental
+    private var seekingEventListener: EventListener?
+    private var seekedEventListener: EventListener?
+    
     private let emptyCompletion: (Result<Void, FlutterError>) -> Void = {result in }
     
     init(theoLive: THEOlive, pigeonMessenger: PigeonBinaryMessengerWrapper) {
@@ -50,6 +54,18 @@ class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
             guard let welf = self else { return }
             welf.flutterTHEOliveAPI.onIntentToFallbackEvent(completion: welf.emptyCompletion)
         })
+        
+        seekingEventListener = theoLive.addEventListener(type: PlayerEventTypes.SEEKING, listener: { [weak self] event in
+            guard let welf = self else { return }
+            //current time is not used
+            welf.flutterTHEOliveAPI.onSeeking(currentTime: 0, completion: welf.emptyCompletion)
+        })
+        
+        seekedEventListener = theoLive.addEventListener(type: PlayerEventTypes.SEEKED, listener: { [weak self] event in
+            guard let welf = self else { return }
+            //current time is not used
+            welf.flutterTHEOliveAPI.onSeeked(currentTime: 0, completion: welf.emptyCompletion)
+        })
     }
     
     func removeListeners() {
@@ -58,6 +74,8 @@ class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
         theoLive.removeEventListener(type: THEOliveEventTypes.PUBLICATION_LOADED, listener: publicationLoadedListener!)
         theoLive.removeEventListener(type: THEOliveEventTypes.PUBLICATION_OFFLINE, listener: publicationOfflineListener!)
         theoLive.removeEventListener(type: THEOliveEventTypes.INTENT_TO_FALLBACK, listener: intentToFallbackListener!)
+        theoLive.removeEventListener(type: PlayerEventTypes.SEEKING, listener: seekingEventListener!)
+        theoLive.removeEventListener(type: PlayerEventTypes.SEEKED, listener: seekedEventListener!)
     }
     
     //MARK: THEOplayerNativeTHEOliveAPI API

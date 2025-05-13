@@ -12,4 +12,7 @@ abstract class THEOplayerFlutterTHEOliveAPI {
   void onPublicationLoadedEvent(String channelId);
   void onPublicationOfflineEvent(String channelId);
   void onIntentToFallbackEvent();
+  //experimental API for iOS-only
+  void onSeeking(double currentTime);
+  void onSeeked(double currentTime);
 }
