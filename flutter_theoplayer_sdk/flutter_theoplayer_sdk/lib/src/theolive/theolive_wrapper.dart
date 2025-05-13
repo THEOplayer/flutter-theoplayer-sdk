@@ -46,6 +46,10 @@ class THEOliveAPIHolder extends THEOlive {
     _internalTHEOliveAPI?.addEventListener(THEOliveApiEventTypes.ENTERBADNETWORKMODE, _forwardingEventListener);
     _internalTHEOliveAPI?.addEventListener(THEOliveApiEventTypes.EXITBADNETWORKMODE, _forwardingEventListener);
 
+    // experimental - only used on iOS, but kept it here for consistency - Android will not dispatch these
+    _internalTHEOliveAPI?.addEventListener(PlayerEventTypes.SEEKING, _forwardingEventListener);
+    _internalTHEOliveAPI?.addEventListener(PlayerEventTypes.SEEKED, _forwardingEventListener);
+
   }
 
   @override
