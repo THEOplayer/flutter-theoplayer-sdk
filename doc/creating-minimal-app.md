@@ -212,7 +212,8 @@ Without a license you can only play sources hosted on `theoplayer.com` domain.
 ```dart
 SizedBox(
     height: 300,
-    child: player.getView(),
+    // player.getView() is now deprecated. Use 'view' like below
+    child: player.view,
 ),
 ```
 
@@ -221,9 +222,10 @@ SizedBox(
 ```dart
 FilledButton(
     onPressed: () {
-        player.setSource(SourceDescription(sources: [
+      // player.setSource() is now deprecated. Use 'source' like below
+        player.source = SourceDescription(sources: [
             TypedSource(src: "https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8"),
-        ]));
+        ]);
         player.play();
     },
     child: const Text("Play BBB source"),
