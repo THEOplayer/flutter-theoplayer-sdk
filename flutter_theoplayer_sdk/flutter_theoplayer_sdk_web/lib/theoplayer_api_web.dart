@@ -107,6 +107,7 @@ class TheoLiveConfig {
   external factory TheoLiveConfig({
       String? externalSessionId,
       bool? fallbackEnabled,
+      String? discoveryUrl,
   });
 }
 
