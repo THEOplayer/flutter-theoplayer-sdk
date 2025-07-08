@@ -53,13 +53,21 @@ object SourceTransformer {
 
     fun toFlutterDRMConfiguration(drmConfiguration: DRMConfiguration): FlutterDRMConfiguration {
         var flutterWidevineConfig: FlutterWidevineDRMConfiguration? = null
-        drmConfiguration.widevine?.let {
-            flutterWidevineConfig = FlutterWidevineDRMConfiguration(it.licenseAcquisitionURL, it.headers)
+        drmConfiguration.widevine?.let { widevine ->
+            flutterWidevineConfig = FlutterWidevineDRMConfiguration(
+                widevine.licenseAcquisitionURL,
+                //TODO: clean-up these mappings
+                widevine.headers.mapKeys { it.key as String? }.mapValues { it.value as String? }
+            )
         }
 
         var flutterFairplayConfig: FlutterFairPlayDRMConfiguration? = null
-        drmConfiguration.fairplay?.let {
-            flutterFairplayConfig = FlutterFairPlayDRMConfiguration(it.licenseAcquisitionURL, it.certificateURL, it.headers)
+        drmConfiguration.fairplay?.let { fairplay ->
+            flutterFairplayConfig = FlutterFairPlayDRMConfiguration(
+                fairplay.licenseAcquisitionURL,
+                fairplay.certificateURL,
+                fairplay.headers.mapKeys { it.key as String? }.mapValues { it.value as String? }
+            )
         }
 
         var integrationParamaters : MutableMap<String, String>? = null
@@ -88,7 +96,8 @@ object SourceTransformer {
 
         return SourceDescription.Builder(
             *flutterSourceDescription.sources
-                .map { toTypedSource(it) }
+                .filterNotNull()
+                .map { toTypedSource(it) as TypedSource}
                 .toTypedArray())
             .build()
     }
@@ -136,16 +145,20 @@ object SourceTransformer {
 
         flutterDRMConfiguration.widevine?.let { flutterWidevineConfig ->
             val widevineDRMConfiguration = KeySystemConfiguration.Builder(flutterWidevineConfig.licenseAcquisitionURL)
-            flutterWidevineConfig.headers?.let {
-                widevineDRMConfiguration.headers(it)
+            flutterWidevineConfig.headers?.let { widevine ->
+                widevineDRMConfiguration.headers(
+                    widevine.mapKeys { it.key as String }.mapValues { it.value as String}
+                )
             }
             drm.widevine(widevineDRMConfiguration.build())
         }
 
         flutterDRMConfiguration.fairplay?.let { flutterFairplayConfig ->
             val fairplayDRMConfiguration = FairPlayKeySystemConfiguration.Builder(flutterFairplayConfig.licenseAcquisitionURL, flutterFairplayConfig.certificateURL)
-            flutterFairplayConfig.headers?.let {
-                fairplayDRMConfiguration.headers(it)
+            flutterFairplayConfig.headers?.let { fairplay ->
+                fairplayDRMConfiguration.headers(
+                    fairplay.mapKeys { it.key as String }.mapValues { it.value as String}
+                )
             }
             drm.fairplay(fairplayDRMConfiguration.build())
         }
@@ -154,8 +167,10 @@ object SourceTransformer {
             drm.customIntegrationId(it);
         }
 
-        flutterDRMConfiguration.integrationParameters?.let {
-            drm.integrationParameters(it)
+        flutterDRMConfiguration.integrationParameters?.let { integrationParams ->
+            drm.integrationParameters(
+                integrationParams.mapKeys { it.key as String }.mapValues { it.value}
+            )
         }
 
         return drm.build()

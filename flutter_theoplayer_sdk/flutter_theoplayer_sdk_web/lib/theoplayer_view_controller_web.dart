@@ -34,6 +34,7 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
       webTheoliveConfig = TheoLiveConfig(
           externalSessionId: theoliveConfig.externalSessionId,
           fallbackEnabled: theoliveConfig.fallbackEnabled,
+          discoveryUrl: theoliveConfig.discoveryUrl,
       );
     }
     _theoPlayerJS = THEOplayerJS(

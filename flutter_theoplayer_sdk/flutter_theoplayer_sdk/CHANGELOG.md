@@ -1,3 +1,8 @@
+## 9.7.0
+
+* Updated THEOplayer to 9.7.0.
+* Added `TheoLiveConfiguration.discoveryUrl` to support custom discovery URLs for OptiView live streams (formerly known as THEOlive).
+
 ## 9.3.1
 
 * Updated THEOplayer to 9.3.1.

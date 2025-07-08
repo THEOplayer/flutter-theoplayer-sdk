@@ -40,6 +40,8 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
 
         let theoLiveConfig = playerConfig?["theoLive"] as? [String: Any]
         let theoLiveExternalSessionId = theoLiveConfig?["externalSessionId"] as? String
+        let theoLiveDiscoveryUrl = theoLiveConfig?["discoveryUrl"] as? String
+        let theoLiveUseLegacyPlaybackEngine = theoLiveConfig?["useLegacyPlaybackEngine"] as? Bool ?? false
         
         let pipConfig = PiPConfigurationBuilder()
         pipConfig.nativePictureInPicture = _allowAutomaticPictureInPicture;
@@ -56,7 +58,7 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
         _theoplayer = THEOplayer(configuration: theoConfig.build())
         
         let theoLiveIntegration = THEOliveIntegrationFactory.createIntegration(
-            with: THEOliveConfiguration(externalSessionId: theoLiveExternalSessionId)
+            with: THEOliveConfiguration(externalSessionId: theoLiveExternalSessionId, discoveryUrl: theoLiveDiscoveryUrl, useLegacyPlaybackEngine: theoLiveUseLegacyPlaybackEngine)
         )
         _theoplayer.addIntegration(theoLiveIntegration)
         
