@@ -2,6 +2,7 @@ package com.theoplayer.flutter.transformers
 
 import com.theoplayer.android.api.source.PlaybackPipeline
 import com.theoplayer.android.api.source.SourceDescription
+import com.theoplayer.android.api.source.SourceType
 import com.theoplayer.android.api.source.TypedSource
 import com.theoplayer.android.api.source.drm.DRMConfiguration
 import com.theoplayer.android.api.source.drm.FairPlayKeySystemConfiguration
@@ -44,6 +45,7 @@ object SourceTransformer {
 
         return FlutterTypedSource(
             src = typedSource.src,
+            type = typedSource.type?.mimeType,
             drm = drm,
             integration = integrationID,
             playbackPipeline = playbackPipeline,
@@ -117,6 +119,9 @@ object SourceTransformer {
                 flutterTypedSource.drm?.let {
                     typedSourceBuilder.drm(toDRMConfiguration(it))
                 }
+
+                val typeEnumValue = flutterTypedSource.type?.let { type -> SourceType.entries.firstOrNull { it.mimeType == type } }
+                typeEnumValue?.let { typedSourceBuilder.type(it) }
 
                 //clean headers
                 flutterTypedSource.headers
