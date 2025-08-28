@@ -56,6 +56,7 @@ class _MyAppState extends State<MyApp> {
           license: PLAYER_LICENSE,
           // Extra THEOlive configuration:
           //theolive: TheoLiveConfiguration(externalSessionId: "mySessionID"),
+          webConfiguration: WebConfig(libraryLocation: "/theoplayer")
         ),
         onCreate: () {
           print("main - THEOplayer - onCreate");
