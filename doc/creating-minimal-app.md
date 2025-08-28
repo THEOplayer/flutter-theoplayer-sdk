@@ -290,7 +290,31 @@ Load the `THEOplayer.chromeless.js` Javascript in the `<HEAD>` of your `index.ht
 <!-- Loading THEOplayer -->
 <script src="THEOplayer.chromeless.js" type="application/javascript"></script>
 ```
-
 After these steps, you are good to go.
 
 By using the `flutter run chrome` command, you can try out your application in the Chrome browser.
+
+### Custom path for THEOplayer WEB SDK
+
+You can also place the THEOplayer WEB SDK files on a custom path. (not in the root).
+
+For that you will need some extra steps:
+
+1. Place the files in the desired directory within your Flutter Web project. (e.g. `web/theoplayer_lib/`)
+2. Reference THEOplayer in the `index.html` from that path:
+```html
+<!-- Loading THEOplayer -->
+<script src="theoplayer_lib/THEOplayer.chromeless.js" type="application/javascript"></script>
+```
+3. Setup THEOplayer in Flutter with the custom library location through `THEOplayerConfig.webConfiguration`:
+```dart
+    player = THEOplayer(
+      theoPlayerConfig: THEOplayerConfig(
+        license: PLAYER_LICENSE,
+        webConfiguration: WebConfig(libraryLocation: "/theoplayer_lib")
+      ),
+      onCreate: () {
+        print("THEOplayer - loaded");
+      }
+    );
+```
