@@ -1,3 +1,7 @@
+## 9.11.0
+
+* Updated THEOplayer to 9.11.0.
+
 ## 9.7.1
 
 * Added `TypedSource.type` property.
