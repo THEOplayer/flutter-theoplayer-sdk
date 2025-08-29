@@ -75,12 +75,13 @@ class SourceDescription {
 ///
 class PigeonTypedSource {
   final String src;
+  final String? type;
   final DRMConfiguration? drm;
   final SourceIntegrationId? integration;
   final PlaybackPipeline playbackPipeline;
   final Map<String?, String?>? headers;
 
-  const PigeonTypedSource({required this.src, this.drm, this.integration, this.playbackPipeline = PlaybackPipeline.media3, this.headers});
+  const PigeonTypedSource({required this.src, this.type, this.drm, this.integration, this.playbackPipeline = PlaybackPipeline.media3, this.headers});
 }
 
 enum SourceIntegrationId {

@@ -56,6 +56,7 @@ class _MyAppState extends State<MyApp> {
           license: PLAYER_LICENSE,
           // Extra THEOlive configuration:
           //theolive: TheoLiveConfiguration(externalSessionId: "mySessionID"),
+          webConfiguration: WebConfig(libraryLocation: "/theoplayer")
         ),
         onCreate: () {
           print("main - THEOplayer - onCreate");
@@ -180,7 +181,10 @@ class _MyAppState extends State<MyApp> {
                                 onPressed: () {
                                   _licenseConfigCheckDialog(context);
                                   player.source = SourceDescription(sources: [
-                                    TypedSource(src: "https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8"),
+                                    TypedSource(
+                                        src: "https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8",
+                                        type: "application/x-mpegurl"
+                                    ),
                                   ]);
                                 },
                                 child: const Text("Basic source"),
@@ -230,6 +234,7 @@ class _MyAppState extends State<MyApp> {
                                   player.source = SourceDescription(sources: [
                                     TypedSource(
                                         src: "https://storage.googleapis.com/wvmedia/cenc/h264/tears/tears_sd.mpd",
+                                        type: "application/dash+xml",
                                         drm: DRMConfiguration(
                                           widevine: WidevineDRMConfiguration(
                                               licenseAcquisitionURL: "https://proxy.uat.widevine.com/proxy?provider=widevine_test"),
@@ -244,6 +249,7 @@ class _MyAppState extends State<MyApp> {
                                   player.source = SourceDescription(sources: [
                                     TypedSource(
                                         src: "https://fps.ezdrm.com/demo/video/ezdrm.m3u8",
+                                        type: "application/x-mpegurl",
                                         drm: DRMConfiguration(
                                           customIntegrationId: "EzdrmDRMIntegration",
                                           fairplay: FairPlayDRMConfiguration(
