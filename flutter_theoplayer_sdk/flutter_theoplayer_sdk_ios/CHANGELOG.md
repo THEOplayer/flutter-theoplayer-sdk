@@ -1,3 +1,8 @@
+## 9.7.1
+
+* Added `TypedSource.type` property.
+* Added `WebConfig.libraryLocation` to specify a different path for THEOplayer WEB SDK through `THEOplayerConfig`.
+
 ## 9.7.0
 
 * Updated THEOplayer to 9.7.0.
