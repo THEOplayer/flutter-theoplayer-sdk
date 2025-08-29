@@ -48,6 +48,7 @@ PlatformInterface.SourceDescription? toFlutterSourceDescription(SourceDescriptio
     typedSources.add(
         PlatformInterface.PigeonTypedSource(
             src: typedSource.src,
+            type: typedSource.type,
             drm: PlatformInterface.DRMConfiguration(fairplay: fairPlayDRMConfiguration, widevine: widevineDRMConfiguration),
             playbackPipeline: PlatformInterface.PlaybackPipeline.legacy
         )
@@ -77,7 +78,7 @@ SourceDescription toSourceDescription(PlatformInterface.SourceDescription flutte
       flutterWidevineDrmConfiguration = WidevineContentProtectionConfiguration(licenseAcquisitionURL: widevine.licenseAcquisitionURL);
     }
 
-    flutterTypedSources.add(TypedSource(integration: flutterTypedSource.integration?.name, src: flutterTypedSource.src, contentProtection: ContentProtection(fairplay: flutterFairplayDrmConfiguration, widevine: flutterWidevineDrmConfiguration)));
+    flutterTypedSources.add(TypedSource(integration: flutterTypedSource.integration?.name, src: flutterTypedSource.src, type: flutterTypedSource.type, contentProtection: ContentProtection(fairplay: flutterFairplayDrmConfiguration, widevine: flutterWidevineDrmConfiguration)));
   }
 
   return SourceDescription(sources: flutterTypedSources);

@@ -121,6 +121,7 @@ class SourceDescription {
 class PigeonTypedSource {
   PigeonTypedSource({
     required this.src,
+    this.type,
     this.drm,
     this.integration,
     required this.playbackPipeline,
@@ -128,6 +129,8 @@ class PigeonTypedSource {
   });
 
   String src;
+
+  String? type;
 
   DRMConfiguration? drm;
 
@@ -140,6 +143,7 @@ class PigeonTypedSource {
   Object encode() {
     return <Object?>[
       src,
+      type,
       drm?.encode(),
       integration?.index,
       playbackPipeline.index,
@@ -151,14 +155,15 @@ class PigeonTypedSource {
     result as List<Object?>;
     return PigeonTypedSource(
       src: result[0]! as String,
-      drm: result[1] != null
-          ? DRMConfiguration.decode(result[1]! as List<Object?>)
+      type: result[1] as String?,
+      drm: result[2] != null
+          ? DRMConfiguration.decode(result[2]! as List<Object?>)
           : null,
-      integration: result[2] != null
-          ? SourceIntegrationId.values[result[2]! as int]
+      integration: result[3] != null
+          ? SourceIntegrationId.values[result[3]! as int]
           : null,
-      playbackPipeline: PlaybackPipeline.values[result[3]! as int],
-      headers: (result[4] as Map<Object?, Object?>?)?.cast<String?, String?>(),
+      playbackPipeline: PlaybackPipeline.values[result[4]! as int],
+      headers: (result[5] as Map<Object?, Object?>?)?.cast<String?, String?>(),
     );
   }
 }

@@ -32,7 +32,7 @@ struct SourceTransformer {
             flutterDRMConfiguration = toFlutterDRMConfiguration(drmConfiguration: drmConfiguration)
         }
         
-        return PigeonTypedSource(src: typedSource.src, drm: flutterDRMConfiguration, playbackPipeline: PlaybackPipeline.legacy, headers: typedSource.headers)
+        return PigeonTypedSource(src: typedSource.src, type: typedSource.type, drm: flutterDRMConfiguration, playbackPipeline: PlaybackPipeline.legacy, headers: typedSource.headers)
     }
     
     
@@ -91,7 +91,7 @@ struct SourceTransformer {
                 
                 return THEOplayerSDK.TypedSource(
                     src: typedSource.src,
-                    type: "",
+                    type: typedSource.type ?? "",
                     drm: drm,
                     headers: cleanOptionalHashMap(typedSource.headers)
                 )

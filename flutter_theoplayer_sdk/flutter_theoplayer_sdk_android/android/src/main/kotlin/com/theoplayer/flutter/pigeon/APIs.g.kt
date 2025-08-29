@@ -186,6 +186,7 @@ data class SourceDescription (
  */
 data class PigeonTypedSource (
   val src: String,
+  val type: String? = null,
   val drm: DRMConfiguration? = null,
   val integration: SourceIntegrationId? = null,
   val playbackPipeline: PlaybackPipeline,
@@ -196,20 +197,22 @@ data class PigeonTypedSource (
     @Suppress("UNCHECKED_CAST")
     fun fromList(list: List<Any?>): PigeonTypedSource {
       val src = list[0] as String
-      val drm: DRMConfiguration? = (list[1] as List<Any?>?)?.let {
+      val type = list[1] as String?
+      val drm: DRMConfiguration? = (list[2] as List<Any?>?)?.let {
         DRMConfiguration.fromList(it)
       }
-      val integration: SourceIntegrationId? = (list[2] as Int?)?.let {
+      val integration: SourceIntegrationId? = (list[3] as Int?)?.let {
         SourceIntegrationId.ofRaw(it)
       }
-      val playbackPipeline = PlaybackPipeline.ofRaw(list[3] as Int)!!
-      val headers = list[4] as Map<String?, String?>?
-      return PigeonTypedSource(src, drm, integration, playbackPipeline, headers)
+      val playbackPipeline = PlaybackPipeline.ofRaw(list[4] as Int)!!
+      val headers = list[5] as Map<String?, String?>?
+      return PigeonTypedSource(src, type, drm, integration, playbackPipeline, headers)
     }
   }
   fun toList(): List<Any?> {
     return listOf<Any?>(
       src,
+      type,
       drm?.toList(),
       integration?.raw,
       playbackPipeline.raw,
