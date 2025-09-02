@@ -3,6 +3,7 @@ import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videot
 import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack_impl.dart';
 import 'package:theoplayer_web/theoplayer_api_event_web.dart';
 import 'package:theoplayer_web/theoplayer_api_web.dart';
+import 'package:theoplayer_web/theoplayer_js_helpers_web.dart';
 import 'package:theoplayer_web/track/texttrack/theoplayer_texttrack_impl_web.dart';
 import 'package:theoplayer_web/track/videotrack/theoplayer_videotrack_impl_web.dart';
 import 'package:theoplayer_web/transformers_web.dart';
@@ -19,7 +20,7 @@ class VideoTrackListImplWeb extends VideoTracksImpl {
     addTrackEventListener = (AddVideoTrackEventJS event) {
       var track = event.track;
 
-      VideoQualities qualities = toFlutterVideoQualities(track.qualities);
+      VideoQualities qualities = toFlutterVideoQualities(JSHelpers.jsArrayToList<THEOplayerVideoQuality>(track.qualities));
 
       var flutterTrack = VideoTrackImplWeb(
         track.id, 

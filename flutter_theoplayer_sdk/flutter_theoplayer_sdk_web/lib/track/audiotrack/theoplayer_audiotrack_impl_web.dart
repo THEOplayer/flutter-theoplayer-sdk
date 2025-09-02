@@ -5,6 +5,7 @@ import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiot
 import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack_impl.dart';
 import 'package:theoplayer_web/theoplayer_api_event_web.dart';
 import 'package:theoplayer_web/theoplayer_api_web.dart';
+import 'package:theoplayer_web/theoplayer_js_helpers_web.dart';
 
 class AudioTrackImplWeb extends AudioTrackImpl {
   final THEOplayerAudioTrack _nativeAudioTrack;
@@ -18,8 +19,8 @@ class AudioTrackImplWeb extends AudioTrackImpl {
       var eventTargetQuality = event.quality;
 
       var targetQualitiesUid = [];
-      for (var i = 0; i < eventTargetQualities.length; i++) {
-        THEOplayerAudioQuality q = eventTargetQualities[i];
+      for (var i = 0; i < eventTargetQualities.getLength(); i++) {
+        THEOplayerAudioQuality q = eventTargetQualities.getItem(i) as THEOplayerAudioQuality;
         targetQualitiesUid.add(q.uid);
       }
 
@@ -62,15 +63,15 @@ class AudioTrackImplWeb extends AudioTrackImpl {
 
       var flutterUidMap = targetQualities.map((element) => element.uid);
 
-      for (var i = 0; i < _nativeAudioTrack.qualities.length; i++) {
-        THEOplayerAudioQuality q = _nativeAudioTrack.qualities[i];
+      for (var i = 0; i < _nativeAudioTrack.qualities.getLength(); i++) {
+        THEOplayerAudioQuality q = _nativeAudioTrack.qualities.getItem(i) as THEOplayerAudioQuality;
         if (flutterUidMap.contains(q.uid)) {
           theoplayerQualities.add(q);
         }
       }
     }
 
-    _nativeAudioTrack.targetQuality = theoplayerQualities;
+    _nativeAudioTrack.targetQuality = theoplayerQualities != null ? JSHelpers.jsItemsToJSArray(theoplayerQualities) : null;
   }
 
   @override
@@ -82,8 +83,8 @@ class AudioTrackImplWeb extends AudioTrackImpl {
     if (targetQuality != null) {
       theoplayerQualities = [];
 
-      for (var i = 0; i < _nativeAudioTrack.qualities.length; i++) {
-        THEOplayerAudioQuality q = _nativeAudioTrack.qualities[i];
+      for (var i = 0; i < _nativeAudioTrack.qualities.getLength(); i++) {
+        THEOplayerAudioQuality q = _nativeAudioTrack.qualities.getItem(i) as THEOplayerAudioQuality;
         if (targetQuality.uid == q.uid) {
           theoplayerQualities.add(q);
           break;
@@ -91,7 +92,7 @@ class AudioTrackImplWeb extends AudioTrackImpl {
       }
     }
 
-    _nativeAudioTrack.targetQuality = theoplayerQualities;
+    _nativeAudioTrack.targetQuality = theoplayerQualities != null ? JSHelpers.jsItemsToJSArray(theoplayerQualities) : null;
   }
 
   @override

@@ -3,6 +3,7 @@ import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiot
 import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack_events.dart';
 import 'package:theoplayer_web/theoplayer_api_event_web.dart';
 import 'package:theoplayer_web/theoplayer_api_web.dart';
+import 'package:theoplayer_web/theoplayer_js_helpers_web.dart';
 import 'package:theoplayer_web/track/audiotrack/theoplayer_audiotrack_impl_web.dart';
 import 'package:theoplayer_web/track/texttrack/theoplayer_texttrack_impl_web.dart';
 import 'package:theoplayer_web/transformers_web.dart';
@@ -19,7 +20,7 @@ class AudioTrackListImplWeb extends AudioTracksImpl {
     addTrackEventListener = (AddAudioTrackEventJS event) {
       var track = event.track;
 
-      AudioQualities qualities = toFlutterAudioQualities(track.qualities);
+      AudioQualities qualities = toFlutterAudioQualities(JSHelpers.jsArrayToList<THEOplayerAudioQuality>(track.qualities));
 
       var flutterTrack = AudioTrackImplWeb(
         track.id, 

@@ -11,24 +11,34 @@ void initializeTHEOplayer() {
 //TODO: check if we can properly generate interfaces via js_bindings or typings from TS.
 
 @JS("THEOplayer")
-class THEOplayer {
-  external static List<THEOplayerJS> players;
-}
+@staticInterop
+class THEOplayer {}
+
+@JS("THEOplayer.players")
+external JSArray<JSAny?> get theoplayerPlayers;
+
+extension THEOplayerExtension on THEOplayer {}
 
 @JS()
 @anonymous
-class THEOplayerEventListener {
-  external void addEventListener(String eventType, fn(event), [dynamic id = ""]);
-  external void removeEventListener(String eventType, fn(event), [dynamic id = ""]);
+@staticInterop
+class THEOplayerEventListener {}
+
+extension THEOplayerEventListenerExtension on THEOplayerEventListener {
+  external void addEventListener(String eventType, JSFunction fn);
+  external void removeEventListener(String eventType, JSFunction fn);
 }
 
 @JS("THEOplayer.ChromelessPlayer")
-class THEOplayerJS extends THEOplayerEventListener {
-  external THEOplayerJS(HTMLElement videoElement, THEOplayerConfigParams theoPlayerConfig);
+@staticInterop
+class THEOplayerJS implements THEOplayerEventListener {
+  external factory THEOplayerJS(HTMLElement videoElement, THEOplayerConfigParams theoPlayerConfig);
+}
 
-  external play();
-  external pause();
-  external stop();
+extension THEOplayerJSExtension on THEOplayerJS {
+  external void play();
+  external void pause();
+  external void stop();
 
   external bool muted;
   external bool autoplay;
@@ -60,25 +70,33 @@ class THEOplayerJS extends THEOplayerEventListener {
 
 @JS("Date")
 @anonymous
+@staticInterop
 //NOTE: similar to DateTime in JS, but that object doesn't work, so we create our own representation
 class JSDate {
-  external JSDate(int epoch);
+  external factory JSDate({required int epoch});
+}
+
+extension JSDateExtension on JSDate {
   external int getTime();
 }
 
 @JS()
 @anonymous
+@staticInterop
 //NOTE: similar to TimeRanges, but that object doesn't work, so we create our own representation
 class THEOplayerTimeRanges {
   external factory THEOplayerTimeRanges();
+}
 
+extension THEOplayerTimeRangesExtension on THEOplayerTimeRanges {
   external int get length;
-  external start(int index);
-  external end(int index);
+  external JSAny? start(int index);
+  external JSAny? end(int index);
 }
 
 @JS()
 @anonymous
+@staticInterop
 class THEOplayerError {
   external factory THEOplayerError({
     String message,
@@ -86,12 +104,15 @@ class THEOplayerError {
     String cause,
     String stack,
   });
+}
 
+extension THEOplayerErrorExtension on THEOplayerError {
   external String get message;
 }
 
 @JS()
 @anonymous
+@staticInterop
 class THEOplayerConfigParams {
   external factory THEOplayerConfigParams({
     String? libraryLocation,
@@ -103,6 +124,7 @@ class THEOplayerConfigParams {
 
 @JS()
 @anonymous
+@staticInterop
 class TheoLiveConfig {
   external factory TheoLiveConfig({
       String? externalSessionId,
@@ -113,21 +135,27 @@ class TheoLiveConfig {
 
 @JS()
 @anonymous
+@staticInterop
 class SourceDescription {
-  external factory SourceDescription({required List<TypedSource> sources});
+  external factory SourceDescription({required JSArray<JSAny?> sources});
+}
 
-  external List<TypedSource> get sources;
+extension SourceDescriptionExtension on SourceDescription {
+  external JSArray<JSAny?> get sources;
 }
 
 @JS()
 @anonymous
+@staticInterop
 class TypedSource {
   external factory TypedSource({ required String src, 
     String? type,
     ContentProtection? contentProtection,
     String? integration
   });
+}
 
+extension TypedSourceExtension on TypedSource {
   external String? get integration; // theolive,
   external String get src;
   external String? get type;
@@ -136,57 +164,74 @@ class TypedSource {
 
 @JS()
 @anonymous
+@staticInterop
 class ContentProtection {
   external factory ContentProtection({
     WidevineContentProtectionConfiguration? widevine,
     FairplayContentProtectionConfiguration? fairplay
 
   });
+}
 
+extension ContentProtectionExtension on ContentProtection {
   external WidevineContentProtectionConfiguration? get widevine;
   external FairplayContentProtectionConfiguration? get fairplay;
 }
 
 @JS()
 @anonymous
+@staticInterop
 class WidevineContentProtectionConfiguration {
   external factory WidevineContentProtectionConfiguration({
     String licenseAcquisitionURL
   });
+}
 
+extension WidevineContentProtectionConfigurationExtension on WidevineContentProtectionConfiguration {
   external String get licenseAcquisitionURL;
 }
 
 @JS()
 @anonymous
+@staticInterop
 class FairplayContentProtectionConfiguration {
-
   external factory FairplayContentProtectionConfiguration({
     String licenseAcquisitionURL,
     String certificateURL
   });
+}
 
+extension FairplayContentProtectionConfigurationExtension on FairplayContentProtectionConfiguration {
   external String get licenseAcquisitionURL;
   external String get certificateURL;
 }
 
 @JS()
 @anonymous
-class THEOplayerArrayList<T> extends THEOplayerEventListener {
+@staticInterop
+class THEOplayerArrayList<T> implements THEOplayerEventListener {}
+
+extension THEOplayerArrayListExtension<T> on THEOplayerArrayList<T> {
   external int get length;
-  external T item(int index);
+  external JSAny? item(int index);
 }
 
 @JS()
 @anonymous
-class THEOplayerTextTrackCueList<THEOplayerTextTrackCue> {
+@staticInterop
+class THEOplayerTextTrackCueList<THEOplayerTextTrackCue> {}
+
+extension THEOplayerTextTrackCueListExtension<THEOplayerTextTrackCue> on THEOplayerTextTrackCueList<THEOplayerTextTrackCue> {
   external int get length;
-  external THEOplayerTextTrackCue item(int index);
+  external JSAny? item(int index);
 }
 
 @JS()
 @anonymous
-class THEOplayerTextTrack extends THEOplayerEventListener {
+@staticInterop
+class THEOplayerTextTrack implements THEOplayerEventListener {}
+
+extension THEOplayerTextTrackExtension on THEOplayerTextTrack {
   external String? get id;
   external int get uid;
   external String get label;
@@ -204,19 +249,25 @@ class THEOplayerTextTrack extends THEOplayerEventListener {
 
 @JS()
 @anonymous
-class THEOplayerTextTrackCue extends THEOplayerEventListener {
+@staticInterop
+class THEOplayerTextTrackCue implements THEOplayerEventListener {}
+
+extension THEOplayerTextTrackCueExtension on THEOplayerTextTrackCue {
   external String get id;
   external int get uid;
   external double get startTime;
   external double get endTime;
-  external dynamic get content;
+  external JSAny? get content;
 
   external THEOplayerTextTrack track;
 }
 
 @JS()
 @anonymous
-abstract class THEOplayerMediaTrack<T> extends THEOplayerEventListener {
+@staticInterop
+abstract class THEOplayerMediaTrack<T> implements THEOplayerEventListener {}
+
+extension THEOplayerMediaTrackExtension<T> on THEOplayerMediaTrack<T> {
   external bool enabled;
   external String get id;
   external int get uid;
@@ -224,22 +275,27 @@ abstract class THEOplayerMediaTrack<T> extends THEOplayerEventListener {
   external String label;
   external String language;
 
-  external T? activeQuality;
-  external List<T> qualities;
-  external List<T>? targetQuality;
+  external JSAny? activeQuality;
+  external JSArray<JSAny?> qualities;
+  external JSArray<JSAny?>? targetQuality;
 }
 
 @JS()
 @anonymous
-class THEOplayerAudioTrack extends THEOplayerMediaTrack<THEOplayerAudioQuality> {}
+@staticInterop
+class THEOplayerAudioTrack implements THEOplayerMediaTrack<THEOplayerAudioQuality> {}
 
 @JS()
 @anonymous
-class THEOplayerVideoTrack extends THEOplayerMediaTrack<THEOplayerVideoQuality> {}
+@staticInterop
+class THEOplayerVideoTrack implements THEOplayerMediaTrack<THEOplayerVideoQuality> {}
 
 @JS()
 @anonymous
-abstract class THEOplayerMediaQuality extends THEOplayerEventListener {
+@staticInterop
+abstract class THEOplayerMediaQuality implements THEOplayerEventListener {}
+
+extension THEOplayerMediaQualityExtension on THEOplayerMediaQuality {
   external String get id;
   external int get uid;
   external String get name;
@@ -252,13 +308,19 @@ abstract class THEOplayerMediaQuality extends THEOplayerEventListener {
 
 @JS()
 @anonymous
-class THEOplayerAudioQuality extends THEOplayerMediaQuality {
+@staticInterop
+class THEOplayerAudioQuality implements THEOplayerMediaQuality {}
+
+extension THEOplayerAudioQualityExtension on THEOplayerAudioQuality {
   external int get audioSamplingRate;
 }
 
 @JS()
 @anonymous
-class THEOplayerVideoQuality extends THEOplayerMediaQuality {
+@staticInterop
+class THEOplayerVideoQuality implements THEOplayerMediaQuality {}
+
+extension THEOplayerVideoQualityExtension on THEOplayerVideoQuality {
   external int get height;
   external int get width;
   external double get frameRate;
@@ -269,7 +331,10 @@ class THEOplayerVideoQuality extends THEOplayerMediaQuality {
 // Porting changes from https://github.com/THEOplayer/flutter-theolive-sdk/blob/develop/flutter_theolive_sdk_platform_interface/pigeons/apis/theolive_host_api.dart
 @JS()
 @anonymous
-class THEOplayerTheoLiveApi extends THEOplayerEventListener {
+@staticInterop
+class THEOplayerTheoLiveApi implements THEOplayerEventListener {}
+
+extension THEOplayerTheoLiveApiExtension on THEOplayerTheoLiveApi {
   external bool badNetworkMode;
-  external preloadPublications(List<String> publicationIds);
+  external JSAny? preloadPublications(JSArray<JSAny?> publicationIds);
 }

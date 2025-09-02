@@ -5,6 +5,7 @@ import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videot
 import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack_impl.dart';
 import 'package:theoplayer_web/theoplayer_api_event_web.dart';
 import 'package:theoplayer_web/theoplayer_api_web.dart';
+import 'package:theoplayer_web/theoplayer_js_helpers_web.dart';
 
 class VideoTrackImplWeb extends VideoTrackImpl {
   final THEOplayerVideoTrack _nativeVideoTrack;
@@ -18,8 +19,8 @@ class VideoTrackImplWeb extends VideoTrackImpl {
       var eventTargetQuality = event.quality;
 
       var targetQualitiesUid = [];
-      for (var i = 0; i < eventTargetQualities.length; i++) {
-        THEOplayerVideoQuality q = eventTargetQualities[i];
+      for (var i = 0; i < eventTargetQualities.getLength(); i++) {
+        THEOplayerVideoQuality q = eventTargetQualities.getItem(i) as THEOplayerVideoQuality;
         targetQualitiesUid.add(q.uid);
       }
 
@@ -62,15 +63,15 @@ class VideoTrackImplWeb extends VideoTrackImpl {
 
       var flutterUidMap = targetQualities.map((element) => element.uid);
 
-      for (var i = 0; i < _nativeVideoTrack.qualities.length; i++) {
-        THEOplayerVideoQuality q = _nativeVideoTrack.qualities[i];
+      for (var i = 0; i < _nativeVideoTrack.qualities.getLength(); i++) {
+        THEOplayerVideoQuality q = _nativeVideoTrack.qualities.getItem(i) as THEOplayerVideoQuality;
         if (flutterUidMap.contains(q.uid)) {
           theoplayerQualities.add(q);
         }
       }
     }
 
-    _nativeVideoTrack.targetQuality = theoplayerQualities;
+    _nativeVideoTrack.targetQuality = theoplayerQualities != null ? JSHelpers.jsItemsToJSArray(theoplayerQualities) : null;
   }
 
   @override
@@ -82,8 +83,8 @@ class VideoTrackImplWeb extends VideoTrackImpl {
     if (targetQuality != null) {
       theoplayerQualities = [];
 
-      for (var i = 0; i < _nativeVideoTrack.qualities.length; i++) {
-        THEOplayerVideoQuality q = _nativeVideoTrack.qualities[i];
+      for (var i = 0; i < _nativeVideoTrack.qualities.getLength(); i++) {
+        THEOplayerVideoQuality q = _nativeVideoTrack.qualities.getItem(i) as THEOplayerVideoQuality;
         if (targetQuality.uid == q.uid) {
           theoplayerQualities.add(q);
           break;
@@ -91,7 +92,7 @@ class VideoTrackImplWeb extends VideoTrackImpl {
       }
     }
 
-    _nativeVideoTrack.targetQuality = theoplayerQualities;
+    _nativeVideoTrack.targetQuality = theoplayerQualities != null ? JSHelpers.jsItemsToJSArray(theoplayerQualities) : null;
   }
 
   @override
