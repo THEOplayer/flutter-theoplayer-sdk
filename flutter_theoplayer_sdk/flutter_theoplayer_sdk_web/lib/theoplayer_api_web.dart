@@ -1,7 +1,7 @@
 @JS()
 library THEOplayer.js;
 
-import 'package:js/js.dart';
+import 'dart:js_interop';
 import 'package:web/web.dart';
 
 void initializeTHEOplayer() {

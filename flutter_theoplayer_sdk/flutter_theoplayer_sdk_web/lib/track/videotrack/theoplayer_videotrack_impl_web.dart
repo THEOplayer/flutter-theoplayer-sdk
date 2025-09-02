@@ -1,4 +1,4 @@
-import 'dart:js';
+import 'dart:js_interop';
 
 import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
 import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack_events.dart';
@@ -13,7 +13,7 @@ class VideoTrackImplWeb extends VideoTrackImpl {
   late final targetQualityChangedListener;
 
   VideoTrackImplWeb(super.id, super.uid, super.label, super.language, super.kind, super.qualities, super.isEnabled, this._nativeVideoTrack) {
-    targetQualityChangedListener = allowInterop((VideoTargetQualityChangedEventJS event) {
+    targetQualityChangedListener = ((VideoTargetQualityChangedEventJS event) {
       var eventTargetQualities = event.qualities;
       var eventTargetQuality = event.quality;
 
@@ -33,9 +33,9 @@ class VideoTrackImplWeb extends VideoTrackImpl {
       super.targetQualities = flutterTargetQualities;
       super.targetQuality = flutterTargetQuality;
       dispatchEvent(VideoTargetQualityChangedEvent(qualities: flutterTargetQualities, quality: flutterTargetQuality));
-    });
+    }).toJS;
 
-    aciveQualityChangedEventListener = allowInterop((VideoActiveQualityChangedEventJS event) {
+    aciveQualityChangedEventListener = ((VideoActiveQualityChangedEventJS event) {
       var eventTargetQuality = event.quality;
       VideoQuality? flutterActiveQuality = this.qualities.firstWhereOrNull((element) => element.uid == eventTargetQuality.uid);
       if (flutterActiveQuality == null) {
@@ -45,7 +45,7 @@ class VideoTrackImplWeb extends VideoTrackImpl {
 
       super.activeQuality = flutterActiveQuality;
       dispatchEvent(VideoActiveQualityChangedEvent(quality: flutterActiveQuality));
-    });
+    }).toJS;
 
     this._nativeVideoTrack.addEventListener(VideoTrackEventTypes.TARGETQUALITYCHANGED.toLowerCase(), targetQualityChangedListener);
     this._nativeVideoTrack.addEventListener(VideoTrackEventTypes.ACTIVEQUALITYCHANGED.toLowerCase(), aciveQualityChangedEventListener);

@@ -1,4 +1,4 @@
-import 'package:js/js.dart';
+import 'dart:js_interop';
 import 'package:theoplayer_platform_interface/theolive/theolive_events.dart';
 import 'package:theoplayer_platform_interface/theolive/theolive_internal_api.dart';
 import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
@@ -20,29 +20,29 @@ class THEOliveControllerWeb extends THEOliveInternalInterface {
   late final exitBadNetworkModeEventListener;
 
   THEOliveControllerWeb(this._theoLiveApi) {
-    publicationLoadedEventListener = allowInterop((PublicationLoadedEventJS event) {
+    publicationLoadedEventListener = (PublicationLoadedEventJS event) {
       _eventManager.dispatchEvent(PublicationLoadedEvent(publicationId: event.publicationId));
-    });
+    }.toJS;
 
-    publicationLoadStartEventListener = allowInterop((PublicationLoadStartEventJS event) {
+    publicationLoadStartEventListener = (PublicationLoadStartEventJS event) {
       _eventManager.dispatchEvent(PublicationLoadStartEvent(publicationId: event.publicationId));
-    });
+    }.toJS;
 
-    publicationOfflineEventListener = allowInterop((PublicationOfflineEventJS event) {
+    publicationOfflineEventListener = (PublicationOfflineEventJS event) {
       _eventManager.dispatchEvent(PublicationOfflineEvent(publicationId: event.publicationId));
-    });
+    }.toJS;
 
-    intentToFallbackEventListener = allowInterop((IntentToFallbackEventJS event) {
+    intentToFallbackEventListener = (IntentToFallbackEventJS event) {
       _eventManager.dispatchEvent(IntentToFallbackEvent());
-    });
+    }.toJS;
 
-    enterBadNetworkModeEventListener = allowInterop((EnterBadNetworkModeEventJS event) {
+    enterBadNetworkModeEventListener = (EnterBadNetworkModeEventJS event) {
       _eventManager.dispatchEvent(EnterBadNetworkModeEvent());
-    });
+    }.toJS;
 
-    exitBadNetworkModeEventListener = allowInterop((ExitBadNetworkModeEventJS event) {
+    exitBadNetworkModeEventListener = (ExitBadNetworkModeEventJS event) {
       _eventManager.dispatchEvent(ExitBadNetworkModeEvent());
-    });
+    }.toJS;
 
     _theoLiveApi.addEventListener(THEOliveApiEventTypes.PUBLICATIONLOADED.toLowerCase(), publicationLoadedEventListener);
     _theoLiveApi.addEventListener(THEOliveApiEventTypes.PUBLICATIONLOADSTART.toLowerCase(), publicationLoadStartEventListener);

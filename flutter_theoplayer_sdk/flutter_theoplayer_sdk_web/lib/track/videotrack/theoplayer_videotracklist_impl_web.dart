@@ -6,7 +6,7 @@ import 'package:theoplayer_web/theoplayer_api_web.dart';
 import 'package:theoplayer_web/track/texttrack/theoplayer_texttrack_impl_web.dart';
 import 'package:theoplayer_web/track/videotrack/theoplayer_videotrack_impl_web.dart';
 import 'package:theoplayer_web/transformers_web.dart';
-import 'package:js/js.dart';
+import 'dart:js_interop';
 
 class VideoTrackListImplWeb extends VideoTracksImpl {
   final THEOplayerArrayList<THEOplayerVideoTrack> _theoPlayerVideoTracks;
@@ -16,7 +16,7 @@ class VideoTrackListImplWeb extends VideoTracksImpl {
   late final changeTrackEventListener;
 
   VideoTrackListImplWeb(this._theoPlayerVideoTracks) {
-    addTrackEventListener = allowInterop((AddVideoTrackEventJS event) {
+    addTrackEventListener = (AddVideoTrackEventJS event) {
       var track = event.track;
 
       VideoQualities qualities = toFlutterVideoQualities(track.qualities);
@@ -33,9 +33,9 @@ class VideoTrackListImplWeb extends VideoTracksImpl {
       );
       add(flutterTrack);
       dispatchEvent(AddVideoTrackEvent(track: flutterTrack));
-    });
+    }.toJS;
 
-    removeTrackEventListener = allowInterop((RemoveVideoTrackEventJS event) {
+    removeTrackEventListener = (RemoveVideoTrackEventJS event) {
       var track = event.track;
 
       var flutterTrack = firstWhereOrNull((item) => item.uid == track.uid);
@@ -45,10 +45,10 @@ class VideoTrackListImplWeb extends VideoTracksImpl {
 
       remove(flutterTrack);
       dispatchEvent(RemoveVideoTrackEvent(track: flutterTrack));
-    });
+    }.toJS;
 
     //only triggered for enable/disable
-    changeTrackEventListener = allowInterop((VideoTrackListChangeEventJS event) {
+    changeTrackEventListener = (VideoTrackListChangeEventJS event) {
       var track = event.track;
 
       var flutterTrack = firstWhereOrNull((item) => item.uid == track.uid);
@@ -57,7 +57,7 @@ class VideoTrackListImplWeb extends VideoTracksImpl {
       }
 
       dispatchEvent(VideoTrackListChangeEvent(track: flutterTrack));
-    });
+    }.toJS;
 
     _theoPlayerVideoTracks.addEventListener(VideoTracksEventTypes.ADDTRACK.toLowerCase(), addTrackEventListener);
     _theoPlayerVideoTracks.addEventListener(VideoTracksEventTypes.REMOVETRACK.toLowerCase(), removeTrackEventListener);

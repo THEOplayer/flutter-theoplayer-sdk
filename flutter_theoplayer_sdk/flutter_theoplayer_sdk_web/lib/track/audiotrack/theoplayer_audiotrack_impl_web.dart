@@ -1,4 +1,4 @@
-import 'dart:js';
+import 'dart:js_interop';
 
 import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack.dart';
 import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiotrack_events.dart';
@@ -13,7 +13,7 @@ class AudioTrackImplWeb extends AudioTrackImpl {
   late final targetQualityChangedListener;
 
   AudioTrackImplWeb(super.id, super.uid, super.label, super.language, super.kind, super.qualities, super.isEnabled, this._nativeAudioTrack) {
-    targetQualityChangedListener = allowInterop((AudioTargetQualityChangedEventJS event) {
+    targetQualityChangedListener = ((AudioTargetQualityChangedEventJS event) {
       var eventTargetQualities = event.qualities;
       var eventTargetQuality = event.quality;
 
@@ -33,9 +33,9 @@ class AudioTrackImplWeb extends AudioTrackImpl {
       super.targetQualities = flutterTargetQualities;
       super.targetQuality = flutterTargetQuality;
       dispatchEvent(AudioTargetQualityChangedEvent(qualities: flutterTargetQualities, quality: flutterTargetQuality));
-    });
+    }).toJS;
 
-    aciveQualityChangedEventListener = allowInterop((AudioActiveQualityChangedEventJS event) {
+    aciveQualityChangedEventListener = ((AudioActiveQualityChangedEventJS event) {
       var eventTargetQuality = event.quality;
       AudioQuality? flutterActiveQuality = this.qualities.firstWhereOrNull((element) => element.uid == eventTargetQuality.uid);
       if (flutterActiveQuality == null) {
@@ -45,7 +45,7 @@ class AudioTrackImplWeb extends AudioTrackImpl {
 
       super.activeQuality = flutterActiveQuality;
       dispatchEvent(AudioActiveQualityChangedEvent(quality: flutterActiveQuality));
-    });
+    }).toJS;
 
     this._nativeAudioTrack.addEventListener(AudioTrackEventTypes.TARGETQUALITYCHANGED.toLowerCase(), targetQualityChangedListener);
     this._nativeAudioTrack.addEventListener(AudioTrackEventTypes.ACTIVEQUALITYCHANGED.toLowerCase(), aciveQualityChangedEventListener);

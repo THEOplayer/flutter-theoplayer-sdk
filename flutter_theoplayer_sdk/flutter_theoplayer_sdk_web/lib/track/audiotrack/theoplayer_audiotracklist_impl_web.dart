@@ -6,7 +6,7 @@ import 'package:theoplayer_web/theoplayer_api_web.dart';
 import 'package:theoplayer_web/track/audiotrack/theoplayer_audiotrack_impl_web.dart';
 import 'package:theoplayer_web/track/texttrack/theoplayer_texttrack_impl_web.dart';
 import 'package:theoplayer_web/transformers_web.dart';
-import 'package:js/js.dart';
+import 'dart:js_interop';
 
 class AudioTrackListImplWeb extends AudioTracksImpl {
   final THEOplayerArrayList<THEOplayerAudioTrack> _theoPlayerAudioTracks;
@@ -16,7 +16,7 @@ class AudioTrackListImplWeb extends AudioTracksImpl {
   late final changeTrackEventListener;
 
   AudioTrackListImplWeb(this._theoPlayerAudioTracks) {
-    addTrackEventListener = allowInterop((AddAudioTrackEventJS event) {
+    addTrackEventListener = (AddAudioTrackEventJS event) {
       var track = event.track;
 
       AudioQualities qualities = toFlutterAudioQualities(track.qualities);
@@ -33,9 +33,9 @@ class AudioTrackListImplWeb extends AudioTracksImpl {
       );
       add(flutterTrack);
       dispatchEvent(AddAudioTrackEvent(track: flutterTrack));
-    });
+    }.toJS;
 
-    removeTrackEventListener = allowInterop((RemoveAudioTrackEventJS event) {
+    removeTrackEventListener = (RemoveAudioTrackEventJS event) {
       var track = event.track;
 
       var flutterTrack = firstWhereOrNull((item) => item.uid == track.uid);
@@ -45,10 +45,10 @@ class AudioTrackListImplWeb extends AudioTracksImpl {
 
       remove(flutterTrack);
       dispatchEvent(RemoveAudioTrackEvent(track: flutterTrack));
-    });
+    }.toJS;
 
     //only triggered for enable/disable
-    changeTrackEventListener = allowInterop((AudioTrackListChangeEventJS event) {
+    changeTrackEventListener = (AudioTrackListChangeEventJS event) {
       var track = event.track;
 
       var flutterTrack = firstWhereOrNull((item) => item.uid == track.uid);
@@ -57,7 +57,7 @@ class AudioTrackListImplWeb extends AudioTracksImpl {
       }
 
       dispatchEvent(AudioTrackListChangeEvent(track: flutterTrack));
-    });
+    }.toJS;
 
     _theoPlayerAudioTracks.addEventListener(AudioTracksEventTypes.ADDTRACK.toLowerCase(), addTrackEventListener);
     _theoPlayerAudioTracks.addEventListener(AudioTracksEventTypes.REMOVETRACK.toLowerCase(), removeTrackEventListener);

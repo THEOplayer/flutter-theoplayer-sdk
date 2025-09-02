@@ -2,7 +2,7 @@
 library THEOplayer.js;
 
 import 'package:theoplayer_web/theoplayer_api_web.dart';
-import 'package:js/js.dart';
+import 'dart:js_interop';
 
 @JS()
 @anonymous

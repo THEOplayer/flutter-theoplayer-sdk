@@ -1,12 +1,20 @@
 import 'dart:convert';
-import 'dart:js';
+import 'dart:js_interop';
+import 'dart:js_interop_unsafe';
+import 'package:web/web.dart' as web;
 
-String? jsObjectToJsonString(dynamic obj) { //LegacyJavaScriptObject
+@JS('JSON.stringify')
+external String? _jsonStringify(JSAny? obj);
+
+@JS('JSON.parse')
+external JSAny? _jsonParse(String jsonString);
+
+String? jsObjectToJsonString(JSAny? obj) {
   if (obj == null) return null;
-  return context['JSON'].callMethod('stringify', [obj]);
+  return _jsonStringify(obj);
 }
 
-Map? jsObjectToDartMap(JsObject? obj) {
+Map? jsObjectToDartMap(JSAny? obj) {
   if (obj == null) {
     return null;
   }
@@ -19,6 +27,7 @@ Map? jsObjectToDartMap(JsObject? obj) {
   return jsonDecode(jsonString);
 }
 
-JsObject dartObjectToJsObject(object) {
-  return JsObject.jsify(object);
+JSAny dartObjectToJsObject(Object? object) {
+  if (object == null) return null.jsify()!;
+  return object.jsify()!;
 }
