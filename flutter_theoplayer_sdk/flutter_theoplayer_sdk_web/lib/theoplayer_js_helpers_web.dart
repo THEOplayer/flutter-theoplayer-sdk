@@ -6,7 +6,8 @@ import 'package:theoplayer_web/theoplayer_api_web.dart';
 class JSHelpers {
   /// Get the length of a JSArray<JSAny?>
   static int getJSArrayLength(JSArray<JSAny?> array) {
-    return (array as JSObject)['length']! as int;
+    final lengthProperty = (array as JSObject)['length']!;
+    return (lengthProperty as JSNumber).toDartInt;
   }
   
   /// Get an item from JSArray<JSAny?> at a specific index
