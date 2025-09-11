@@ -2,7 +2,7 @@ group 'com.theoplayer.flutter'
 version '1.0.3'
 
 buildscript {
-    ext.kotlin_version = '1.9.25'
+    ext.kotlin_version = '2.2.10'
     repositories {
         google()
         mavenCentral()
