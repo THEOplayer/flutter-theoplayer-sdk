@@ -32,7 +32,7 @@ android {
         namespace 'com.theoplayer.flutter'
     }
 
-    compileSdkVersion 35
+    compileSdkVersion 36
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
