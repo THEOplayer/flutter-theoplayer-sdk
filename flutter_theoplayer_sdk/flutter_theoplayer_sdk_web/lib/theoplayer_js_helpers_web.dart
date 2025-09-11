@@ -7,6 +7,7 @@ class JSHelpers {
   /// Get the length of a JSArray<JSAny?>
   static int getJSArrayLength(JSArray<JSAny?> array) {
     final lengthProperty = (array as JSObject)['length']!;
+    //TODO: we should make this nicer if possible
     return (lengthProperty as JSNumber).toDartInt;
   }
   

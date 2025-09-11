@@ -219,6 +219,7 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   Future<List<PlatformInterface.TimeRange?>> getPlayed() {
     List<PlatformInterface.TimeRange> ranges = [];
     for (var i = 0; i < _theoPlayerJS.played.length; i++) {
+      //TODO: we should make this nicer if possible
       ranges.add(PlatformInterface.TimeRange(start: (_theoPlayerJS.played.start(i) as JSNumber).toDartDouble, end: (_theoPlayerJS.played.end(i) as JSNumber).toDartDouble));
     }
     return Future.value(ranges);
@@ -228,6 +229,7 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   Future<List<PlatformInterface.TimeRange?>> getSeekable() {
     List<PlatformInterface.TimeRange> ranges = [];
     for (var i = 0; i < _theoPlayerJS.seekable.length; i++) {
+      //TODO: we should make this nicer if possible
       ranges.add(PlatformInterface.TimeRange(start: (_theoPlayerJS.seekable.start(i) as JSNumber).toDartDouble, end: (_theoPlayerJS.seekable.end(i) as JSNumber).toDartDouble));
     }
     return Future.value(ranges);
