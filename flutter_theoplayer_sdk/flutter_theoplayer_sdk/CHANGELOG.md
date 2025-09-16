@@ -1,3 +1,21 @@
+## 9.11.0
+
+* Updated THEOplayer to 9.11.0.
+
+## 9.7.1
+
+* Added `TypedSource.type` property.
+* Added `WebConfig.libraryLocation` to specify a different path for THEOplayer WEB SDK through `THEOplayerConfig`.
+
+## 9.7.0
+
+* Updated THEOplayer to 9.7.0.
+* Added `TheoLiveConfiguration.discoveryUrl` to support custom discovery URLs for OptiView live streams (formerly known as THEOlive).
+
+## 9.3.3
+
+* Updated THEOplayer to 9.3.3.
+
 ## 9.3.1
 
 * Updated THEOplayer to 9.3.1.
@@ -5,7 +23,7 @@
 ## 9.3.0
 
 * Updated THEOplayer to 9.3.0.
-  - Fixed an issue where `THEOplayer.allowAutomaticPictureInPicture` was not respected after setting a source.
+	- Fixed an issue where `THEOplayer.allowAutomaticPictureInPicture` was not respected after setting a source.
 
 ## 9.2.0
 
