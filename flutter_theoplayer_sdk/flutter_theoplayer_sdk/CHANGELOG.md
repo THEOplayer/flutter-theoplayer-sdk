@@ -1,24 +1,17 @@
-## 9.11.0
+## 9.3.4
 
-* Updated THEOplayer to 9.11.0.
-
-## 9.7.1
-
-* Added `TypedSource.type` property.
-* Added `WebConfig.libraryLocation` to specify a different path for THEOplayer WEB SDK through `THEOplayerConfig`.
-
-## 9.7.0
-
-* Updated THEOplayer to 9.7.0.
-* Added `TheoLiveConfiguration.discoveryUrl` to support custom discovery URLs for OptiView live streams (formerly known as THEOlive).
+* Updated THEOplayer to 9.3.4.
+	- For underlying changes please consult with the [native THEOplayer SDK changelog](https://optiview.dolby.com/docs/theoplayer/changelog/#-934-20250922)
 
 ## 9.3.3
 
 * Updated THEOplayer to 9.3.3.
+	- For underlying changes please consult with the [native THEOplayer SDK changelog](https://optiview.dolby.com/docs/theoplayer/changelog/#-933-20250917)
 
 ## 9.3.1
 
 * Updated THEOplayer to 9.3.1.
+	- For underlying changes please consult with the [native THEOplayer SDK changelog](https://optiview.dolby.com/docs/theoplayer/changelog/#-931-20250512)
 
 ## 9.3.0
 
