@@ -93,16 +93,25 @@ class THEOplayerViewNative(
         useHybridComposition =
             (flutterPlayerConfig?.get("androidConfig") as? Map<*, *>)?.get("viewComposition") as? String == "HYBRID_COMPOSITION"
 
-        val theoLiveConfigExternalSessionId = (flutterPlayerConfig?.get("theoLive") as?  Map<*, *>)?.get("externalSessionId") as? String
+        val flutterTheoLiveConfig = flutterPlayerConfig?.get("theoLive") as?  Map<*, *>
+        val theoLiveConfigExternalSessionId = flutterTheoLiveConfig?.get("externalSessionId") as? String
+        val theoLiveDiscoveryUrl = flutterTheoLiveConfig?.get("discoveryUrl") as? String
 
         val playerConfigBuilder = THEOplayerConfig.Builder()
         license?.let { playerConfigBuilder.license(it) }
         licenseUrl?.let { playerConfigBuilder.licenseUrl(it) }
         playerConfigBuilder.pipConfiguration(PipConfiguration.Builder().build())
 
-        if (theoLiveConfigExternalSessionId != null) {
-            playerConfigBuilder.theoLiveConfiguration(THEOLiveConfig.Builder().externalSessionId(theoLiveConfigExternalSessionId).build())
+        val theoLiveConfigurationBuilder = THEOLiveConfig.Builder()
+
+        theoLiveConfigExternalSessionId?.let {
+            theoLiveConfigurationBuilder.externalSessionId(it)
         }
+        theoLiveDiscoveryUrl?.let {
+            theoLiveConfigurationBuilder.discoveryUrl(it)
+        }
+
+        playerConfigBuilder.theoLiveConfiguration(theoLiveConfigurationBuilder.build())
 
         theoplayerWrapper = LinearLayout(context)
         theoplayerWrapper.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)

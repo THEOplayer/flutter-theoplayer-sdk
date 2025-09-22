@@ -6,8 +6,9 @@ class THEOplayerConfig {
   AndroidConfig _androidConfig = AndroidConfig();
   FullscreenConfig _fullscreenConfig = FullscreenConfig();
   TheoLiveConfiguration? _theoLive = null;
+  WebConfig _webConfig = WebConfig();
 
-  THEOplayerConfig({String? license, String? licenseUrl, AndroidConfig? androidConfiguration, FullscreenConfig? fullscreenConfiguration, TheoLiveConfiguration? theolive,}) {
+  THEOplayerConfig({String? license, String? licenseUrl, AndroidConfig? androidConfiguration, FullscreenConfig? fullscreenConfiguration, TheoLiveConfiguration? theolive, WebConfig? webConfiguration}) {
     _license = license;
     _licenseUrl = licenseUrl;
     if (androidConfiguration != null) {
@@ -18,6 +19,10 @@ class THEOplayerConfig {
     }
     if (theolive != null) {
       _theoLive = theolive;
+    }
+
+    if (webConfiguration != null) {
+      _webConfig = webConfiguration;
     }
   }
 
@@ -41,12 +46,17 @@ class THEOplayerConfig {
     return _androidConfig;
   }
 
+  WebConfig get webConfig {
+    return _webConfig;
+  }
+
   //TODO: fix this, don't generate JSON manually.
   Map<String, dynamic> toJson() => {
         'license': _license,
         'licenseUrl': _licenseUrl,
         'androidConfig': _androidConfig._toJson(),
-        'theoLive': _theoLive?._toJson()
+        'theoLive': _theoLive?._toJson(),
+        'webConfig': _webConfig._toJson()
       };
 
 }
@@ -108,10 +118,36 @@ class TheoLiveConfiguration {
   String? externalSessionId;
   bool? fallbackEnabled;
 
-  TheoLiveConfiguration({this.externalSessionId = null, this.fallbackEnabled = null});
+  /// An optional custom discovery endpoint URL for THEOlive, defaults to nil.
+  String? discoveryUrl;
+
+  /// Uses the legacy THEOlive playback pipeline
+  /// NOTE:
+  ///   - only available on iOS
+  ///   - it will be removed from THEOplayer version 10.0
+  bool useLegacyPlaybackEngine;
+
+  TheoLiveConfiguration({this.externalSessionId = null, this.fallbackEnabled = null, this.discoveryUrl = null, this.useLegacyPlaybackEngine = false});
 
   Map<String, dynamic> _toJson() => {
     'externalSessionId': externalSessionId,
     'fallbackEnabled': fallbackEnabled,
+    'discoveryUrl': discoveryUrl,
+    'useLegacyPlaybackEngine': useLegacyPlaybackEngine,
   };
+}
+
+class WebConfig {
+  /// The directory in which the THEOplayer library worker files are located. These worker files are theoplayer.d.js, theoplayer.e.js, theoplayer.p.js.
+  /// NOTE:
+  ///   - This parameter is required when using a HLS source and has no default.
+  ///   - Example: '/lib/theoplayer/'
+  String? libraryLocation;
+
+  WebConfig({this.libraryLocation = null});
+
+  Map<String, dynamic> _toJson() => {
+    'libraryLocation': libraryLocation,
+  };
+
 }

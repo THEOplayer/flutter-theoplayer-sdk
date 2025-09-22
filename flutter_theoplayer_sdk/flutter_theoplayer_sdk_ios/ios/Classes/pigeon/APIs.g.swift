@@ -136,6 +136,7 @@ struct SourceDescription {
 /// Generated class from Pigeon that represents data sent in messages.
 struct PigeonTypedSource {
   var src: String
+  var type: String? = nil
   var drm: DRMConfiguration? = nil
   var integration: SourceIntegrationId? = nil
   var playbackPipeline: PlaybackPipeline
@@ -143,20 +144,22 @@ struct PigeonTypedSource {
 
   static func fromList(_ list: [Any?]) -> PigeonTypedSource? {
     let src = list[0] as! String
+    let type: String? = nilOrValue(list[1])
     var drm: DRMConfiguration? = nil
-    if let drmList: [Any?] = nilOrValue(list[1]) {
+    if let drmList: [Any?] = nilOrValue(list[2]) {
       drm = DRMConfiguration.fromList(drmList)
     }
     var integration: SourceIntegrationId? = nil
-    let integrationEnumVal: Int? = nilOrValue(list[2])
+    let integrationEnumVal: Int? = nilOrValue(list[3])
     if let integrationRawValue = integrationEnumVal {
       integration = SourceIntegrationId(rawValue: integrationRawValue)!
     }
-    let playbackPipeline = PlaybackPipeline(rawValue: list[3] as! Int)!
-    let headers: [String?: String?]? = nilOrValue(list[4])
+    let playbackPipeline = PlaybackPipeline(rawValue: list[4] as! Int)!
+    let headers: [String?: String?]? = nilOrValue(list[5])
 
     return PigeonTypedSource(
       src: src,
+      type: type,
       drm: drm,
       integration: integration,
       playbackPipeline: playbackPipeline,
@@ -166,6 +169,7 @@ struct PigeonTypedSource {
   func toList() -> [Any?] {
     return [
       src,
+      type,
       drm?.toList(),
       integration?.rawValue,
       playbackPipeline.rawValue,

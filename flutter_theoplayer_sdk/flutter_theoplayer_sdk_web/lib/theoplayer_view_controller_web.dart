@@ -34,6 +34,7 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
       webTheoliveConfig = TheoLiveConfig(
           externalSessionId: theoliveConfig.externalSessionId,
           fallbackEnabled: theoliveConfig.fallbackEnabled,
+          discoveryUrl: theoliveConfig.discoveryUrl,
       );
     }
     _theoPlayerJS = THEOplayerJS(
@@ -42,6 +43,7 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
           license: theoPlayerConfig.license,
           licenseUrl: theoPlayerConfig.licenseUrl,
           theoLive: webTheoliveConfig,
+          libraryLocation: theoPlayerConfig.webConfig.libraryLocation ?? "/"
         ));
     _eventForwarder = PlayerEventForwarderWeb(_theoPlayerJS);
     _tracksController = THEOplayerTrackControllerWeb(_theoPlayerJS);

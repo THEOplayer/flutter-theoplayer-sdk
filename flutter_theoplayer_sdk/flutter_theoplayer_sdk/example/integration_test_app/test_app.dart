@@ -37,7 +37,9 @@ class _TestAppState extends State<TestApp> {
     player = THEOplayer(
         theoPlayerConfig: THEOplayerConfig(
           license: TEST_LICENSE,
-          androidConfiguration: AndroidConfig.create(viewComposition: widget.androidViewComposition)        ),
+          androidConfiguration: AndroidConfig.create(viewComposition: widget.androidViewComposition),
+          webConfiguration: WebConfig(libraryLocation: "/theoplayer")
+        ),
         onCreate: () {
           print("TestApp - THEOplayer - onCreate");
           player.addEventListener(PlayerEventTypes.SOURCECHANGE, (event) {
