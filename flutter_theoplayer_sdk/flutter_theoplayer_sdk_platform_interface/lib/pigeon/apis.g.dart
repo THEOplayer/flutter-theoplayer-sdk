@@ -61,11 +61,6 @@ enum SourceIntegrationId {
   theolive,
 }
 
-enum PlaybackPipeline {
-  media3,
-  legacy,
-}
-
 class TimeRange {
   TimeRange({
     required this.start,
@@ -124,7 +119,6 @@ class PigeonTypedSource {
     this.type,
     this.drm,
     this.integration,
-    required this.playbackPipeline,
     this.headers,
   });
 
@@ -136,8 +130,6 @@ class PigeonTypedSource {
 
   SourceIntegrationId? integration;
 
-  PlaybackPipeline playbackPipeline;
-
   Map<String?, String?>? headers;
 
   Object encode() {
@@ -146,7 +138,6 @@ class PigeonTypedSource {
       type,
       drm?.encode(),
       integration?.index,
-      playbackPipeline.index,
       headers,
     ];
   }
@@ -162,8 +153,7 @@ class PigeonTypedSource {
       integration: result[3] != null
           ? SourceIntegrationId.values[result[3]! as int]
           : null,
-      playbackPipeline: PlaybackPipeline.values[result[4]! as int],
-      headers: (result[5] as Map<Object?, Object?>?)?.cast<String?, String?>(),
+      headers: (result[4] as Map<Object?, Object?>?)?.cast<String?, String?>(),
     );
   }
 }
@@ -261,6 +251,52 @@ class FairPlayDRMConfiguration {
       licenseAcquisitionURL: result[0]! as String,
       certificateURL: result[1]! as String,
       headers: (result[2] as Map<Object?, Object?>?)?.cast<String?, String?>(),
+    );
+  }
+}
+
+class Endpoint {
+  Endpoint({
+    this.hespSrc,
+    this.hlsSrc,
+    this.cdn,
+    this.adSrc,
+    required this.weight,
+    required this.priority,
+  });
+
+  String? hespSrc;
+
+  String? hlsSrc;
+
+  String? cdn;
+
+  String? adSrc;
+
+  double weight;
+
+  int priority;
+
+  Object encode() {
+    return <Object?>[
+      hespSrc,
+      hlsSrc,
+      cdn,
+      adSrc,
+      weight,
+      priority,
+    ];
+  }
+
+  static Endpoint decode(Object result) {
+    result as List<Object?>;
+    return Endpoint(
+      hespSrc: result[0] as String?,
+      hlsSrc: result[1] as String?,
+      cdn: result[2] as String?,
+      adSrc: result[3] as String?,
+      weight: result[4]! as double,
+      priority: result[5]! as int,
     );
   }
 }
@@ -741,14 +777,37 @@ class THEOplayerNativeTHEOliveAPI {
   }
 }
 
+class _THEOplayerFlutterTHEOliveAPICodec extends StandardMessageCodec {
+  const _THEOplayerFlutterTHEOliveAPICodec();
+  @override
+  void writeValue(WriteBuffer buffer, Object? value) {
+    if (value is Endpoint) {
+      buffer.putUint8(128);
+      writeValue(buffer, value.encode());
+    } else {
+      super.writeValue(buffer, value);
+    }
+  }
+
+  @override
+  Object? readValueOfType(int type, ReadBuffer buffer) {
+    switch (type) {
+      case 128: 
+        return Endpoint.decode(readValue(buffer)!);
+      default:
+        return super.readValueOfType(type, buffer);
+    }
+  }
+}
+
 abstract class THEOplayerFlutterTHEOliveAPI {
-  static const MessageCodec<Object?> codec = StandardMessageCodec();
+  static const MessageCodec<Object?> codec = _THEOplayerFlutterTHEOliveAPICodec();
 
-  void onPublicationLoadStartEvent(String channelId);
+  void onDistributionLoadStartEvent(String channelId);
 
-  void onPublicationLoadedEvent(String channelId);
+  void onEndpointLoadedEvent(Endpoint endpoint);
 
-  void onPublicationOfflineEvent(String channelId);
+  void onDistributionOfflineEvent(String channelId);
 
   void onIntentToFallbackEvent();
 
@@ -759,20 +818,20 @@ abstract class THEOplayerFlutterTHEOliveAPI {
   static void setup(THEOplayerFlutterTHEOliveAPI? api, {BinaryMessenger? binaryMessenger}) {
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onPublicationLoadStartEvent', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionLoadStartEvent', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onPublicationLoadStartEvent was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionLoadStartEvent was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_channelId = (args[0] as String?);
           assert(arg_channelId != null,
-              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onPublicationLoadStartEvent was null, expected non-null String.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionLoadStartEvent was null, expected non-null String.');
           try {
-            api.onPublicationLoadStartEvent(arg_channelId!);
+            api.onDistributionLoadStartEvent(arg_channelId!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -784,20 +843,20 @@ abstract class THEOplayerFlutterTHEOliveAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onPublicationLoadedEvent', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onEndpointLoadedEvent', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onPublicationLoadedEvent was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onEndpointLoadedEvent was null.');
           final List<Object?> args = (message as List<Object?>?)!;
-          final String? arg_channelId = (args[0] as String?);
-          assert(arg_channelId != null,
-              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onPublicationLoadedEvent was null, expected non-null String.');
+          final Endpoint? arg_endpoint = (args[0] as Endpoint?);
+          assert(arg_endpoint != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onEndpointLoadedEvent was null, expected non-null Endpoint.');
           try {
-            api.onPublicationLoadedEvent(arg_channelId!);
+            api.onEndpointLoadedEvent(arg_endpoint!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -809,20 +868,20 @@ abstract class THEOplayerFlutterTHEOliveAPI {
     }
     {
       final BasicMessageChannel<Object?> channel = BasicMessageChannel<Object?>(
-          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onPublicationOfflineEvent', codec,
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionOfflineEvent', codec,
           binaryMessenger: binaryMessenger);
       if (api == null) {
         channel.setMessageHandler(null);
       } else {
         channel.setMessageHandler((Object? message) async {
           assert(message != null,
-          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onPublicationOfflineEvent was null.');
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionOfflineEvent was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_channelId = (args[0] as String?);
           assert(arg_channelId != null,
-              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onPublicationOfflineEvent was null, expected non-null String.');
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionOfflineEvent was null, expected non-null String.');
           try {
-            api.onPublicationOfflineEvent(arg_channelId!);
+            api.onDistributionOfflineEvent(arg_channelId!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);

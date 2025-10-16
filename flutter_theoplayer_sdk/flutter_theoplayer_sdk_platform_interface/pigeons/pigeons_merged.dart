@@ -78,10 +78,9 @@ class PigeonTypedSource {
   final String? type;
   final DRMConfiguration? drm;
   final SourceIntegrationId? integration;
-  final PlaybackPipeline playbackPipeline;
   final Map<String?, String?>? headers;
 
-  const PigeonTypedSource({required this.src, this.type, this.drm, this.integration, this.playbackPipeline = PlaybackPipeline.media3, this.headers});
+  const PigeonTypedSource({required this.src, this.type, this.drm, this.integration, this.headers});
 }
 
 enum SourceIntegrationId {
@@ -112,9 +111,6 @@ class FairPlayDRMConfiguration {
   FairPlayDRMConfiguration({required this.licenseAcquisitionURL, required this.certificateURL, this.headers});
 }
 
-enum PlaybackPipeline {
-  media3, legacy,
-}
 
 
 
@@ -174,15 +170,26 @@ abstract class THEOplayerNativeTHEOliveAPI {
 
 @FlutterApi()
 abstract class THEOplayerFlutterTHEOliveAPI {
-  void onPublicationLoadStartEvent(String channelId);
-  void onPublicationLoadedEvent(String channelId);
-  void onPublicationOfflineEvent(String channelId);
+  void onDistributionLoadStartEvent(String channelId);
+  void onEndpointLoadedEvent(Endpoint endpoint);
+  void onDistributionOfflineEvent(String channelId);
   void onIntentToFallbackEvent();
   //experimental API for iOS-only
   void onSeeking(double currentTime);
   void onSeeked(double currentTime);
 }
 
+
+class Endpoint {
+  final String? hespSrc;
+  final String? hlsSrc;
+  final String? cdn;
+  final String? adSrc;
+  final double weight;
+  final int priority;
+
+  Endpoint(this.hespSrc, this.hlsSrc, this.cdn, this.adSrc, this.weight, this.priority);
+}
 
 
 

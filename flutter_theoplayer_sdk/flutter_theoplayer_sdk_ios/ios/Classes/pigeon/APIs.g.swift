@@ -82,11 +82,6 @@ enum SourceIntegrationId: Int {
   case theolive = 0
 }
 
-enum PlaybackPipeline: Int {
-  case media3 = 0
-  case legacy = 1
-}
-
 /// Generated class from Pigeon that represents data sent in messages.
 struct TimeRange {
   var start: Double
@@ -139,7 +134,6 @@ struct PigeonTypedSource {
   var type: String? = nil
   var drm: DRMConfiguration? = nil
   var integration: SourceIntegrationId? = nil
-  var playbackPipeline: PlaybackPipeline
   var headers: [String?: String?]? = nil
 
   static func fromList(_ list: [Any?]) -> PigeonTypedSource? {
@@ -154,15 +148,13 @@ struct PigeonTypedSource {
     if let integrationRawValue = integrationEnumVal {
       integration = SourceIntegrationId(rawValue: integrationRawValue)!
     }
-    let playbackPipeline = PlaybackPipeline(rawValue: list[4] as! Int)!
-    let headers: [String?: String?]? = nilOrValue(list[5])
+    let headers: [String?: String?]? = nilOrValue(list[4])
 
     return PigeonTypedSource(
       src: src,
       type: type,
       drm: drm,
       integration: integration,
-      playbackPipeline: playbackPipeline,
       headers: headers
     )
   }
@@ -172,7 +164,6 @@ struct PigeonTypedSource {
       type,
       drm?.toList(),
       integration?.rawValue,
-      playbackPipeline.rawValue,
       headers,
     ]
   }
@@ -258,6 +249,44 @@ struct FairPlayDRMConfiguration {
       licenseAcquisitionURL,
       certificateURL,
       headers,
+    ]
+  }
+}
+
+/// Generated class from Pigeon that represents data sent in messages.
+struct Endpoint {
+  var hespSrc: String? = nil
+  var hlsSrc: String? = nil
+  var cdn: String? = nil
+  var adSrc: String? = nil
+  var weight: Double
+  var priority: Int64
+
+  static func fromList(_ list: [Any?]) -> Endpoint? {
+    let hespSrc: String? = nilOrValue(list[0])
+    let hlsSrc: String? = nilOrValue(list[1])
+    let cdn: String? = nilOrValue(list[2])
+    let adSrc: String? = nilOrValue(list[3])
+    let weight = list[4] as! Double
+    let priority = list[5] is Int64 ? list[5] as! Int64 : Int64(list[5] as! Int32)
+
+    return Endpoint(
+      hespSrc: hespSrc,
+      hlsSrc: hlsSrc,
+      cdn: cdn,
+      adSrc: adSrc,
+      weight: weight,
+      priority: priority
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      hespSrc,
+      hlsSrc,
+      cdn,
+      adSrc,
+      weight,
+      priority,
     ]
   }
 }
@@ -423,11 +452,47 @@ class THEOplayerNativeTHEOliveAPISetup {
     }
   }
 }
+private class THEOplayerFlutterTHEOliveAPICodecReader: FlutterStandardReader {
+  override func readValue(ofType type: UInt8) -> Any? {
+    switch type {
+      case 128:
+        return Endpoint.fromList(self.readValue() as! [Any?])
+      default:
+        return super.readValue(ofType: type)
+    }
+  }
+}
+
+private class THEOplayerFlutterTHEOliveAPICodecWriter: FlutterStandardWriter {
+  override func writeValue(_ value: Any) {
+    if let value = value as? Endpoint {
+      super.writeByte(128)
+      super.writeValue(value.toList())
+    } else {
+      super.writeValue(value)
+    }
+  }
+}
+
+private class THEOplayerFlutterTHEOliveAPICodecReaderWriter: FlutterStandardReaderWriter {
+  override func reader(with data: Data) -> FlutterStandardReader {
+    return THEOplayerFlutterTHEOliveAPICodecReader(data: data)
+  }
+
+  override func writer(with data: NSMutableData) -> FlutterStandardWriter {
+    return THEOplayerFlutterTHEOliveAPICodecWriter(data: data)
+  }
+}
+
+class THEOplayerFlutterTHEOliveAPICodec: FlutterStandardMessageCodec {
+  static let shared = THEOplayerFlutterTHEOliveAPICodec(readerWriter: THEOplayerFlutterTHEOliveAPICodecReaderWriter())
+}
+
 /// Generated protocol from Pigeon that represents Flutter messages that can be called from Swift.
 protocol THEOplayerFlutterTHEOliveAPIProtocol {
-  func onPublicationLoadStartEvent(channelId channelIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void) 
-  func onPublicationLoadedEvent(channelId channelIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void) 
-  func onPublicationOfflineEvent(channelId channelIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onDistributionLoadStartEvent(channelId channelIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onEndpointLoadedEvent(endpoint endpointArg: Endpoint, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onDistributionOfflineEvent(channelId channelIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void) 
   func onIntentToFallbackEvent(completion: @escaping (Result<Void, FlutterError>) -> Void) 
   func onSeeking(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) 
   func onSeeked(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) 
@@ -437,38 +502,41 @@ class THEOplayerFlutterTHEOliveAPI: THEOplayerFlutterTHEOliveAPIProtocol {
   init(binaryMessenger: FlutterBinaryMessenger){
     self.binaryMessenger = binaryMessenger
   }
-  func onPublicationLoadStartEvent(channelId channelIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onPublicationLoadStartEvent", binaryMessenger: binaryMessenger)
+  var codec: FlutterStandardMessageCodec {
+    return THEOplayerFlutterTHEOliveAPICodec.shared
+  }
+  func onDistributionLoadStartEvent(channelId channelIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionLoadStartEvent", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([channelIdArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
-  func onPublicationLoadedEvent(channelId channelIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onPublicationLoadedEvent", binaryMessenger: binaryMessenger)
-    channel.sendMessage([channelIdArg] as [Any?]) { _ in
+  func onEndpointLoadedEvent(endpoint endpointArg: Endpoint, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onEndpointLoadedEvent", binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([endpointArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
-  func onPublicationOfflineEvent(channelId channelIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onPublicationOfflineEvent", binaryMessenger: binaryMessenger)
+  func onDistributionOfflineEvent(channelId channelIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionOfflineEvent", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([channelIdArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onIntentToFallbackEvent(completion: @escaping (Result<Void, FlutterError>) -> Void)  {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onIntentToFallbackEvent", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onIntentToFallbackEvent", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage(nil) { _ in
       completion(.success(Void()))
     }
   }
   func onSeeking(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onSeeking", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onSeeking", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([currentTimeArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
   func onSeeked(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
-    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onSeeked", binaryMessenger: binaryMessenger)
+    let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onSeeked", binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([currentTimeArg] as [Any?]) { _ in
       completion(.success(Void()))
     }

@@ -123,17 +123,6 @@ enum class SourceIntegrationId(val raw: Int) {
   }
 }
 
-enum class PlaybackPipeline(val raw: Int) {
-  MEDIA3(0),
-  LEGACY(1);
-
-  companion object {
-    fun ofRaw(raw: Int): PlaybackPipeline? {
-      return values().firstOrNull { it.raw == raw }
-    }
-  }
-}
-
 /** Generated class from Pigeon that represents data sent in messages. */
 data class TimeRange (
   val start: Double,
@@ -189,7 +178,6 @@ data class PigeonTypedSource (
   val type: String? = null,
   val drm: DRMConfiguration? = null,
   val integration: SourceIntegrationId? = null,
-  val playbackPipeline: PlaybackPipeline,
   val headers: Map<String?, String?>? = null
 
 ) {
@@ -204,9 +192,8 @@ data class PigeonTypedSource (
       val integration: SourceIntegrationId? = (list[3] as Int?)?.let {
         SourceIntegrationId.ofRaw(it)
       }
-      val playbackPipeline = PlaybackPipeline.ofRaw(list[4] as Int)!!
-      val headers = list[5] as Map<String?, String?>?
-      return PigeonTypedSource(src, type, drm, integration, playbackPipeline, headers)
+      val headers = list[4] as Map<String?, String?>?
+      return PigeonTypedSource(src, type, drm, integration, headers)
     }
   }
   fun toList(): List<Any?> {
@@ -215,7 +202,6 @@ data class PigeonTypedSource (
       type,
       drm?.toList(),
       integration?.raw,
-      playbackPipeline.raw,
       headers,
     )
   }
@@ -296,6 +282,40 @@ data class FairPlayDRMConfiguration (
       licenseAcquisitionURL,
       certificateURL,
       headers,
+    )
+  }
+}
+
+/** Generated class from Pigeon that represents data sent in messages. */
+data class Endpoint (
+  val hespSrc: String? = null,
+  val hlsSrc: String? = null,
+  val cdn: String? = null,
+  val adSrc: String? = null,
+  val weight: Double,
+  val priority: Long
+
+) {
+  companion object {
+    @Suppress("UNCHECKED_CAST")
+    fun fromList(list: List<Any?>): Endpoint {
+      val hespSrc = list[0] as String?
+      val hlsSrc = list[1] as String?
+      val cdn = list[2] as String?
+      val adSrc = list[3] as String?
+      val weight = list[4] as Double
+      val priority = list[5].let { if (it is Int) it.toLong() else it as Long }
+      return Endpoint(hespSrc, hlsSrc, cdn, adSrc, weight, priority)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf<Any?>(
+      hespSrc,
+      hlsSrc,
+      cdn,
+      adSrc,
+      weight,
+      priority,
     )
   }
 }
@@ -564,17 +584,40 @@ interface THEOplayerNativeTHEOliveAPI {
     }
   }
 }
+@Suppress("UNCHECKED_CAST")
+private object THEOplayerFlutterTHEOliveAPICodec : StandardMessageCodec() {
+  override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
+    return when (type) {
+      128.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          Endpoint.fromList(it)
+        }
+      }
+      else -> super.readValueOfType(type, buffer)
+    }
+  }
+  override fun writeValue(stream: ByteArrayOutputStream, value: Any?)   {
+    when (value) {
+      is Endpoint -> {
+        stream.write(128)
+        writeValue(stream, value.toList())
+      }
+      else -> super.writeValue(stream, value)
+    }
+  }
+}
+
 /** Generated class from Pigeon that represents Flutter messages that can be called from Kotlin. */
 @Suppress("UNCHECKED_CAST")
 class THEOplayerFlutterTHEOliveAPI(private val binaryMessenger: BinaryMessenger) {
   companion object {
     /** The codec used by THEOplayerFlutterTHEOliveAPI. */
     val codec: MessageCodec<Any?> by lazy {
-      StandardMessageCodec()
+      THEOplayerFlutterTHEOliveAPICodec
     }
   }
-  fun onPublicationLoadStartEvent(channelIdArg: String, callback: (Result<Unit>) -> Unit) {
-    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onPublicationLoadStartEvent", codec)
+  fun onDistributionLoadStartEvent(channelIdArg: String, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionLoadStartEvent", codec)
     channel.send(listOf(channelIdArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
@@ -587,9 +630,9 @@ class THEOplayerFlutterTHEOliveAPI(private val binaryMessenger: BinaryMessenger)
       } 
     }
   }
-  fun onPublicationLoadedEvent(channelIdArg: String, callback: (Result<Unit>) -> Unit) {
-    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onPublicationLoadedEvent", codec)
-    channel.send(listOf(channelIdArg)) {
+  fun onEndpointLoadedEvent(endpointArg: Endpoint, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onEndpointLoadedEvent", codec)
+    channel.send(listOf(endpointArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
@@ -601,8 +644,8 @@ class THEOplayerFlutterTHEOliveAPI(private val binaryMessenger: BinaryMessenger)
       } 
     }
   }
-  fun onPublicationOfflineEvent(channelIdArg: String, callback: (Result<Unit>) -> Unit) {
-    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onPublicationOfflineEvent", codec)
+  fun onDistributionOfflineEvent(channelIdArg: String, callback: (Result<Unit>) -> Unit) {
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionOfflineEvent", codec)
     channel.send(listOf(channelIdArg)) {
       if (it is List<*>) {
         if (it.size > 1) {

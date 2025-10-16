@@ -14,10 +14,9 @@ class PigeonTypedSource {
   final String? type;
   final DRMConfiguration? drm;
   final SourceIntegrationId? integration;
-  final PlaybackPipeline playbackPipeline;
   final Map<String?, String?>? headers;
 
-  const PigeonTypedSource({required this.src, this.type, this.drm, this.integration, this.playbackPipeline = PlaybackPipeline.media3, this.headers});
+  const PigeonTypedSource({required this.src, this.type, this.drm, this.integration, this.headers});
 }
 
 enum SourceIntegrationId {
@@ -46,8 +45,4 @@ class FairPlayDRMConfiguration {
   final Map<String?, String?>? headers;
 
   FairPlayDRMConfiguration({required this.licenseAcquisitionURL, required this.certificateURL, this.headers});
-}
-
-enum PlaybackPipeline {
-  media3, legacy,
 }
