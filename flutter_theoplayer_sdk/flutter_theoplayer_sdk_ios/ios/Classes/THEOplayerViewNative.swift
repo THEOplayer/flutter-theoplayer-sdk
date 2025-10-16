@@ -145,7 +145,7 @@ extension THEOplayerViewNative: THEOplayerNativeAPI {
     }
     
     func getDuration() throws -> Double {
-        return _theoplayer.duration!
+        return _theoplayer.duration ?? 0
     }
     
     func setPlaybackRate(playbackRate: Double) throws {
