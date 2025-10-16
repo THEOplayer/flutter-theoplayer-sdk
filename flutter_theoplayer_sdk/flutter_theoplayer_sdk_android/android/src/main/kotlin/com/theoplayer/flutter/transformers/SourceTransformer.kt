@@ -1,6 +1,5 @@
 package com.theoplayer.flutter.transformers
 
-import com.theoplayer.android.api.source.PlaybackPipeline
 import com.theoplayer.android.api.source.SourceDescription
 import com.theoplayer.android.api.source.SourceType
 import com.theoplayer.android.api.source.TypedSource
@@ -17,7 +16,6 @@ typealias FlutterTypedSource = com.theoplayer.flutter.pigeon.PigeonTypedSource
 typealias FlutterDRMConfiguration = com.theoplayer.flutter.pigeon.DRMConfiguration
 typealias FlutterWidevineDRMConfiguration = WidevineDRMConfiguration
 typealias FlutterFairPlayDRMConfiguration = FairPlayDRMConfiguration
-typealias FlutterPlaybackPipeline = com.theoplayer.flutter.pigeon.PlaybackPipeline
 
 object SourceTransformer {
 
@@ -41,14 +39,12 @@ object SourceTransformer {
         }
 
         val integrationID = if (typedSource is TheoLiveSource) SourceIntegrationId.THEOLIVE else null
-        val playbackPipeline = if (typedSource.playbackPipeline == PlaybackPipeline.LEGACY) FlutterPlaybackPipeline.LEGACY else FlutterPlaybackPipeline.MEDIA3
 
         return FlutterTypedSource(
             src = typedSource.src,
             type = typedSource.type?.mimeType,
             drm = drm,
             integration = integrationID,
-            playbackPipeline = playbackPipeline,
             headers = typedSource.headers as Map<String?, String?>?
         )
     }
@@ -115,7 +111,6 @@ object SourceTransformer {
             }
             else -> {
                 val typedSourceBuilder = TypedSource.Builder(flutterTypedSource.src)
-                typedSourceBuilder.playbackPipeline(toPlaybackPipeline(flutterTypedSource.playbackPipeline));
                 flutterTypedSource.drm?.let {
                     typedSourceBuilder.drm(toDRMConfiguration(it))
                 }
@@ -135,13 +130,6 @@ object SourceTransformer {
 
                 return typedSourceBuilder.build()
             }
-        }
-    }
-
-    private fun toPlaybackPipeline(playbackPipeline: FlutterPlaybackPipeline): PlaybackPipeline {
-        return when(playbackPipeline) {
-            FlutterPlaybackPipeline.LEGACY -> PlaybackPipeline.LEGACY
-            else -> PlaybackPipeline.MEDIA3
         }
     }
 

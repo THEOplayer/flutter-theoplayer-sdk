@@ -59,18 +59,18 @@ class THEOplayerTHEOliveControllerMobile extends THEOliveInternalInterface imple
   }
 
   @override
-  void onPublicationOfflineEvent(String channelId) {
+  void onDistributionOfflineEvent(String channelId) {
     _eventManager.dispatchEvent(PublicationOfflineEvent(publicationId: channelId));
   }
 
   @override
-  void onPublicationLoadStartEvent(String channelId) {
+  void onDistributionLoadStartEvent(String channelId) {
     _eventManager.dispatchEvent(PublicationLoadStartEvent(publicationId: channelId));
   }
 
-  @override
-  void onPublicationLoadedEvent(String channelId) {
-    _eventManager.dispatchEvent(PublicationLoadedEvent(publicationId: channelId));
+@override
+  void onEndpointLoadedEvent(Endpoint endpoint) {
+    //_eventManager.dispatchEvent(PublicationLoadedEvent(publicationId: channelId));
   }
 
   /// Experimental API
