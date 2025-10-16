@@ -1,30 +1,31 @@
+import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
 import 'package:theoplayer_platform_interface/theoplayer_events.dart';
 
 class THEOliveApiEventTypes {
-  static const PUBLICATIONLOADSTART = "publicationloadstart";
-  static const PUBLICATIONLOADED = "publicationloaded";
-  static const PUBLICATIONOFFLINE = "publicationoffline";
+  static const DISTRIBUTIONLOADSTART = "distributionloadstart";
+  static const ENDPOINTLOADED = "endpointloaded";
+  static const DISTRIBUTIONOFFLINE = "distributionoffline";
   static const INTENTTOFALLBACK = "intenttofallback";
   static const ENTERBADNETWORKMODE = "enterbadnetworkmode";
   static const EXITBADNETWORKMODE = "exitbadnetworkmode";
 }
 
-class PublicationLoadStartEvent extends Event {
-  final String publicationId;
+class DistributionLoadStartEvent extends Event {
+  final String channelId;
 
-  PublicationLoadStartEvent({required this.publicationId}) : super(type: THEOliveApiEventTypes.PUBLICATIONLOADSTART);
+  DistributionLoadStartEvent({required this.channelId}) : super(type: THEOliveApiEventTypes.DISTRIBUTIONLOADSTART);
 }
 
-class PublicationLoadedEvent extends Event {
-  final String publicationId;
+class EndpointLoaded extends Event {
+  final Endpoint endpoint;
 
-  PublicationLoadedEvent({required this.publicationId}) : super(type: THEOliveApiEventTypes.PUBLICATIONLOADED);
+  EndpointLoaded({required this.endpoint}) : super(type: THEOliveApiEventTypes.ENDPOINTLOADED);
 }
 
-class PublicationOfflineEvent extends Event {
-  final String publicationId;
+class DistributionOfflineEvent extends Event {
+  final String channelId;
 
-  PublicationOfflineEvent({required this.publicationId}) : super(type: THEOliveApiEventTypes.PUBLICATIONOFFLINE);
+  DistributionOfflineEvent({required this.channelId}) : super(type: THEOliveApiEventTypes.DISTRIBUTIONOFFLINE);
 }
 
 class IntentToFallbackEvent extends Event {

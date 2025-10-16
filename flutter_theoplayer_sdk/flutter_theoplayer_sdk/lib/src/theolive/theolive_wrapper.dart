@@ -19,9 +19,9 @@ class THEOliveAPIHolder extends THEOlive {
   void _forwardingEventListener(event) {
     var oldPublicationState = publicationState;
     switch (event) {
-      case PublicationLoadStartEvent e: _publicationState = PublicationState.loading;
-      case PublicationLoadedEvent e: _publicationState = PublicationState.loaded;
-      case PublicationOfflineEvent e: _publicationState = PublicationState.offline;
+      case DistributionLoadStartEvent e: _publicationState = PublicationState.loading;
+      case EndpointLoaded e: _publicationState = PublicationState.loaded;
+      case DistributionOfflineEvent e: _publicationState = PublicationState.offline;
       case IntentToFallbackEvent e: _publicationState = PublicationState.intentToFallback;
       default:
         break;
@@ -39,9 +39,9 @@ class THEOliveAPIHolder extends THEOlive {
   void setup(THEOliveInternalInterface? internalTHEOliveAPI) {
     _internalTHEOliveAPI = internalTHEOliveAPI;
 
-    _internalTHEOliveAPI?.addEventListener(THEOliveApiEventTypes.PUBLICATIONLOADSTART, _forwardingEventListener);
-    _internalTHEOliveAPI?.addEventListener(THEOliveApiEventTypes.PUBLICATIONLOADED, _forwardingEventListener);
-    _internalTHEOliveAPI?.addEventListener(THEOliveApiEventTypes.PUBLICATIONOFFLINE, _forwardingEventListener);
+    _internalTHEOliveAPI?.addEventListener(THEOliveApiEventTypes.DISTRIBUTIONLOADSTART, _forwardingEventListener);
+    _internalTHEOliveAPI?.addEventListener(THEOliveApiEventTypes.ENDPOINTLOADED, _forwardingEventListener);
+    _internalTHEOliveAPI?.addEventListener(THEOliveApiEventTypes.DISTRIBUTIONOFFLINE, _forwardingEventListener);
     _internalTHEOliveAPI?.addEventListener(THEOliveApiEventTypes.INTENTTOFALLBACK, _forwardingEventListener);
     _internalTHEOliveAPI?.addEventListener(THEOliveApiEventTypes.ENTERBADNETWORKMODE, _forwardingEventListener);
     _internalTHEOliveAPI?.addEventListener(THEOliveApiEventTypes.EXITBADNETWORKMODE, _forwardingEventListener);
@@ -64,9 +64,9 @@ class THEOliveAPIHolder extends THEOlive {
 
   /// Method to clean the listeners.
   void dispose() {
-    _internalTHEOliveAPI?.removeEventListener(THEOliveApiEventTypes.PUBLICATIONLOADSTART, _forwardingEventListener);
-    _internalTHEOliveAPI?.removeEventListener(THEOliveApiEventTypes.PUBLICATIONLOADED, _forwardingEventListener);
-    _internalTHEOliveAPI?.removeEventListener(THEOliveApiEventTypes.PUBLICATIONOFFLINE, _forwardingEventListener);
+    _internalTHEOliveAPI?.removeEventListener(THEOliveApiEventTypes.DISTRIBUTIONLOADSTART, _forwardingEventListener);
+    _internalTHEOliveAPI?.removeEventListener(THEOliveApiEventTypes.ENDPOINTLOADED, _forwardingEventListener);
+    _internalTHEOliveAPI?.removeEventListener(THEOliveApiEventTypes.DISTRIBUTIONOFFLINE, _forwardingEventListener);
     _internalTHEOliveAPI?.removeEventListener(THEOliveApiEventTypes.INTENTTOFALLBACK, _forwardingEventListener);
     _internalTHEOliveAPI?.removeEventListener(THEOliveApiEventTypes.ENTERBADNETWORKMODE, _forwardingEventListener);
     _internalTHEOliveAPI?.removeEventListener(THEOliveApiEventTypes.EXITBADNETWORKMODE, _forwardingEventListener);
