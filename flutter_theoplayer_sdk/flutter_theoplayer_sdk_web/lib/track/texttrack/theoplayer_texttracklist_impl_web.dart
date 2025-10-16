@@ -5,7 +5,7 @@ import 'package:theoplayer_web/theoplayer_api_event_web.dart';
 import 'package:theoplayer_web/theoplayer_api_web.dart';
 import 'package:theoplayer_web/track/texttrack/theoplayer_texttrack_impl_web.dart';
 import 'package:theoplayer_web/transformers_web.dart';
-import 'package:js/js.dart';
+import 'dart:js_interop';
 
 class TextTrackListImplWeb extends TextTracksImpl {
   final THEOplayerArrayList<THEOplayerTextTrack> _theoPlayerTextTracks;
@@ -15,7 +15,7 @@ class TextTrackListImplWeb extends TextTracksImpl {
   late final changeTrackEventListener;
 
   TextTrackListImplWeb(this._theoPlayerTextTracks) {
-    addTrackEventListener = allowInterop((AddTextTrackEventJS event) {
+    addTrackEventListener = (AddTextTrackEventJS event) {
       var track = event.track;
       var flutterTrack = TextTrackImplWeb(
         track.id, 
@@ -35,9 +35,9 @@ class TextTrackListImplWeb extends TextTracksImpl {
       );
       add(flutterTrack);
       dispatchEvent(AddTextTrackEvent(track: flutterTrack));
-    });
+    }.toJS;
 
-    removeTrackEventListener = allowInterop((RemoveTextTrackEventJS event) {
+    removeTrackEventListener = (RemoveTextTrackEventJS event) {
       var track = event.track;
 
       var flutterTrack = firstWhereOrNull((item) => item.uid == track.uid);
@@ -47,10 +47,10 @@ class TextTrackListImplWeb extends TextTracksImpl {
 
       remove(flutterTrack);
       dispatchEvent(RemoveTextTrackEvent(track: flutterTrack));
-    });
+    }.toJS;
 
     //only triggered for enable/disable
-    changeTrackEventListener = allowInterop((TextTrackListChangeEventJS event) {
+    changeTrackEventListener = (TextTrackListChangeEventJS event) {
       var track = event.track;
 
       var flutterTrack = firstWhereOrNull((item) => item.uid == track.uid);
@@ -59,7 +59,7 @@ class TextTrackListImplWeb extends TextTracksImpl {
       }
 
       dispatchEvent(TextTrackListChangeEvent(track: flutterTrack));
-    });
+    }.toJS;
 
     _theoPlayerTextTracks.addEventListener(TextTracksEventTypes.ADDTRACK.toLowerCase(), addTrackEventListener);
     _theoPlayerTextTracks.addEventListener(TextTracksEventTypes.REMOVETRACK.toLowerCase(), removeTrackEventListener);

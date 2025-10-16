@@ -1,4 +1,4 @@
-import 'dart:js';
+import 'dart:js_interop';
 
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
 import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack_events.dart';
@@ -22,14 +22,14 @@ class TextTrackImplWeb extends TextTrackImpl {
 
   TextTrackImplWeb(super.id, super.uid, super.label, super.language, super.kind, super.inBandMetadataTrackDispatchType, super.readyState, super.type,
       super.cues, super.activeCues, super.source, super.isForced, super.mode, this._nativeTextTrack) {
-    addCueEventListener = allowInterop((TextTrackAddCueEventJS event) {
+    addCueEventListener = ((TextTrackAddCueEventJS event) {
       var cue = event.cue;
       var flutterCue = CueImplWeb(cue.id, cue.uid, cue.startTime, cue.endTime, jsObjectToJsonString(cue.content) ?? "", cue);
       cues.add(flutterCue);
       dispatchEvent(TextTrackAddCueEvent(track: this, cue: flutterCue));
-    });
+    }).toJS;
 
-    removeCueEventListener = allowInterop((TextTrackRemoveCueEventJS event) {
+    removeCueEventListener = ((TextTrackRemoveCueEventJS event) {
       var cue = event.cue;
       Cue? flutterCue = cues.firstWhereOrNull((item) => item.uid == cue.uid);
       if (flutterCue == null) {
@@ -39,9 +39,9 @@ class TextTrackImplWeb extends TextTrackImpl {
       cues.remove(flutterCue);
       activeCues.remove(flutterCue);
       dispatchEvent(TextTrackRemoveCueEvent(track: this, cue: flutterCue));
-    });
+    }).toJS;
 
-    enterCueEventListener = allowInterop((TextTrackEnterCueEventJS event) {
+    enterCueEventListener = ((TextTrackEnterCueEventJS event) {
       var cue = event.cue;
 
       Cue? flutterCue = cues.firstWhereOrNull((item) => item.uid == cue.uid);
@@ -51,9 +51,9 @@ class TextTrackImplWeb extends TextTrackImpl {
 
       activeCues.add(flutterCue);
       dispatchEvent(TextTrackEnterCueEvent(cue: flutterCue));
-    });
+    }).toJS;
 
-    exitCueEventListener = allowInterop((TextTrackExitCueEventJS event) {
+    exitCueEventListener = ((TextTrackExitCueEventJS event) {
       var cue = event.cue;
 
       Cue? flutterCue = cues.firstWhereOrNull((item) => item.uid == cue.uid);
@@ -63,15 +63,15 @@ class TextTrackImplWeb extends TextTrackImpl {
 
       activeCues.remove(flutterCue);
       dispatchEvent(TextTrackExitCueEvent(cue: flutterCue));
-    });
+    }).toJS;
 
-    cueChangeEventListener = allowInterop((TextTrackCueChangeEventJS event) {
+    cueChangeEventListener = ((TextTrackCueChangeEventJS event) {
       dispatchEvent(TextTrackCueChangeEvent(track: this));
-    });
+    }).toJS;
 
-    changeEventListener = allowInterop((TextTrackChangeEventJS event) {
+    changeEventListener = ((TextTrackChangeEventJS event) {
       dispatchEvent(TextTrackChangeEvent(track: this));
-    });
+    }).toJS;
 
     _nativeTextTrack.addEventListener(TextTrackEventTypes.ADDCUE.toLowerCase(), addCueEventListener);
     _nativeTextTrack.addEventListener(TextTrackEventTypes.REMOVECUE.toLowerCase(), removeCueEventListener);

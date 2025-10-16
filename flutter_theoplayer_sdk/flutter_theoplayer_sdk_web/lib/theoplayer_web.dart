@@ -4,6 +4,7 @@
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:ui_web' as ui;
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:theoplayer_platform_interface/theopalyer_config.dart';
 import 'package:theoplayer_platform_interface/theoplayer_platform_interface.dart';
@@ -20,6 +21,15 @@ class TheoplayerWeb extends TheoplayerPlatform {
   /// Constructs a TheoplayerWeb
   TheoplayerWeb() {
     // ignore: undefined_prefixed_name
+
+
+    // Log renderer info
+    if (kDebugMode) {
+      const isRunningWithWasm = bool.fromEnvironment('dart.tool.dart2wasm');
+      print('THEOplayer Flutter Web - Running with WASM: $isRunningWithWasm');
+      print('THEOplayer Flutter Web - Device pixel ratio: ${window.devicePixelRatio}');
+      print('THEOplayer Flutter Web - User agent: ${window.navigator.userAgent}');
+    }
 
     ui.platformViewRegistry.registerViewFactory(viewType, (int viewId, {Object? params}) {
       final div = document.createElement('div') as HTMLDivElement;

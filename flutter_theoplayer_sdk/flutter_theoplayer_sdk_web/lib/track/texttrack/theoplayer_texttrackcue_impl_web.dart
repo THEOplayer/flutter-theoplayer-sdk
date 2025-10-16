@@ -1,4 +1,4 @@
-import 'dart:js';
+import 'dart:js_interop';
 
 import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack_events.dart';
 import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack_impl.dart';
@@ -14,19 +14,19 @@ class CueImplWeb extends CueImpl {
   late final updateEventlistener;
 
   CueImplWeb(super.id, super.uid, super.startTime, super.endTime, super.content, this._nativeTextTrackCue) {
-    enterEventListener = allowInterop((CueEnterEventJS event) {
+    enterEventListener = (CueEnterEventJS event) {
       dispatchEvent(CueEnterEvent(cue: this));
-    });
+    }.toJS;
 
-    exitEventListener = allowInterop((CueExitEventJS event) {
+    exitEventListener = (CueExitEventJS event) {
       dispatchEvent(CueExitEvent(cue: this));
-    });
+    }.toJS;
 
-    updateEventlistener = allowInterop((CueUpdateEventJS event) {
+    updateEventlistener = (CueUpdateEventJS event) {
       var cue = event.cue;
       update(cue.endTime, jsObjectToJsonString(cue.content) ?? "");
       dispatchEvent(CueUpdateEvent(cue: this));
-    });
+    }.toJS;
 
     this._nativeTextTrackCue.addEventListener(TextTrackCueEventTypes.ENTER.toLowerCase(), enterEventListener);
     this._nativeTextTrackCue.addEventListener(TextTrackCueEventTypes.ENTER.toLowerCase(), exitEventListener);
