@@ -8,26 +8,26 @@ import 'package:theoplayer_platform_interface/theoplayer_events.dart';
 class THEOliveAPIHolder extends THEOlive {
   final EventManager _eventManager = EventManager();
 
-  PublicationState _publicationState = PublicationState.idle;
+  DistributionState _distributionState = DistributionState.idle;
 
   THEOliveStateChangeListener? _stateChangeListener;
   THEOliveInternalInterface? _internalTHEOliveAPI;
 
   @override
-  PublicationState get publicationState => _publicationState;
+  DistributionState get distributionState => _distributionState;
 
   void _forwardingEventListener(event) {
-    var oldPublicationState = publicationState;
+    var oldDistributionState = distributionState;
     switch (event) {
-      case DistributionLoadStartEvent e: _publicationState = PublicationState.loading;
-      case EndpointLoaded e: _publicationState = PublicationState.loaded;
-      case DistributionOfflineEvent e: _publicationState = PublicationState.offline;
-      case IntentToFallbackEvent e: _publicationState = PublicationState.intentToFallback;
+      case DistributionLoadStartEvent e: _distributionState = DistributionState.loading;
+      case EndpointLoaded e: _distributionState = DistributionState.loaded;
+      case DistributionOfflineEvent e: _distributionState = DistributionState.offline;
+      case IntentToFallbackEvent e: _distributionState = DistributionState.intentToFallback;
       default:
         break;
     }
 
-    if (oldPublicationState != _publicationState) {
+    if (oldDistributionState != _distributionState) {
       _stateChangeListener?.call();
     }
     _eventManager.dispatchEvent(event);
@@ -71,7 +71,7 @@ class THEOliveAPIHolder extends THEOlive {
     _internalTHEOliveAPI?.removeEventListener(THEOliveApiEventTypes.ENTERBADNETWORKMODE, _forwardingEventListener);
     _internalTHEOliveAPI?.removeEventListener(THEOliveApiEventTypes.EXITBADNETWORKMODE, _forwardingEventListener);
     _stateChangeListener = null;
-    _publicationState = PublicationState.idle;
+    _distributionState = DistributionState.idle;
     _eventManager.clear();
   }
 

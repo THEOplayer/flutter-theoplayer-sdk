@@ -14,15 +14,15 @@ class THEOliveControllerWeb extends THEOliveInternalInterface {
   final THEOplayerTheoLiveApi _theoLiveApi;
   final EventManager _eventManager = EventManager();
 
-  late final publicationLoadedEventListener;
-  late final publicationLoadStartEventListener;
-  late final publicationOfflineEventListener;
+  late final endpointLoadedEventListener;
+  late final distributionLoadStartEventListener;
+  late final distributionOfflineEventListener;
   late final intentToFallbackEventListener;
   late final enterBadNetworkModeEventListener;
   late final exitBadNetworkModeEventListener;
 
   THEOliveControllerWeb(this._theoLiveApi) {
-    publicationLoadedEventListener = (EndpointLoadedEventJS event) {
+    endpointLoadedEventListener = (EndpointLoadedEventJS event) {
       _eventManager.dispatchEvent(EndpointLoaded(endpoint:
           Endpoint(
             hespSrc: event.endpoint.hespSrc,
@@ -35,11 +35,11 @@ class THEOliveControllerWeb extends THEOliveInternalInterface {
       ));
     }.toJS;
 
-    publicationLoadStartEventListener = (DistributionLoadStartEventJS event) {
+    distributionLoadStartEventListener = (DistributionLoadStartEventJS event) {
       _eventManager.dispatchEvent(DistributionLoadStartEvent(channelId: event.distributionId));
     }.toJS;
 
-    publicationOfflineEventListener = (DistributionOfflineEventJS event) {
+    distributionOfflineEventListener = (DistributionOfflineEventJS event) {
       _eventManager.dispatchEvent(DistributionOfflineEvent(channelId: event.distributionId));
     }.toJS;
 
@@ -55,9 +55,9 @@ class THEOliveControllerWeb extends THEOliveInternalInterface {
       _eventManager.dispatchEvent(ExitBadNetworkModeEvent());
     }.toJS;
 
-    _theoLiveApi.addEventListener(THEOliveApiEventTypes.ENDPOINTLOADED.toLowerCase(), publicationLoadedEventListener);
-    _theoLiveApi.addEventListener(THEOliveApiEventTypes.DISTRIBUTIONLOADSTART.toLowerCase(), publicationLoadStartEventListener);
-    _theoLiveApi.addEventListener(THEOliveApiEventTypes.DISTRIBUTIONOFFLINE.toLowerCase(), publicationOfflineEventListener);
+    _theoLiveApi.addEventListener(THEOliveApiEventTypes.ENDPOINTLOADED.toLowerCase(), endpointLoadedEventListener);
+    _theoLiveApi.addEventListener(THEOliveApiEventTypes.DISTRIBUTIONLOADSTART.toLowerCase(), distributionLoadStartEventListener);
+    _theoLiveApi.addEventListener(THEOliveApiEventTypes.DISTRIBUTIONOFFLINE.toLowerCase(), distributionOfflineEventListener);
     _theoLiveApi.addEventListener(THEOliveApiEventTypes.INTENTTOFALLBACK.toLowerCase(), intentToFallbackEventListener);
     _theoLiveApi.addEventListener(THEOliveApiEventTypes.ENTERBADNETWORKMODE.toLowerCase(), enterBadNetworkModeEventListener);
     _theoLiveApi.addEventListener(THEOliveApiEventTypes.EXITBADNETWORKMODE.toLowerCase(), exitBadNetworkModeEventListener);
@@ -91,9 +91,9 @@ class THEOliveControllerWeb extends THEOliveInternalInterface {
   @override
   void dispose() {
     _eventManager.clear();
-    _theoLiveApi.removeEventListener(THEOliveApiEventTypes.ENDPOINTLOADED.toLowerCase(), publicationLoadedEventListener);
-    _theoLiveApi.removeEventListener(THEOliveApiEventTypes.DISTRIBUTIONLOADSTART.toLowerCase(), publicationLoadStartEventListener);
-    _theoLiveApi.removeEventListener(THEOliveApiEventTypes.DISTRIBUTIONOFFLINE.toLowerCase(), publicationOfflineEventListener);
+    _theoLiveApi.removeEventListener(THEOliveApiEventTypes.ENDPOINTLOADED.toLowerCase(), endpointLoadedEventListener);
+    _theoLiveApi.removeEventListener(THEOliveApiEventTypes.DISTRIBUTIONLOADSTART.toLowerCase(), distributionLoadStartEventListener);
+    _theoLiveApi.removeEventListener(THEOliveApiEventTypes.DISTRIBUTIONOFFLINE.toLowerCase(), distributionOfflineEventListener);
     _theoLiveApi.removeEventListener(THEOliveApiEventTypes.INTENTTOFALLBACK.toLowerCase(), intentToFallbackEventListener);
     _theoLiveApi.removeEventListener(THEOliveApiEventTypes.ENTERBADNETWORKMODE.toLowerCase(), enterBadNetworkModeEventListener);
     _theoLiveApi.removeEventListener(THEOliveApiEventTypes.EXITBADNETWORKMODE.toLowerCase(), exitBadNetworkModeEventListener);

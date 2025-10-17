@@ -44,14 +44,14 @@ By setting a `THEOliveConfiguration` object on `THEOplayerConfig` you are able t
 ### Listening for THEOlive-specific events
 
 ```js
-    player.theoLive?.addEventListener(THEOliveApiEventTypes.PUBLICATIONLOADSTART, (e) {
-        print("PUBLICATIONLOADSTART");
+    player.theoLive?.addEventListener(THEOliveApiEventTypes.DISTRIBUTIONLOADSTART, (e) {
+        print("DISTRIBUTIONLOADSTART");
     });
-    player.theoLive?.addEventListener(THEOliveApiEventTypes.PUBLICATIONOFFLINE, (e) {
-        print("PUBLICATIONOFFLINE");
+    player.theoLive?.addEventListener(THEOliveApiEventTypes.DISTRIBUTIONOFFLINE, (e) {
+        print("DISTRIBUTIONOFFLINE");
     });
-    player.theoLive?.addEventListener(THEOliveApiEventTypes.PUBLICATIONLOADED, (e) {
-        print("PUBLICATIONLOADED");
+    player.theoLive?.addEventListener(THEOliveApiEventTypes.ENDPOINTLOADED, (e) {
+        print("ENDPOINTLOADED");
     });
     player.theoLive?.addEventListener(THEOliveApiEventTypes.INTENTTOFALLBACK, (e) {
         print("INTENTTOFALLBACK");
@@ -98,14 +98,14 @@ theoLive.addEventListener(this)
 
 to THEOlive-related events
 ```js
-    player.theoLive?.addEventListener(THEOliveApiEventTypes.PUBLICATIONLOADSTART, (e) {
-        print("PUBLICATIONLOADSTART event");
+    player.theoLive?.addEventListener(THEOliveApiEventTypes.DISTRIBUTIONLOADSTART, (e) {
+        print("DISTRIBUTIONLOADSTART event");
     });
-    player.theoLive?.addEventListener(THEOliveApiEventTypes.PUBLICATIONOFFLINE, (e) {
-        print("PUBLICATIONOFFLINE event");
+    player.theoLive?.addEventListener(THEOliveApiEventTypes.DISTRIBUTIONOFFLINE, (e) {
+        print("DISTRIBUTIONOFFLINE event");
     });
-    player.theoLive?.addEventListener(THEOliveApiEventTypes.PUBLICATIONLOADED, (e) {
-        print("PUBLICATIONLOADED event");
+    player.theoLive?.addEventListener(THEOliveApiEventTypes.ENDPOINTLOADED, (e) {
+        print("ENDPOINTLOADED event");
     });
     player.theoLive?.addEventListener(THEOliveApiEventTypes.INTENTTOFALLBACK, (e) {
         print("INTENTTOFALLBACK event");

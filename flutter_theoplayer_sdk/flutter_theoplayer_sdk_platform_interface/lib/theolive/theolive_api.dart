@@ -9,7 +9,7 @@ abstract class THEOlive implements EventDispatcher{
   void set badNetworkMode(bool badNetworkMode);
   bool get badNetworkMode;
   void setStateListener(THEOliveStateChangeListener listener);
-  PublicationState get publicationState;
+  DistributionState get distributionState;
 }
 
-enum PublicationState { idle, loading, loaded, intentToFallback, offline }
+enum DistributionState { idle, loading, loaded, intentToFallback, offline }
