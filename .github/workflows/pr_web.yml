@@ -10,7 +10,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        build_type: [js, wasm]
+        build_type: [js] # 'wasm' can be added when flutter wasm support is figured out in the tests
         flutter_version: ['stable', 'beta']
 
     runs-on: ubuntu-latest
