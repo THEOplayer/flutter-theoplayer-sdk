@@ -616,9 +616,9 @@ class THEOplayerFlutterTHEOliveAPI(private val binaryMessenger: BinaryMessenger)
       THEOplayerFlutterTHEOliveAPICodec
     }
   }
-  fun onDistributionLoadStartEvent(channelIdArg: String, callback: (Result<Unit>) -> Unit) {
+  fun onDistributionLoadStartEvent(distributionIdArg: String, callback: (Result<Unit>) -> Unit) {
     val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionLoadStartEvent", codec)
-    channel.send(listOf(channelIdArg)) {
+    channel.send(listOf(distributionIdArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));
@@ -644,9 +644,9 @@ class THEOplayerFlutterTHEOliveAPI(private val binaryMessenger: BinaryMessenger)
       } 
     }
   }
-  fun onDistributionOfflineEvent(channelIdArg: String, callback: (Result<Unit>) -> Unit) {
+  fun onDistributionOfflineEvent(distributionIdArg: String, callback: (Result<Unit>) -> Unit) {
     val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionOfflineEvent", codec)
-    channel.send(listOf(channelIdArg)) {
+    channel.send(listOf(distributionIdArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)));

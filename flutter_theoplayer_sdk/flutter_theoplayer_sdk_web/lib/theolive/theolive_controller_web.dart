@@ -36,11 +36,11 @@ class THEOliveControllerWeb extends THEOliveInternalInterface {
     }.toJS;
 
     distributionLoadStartEventListener = (DistributionLoadStartEventJS event) {
-      _eventManager.dispatchEvent(DistributionLoadStartEvent(channelId: event.distributionId));
+      _eventManager.dispatchEvent(DistributionLoadStartEvent(distributionId: event.distributionId));
     }.toJS;
 
     distributionOfflineEventListener = (DistributionOfflineEventJS event) {
-      _eventManager.dispatchEvent(DistributionOfflineEvent(channelId: event.distributionId));
+      _eventManager.dispatchEvent(DistributionOfflineEvent(distributionId: event.distributionId));
     }.toJS;
 
     intentToFallbackEventListener = (IntentToFallbackEventJS event) {

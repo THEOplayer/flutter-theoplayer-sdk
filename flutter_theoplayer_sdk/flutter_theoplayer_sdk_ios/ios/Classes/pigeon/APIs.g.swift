@@ -490,9 +490,9 @@ class THEOplayerFlutterTHEOliveAPICodec: FlutterStandardMessageCodec {
 
 /// Generated protocol from Pigeon that represents Flutter messages that can be called from Swift.
 protocol THEOplayerFlutterTHEOliveAPIProtocol {
-  func onDistributionLoadStartEvent(channelId channelIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onDistributionLoadStartEvent(distributionId distributionIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void) 
   func onEndpointLoadedEvent(endpoint endpointArg: Endpoint, completion: @escaping (Result<Void, FlutterError>) -> Void) 
-  func onDistributionOfflineEvent(channelId channelIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void) 
+  func onDistributionOfflineEvent(distributionId distributionIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void) 
   func onIntentToFallbackEvent(completion: @escaping (Result<Void, FlutterError>) -> Void) 
   func onSeeking(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) 
   func onSeeked(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, FlutterError>) -> Void) 
@@ -505,9 +505,9 @@ class THEOplayerFlutterTHEOliveAPI: THEOplayerFlutterTHEOliveAPIProtocol {
   var codec: FlutterStandardMessageCodec {
     return THEOplayerFlutterTHEOliveAPICodec.shared
   }
-  func onDistributionLoadStartEvent(channelId channelIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+  func onDistributionLoadStartEvent(distributionId distributionIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
     let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionLoadStartEvent", binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([channelIdArg] as [Any?]) { _ in
+    channel.sendMessage([distributionIdArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }
@@ -517,9 +517,9 @@ class THEOplayerFlutterTHEOliveAPI: THEOplayerFlutterTHEOliveAPIProtocol {
       completion(.success(Void()))
     }
   }
-  func onDistributionOfflineEvent(channelId channelIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
+  func onDistributionOfflineEvent(distributionId distributionIdArg: String, completion: @escaping (Result<Void, FlutterError>) -> Void)  {
     let channel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionOfflineEvent", binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([channelIdArg] as [Any?]) { _ in
+    channel.sendMessage([distributionIdArg] as [Any?]) { _ in
       completion(.success(Void()))
     }
   }

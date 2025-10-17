@@ -37,7 +37,7 @@ class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
     func attachListeners() {
         distributionLoadStartListener = theoLive.addEventListener(type: THEOliveEventTypes.DISTRIBUTION_LOAD_START, listener: { [weak self] event in
             guard let welf = self else { return }
-            welf.flutterTHEOliveAPI.onDistributionLoadStartEvent(channelId: event.distributionId, completion: welf.emptyCompletion)
+            welf.flutterTHEOliveAPI.onDistributionLoadStartEvent(distributionId: event.distributionId, completion: welf.emptyCompletion)
         })
         
         endpointLoadedListener = theoLive.addEventListener(type: THEOliveEventTypes.ENDPOINT_LOADED, listener: { [weak self] event in
@@ -58,7 +58,7 @@ class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
         
         distributionOfflineListener = theoLive.addEventListener(type: THEOliveEventTypes.DISTRIBUTION_OFFLINE, listener: { [weak self] event in
             guard let welf = self else { return }
-            welf.flutterTHEOliveAPI.onDistributionOfflineEvent(channelId: event.distributionId, completion: welf.emptyCompletion)
+            welf.flutterTHEOliveAPI.onDistributionOfflineEvent(distributionId: event.distributionId, completion: welf.emptyCompletion)
         })
         
         intentToFallbackListener = theoLive.addEventListener(type: THEOliveEventTypes.INTENT_TO_FALLBACK, listener: { [weak self] event in

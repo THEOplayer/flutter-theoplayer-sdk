@@ -11,9 +11,9 @@ class THEOliveApiEventTypes {
 }
 
 class DistributionLoadStartEvent extends Event {
-  final String channelId;
+  final String distributionId;
 
-  DistributionLoadStartEvent({required this.channelId}) : super(type: THEOliveApiEventTypes.DISTRIBUTIONLOADSTART);
+  DistributionLoadStartEvent({required this.distributionId}) : super(type: THEOliveApiEventTypes.DISTRIBUTIONLOADSTART);
 }
 
 class EndpointLoadedEvent extends Event {
@@ -23,9 +23,9 @@ class EndpointLoadedEvent extends Event {
 }
 
 class DistributionOfflineEvent extends Event {
-  final String channelId;
+  final String distributionId;
 
-  DistributionOfflineEvent({required this.channelId}) : super(type: THEOliveApiEventTypes.DISTRIBUTIONOFFLINE);
+  DistributionOfflineEvent({required this.distributionId}) : super(type: THEOliveApiEventTypes.DISTRIBUTIONOFFLINE);
 }
 
 class IntentToFallbackEvent extends Event {

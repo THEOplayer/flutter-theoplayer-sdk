@@ -803,11 +803,11 @@ class _THEOplayerFlutterTHEOliveAPICodec extends StandardMessageCodec {
 abstract class THEOplayerFlutterTHEOliveAPI {
   static const MessageCodec<Object?> codec = _THEOplayerFlutterTHEOliveAPICodec();
 
-  void onDistributionLoadStartEvent(String channelId);
+  void onDistributionLoadStartEvent(String distributionId);
 
   void onEndpointLoadedEvent(Endpoint endpoint);
 
-  void onDistributionOfflineEvent(String channelId);
+  void onDistributionOfflineEvent(String distributionId);
 
   void onIntentToFallbackEvent();
 
@@ -827,11 +827,11 @@ abstract class THEOplayerFlutterTHEOliveAPI {
           assert(message != null,
           'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionLoadStartEvent was null.');
           final List<Object?> args = (message as List<Object?>?)!;
-          final String? arg_channelId = (args[0] as String?);
-          assert(arg_channelId != null,
+          final String? arg_distributionId = (args[0] as String?);
+          assert(arg_distributionId != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionLoadStartEvent was null, expected non-null String.');
           try {
-            api.onDistributionLoadStartEvent(arg_channelId!);
+            api.onDistributionLoadStartEvent(arg_distributionId!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -877,11 +877,11 @@ abstract class THEOplayerFlutterTHEOliveAPI {
           assert(message != null,
           'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionOfflineEvent was null.');
           final List<Object?> args = (message as List<Object?>?)!;
-          final String? arg_channelId = (args[0] as String?);
-          assert(arg_channelId != null,
+          final String? arg_distributionId = (args[0] as String?);
+          assert(arg_distributionId != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionOfflineEvent was null, expected non-null String.');
           try {
-            api.onDistributionOfflineEvent(arg_channelId!);
+            api.onDistributionOfflineEvent(arg_distributionId!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);

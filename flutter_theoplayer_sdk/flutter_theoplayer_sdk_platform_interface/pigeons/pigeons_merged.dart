@@ -170,9 +170,9 @@ abstract class THEOplayerNativeTHEOliveAPI {
 
 @FlutterApi()
 abstract class THEOplayerFlutterTHEOliveAPI {
-  void onDistributionLoadStartEvent(String channelId);
+  void onDistributionLoadStartEvent(String distributionId);
   void onEndpointLoadedEvent(Endpoint endpoint);
-  void onDistributionOfflineEvent(String channelId);
+  void onDistributionOfflineEvent(String distributionId);
   void onIntentToFallbackEvent();
   //experimental API for iOS-only
   void onSeeking(double currentTime);
