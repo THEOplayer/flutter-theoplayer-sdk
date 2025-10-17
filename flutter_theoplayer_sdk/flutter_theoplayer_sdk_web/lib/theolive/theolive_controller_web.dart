@@ -23,7 +23,7 @@ class THEOliveControllerWeb extends THEOliveInternalInterface {
 
   THEOliveControllerWeb(this._theoLiveApi) {
     endpointLoadedEventListener = (EndpointLoadedEventJS event) {
-      _eventManager.dispatchEvent(EndpointLoaded(endpoint:
+      _eventManager.dispatchEvent(EndpointLoadedEvent(endpoint:
           Endpoint(
             hespSrc: event.endpoint.hespSrc,
             hlsSrc: event.endpoint.hlsSrc,

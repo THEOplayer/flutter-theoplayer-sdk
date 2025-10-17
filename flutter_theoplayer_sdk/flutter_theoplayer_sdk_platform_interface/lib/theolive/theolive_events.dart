@@ -16,10 +16,10 @@ class DistributionLoadStartEvent extends Event {
   DistributionLoadStartEvent({required this.channelId}) : super(type: THEOliveApiEventTypes.DISTRIBUTIONLOADSTART);
 }
 
-class EndpointLoaded extends Event {
+class EndpointLoadedEvent extends Event {
   final Endpoint endpoint;
 
-  EndpointLoaded({required this.endpoint}) : super(type: THEOliveApiEventTypes.ENDPOINTLOADED);
+  EndpointLoadedEvent({required this.endpoint}) : super(type: THEOliveApiEventTypes.ENDPOINTLOADED);
 }
 
 class DistributionOfflineEvent extends Event {

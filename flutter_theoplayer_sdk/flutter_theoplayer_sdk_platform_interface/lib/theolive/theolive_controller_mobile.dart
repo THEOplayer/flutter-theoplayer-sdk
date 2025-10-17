@@ -70,7 +70,7 @@ class THEOplayerTHEOliveControllerMobile extends THEOliveInternalInterface imple
 
 @override
   void onEndpointLoadedEvent(Endpoint endpoint) {
-    _eventManager.dispatchEvent(EndpointLoaded(endpoint: endpoint));
+    _eventManager.dispatchEvent(EndpointLoadedEvent(endpoint: endpoint));
   }
 
   /// Experimental API
