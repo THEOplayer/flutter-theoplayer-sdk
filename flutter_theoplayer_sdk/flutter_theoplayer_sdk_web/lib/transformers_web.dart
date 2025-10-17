@@ -52,8 +52,7 @@ PlatformInterface.SourceDescription? toFlutterSourceDescription(SourceDescriptio
         PlatformInterface.PigeonTypedSource(
             src: typedSource.src,
             type: typedSource.type,
-            drm: PlatformInterface.DRMConfiguration(fairplay: fairPlayDRMConfiguration, widevine: widevineDRMConfiguration),
-            playbackPipeline: PlatformInterface.PlaybackPipeline.legacy
+            drm: PlatformInterface.DRMConfiguration(fairplay: fairPlayDRMConfiguration, widevine: widevineDRMConfiguration)
         )
     );
   }
