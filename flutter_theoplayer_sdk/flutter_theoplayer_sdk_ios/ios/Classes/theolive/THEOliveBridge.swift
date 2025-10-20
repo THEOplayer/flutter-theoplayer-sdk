@@ -79,7 +79,7 @@ class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
         })
     }
     
-    func removeListeners() {
+    private func removeListeners() {
         // TODO: remove force unwraps
         theoLive.removeEventListener(type: THEOliveEventTypes.DISTRIBUTION_LOAD_START, listener: distributionLoadStartListener!)
         theoLive.removeEventListener(type: THEOliveEventTypes.ENDPOINT_LOADED, listener: endpointLoadedListener!)
@@ -87,6 +87,11 @@ class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
         theoLive.removeEventListener(type: THEOliveEventTypes.INTENT_TO_FALLBACK, listener: intentToFallbackListener!)
         theoLive.removeEventListener(type: PlayerEventTypes.SEEKING, listener: seekingEventListener!)
         theoLive.removeEventListener(type: PlayerEventTypes.SEEKED, listener: seekedEventListener!)
+    }
+    
+    func dispose() {
+        removeListeners()
+        THEOplayerNativeTHEOliveAPISetup.setUp(binaryMessenger: pigeonMessenger, api: nil)
     }
     
     //MARK: THEOplayerNativeTHEOliveAPI API

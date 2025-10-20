@@ -40,7 +40,8 @@ class TextTrackBridge: THEOplayerNativeTextTracksAPI {
     }
     
     func attachListeners() {
-        addTextTrackListener = theoplayer.textTracks.addEventListener(type: TextTrackListEventTypes.ADD_TRACK, listener: { event in
+        addTextTrackListener = theoplayer.textTracks.addEventListener(type: TextTrackListEventTypes.ADD_TRACK, listener: { [weak self] event in
+            guard let self else { return }
             if let textTrack = event.track as? TextTrack {
                 self.flutterTextTracksAPI.onAddTextTrack(
                     id: textTrack.id,
@@ -58,17 +59,27 @@ class TextTrackBridge: THEOplayerNativeTextTracksAPI {
                 self.attachTrackListeners(track: textTrack)
             }
         })
-        
-        removeTextTrackListener = theoplayer.textTracks.addEventListener(type: TextTrackListEventTypes.REMOVE_TRACK, listener: { event in
+
+        removeTextTrackListener = theoplayer.textTracks.addEventListener(type: TextTrackListEventTypes.REMOVE_TRACK, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterTextTracksAPI.onRemoveTextTrack(uid: Int64(event.track.uid), completion: self.emptyCompletion)
+            
+            if let track = event.track as? TextTrack {
+                self.removeTrackListeners(track: track)
+                track.cues.forEach { cue in
+                    self.removeCueListeners(track: track, cue: cue)
+                }
+            }
+            
         })
-        
-        textTrackListChange = theoplayer.textTracks.addEventListener(type: TextTrackListEventTypes.CHANGE, listener: { event in
+
+        textTrackListChange = theoplayer.textTracks.addEventListener(type: TextTrackListEventTypes.CHANGE, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterTextTracksAPI.onTextTrackListChange(uid: Int64(event.track.uid), completion: self.emptyCompletion)
         })
     }
     
-    func removeListeners() {
+    private func removeListeners() {
         // TODO: remove force unwraps
         theoplayer.textTracks.removeEventListener(type: TextTrackListEventTypes.ADD_TRACK, listener: addTextTrackListener!)
         theoplayer.textTracks.removeEventListener(type: TextTrackListEventTypes.REMOVE_TRACK, listener: removeTextTrackListener!)
@@ -83,8 +94,14 @@ class TextTrackBridge: THEOplayerNativeTextTracksAPI {
         }
     }
     
+    func dispose() {
+        removeListeners()
+        THEOplayerNativeTextTracksAPISetup.setUp(binaryMessenger: pigeonMessenger, api: nil)
+    }
+    
     private func attachTrackListeners(track: TextTrack) {
-        textTrackAddCueListener = track.addEventListener(type: TextTrackEventTypes.ADD_CUE, listener: { event in
+        textTrackAddCueListener = track.addEventListener(type: TextTrackEventTypes.ADD_CUE, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterTextTracksAPI.onTextTrackAddCue(
                 textTrackUid: Int64(track.uid),
                 id: event.cue.id,
@@ -95,16 +112,20 @@ class TextTrackBridge: THEOplayerNativeTextTracksAPI {
                 completion: self.emptyCompletion)
             self.attachCueListeners(track: track, cue: event.cue)
         })
-        textTrackRemoveCueListener = track.addEventListener(type: TextTrackEventTypes.REMOVE_CUE, listener: { event in
+        textTrackRemoveCueListener = track.addEventListener(type: TextTrackEventTypes.REMOVE_CUE, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterTextTracksAPI.onTextTrackRemoveCue(textTrackUid: Int64(track.uid), cueUid: Int64(event.cue.uid), completion: self.emptyCompletion)
         })
-        textTrackEnterCueListener = track.addEventListener(type: TextTrackEventTypes.ENTER_CUE, listener: { event in
+        textTrackEnterCueListener = track.addEventListener(type: TextTrackEventTypes.ENTER_CUE, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterTextTracksAPI.onTextTrackEnterCue(textTrackUid: Int64(track.uid), cueUid: Int64(event.cue.uid), completion: self.emptyCompletion)
         })
-        textTrackExitCueListener = track.addEventListener(type: TextTrackEventTypes.EXIT_CUE, listener: { event in
+        textTrackExitCueListener = track.addEventListener(type: TextTrackEventTypes.EXIT_CUE, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterTextTracksAPI.onTextTrackExitCue(textTrackUid: Int64(track.uid), cueUid: Int64(event.cue.uid), completion: self.emptyCompletion)
         })
-        textTrackCueChangeListener = track.addEventListener(type: TextTrackEventTypes.CUE_CHANGE, listener: { event in
+        textTrackCueChangeListener = track.addEventListener(type: TextTrackEventTypes.CUE_CHANGE, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterTextTracksAPI.onTextTrackCueChange(textTrackUid: Int64(track.uid), completion: self.emptyCompletion)
         })
     }
@@ -118,13 +139,16 @@ class TextTrackBridge: THEOplayerNativeTextTracksAPI {
     }
     
     private func attachCueListeners(track: TextTrack, cue: TextTrackCue) {
-        cueEnterListener = cue.addEventListener(type: TextTrackCueEventTypes.ENTER, listener: {event in
+        cueEnterListener = cue.addEventListener(type: TextTrackCueEventTypes.ENTER, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterTextTracksAPI.onCueEnter(textTrackUid: Int64(track.uid), cueUid: Int64(cue.uid), completion: self.emptyCompletion)
         })
-        cueExitListener = cue.addEventListener(type: TextTrackCueEventTypes.EXIT, listener: {event in
+        cueExitListener = cue.addEventListener(type: TextTrackCueEventTypes.EXIT, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterTextTracksAPI.onCueExit(textTrackUid: Int64(track.uid), cueUid: Int64(cue.uid), completion: self.emptyCompletion)
         })
-        cueUpdateListener = cue.addEventListener(type: TextTrackCueEventTypes.UPDATE, listener: {event in
+        cueUpdateListener = cue.addEventListener(type: TextTrackCueEventTypes.UPDATE, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterTextTracksAPI.onCueUpdate(
                 textTrackUid: Int64(track.uid),
                 cueUid: Int64(cue.uid),

@@ -243,10 +243,22 @@ extension THEOplayerViewNative: THEOplayerNativeAPI {
     
     func dispose() throws {
         _playerEventForwarder.removeListeners()
-        _textTrackBridge.removeListeners()
-        _audioTrackBridge.removeListeners()
-        _videoTrackBridge.removeListeners()
-        _theoLiveBridge.removeListeners()
+        _textTrackBridge.dispose()
+        _audioTrackBridge.dispose()
+        _videoTrackBridge.dispose()
+        _theoLiveBridge.dispose()
+
+        // Break retain cycles
+        _theoplayer.backgroundPlaybackDelegate = nil
+        if #available(iOS 14.0, *) {
+            _theoplayer.pip?.nativePictureInPictureDelegate = nil
+        }
+        
+        _theoplayer.stop()
+        
+        // Unregister from Pigeon API to break retain cycle
+        THEOplayerNativeAPISetup.setUp(binaryMessenger: _pigeonMessenger, api: nil)
+
     }
     
     func onLifecycleResume() throws {

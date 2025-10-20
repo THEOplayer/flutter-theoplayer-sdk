@@ -45,100 +45,122 @@ class PlayerEventForwarder {
     }
     
     func attachListeners() {
-        sourceChangeEventListener = theoplayer.addEventListener(type: PlayerEventTypes.SOURCE_CHANGE, listener: {event in
+        sourceChangeEventListener = theoplayer.addEventListener(type: PlayerEventTypes.SOURCE_CHANGE, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAPI.onSourceChange(source: SourceTransformer.toFlutterSourceDescription(source: event.source), completion: self.emptyCompletion)
         })
         
-        playEventListener = theoplayer.addEventListener(type: PlayerEventTypes.PLAY, listener: {event in
+        playEventListener = theoplayer.addEventListener(type: PlayerEventTypes.PLAY, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAPI.onPlay(currentTime: event.currentTime, completion: self.emptyCompletion)
         })
         
-        playingEventListener = theoplayer.addEventListener(type: PlayerEventTypes.PLAYING, listener: {event in
+        playingEventListener = theoplayer.addEventListener(type: PlayerEventTypes.PLAYING, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAPI.onPlaying(currentTime: event.currentTime, completion: self.emptyCompletion)
         })
-        
-        pauseEventListener = theoplayer.addEventListener(type: PlayerEventTypes.PAUSE, listener: {event in
+
+        pauseEventListener = theoplayer.addEventListener(type: PlayerEventTypes.PAUSE, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAPI.onPause(currentTime: event.currentTime, completion: self.emptyCompletion)
         })
-        
-        waitingEventListener = theoplayer.addEventListener(type: PlayerEventTypes.WAITING, listener: {event in
+
+        waitingEventListener = theoplayer.addEventListener(type: PlayerEventTypes.WAITING, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAPI.onWaiting(currentTime: event.currentTime, completion: self.emptyCompletion)
         })
-        
-        durationChangeEventListener = theoplayer.addEventListener(type: PlayerEventTypes.DURATION_CHANGE, listener: {event in
+
+        durationChangeEventListener = theoplayer.addEventListener(type: PlayerEventTypes.DURATION_CHANGE, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAPI.onDurationChange(duration: event.duration ?? 0, completion: self.emptyCompletion)
         })
-        
-        progressEventListener = theoplayer.addEventListener(type: PlayerEventTypes.PROGRESS, listener: {event in
+
+        progressEventListener = theoplayer.addEventListener(type: PlayerEventTypes.PROGRESS, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAPI.onProgress(currentTime: event.currentTime, completion: self.emptyCompletion)
         })
         
-        timeUpdateEventListener = theoplayer.addEventListener(type: PlayerEventTypes.TIME_UPDATE, listener: {event in
+        timeUpdateEventListener = theoplayer.addEventListener(type: PlayerEventTypes.TIME_UPDATE, listener: { [weak self] event in
+            guard let self else { return }
             var currentProgramDateTime: Int64?;
             if let timeIntervalSince1970 = event.currentProgramDateTime?.timeIntervalSince1970 {
                 currentProgramDateTime = Int64(timeIntervalSince1970)
             }
-            
+
             self.flutterAPI.onTimeUpdate(currentTime: event.currentTime, currentProgramDateTime: currentProgramDateTime, completion: self.emptyCompletion)
         })
-        
-        rateChangeEventListener = theoplayer.addEventListener(type: PlayerEventTypes.RATE_CHANGE, listener: {event in
+
+        rateChangeEventListener = theoplayer.addEventListener(type: PlayerEventTypes.RATE_CHANGE, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAPI.onRateChange(currentTime: event.currentTime, playbackRate: event.playbackRate, completion: self.emptyCompletion)
         })
-        
-        seekingEventListener = theoplayer.addEventListener(type: PlayerEventTypes.SEEKING, listener: {event in
+
+        seekingEventListener = theoplayer.addEventListener(type: PlayerEventTypes.SEEKING, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAPI.onSeeking(currentTime: event.currentTime, completion: self.emptyCompletion)
         })
-        
-        seekedEventListener = theoplayer.addEventListener(type: PlayerEventTypes.SEEKED, listener: {event in
+
+        seekedEventListener = theoplayer.addEventListener(type: PlayerEventTypes.SEEKED, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAPI.onSeeked(currentTime: event.currentTime, completion: self.emptyCompletion)
         })
-        
-        volumeChangeEventListener = theoplayer.addEventListener(type: PlayerEventTypes.VOLUME_CHANGE, listener: {event in
+
+        volumeChangeEventListener = theoplayer.addEventListener(type: PlayerEventTypes.VOLUME_CHANGE, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAPI.onVolumeChange(currentTime: event.currentTime, volume: Double(event.volume), completion: self.emptyCompletion)
         })
         
-        resizeEventListener = theoplayer.addEventListener(type: PlayerEventTypes.RESIZE, listener: {event in
+        resizeEventListener = theoplayer.addEventListener(type: PlayerEventTypes.RESIZE, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAPI.onResize(
                 currentTime: self.theoplayer.currentTime,
                 width: Int64(self.theoplayer.videoWidth),
                 height: Int64(self.theoplayer.videoHeight),
                 completion: self.emptyCompletion)
         })
-        
-        endedEventListener = theoplayer.addEventListener(type: PlayerEventTypes.ENDED, listener: {event in
+
+        endedEventListener = theoplayer.addEventListener(type: PlayerEventTypes.ENDED, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAPI.onEnded(currentTime: event.currentTime, completion: self.emptyCompletion)
         })
-        
-        errorEventListener = theoplayer.addEventListener(type: PlayerEventTypes.ERROR, listener: {event in
+
+        errorEventListener = theoplayer.addEventListener(type: PlayerEventTypes.ERROR, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAPI.onError(error: event.error, completion: self.emptyCompletion)
         })
-        
-        destroyEventListener = theoplayer.addEventListener(type: PlayerEventTypes.DESTROY, listener: {event in
+
+        destroyEventListener = theoplayer.addEventListener(type: PlayerEventTypes.DESTROY, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAPI.onDestroy(completion: self.emptyCompletion)
         })
         
-        readyStateChangeEventListener = theoplayer.addEventListener(type: PlayerEventTypes.READY_STATE_CHANGE, listener: {event in
+        readyStateChangeEventListener = theoplayer.addEventListener(type: PlayerEventTypes.READY_STATE_CHANGE, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAPI.onReadyStateChange(currentTime: event.currentTime, readyState: PlayerEnumTransformer.toFlutterReadyState(readyState: event.readyState), completion: self.emptyCompletion)
         })
-        
-        loadStartEventListener = theoplayer.addEventListener(type: PlayerEventTypes.LOAD_START, listener: {event in
+
+        loadStartEventListener = theoplayer.addEventListener(type: PlayerEventTypes.LOAD_START, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAPI.onLoadStart(completion: self.emptyCompletion)
         })
-        
-        loadedMetadataEventListener = theoplayer.addEventListener(type: PlayerEventTypes.LOADED_META_DATA, listener: {event in
+
+        loadedMetadataEventListener = theoplayer.addEventListener(type: PlayerEventTypes.LOADED_META_DATA, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAPI.onLoadedMetadata(currentTime: event.currentTime, completion: self.emptyCompletion)
         })
-        
-        loadedDataEventListener = theoplayer.addEventListener(type: PlayerEventTypes.LOADED_DATA, listener: {event in
+
+        loadedDataEventListener = theoplayer.addEventListener(type: PlayerEventTypes.LOADED_DATA, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAPI.onLoadedData(currentTime: event.currentTime, completion: self.emptyCompletion)
         })
-        
-        canPlayEventListener = theoplayer.addEventListener(type: PlayerEventTypes.CAN_PLAY, listener: {event in
+
+        canPlayEventListener = theoplayer.addEventListener(type: PlayerEventTypes.CAN_PLAY, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAPI.onCanPlay(currentTime: event.currentTime, completion: self.emptyCompletion)
         })
-        
-        canPlayThroughEventListener = theoplayer.addEventListener(type: PlayerEventTypes.CAN_PLAY_THROUGH, listener: {event in
+
+        canPlayThroughEventListener = theoplayer.addEventListener(type: PlayerEventTypes.CAN_PLAY_THROUGH, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAPI.onCanPlayThrough(currentTime: event.currentTime, completion: self.emptyCompletion)
         })
     }

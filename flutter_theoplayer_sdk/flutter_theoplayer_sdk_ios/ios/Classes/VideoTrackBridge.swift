@@ -29,7 +29,8 @@ class VideoTrackBridge: THEOplayerNativeVideoTracksAPI {
     }
     
     func attachListeners() {
-        addVideoTrackListener = theoplayer.videoTracks.addEventListener(type: VideoTrackListEventTypes.ADD_TRACK, listener: { event in
+        addVideoTrackListener = theoplayer.videoTracks.addEventListener(type: VideoTrackListEventTypes.ADD_TRACK, listener: { [weak self] event in
+            guard let self else { return }
             if let videoTrack = event.track as? VideoTrack {
                 self.flutterVideoTracksAPI.onAddVideoTrack(
                     id: videoTrack.id,
@@ -39,24 +40,31 @@ class VideoTrackBridge: THEOplayerNativeVideoTracksAPI {
                     kind: videoTrack.kind,
                     isEnabled: videoTrack.enabled,
                     completion: self.emptyCompletion)
-             
+
             }
         })
-        
-        removeVideoTrackListener = theoplayer.videoTracks.addEventListener(type: VideoTrackListEventTypes.REMOVE_TRACK, listener: { event in
+
+        removeVideoTrackListener = theoplayer.videoTracks.addEventListener(type: VideoTrackListEventTypes.REMOVE_TRACK, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterVideoTracksAPI.onRemoveVideoTrack(uid: Int64(event.track.uid), completion: self.emptyCompletion)
         })
-        
-        videoTrackListChangeListener = theoplayer.videoTracks.addEventListener(type: VideoTrackListEventTypes.CHANGE, listener: { event in
+
+        videoTrackListChangeListener = theoplayer.videoTracks.addEventListener(type: VideoTrackListEventTypes.CHANGE, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterVideoTracksAPI.onVideoTrackListChange(uid: Int64(event.track.uid), completion: self.emptyCompletion)
         })
     }
     
-    func removeListeners() {
+    private func removeListeners() {
         // TODO: remove force unwraps
         theoplayer.videoTracks.removeEventListener(type: VideoTrackListEventTypes.ADD_TRACK, listener: addVideoTrackListener!)
         theoplayer.videoTracks.removeEventListener(type: VideoTrackListEventTypes.REMOVE_TRACK, listener: removeVideoTrackListener!)
         theoplayer.videoTracks.removeEventListener(type: VideoTrackListEventTypes.CHANGE, listener: videoTrackListChangeListener!)
+    }
+    
+    func dispose() {
+        removeListeners()
+        THEOplayerNativeVideoTracksAPISetup.setUp(binaryMessenger: pigeonMessenger, api: nil)
     }
     
     func setTargetQuality(videoTrackUid: Int64, qualityUid: Int64?) throws {
