@@ -417,28 +417,84 @@ extension CueUpdateEventJSExtension on CueUpdateEventJS {
 @JS()
 @anonymous
 @staticInterop
-class PublicationLoadedEventJS {}
+class EndpointLoadedEventJS {}
 
-extension PublicationLoadedEventJSExtension on PublicationLoadedEventJS {
-  external String publicationId;
+extension EndpointLoadedEventJExtension on EndpointLoadedEventJS {
+  external EndpointJS endpoint;
 }
 
 @JS()
 @anonymous
 @staticInterop
-class PublicationLoadStartEventJS {}
+class EndpointJS {}
 
-extension PublicationLoadStartEventJSExtension on PublicationLoadStartEventJS {
-  external String publicationId;
+extension EndpointJSExtension on EndpointJS {
+  external String? get hespSrc;
+  external String? get hlsSrc;
+  external String? get adSrc;
+  external String? get daiAssetKey;
+  external String? get cdn;
+  external int get weight;
+  external int get priority;
+  external DistributionContentProtectionConfigurationJS? get contentProtection;
 }
 
 @JS()
 @anonymous
 @staticInterop
-class PublicationOfflineEventJS {}
+class DistributionContentProtectionConfigurationJS {}
 
-extension PublicationOfflineEventJSExtension on PublicationOfflineEventJS {
-  external String publicationId;
+extension DistributionContentProtectionConfigurationJSExtension on DistributionContentProtectionConfigurationJS {
+  external String get integration;
+  external WidevineDistributionContentProtectionConfigurationJS? get widevine;
+  external PlayReadyDistributionContentProtectionConfigurationJS? get playready;
+  external FairplayDistributionContentProtectionConfigurationJS? get fairplay;
+}
+
+@JS()
+@anonymous
+@staticInterop
+class WidevineDistributionContentProtectionConfigurationJS {}
+
+extension WidevineDistributionContentProtectionConfigurationJSExtension on WidevineDistributionContentProtectionConfigurationJS {
+  external String get licenseUrl;
+}
+
+@JS()
+@anonymous
+@staticInterop
+class PlayReadyDistributionContentProtectionConfigurationJS {}
+
+extension PlayReadyDistributionContentProtectionConfigurationJSExtension on PlayReadyDistributionContentProtectionConfigurationJS {
+  external String get licenseUrl;
+}
+
+@JS()
+@anonymous
+@staticInterop
+class FairplayDistributionContentProtectionConfigurationJS {}
+
+extension FairplayDistributionContentProtectionConfigurationJSExtension on FairplayDistributionContentProtectionConfigurationJS {
+  external String get licenseUrl;
+  external String get certificateUrl;
+}
+
+@JS()
+@anonymous
+@staticInterop
+class DistributionLoadStartEventJS {}
+
+extension PublicationLoadStartEventJSExtension on DistributionLoadStartEventJS {
+  external String distributionId;
+}
+
+@JS()
+@anonymous
+@staticInterop
+class DistributionOfflineEventJS {}
+
+extension DistributionOfflineEventJSExtension on DistributionOfflineEventJS {
+  external String distributionId;
 }
 
 @JS()

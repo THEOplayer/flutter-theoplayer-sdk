@@ -22,7 +22,7 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
-def theoplayerVersion ='9.11.0'
+def theoplayerVersion ='10.0.0'
 
 android {
     namespace "com.theoplayer.theoplayer_example"
@@ -33,7 +33,7 @@ android {
     //     aapt2 E 10-08 09:20:39  4067  4067 LoadedArsc.cpp:94] RES_TABLE_TYPE_TYPE entry offsets overlap actual entry data.
     //     aapt2 E 10-08 09:20:39  4067  4067 ApkAssets.cpp:149] Failed to load resources table in APK '/usr/local/lib/android/sdk/platforms/android-35/android.jar'.
     //     error: failed to load include path /usr/local/lib/android/sdk/platforms/android-35/android.jar.
-    compileSdkVersion 35
+    compileSdkVersion 36
     ndkVersion = "27.0.12077973"
 
     compileOptions {
@@ -54,7 +54,7 @@ android {
         applicationId "com.theoplayer.theoplayer_example"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

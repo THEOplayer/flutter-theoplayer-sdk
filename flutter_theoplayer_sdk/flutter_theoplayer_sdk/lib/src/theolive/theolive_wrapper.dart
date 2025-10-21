@@ -8,26 +8,26 @@ import 'package:theoplayer_platform_interface/theoplayer_events.dart';
 class THEOliveAPIHolder extends THEOlive {
   final EventManager _eventManager = EventManager();
 
-  PublicationState _publicationState = PublicationState.idle;
+  DistributionState _distributionState = DistributionState.idle;
 
   THEOliveStateChangeListener? _stateChangeListener;
   THEOliveInternalInterface? _internalTHEOliveAPI;
 
   @override
-  PublicationState get publicationState => _publicationState;
+  DistributionState get distributionState => _distributionState;
 
   void _forwardingEventListener(event) {
-    var oldPublicationState = publicationState;
+    var oldDistributionState = distributionState;
     switch (event) {
-      case PublicationLoadStartEvent e: _publicationState = PublicationState.loading;
-      case PublicationLoadedEvent e: _publicationState = PublicationState.loaded;
-      case PublicationOfflineEvent e: _publicationState = PublicationState.offline;
-      case IntentToFallbackEvent e: _publicationState = PublicationState.intentToFallback;
+      case DistributionLoadStartEvent e: _distributionState = DistributionState.loading;
+      case EndpointLoadedEvent e: _distributionState = DistributionState.loaded;
+      case DistributionOfflineEvent e: _distributionState = DistributionState.offline;
+      case IntentToFallbackEvent e: _distributionState = DistributionState.intentToFallback;
       default:
         break;
     }
 
-    if (oldPublicationState != _publicationState) {
+    if (oldDistributionState != _distributionState) {
       _stateChangeListener?.call();
     }
     _eventManager.dispatchEvent(event);
@@ -39,9 +39,9 @@ class THEOliveAPIHolder extends THEOlive {
   void setup(THEOliveInternalInterface? internalTHEOliveAPI) {
     _internalTHEOliveAPI = internalTHEOliveAPI;
 
-    _internalTHEOliveAPI?.addEventListener(THEOliveApiEventTypes.PUBLICATIONLOADSTART, _forwardingEventListener);
-    _internalTHEOliveAPI?.addEventListener(THEOliveApiEventTypes.PUBLICATIONLOADED, _forwardingEventListener);
-    _internalTHEOliveAPI?.addEventListener(THEOliveApiEventTypes.PUBLICATIONOFFLINE, _forwardingEventListener);
+    _internalTHEOliveAPI?.addEventListener(THEOliveApiEventTypes.DISTRIBUTIONLOADSTART, _forwardingEventListener);
+    _internalTHEOliveAPI?.addEventListener(THEOliveApiEventTypes.ENDPOINTLOADED, _forwardingEventListener);
+    _internalTHEOliveAPI?.addEventListener(THEOliveApiEventTypes.DISTRIBUTIONOFFLINE, _forwardingEventListener);
     _internalTHEOliveAPI?.addEventListener(THEOliveApiEventTypes.INTENTTOFALLBACK, _forwardingEventListener);
     _internalTHEOliveAPI?.addEventListener(THEOliveApiEventTypes.ENTERBADNETWORKMODE, _forwardingEventListener);
     _internalTHEOliveAPI?.addEventListener(THEOliveApiEventTypes.EXITBADNETWORKMODE, _forwardingEventListener);
@@ -64,14 +64,14 @@ class THEOliveAPIHolder extends THEOlive {
 
   /// Method to clean the listeners.
   void dispose() {
-    _internalTHEOliveAPI?.removeEventListener(THEOliveApiEventTypes.PUBLICATIONLOADSTART, _forwardingEventListener);
-    _internalTHEOliveAPI?.removeEventListener(THEOliveApiEventTypes.PUBLICATIONLOADED, _forwardingEventListener);
-    _internalTHEOliveAPI?.removeEventListener(THEOliveApiEventTypes.PUBLICATIONOFFLINE, _forwardingEventListener);
+    _internalTHEOliveAPI?.removeEventListener(THEOliveApiEventTypes.DISTRIBUTIONLOADSTART, _forwardingEventListener);
+    _internalTHEOliveAPI?.removeEventListener(THEOliveApiEventTypes.ENDPOINTLOADED, _forwardingEventListener);
+    _internalTHEOliveAPI?.removeEventListener(THEOliveApiEventTypes.DISTRIBUTIONOFFLINE, _forwardingEventListener);
     _internalTHEOliveAPI?.removeEventListener(THEOliveApiEventTypes.INTENTTOFALLBACK, _forwardingEventListener);
     _internalTHEOliveAPI?.removeEventListener(THEOliveApiEventTypes.ENTERBADNETWORKMODE, _forwardingEventListener);
     _internalTHEOliveAPI?.removeEventListener(THEOliveApiEventTypes.EXITBADNETWORKMODE, _forwardingEventListener);
     _stateChangeListener = null;
-    _publicationState = PublicationState.idle;
+    _distributionState = DistributionState.idle;
     _eventManager.clear();
   }
 

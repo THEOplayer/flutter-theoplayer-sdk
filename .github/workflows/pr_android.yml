@@ -8,6 +8,7 @@ jobs:
   build_android:
 
     strategy:
+      fail-fast: false
       matrix:
         flutter_version: ['stable', 'beta']
 

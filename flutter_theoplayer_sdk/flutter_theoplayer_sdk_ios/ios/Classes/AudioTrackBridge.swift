@@ -29,7 +29,8 @@ class AudioTrackBridge: THEOplayerNativeAudioTracksAPI {
     }
     
     func attachListeners() {
-        addAudioTrackListener = theoplayer.audioTracks.addEventListener(type: AudioTrackListEventTypes.ADD_TRACK, listener: { event in
+        addAudioTrackListener = theoplayer.audioTracks.addEventListener(type: AudioTrackListEventTypes.ADD_TRACK, listener: { [weak self] event in
+            guard let self else { return }
             if let audioTrack = event.track as? AudioTrack {
                 self.flutterAudioTracksAPI.onAddAudioTrack(
                     id: audioTrack.id,
@@ -39,24 +40,31 @@ class AudioTrackBridge: THEOplayerNativeAudioTracksAPI {
                     kind: audioTrack.kind,
                     isEnabled: audioTrack.enabled,
                     completion: self.emptyCompletion)
-             
+
             }
         })
-        
-        removeAudioTrackListener = theoplayer.audioTracks.addEventListener(type: AudioTrackListEventTypes.REMOVE_TRACK, listener: { event in
+
+        removeAudioTrackListener = theoplayer.audioTracks.addEventListener(type: AudioTrackListEventTypes.REMOVE_TRACK, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAudioTracksAPI.onRemoveAudioTrack(uid: Int64(event.track.uid), completion: self.emptyCompletion)
         })
-        
-        audioTrackListChangeListener = theoplayer.audioTracks.addEventListener(type: AudioTrackListEventTypes.CHANGE, listener: { event in
+
+        audioTrackListChangeListener = theoplayer.audioTracks.addEventListener(type: AudioTrackListEventTypes.CHANGE, listener: { [weak self] event in
+            guard let self else { return }
             self.flutterAudioTracksAPI.onAudioTrackListChange(uid: Int64(event.track.uid), completion: self.emptyCompletion)
         })
     }
     
-    func removeListeners() {
+    private func removeListeners() {
         // TODO: remove force unwraps
         theoplayer.audioTracks.removeEventListener(type: AudioTrackListEventTypes.ADD_TRACK, listener: addAudioTrackListener!)
         theoplayer.audioTracks.removeEventListener(type: AudioTrackListEventTypes.REMOVE_TRACK, listener: removeAudioTrackListener!)
         theoplayer.audioTracks.removeEventListener(type: AudioTrackListEventTypes.CHANGE, listener: audioTrackListChangeListener!)
+    }
+    
+    func dispose() {
+        removeListeners()
+        THEOplayerNativeAudioTracksAPISetup.setUp(binaryMessenger: pigeonMessenger, api: nil)
     }
     
     func setTargetQuality(audioTrackUid: Int64, qualityUid: Int64?) throws {

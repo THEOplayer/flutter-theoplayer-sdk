@@ -16,9 +16,9 @@ class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
     private let pigeonMessenger: PigeonBinaryMessengerWrapper
     private let flutterTHEOliveAPI: THEOplayerFlutterTHEOliveAPI
     
-    private var publicationLoadStartListener: EventListener?
-    private var publicationLoadedListener: EventListener?
-    private var publicationOfflineListener: EventListener?
+    private var distributionLoadStartListener: EventListener?
+    private var endpointLoadedListener: EventListener?
+    private var distributionOfflineListener: EventListener?
     private var intentToFallbackListener: EventListener?
     
     //experimental
@@ -35,19 +35,30 @@ class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
     }
     
     func attachListeners() {
-        publicationLoadStartListener = theoLive.addEventListener(type: THEOliveEventTypes.PUBLICATION_LOAD_START, listener: { [weak self] event in
+        distributionLoadStartListener = theoLive.addEventListener(type: THEOliveEventTypes.DISTRIBUTION_LOAD_START, listener: { [weak self] event in
             guard let welf = self else { return }
-            welf.flutterTHEOliveAPI.onPublicationLoadStartEvent(channelId: event.publicationId, completion: welf.emptyCompletion)
+            welf.flutterTHEOliveAPI.onDistributionLoadStartEvent(distributionId: event.distributionId, completion: welf.emptyCompletion)
         })
         
-        publicationLoadedListener = theoLive.addEventListener(type: THEOliveEventTypes.PUBLICATION_LOADED, listener: { [weak self] event in
+        endpointLoadedListener = theoLive.addEventListener(type: THEOliveEventTypes.ENDPOINT_LOADED, listener: { [weak self] event in
             guard let welf = self else { return }
-            welf.flutterTHEOliveAPI.onPublicationLoadedEvent(channelId: event.publicationId, completion: welf.emptyCompletion)
+            let endpoint = event.endpoint
+            welf.flutterTHEOliveAPI.onEndpointLoadedEvent(
+                endpoint: Endpoint(
+                    hespSrc: endpoint.hespSrc,
+                    hlsSrc: endpoint.hlsSrc,
+                    cdn: endpoint.cdn,
+                    adSrc: endpoint.adSrc,
+                    weight: endpoint.weight,
+                    priority: Int64(endpoint.priority)
+                ),
+                completion: welf.emptyCompletion
+            )
         })
         
-        publicationOfflineListener = theoLive.addEventListener(type: THEOliveEventTypes.PUBLICATION_OFFLINE, listener: { [weak self] event in
+        distributionOfflineListener = theoLive.addEventListener(type: THEOliveEventTypes.DISTRIBUTION_OFFLINE, listener: { [weak self] event in
             guard let welf = self else { return }
-            welf.flutterTHEOliveAPI.onPublicationOfflineEvent(channelId: event.publicationId, completion: welf.emptyCompletion)
+            welf.flutterTHEOliveAPI.onDistributionOfflineEvent(distributionId: event.distributionId, completion: welf.emptyCompletion)
         })
         
         intentToFallbackListener = theoLive.addEventListener(type: THEOliveEventTypes.INTENT_TO_FALLBACK, listener: { [weak self] event in
@@ -68,14 +79,19 @@ class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
         })
     }
     
-    func removeListeners() {
+    private func removeListeners() {
         // TODO: remove force unwraps
-        theoLive.removeEventListener(type: THEOliveEventTypes.PUBLICATION_LOAD_START, listener: publicationLoadStartListener!)
-        theoLive.removeEventListener(type: THEOliveEventTypes.PUBLICATION_LOADED, listener: publicationLoadedListener!)
-        theoLive.removeEventListener(type: THEOliveEventTypes.PUBLICATION_OFFLINE, listener: publicationOfflineListener!)
+        theoLive.removeEventListener(type: THEOliveEventTypes.DISTRIBUTION_LOAD_START, listener: distributionLoadStartListener!)
+        theoLive.removeEventListener(type: THEOliveEventTypes.ENDPOINT_LOADED, listener: endpointLoadedListener!)
+        theoLive.removeEventListener(type: THEOliveEventTypes.DISTRIBUTION_OFFLINE, listener: distributionOfflineListener!)
         theoLive.removeEventListener(type: THEOliveEventTypes.INTENT_TO_FALLBACK, listener: intentToFallbackListener!)
         theoLive.removeEventListener(type: PlayerEventTypes.SEEKING, listener: seekingEventListener!)
         theoLive.removeEventListener(type: PlayerEventTypes.SEEKED, listener: seekedEventListener!)
+    }
+    
+    func dispose() {
+        removeListeners()
+        THEOplayerNativeTHEOliveAPISetup.setUp(binaryMessenger: pigeonMessenger, api: nil)
     }
     
     //MARK: THEOplayerNativeTHEOliveAPI API

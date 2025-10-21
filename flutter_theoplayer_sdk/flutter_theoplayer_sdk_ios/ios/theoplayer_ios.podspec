@@ -22,7 +22,7 @@ THEOplayer Flutter iOS SDK
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
   s.swift_version = '5.0'
 
-  s.dependency 'THEOplayerSDK-core', '9.11.0'
-  s.dependency 'THEOplayer-Integration-THEOlive', '9.11.0'
+  s.dependency 'THEOplayerSDK-core', '10.0.0'
+  s.dependency 'THEOplayer-Integration-THEOlive', '10.0.0'
 
 end
