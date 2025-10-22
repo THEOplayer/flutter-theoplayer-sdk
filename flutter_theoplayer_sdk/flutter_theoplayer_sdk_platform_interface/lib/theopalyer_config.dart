@@ -121,19 +121,12 @@ class TheoLiveConfiguration {
   /// An optional custom discovery endpoint URL for THEOlive, defaults to nil.
   String? discoveryUrl;
 
-  /// Uses the legacy THEOlive playback pipeline
-  /// NOTE:
-  ///   - only available on iOS
-  ///   - it will be removed from THEOplayer version 10.0
-  bool useLegacyPlaybackEngine;
-
-  TheoLiveConfiguration({this.externalSessionId = null, this.fallbackEnabled = null, this.discoveryUrl = null, this.useLegacyPlaybackEngine = false});
+  TheoLiveConfiguration({this.externalSessionId = null, this.fallbackEnabled = null, this.discoveryUrl = null});
 
   Map<String, dynamic> _toJson() => {
     'externalSessionId': externalSessionId,
     'fallbackEnabled': fallbackEnabled,
     'discoveryUrl': discoveryUrl,
-    'useLegacyPlaybackEngine': useLegacyPlaybackEngine,
   };
 }
 

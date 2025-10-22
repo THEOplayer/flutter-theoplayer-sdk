@@ -102,8 +102,8 @@ Future<void> runBasicTHEOlivePlaybackTest(WidgetTester tester, AndroidViewCompos
 
   await tester.pumpAndSettle(const Duration(seconds: 10));
 
-  print("Testing channel state :  ${player.theoLive!.publicationState}");
-  expect(player.theoLive?.publicationState == PublicationState.loaded, isTrue);
+  print("Testing channel state :  ${player.theoLive!.distributionState}");
+  expect(player.theoLive?.distributionState == DistributionState.loaded, isTrue);
 
   print("Testing playback duration():  ${player.getDuration()}");
   expect(player.getDuration() == double.infinity, isTrue);

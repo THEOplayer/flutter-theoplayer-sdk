@@ -1,4 +1,5 @@
-import 'package:js/js.dart';
+import 'dart:js_interop';
+import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
 import 'package:theoplayer_platform_interface/theolive/theolive_events.dart';
 import 'package:theoplayer_platform_interface/theolive/theolive_internal_api.dart';
 import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
@@ -6,47 +7,57 @@ import 'package:theoplayer_platform_interface/theoplayer_event_manager.dart';
 import 'package:theoplayer_platform_interface/theoplayer_events.dart';
 import 'package:theoplayer_web/theoplayer_api_event_web.dart';
 import 'package:theoplayer_web/theoplayer_api_web.dart';
+import 'package:theoplayer_web/theoplayer_js_helpers_web.dart';
 
 class THEOliveControllerWeb extends THEOliveInternalInterface {
 
   final THEOplayerTheoLiveApi _theoLiveApi;
   final EventManager _eventManager = EventManager();
 
-  late final publicationLoadedEventListener;
-  late final publicationLoadStartEventListener;
-  late final publicationOfflineEventListener;
+  late final endpointLoadedEventListener;
+  late final distributionLoadStartEventListener;
+  late final distributionOfflineEventListener;
   late final intentToFallbackEventListener;
   late final enterBadNetworkModeEventListener;
   late final exitBadNetworkModeEventListener;
 
   THEOliveControllerWeb(this._theoLiveApi) {
-    publicationLoadedEventListener = allowInterop((PublicationLoadedEventJS event) {
-      _eventManager.dispatchEvent(PublicationLoadedEvent(publicationId: event.publicationId));
-    });
+    endpointLoadedEventListener = (EndpointLoadedEventJS event) {
+      _eventManager.dispatchEvent(EndpointLoadedEvent(endpoint:
+          Endpoint(
+            hespSrc: event.endpoint.hespSrc,
+            hlsSrc: event.endpoint.hlsSrc,
+            adSrc: event.endpoint.adSrc,
+            cdn: event.endpoint.adSrc,
+            weight: event.endpoint.weight.toDouble(),
+            priority: event.endpoint.priority,
+          )
+      ));
+    }.toJS;
 
-    publicationLoadStartEventListener = allowInterop((PublicationLoadStartEventJS event) {
-      _eventManager.dispatchEvent(PublicationLoadStartEvent(publicationId: event.publicationId));
-    });
+    distributionLoadStartEventListener = (DistributionLoadStartEventJS event) {
+      _eventManager.dispatchEvent(DistributionLoadStartEvent(distributionId: event.distributionId));
+    }.toJS;
 
-    publicationOfflineEventListener = allowInterop((PublicationOfflineEventJS event) {
-      _eventManager.dispatchEvent(PublicationOfflineEvent(publicationId: event.publicationId));
-    });
+    distributionOfflineEventListener = (DistributionOfflineEventJS event) {
+      _eventManager.dispatchEvent(DistributionOfflineEvent(distributionId: event.distributionId));
+    }.toJS;
 
-    intentToFallbackEventListener = allowInterop((IntentToFallbackEventJS event) {
+    intentToFallbackEventListener = (IntentToFallbackEventJS event) {
       _eventManager.dispatchEvent(IntentToFallbackEvent());
-    });
+    }.toJS;
 
-    enterBadNetworkModeEventListener = allowInterop((EnterBadNetworkModeEventJS event) {
+    enterBadNetworkModeEventListener = (EnterBadNetworkModeEventJS event) {
       _eventManager.dispatchEvent(EnterBadNetworkModeEvent());
-    });
+    }.toJS;
 
-    exitBadNetworkModeEventListener = allowInterop((ExitBadNetworkModeEventJS event) {
+    exitBadNetworkModeEventListener = (ExitBadNetworkModeEventJS event) {
       _eventManager.dispatchEvent(ExitBadNetworkModeEvent());
-    });
+    }.toJS;
 
-    _theoLiveApi.addEventListener(THEOliveApiEventTypes.PUBLICATIONLOADED.toLowerCase(), publicationLoadedEventListener);
-    _theoLiveApi.addEventListener(THEOliveApiEventTypes.PUBLICATIONLOADSTART.toLowerCase(), publicationLoadStartEventListener);
-    _theoLiveApi.addEventListener(THEOliveApiEventTypes.PUBLICATIONOFFLINE.toLowerCase(), publicationOfflineEventListener);
+    _theoLiveApi.addEventListener(THEOliveApiEventTypes.ENDPOINTLOADED.toLowerCase(), endpointLoadedEventListener);
+    _theoLiveApi.addEventListener(THEOliveApiEventTypes.DISTRIBUTIONLOADSTART.toLowerCase(), distributionLoadStartEventListener);
+    _theoLiveApi.addEventListener(THEOliveApiEventTypes.DISTRIBUTIONOFFLINE.toLowerCase(), distributionOfflineEventListener);
     _theoLiveApi.addEventListener(THEOliveApiEventTypes.INTENTTOFALLBACK.toLowerCase(), intentToFallbackEventListener);
     _theoLiveApi.addEventListener(THEOliveApiEventTypes.ENTERBADNETWORKMODE.toLowerCase(), enterBadNetworkModeEventListener);
     _theoLiveApi.addEventListener(THEOliveApiEventTypes.EXITBADNETWORKMODE.toLowerCase(), exitBadNetworkModeEventListener);
@@ -64,7 +75,7 @@ class THEOliveControllerWeb extends THEOliveInternalInterface {
 
   @override
   void preloadChannels(List<String> channelIDs) {
-    _theoLiveApi.preloadPublications(channelIDs);
+    _theoLiveApi.preloadPublications(JSHelpers.stringListToJSArray(channelIDs));
   }
 
   @override
@@ -80,9 +91,9 @@ class THEOliveControllerWeb extends THEOliveInternalInterface {
   @override
   void dispose() {
     _eventManager.clear();
-    _theoLiveApi.removeEventListener(THEOliveApiEventTypes.PUBLICATIONLOADED.toLowerCase(), publicationLoadedEventListener);
-    _theoLiveApi.removeEventListener(THEOliveApiEventTypes.PUBLICATIONLOADSTART.toLowerCase(), publicationLoadStartEventListener);
-    _theoLiveApi.removeEventListener(THEOliveApiEventTypes.PUBLICATIONOFFLINE.toLowerCase(), publicationOfflineEventListener);
+    _theoLiveApi.removeEventListener(THEOliveApiEventTypes.ENDPOINTLOADED.toLowerCase(), endpointLoadedEventListener);
+    _theoLiveApi.removeEventListener(THEOliveApiEventTypes.DISTRIBUTIONLOADSTART.toLowerCase(), distributionLoadStartEventListener);
+    _theoLiveApi.removeEventListener(THEOliveApiEventTypes.DISTRIBUTIONOFFLINE.toLowerCase(), distributionOfflineEventListener);
     _theoLiveApi.removeEventListener(THEOliveApiEventTypes.INTENTTOFALLBACK.toLowerCase(), intentToFallbackEventListener);
     _theoLiveApi.removeEventListener(THEOliveApiEventTypes.ENTERBADNETWORKMODE.toLowerCase(), enterBadNetworkModeEventListener);
     _theoLiveApi.removeEventListener(THEOliveApiEventTypes.EXITBADNETWORKMODE.toLowerCase(), exitBadNetworkModeEventListener);

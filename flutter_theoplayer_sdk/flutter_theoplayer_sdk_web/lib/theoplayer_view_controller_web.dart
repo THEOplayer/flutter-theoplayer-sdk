@@ -159,7 +159,7 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
 
   @override
   void setCurrentProgramDateTime(DateTime currentProgramDateTime) {
-    _theoPlayerJS.currentProgramDateTime = JSDate(currentProgramDateTime.millisecondsSinceEpoch);
+    _theoPlayerJS.currentProgramDateTime = JSDate(epoch: currentProgramDateTime.millisecondsSinceEpoch);
   }
 
   @override
@@ -205,7 +205,7 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   Future<List<PlatformInterface.TimeRange?>> getBuffered() {
     List<PlatformInterface.TimeRange> ranges = [];
     for (var i = 0; i < _theoPlayerJS.buffered.length; i++) {
-      ranges.add(PlatformInterface.TimeRange(start: _theoPlayerJS.buffered.start(i), end: _theoPlayerJS.buffered.end(i)));
+      ranges.add(PlatformInterface.TimeRange(start: (_theoPlayerJS.buffered.start(i) as JSNumber).toDartDouble, end: (_theoPlayerJS.buffered.end(i) as JSNumber).toDartDouble));
     }
     return Future.value(ranges);
   }
@@ -219,7 +219,8 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   Future<List<PlatformInterface.TimeRange?>> getPlayed() {
     List<PlatformInterface.TimeRange> ranges = [];
     for (var i = 0; i < _theoPlayerJS.played.length; i++) {
-      ranges.add(PlatformInterface.TimeRange(start: _theoPlayerJS.played.start(i), end: _theoPlayerJS.played.end(i)));
+      //TODO: we should make this nicer if possible
+      ranges.add(PlatformInterface.TimeRange(start: (_theoPlayerJS.played.start(i) as JSNumber).toDartDouble, end: (_theoPlayerJS.played.end(i) as JSNumber).toDartDouble));
     }
     return Future.value(ranges);
   }
@@ -228,7 +229,8 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   Future<List<PlatformInterface.TimeRange?>> getSeekable() {
     List<PlatformInterface.TimeRange> ranges = [];
     for (var i = 0; i < _theoPlayerJS.seekable.length; i++) {
-      ranges.add(PlatformInterface.TimeRange(start: _theoPlayerJS.seekable.start(i), end: _theoPlayerJS.seekable.end(i)));
+      //TODO: we should make this nicer if possible
+      ranges.add(PlatformInterface.TimeRange(start: (_theoPlayerJS.seekable.start(i) as JSNumber).toDartDouble, end: (_theoPlayerJS.seekable.end(i) as JSNumber).toDartDouble));
     }
     return Future.value(ranges);
   }
@@ -307,7 +309,7 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
 
     switch (presentationMode) {
       case PresentationMode.FULLSCREEN:
-        elementToFullscreen?.requestFullscreen();
+        elementToFullscreen.requestFullscreen();
 
         jsFullscreenChangeListener = ((JSAny event) {
           if (document.fullscreenElement != null) {

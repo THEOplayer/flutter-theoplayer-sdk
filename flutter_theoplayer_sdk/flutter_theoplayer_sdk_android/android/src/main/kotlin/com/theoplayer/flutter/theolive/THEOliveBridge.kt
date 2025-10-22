@@ -1,13 +1,14 @@
 package com.theoplayer.flutter.theolive
 
 import com.theoplayer.android.api.event.EventListener
+import com.theoplayer.android.api.event.player.theolive.DistributionLoadStartEvent
+import com.theoplayer.android.api.event.player.theolive.DistributionOfflineEvent
+import com.theoplayer.android.api.event.player.theolive.EndpointLoadedEvent
 import com.theoplayer.android.api.event.player.theolive.IntentToFallbackEvent
-import com.theoplayer.android.api.event.player.theolive.PublicationLoadStartEvent
-import com.theoplayer.android.api.event.player.theolive.PublicationLoadedEvent
-import com.theoplayer.android.api.event.player.theolive.PublicationOfflineEvent
 import com.theoplayer.android.api.event.player.theolive.TheoLiveEventTypes
 import com.theoplayer.android.api.player.theolive.TheoLive
 import com.theoplayer.flutter.PigeonBinaryMessengerWrapper
+import com.theoplayer.flutter.pigeon.Endpoint
 import com.theoplayer.flutter.pigeon.THEOplayerFlutterTHEOliveAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeTHEOliveAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeTHEOliveAPI.Companion.setUp
@@ -21,16 +22,25 @@ class THEOliveBridge(private val theoLive: TheoLive, pigeonMessenger: PigeonBina
         setUp(pigeonMessenger, this)
     }
 
-    private val publicationLoadStartListener = EventListener<PublicationLoadStartEvent> {
-        flutterTHEOliveAPI.onPublicationLoadStartEvent(it.getChannelId(), emptyCallback)
+    private val distributionLoadStartListener = EventListener<DistributionLoadStartEvent> {
+        flutterTHEOliveAPI.onDistributionLoadStartEvent(it.getDistributionId(), emptyCallback)
     }
 
-    private val publicationLoadedListener = EventListener<PublicationLoadedEvent> {
-        flutterTHEOliveAPI.onPublicationLoadedEvent(it.getChannelId(), emptyCallback)
+    private val endpointLoadedListener = EventListener<EndpointLoadedEvent> {
+        val eventEndpoint = it.getEndpoint()
+        val endpoint = Endpoint(
+            eventEndpoint.hespSrc,
+            eventEndpoint.hlsSrc,
+            null,
+            eventEndpoint.adSrc,
+            eventEndpoint.weight.toDouble(),
+            eventEndpoint.priority.toLong()
+        )
+        flutterTHEOliveAPI.onEndpointLoadedEvent(endpoint, emptyCallback)
     }
 
-    private val publicationOfflineListener = EventListener<PublicationOfflineEvent> {
-        flutterTHEOliveAPI.onPublicationOfflineEvent(it.getChannelId(), emptyCallback)
+    private val distributionOfflineListener = EventListener<DistributionOfflineEvent> {
+        flutterTHEOliveAPI.onDistributionOfflineEvent(it.getDistributionId(), emptyCallback)
     }
 
     private val intentToFallbackListener = EventListener<IntentToFallbackEvent> {
@@ -48,16 +58,16 @@ class THEOliveBridge(private val theoLive: TheoLive, pigeonMessenger: PigeonBina
     }
 
     fun attachListeners() {
-        this.theoLive.addEventListener(TheoLiveEventTypes.PUBLICATIONLOADSTART, publicationLoadStartListener)
-        this.theoLive.addEventListener(TheoLiveEventTypes.PUBLICATIONLOADED, publicationLoadedListener)
-        this.theoLive.addEventListener(TheoLiveEventTypes.PUBLICATIONOFFLINE, publicationOfflineListener)
+        this.theoLive.addEventListener(TheoLiveEventTypes.DISTRIBUTIONLOADSTART, distributionLoadStartListener)
+        this.theoLive.addEventListener(TheoLiveEventTypes.ENDPOINTLOADED, endpointLoadedListener)
+        this.theoLive.addEventListener(TheoLiveEventTypes.DISTRIBUTIONOFFLINE, distributionOfflineListener)
         this.theoLive.addEventListener(TheoLiveEventTypes.INTENTTOFALLBACK, intentToFallbackListener)
     }
 
     fun removeListeners() {
-        this.theoLive.removeEventListener(TheoLiveEventTypes.PUBLICATIONLOADSTART, publicationLoadStartListener)
-        this.theoLive.removeEventListener(TheoLiveEventTypes.PUBLICATIONLOADED, publicationLoadedListener)
-        this.theoLive.removeEventListener(TheoLiveEventTypes.PUBLICATIONOFFLINE, publicationOfflineListener)
+        this.theoLive.removeEventListener(TheoLiveEventTypes.DISTRIBUTIONLOADSTART, distributionLoadStartListener)
+        this.theoLive.removeEventListener(TheoLiveEventTypes.ENDPOINTLOADED, endpointLoadedListener)
+        this.theoLive.removeEventListener(TheoLiveEventTypes.DISTRIBUTIONOFFLINE, distributionOfflineListener)
         this.theoLive.removeEventListener(TheoLiveEventTypes.INTENTTOFALLBACK, intentToFallbackListener)
     }
 

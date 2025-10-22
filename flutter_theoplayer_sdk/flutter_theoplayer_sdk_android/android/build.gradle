@@ -2,7 +2,7 @@ group 'com.theoplayer.flutter'
 version '1.0.3'
 
 buildscript {
-    ext.kotlin_version = '1.9.25'
+    ext.kotlin_version = '2.2.10'
     repositories {
         google()
         mavenCentral()
@@ -25,14 +25,14 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
-def theoplayerVersion ='9.11.0'
+def theoplayerVersion ='10.0.0'
 
 android {
     if (project.android.hasProperty("namespace")) {
         namespace 'com.theoplayer.flutter'
     }
 
-    compileSdkVersion 35
+    compileSdkVersion 36
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -49,7 +49,7 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 23
     }
 
     dependencies {

@@ -2,9 +2,7 @@ import '../pigeon/apis.g.dart';
 
 /// AndroidTypedSourceConfiguration
 class AndroidTypedSourceConfiguration {
-  final PlaybackPipeline playbackPipeline;
-  AndroidTypedSourceConfiguration({PlaybackPipeline? playbackPipeline})
-      : playbackPipeline = playbackPipeline ?? PlaybackPipeline.media3;
+  AndroidTypedSourceConfiguration();
 }
 
 /// TypedSource
@@ -39,7 +37,7 @@ class TypedSource extends PigeonTypedSource {
     super.integration,
     this.androidSourceConfiguration,
     this.headers
-  }) : super(playbackPipeline: androidSourceConfiguration?.playbackPipeline ?? PlaybackPipeline.media3);
+  }) : super();
 }
 /// THEOlive TypedSource
 class TheoLiveSource extends TypedSource {

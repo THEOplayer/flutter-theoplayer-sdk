@@ -197,14 +197,14 @@ class _MyAppState extends State<MyApp> {
                                    * register for theolive events, if interested
                                    *
                                    *
-                                  player.theoLive?.addEventListener(THEOliveApiEventTypes.PUBLICATIONLOADSTART, (e) {
-                                    print("PUBLICATIONLOADSTART");
+                                  player.theoLive?.addEventListener(THEOliveApiEventTypes.DISTRIBUTIONLOADSTART, (e) {
+                                    print("DISTRIBUTIONLOADSTART");
                                   });
-                                  player.theoLive?.addEventListener(THEOliveApiEventTypes.PUBLICATIONOFFLINE, (e) {
-                                    print("PUBLICATIONOFFLINE");
+                                  player.theoLive?.addEventListener(THEOliveApiEventTypes.DISTRIBUTIONOFFLINE, (e) {
+                                    print("DISTRIBUTIONOFFLINE");
                                   });
-                                  player.theoLive?.addEventListener(THEOliveApiEventTypes.PUBLICATIONLOADED, (e) {
-                                    print("PUBLICATIONLOADED");
+                                  player.theoLive?.addEventListener(THEOliveApiEventTypes.ENDPOINTLOADED, (e) {
+                                    print("ENDPOINTLOADED");
                                   });
                                   player.theoLive?.addEventListener(THEOliveApiEventTypes.INTENTTOFALLBACK, (e) {
                                     print("INTENTTOFALLBACK");
@@ -325,7 +325,7 @@ class _MyAppState extends State<MyApp> {
     print("allowBackgroundPlayback: ${player.allowBackgroundPlayback}");
 
     if (kIsWeb) {
-      print("theolive publicaitionState: ${player.theoLive?.publicationState}");
+      print("theolive distributionState: ${player.theoLive?.distributionState}");
       print("theolive badnetwork: ${player.theoLive?.badNetworkMode}");
     }
   }

@@ -4,6 +4,7 @@ import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_audiot
 import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack.dart';
 import 'package:theoplayer_platform_interface/track/mediatrack/theoplayer_videotrack_impl.dart';
 import 'package:theoplayer_web/theoplayer_api_web.dart';
+import 'package:theoplayer_web/theoplayer_js_helpers_web.dart';
 
 PlatformInterface.ReadyState toFlutterReadyState(int readyState) {
   PlatformInterface.ReadyState flutterReadyState = PlatformInterface.ReadyState.have_nothing;
@@ -32,7 +33,9 @@ PlatformInterface.SourceDescription? toFlutterSourceDescription(SourceDescriptio
   }
 
   List<PlatformInterface.PigeonTypedSource> typedSources = [];
-  for (var typedSource in sourceDescription.sources) {
+  final sources = sourceDescription.sources;
+  for (var i = 0; i < sources.getLength(); i++) {
+    final typedSource = sources.getItem(i) as TypedSource;
     PlatformInterface.FairPlayDRMConfiguration? fairPlayDRMConfiguration;
     FairplayContentProtectionConfiguration? fairplay = typedSource.contentProtection?.fairplay;
     if (fairplay != null) {
@@ -49,8 +52,7 @@ PlatformInterface.SourceDescription? toFlutterSourceDescription(SourceDescriptio
         PlatformInterface.PigeonTypedSource(
             src: typedSource.src,
             type: typedSource.type,
-            drm: PlatformInterface.DRMConfiguration(fairplay: fairPlayDRMConfiguration, widevine: widevineDRMConfiguration),
-            playbackPipeline: PlatformInterface.PlaybackPipeline.legacy
+            drm: PlatformInterface.DRMConfiguration(fairplay: fairPlayDRMConfiguration, widevine: widevineDRMConfiguration)
         )
     );
   }
@@ -81,7 +83,7 @@ SourceDescription toSourceDescription(PlatformInterface.SourceDescription flutte
     flutterTypedSources.add(TypedSource(integration: flutterTypedSource.integration?.name, src: flutterTypedSource.src, type: flutterTypedSource.type, contentProtection: ContentProtection(fairplay: flutterFairplayDrmConfiguration, widevine: flutterWidevineDrmConfiguration)));
   }
 
-  return SourceDescription(sources: flutterTypedSources);
+  return SourceDescription(sources: JSHelpers.jsItemsToJSArray(flutterTypedSources));
 }
 
 PlatformInterface.TextTrackReadyState toFlutterTextTrackReadyState(int textTrackReadyState) {

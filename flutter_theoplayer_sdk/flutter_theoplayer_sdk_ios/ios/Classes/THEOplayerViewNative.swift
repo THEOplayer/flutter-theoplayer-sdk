@@ -41,7 +41,6 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
         let theoLiveConfig = playerConfig?["theoLive"] as? [String: Any]
         let theoLiveExternalSessionId = theoLiveConfig?["externalSessionId"] as? String
         let theoLiveDiscoveryUrl = theoLiveConfig?["discoveryUrl"] as? String
-        let theoLiveUseLegacyPlaybackEngine = theoLiveConfig?["useLegacyPlaybackEngine"] as? Bool ?? false
         
         let pipConfig = PiPConfigurationBuilder()
         pipConfig.nativePictureInPicture = _allowAutomaticPictureInPicture;
@@ -58,7 +57,7 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
         _theoplayer = THEOplayer(configuration: theoConfig.build())
         
         let theoLiveIntegration = THEOliveIntegrationFactory.createIntegration(
-            with: THEOliveConfiguration(externalSessionId: theoLiveExternalSessionId, discoveryUrl: theoLiveDiscoveryUrl, useLegacyPlaybackEngine: theoLiveUseLegacyPlaybackEngine)
+            with: THEOliveConfiguration(externalSessionId: theoLiveExternalSessionId, discoveryUrl: theoLiveDiscoveryUrl)
         )
         _theoplayer.addIntegration(theoLiveIntegration)
         
@@ -146,7 +145,7 @@ extension THEOplayerViewNative: THEOplayerNativeAPI {
     }
     
     func getDuration() throws -> Double {
-        return _theoplayer.duration!
+        return _theoplayer.duration ?? 0
     }
     
     func setPlaybackRate(playbackRate: Double) throws {
@@ -244,11 +243,22 @@ extension THEOplayerViewNative: THEOplayerNativeAPI {
     
     func dispose() throws {
         _playerEventForwarder.removeListeners()
-        _textTrackBridge.removeListeners()
-        _audioTrackBridge.removeListeners()
-        _videoTrackBridge.removeListeners()
-        _theoLiveBridge.removeListeners()
-        _theoplayer.destroy()
+        _textTrackBridge.dispose()
+        _audioTrackBridge.dispose()
+        _videoTrackBridge.dispose()
+        _theoLiveBridge.dispose()
+
+        // Break retain cycles
+        _theoplayer.backgroundPlaybackDelegate = nil
+        if #available(iOS 14.0, *) {
+            _theoplayer.pip?.nativePictureInPictureDelegate = nil
+        }
+        
+        _theoplayer.stop()
+        
+        // Unregister from Pigeon API to break retain cycle
+        THEOplayerNativeAPISetup.setUp(binaryMessenger: _pigeonMessenger, api: nil)
+
     }
     
     func onLifecycleResume() throws {

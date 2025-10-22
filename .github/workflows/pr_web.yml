@@ -8,9 +8,9 @@ jobs:
   build_web:
     
     strategy:
+      fail-fast: false
       matrix:
-        # we use the default for now, which is canvaskit
-        #renderer: [html, canvaskit] #TODO: use wasm once support is added
+        build_type: [js] # 'wasm' can be added when flutter wasm support is figured out in the tests
         flutter_version: ['stable', 'beta']
 
     runs-on: ubuntu-latest
@@ -90,7 +90,11 @@ jobs:
     - name: Run integration tests
       run: |
         flutter config --enable-web
-        flutter drive --driver=webdriver_integration_test/webdriver.dart --target=integration_test_single_entrypoint/entrypoint.dart -d web-server --profile --driver-port=4444 -v --web-browser-flag="--disable-web-security --autoplay-policy=no-user-gesture-required" --chrome-binary ${{ steps.setup-chrome.outputs.chrome-path }}
+        if [ "${{ matrix.build_type }}" = "wasm" ]; then
+          flutter drive --driver=webdriver_integration_test/webdriver.dart --target=integration_test_single_entrypoint/entrypoint.dart -d web-server --profile --driver-port=4444 -v --wasm --web-browser-flag="--disable-web-security --autoplay-policy=no-user-gesture-required" --chrome-binary ${{ steps.setup-chrome.outputs.chrome-path }}
+        else
+          flutter drive --driver=webdriver_integration_test/webdriver.dart --target=integration_test_single_entrypoint/entrypoint.dart -d web-server --profile --driver-port=4444 -v --web-browser-flag="--disable-web-security --autoplay-policy=no-user-gesture-required" --chrome-binary ${{ steps.setup-chrome.outputs.chrome-path }}
+        fi
       working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
       env:
         TEST_LICENSE: ${{ secrets.TEST_LICENSE }}
@@ -101,12 +105,17 @@ jobs:
         cat chromedriver.log
 
     - name: Build Web
-      run: flutter build web
+      run: |
+        if [ "${{ matrix.build_type }}" = "wasm" ]; then
+          flutter build web --wasm
+        else
+          flutter build web
+        fi
       working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
 
     - name: Save WEB to artifacts
       uses: actions/upload-artifact@v4
       with:
-        name: web-${{ matrix.flutter_version }}
+        name: web-${{ matrix.flutter_version }}-${{ matrix.build_type }}
         path: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example/build/web/
         retention-days: 5
