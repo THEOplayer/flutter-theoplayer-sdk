@@ -1,3 +1,7 @@
+## 10.3.0
+
+* Updated THEOplayer to 10.3.0.
+
 ## 10.0.0
 
 * Updated THEOplayer to 10.0.0.
