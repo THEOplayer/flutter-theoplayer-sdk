@@ -1,3 +1,34 @@
+## 10.0.0
+
+* Updated THEOplayer to 10.0.0.
+  - For underlying native SDK changes please consult with the [THEOplayer SDK 10.0.0 changelog](https://optiview.dolby.com/docs/theoplayer/changelog/#-1000-20250912)).
+  - Android: Updated Kotlin version to 2.2.10 (to match with THEOplayer Android SDK).
+  - Android: Updated Gradle version to 8.13.0.
+  - Android: Update minSdkVersion to 23.
+  - Android: Update compileSdkVersion to 36.
+* Added **experimental** WASM compilation support for web builds.
+* **BREAKING CHANGE**: Renamed all "publication"-related APIs to "distribution" for consistency with THEOplayer native SDKs:
+	- **State Management**: `PublicationState` → `DistributionState`, `publicationState` → `distributionState`
+	- **Event Types**: `PUBLICATIONLOADSTART` → `DISTRIBUTIONLOADSTART`, `PUBLICATIONLOADED` → `ENDPOINTLOADED`, `PUBLICATIONOFFLINE` → `DISTRIBUTIONOFFLINE`
+	- **Event Classes**: `PublicationLoadStartEvent` → `DistributionLoadStartEvent`, `PublicationLoadedEvent` → removed (replaced by `EndpointLoadedEvent`), `PublicationOfflineEvent` → `DistributionOfflineEvent`
+	- **Event Parameters**: `event.publicationId` → `event.distributionId` in distribution events
+* **BREAKING CHANGE**: Removed Android PlaybackPipeline configuration support:
+	- **Removed**: `PlaybackPipeline` enum (`media3`, `legacy` options)
+	- **Removed**: `AndroidTypedSourceConfiguration.playbackPipeline` parameter
+	- **Default**: Media3 is now the only supported playback pipeline (legacy pipeline removed)
+
+### Migration Notes
+This release contains significant breaking changes that require code updates:
+
+1. **THEOlive API Renaming**: All publication-related APIs have been renamed to distribution equivalents
+2. **Android Configuration Simplification**: PlaybackPipeline configuration is no longer needed (Media3 is default)
+3. **Event Parameter Changes**: Event handlers need to use `distributionId` instead of `publicationId`
+4. **Class Name Updates**: Some event classes have been renamed for consistency
+
+**Migration Required**: Existing code using THEOlive APIs will need updates to compile and function correctly.
+
+For detailed migration instructions, automated find/replace patterns, and complete examples, see the [Migration Guide](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/migrations/migration_from_9.x_to_10.x.md).
+
 ## 9.11.0
 
 * Updated THEOplayer to 9.11.0.
@@ -32,7 +63,7 @@
 
 * Updated THEOplayer to 9.0.0.
 * Added `TypedSource.androidSourceConfiguration` to change playback pipelines on Android (legacy/media3)
-* Changed default media playback pipeline on Android (**Breaking change**)
+* **BREAKING CHANGE**: Changed default media playback pipeline on Android
 	- Starting from THEOplayer 9.0, the new Media3 Playback pipeline is now the default for all [Android SDK playback](https://www.theoplayer.com/docs/theoplayer/changelog/#-900-20250403).
 	- The legacy playback pipeline from version 8.x is still available, and can be activated by setting `TypedSource.androidSourceConfiguration.playbackPipeline` to `PlaybackPipeline.LEGACY`.
 	- The legacy playback pipeline is scheduled to be removed in version 10.
@@ -66,11 +97,11 @@
 * Added [THEOlive support](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/theolive.md) for Flutter WEB.
 * Deprecated getX and setX methods on THEOplayer API in favor of properties.
 * Added new properties on THEOplayer API. (`muted`, `played`, `buffered`, `videoTracks`, etc... for the full list check the API.)
-* Changed `THEOplayer.allowBackgroundPlayback()` to `THEOplayer.allowBackgroundPlayback`. **(Breaking change)**.
-* Changed `THEOplayer.allowAutomaticPictureInPicture()` to `THEOplayer.allowAutomaticPictureInPicture`. **(Breaking change)**.
-* Changed `THEOplayer.isEnded()` to `THEOplayer.isEnded`. **(Breaking change)**.
-* Changed `THEOplayer.isPlaying()` to `THEOplayer.isPlaying`. **(Breaking change)**.
-* Changed `THEOplayer.isSeeking()` to `THEOplayer.isSeeking`. **(Breaking change)**.
+* **BREAKING CHANGE**: Changed `THEOplayer.allowBackgroundPlayback()` to `THEOplayer.allowBackgroundPlayback`.
+* **BREAKING CHANGE**: Changed `THEOplayer.allowAutomaticPictureInPicture()` to `THEOplayer.allowAutomaticPictureInPicture`.
+* **BREAKING CHANGE**: Changed `THEOplayer.isEnded()` to `THEOplayer.isEnded`.
+* **BREAKING CHANGE**: Changed `THEOplayer.isPlaying()` to `THEOplayer.isPlaying`.
+* **BREAKING CHANGE**: Changed `THEOplayer.isSeeking()` to `THEOplayer.isSeeking`.
 
 ## 8.2.0
 
