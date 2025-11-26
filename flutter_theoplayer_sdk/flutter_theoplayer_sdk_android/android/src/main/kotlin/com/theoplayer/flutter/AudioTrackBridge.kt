@@ -19,7 +19,7 @@ import com.theoplayer.flutter.pigeon.THEOplayerNativeAudioTracksAPI.Companion.se
 
 class AudioTrackBridge(
     private val player: Player,
-    pigeonMessenger: PigeonBinaryMessengerWrapper,
+    private val pigeonMessenger: PigeonBinaryMessengerWrapper,
 ) : THEOplayerNativeAudioTracksAPI {
 
     private val flutterAudioTracksAPI = THEOplayerFlutterAudioTracksAPI(pigeonMessenger)
@@ -104,6 +104,9 @@ class AudioTrackBridge(
         player.audioTracks.forEach { track ->
             removeTrackListeners(track)
         }
+
+        // Clean up Pigeon API
+        setUp(pigeonMessenger, null)
     }
 
     private fun attachTrackListeners(track: MediaTrack<AudioQuality>) {
