@@ -115,11 +115,7 @@ class THEOplayerViewNative(
 
         theoplayerWrapper = LinearLayout(context)
         theoplayerWrapper.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        if (BuildConfig.DEBUG) {
-            theoplayerWrapper.setBackgroundColor(android.graphics.Color.BLUE)
-        } else {
-            theoplayerWrapper.setBackgroundColor(android.graphics.Color.BLACK)
-        }
+        theoplayerWrapper.setBackgroundColor(android.graphics.Color.BLACK)
 
         tpv = THEOplayerView(context, playerConfigBuilder.build())
         isFirstPlaying = false
