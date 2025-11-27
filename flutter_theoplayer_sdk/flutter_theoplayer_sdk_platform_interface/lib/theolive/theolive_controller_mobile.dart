@@ -17,7 +17,7 @@ class THEOplayerTHEOliveControllerMobile extends THEOliveInternalInterface imple
   THEOplayerTHEOliveControllerMobile(String channelSuffix) {
     _pigeonMessenger = PigeonBinaryMessengerWrapper(suffix: channelSuffix);
     _nativeTHEOliveAPI = THEOplayerNativeTHEOliveAPI(binaryMessenger: _pigeonMessenger);
-    THEOplayerFlutterTHEOliveAPI.setup(this, binaryMessenger: _pigeonMessenger);
+    THEOplayerFlutterTHEOliveAPI.setUp(this, binaryMessenger: _pigeonMessenger);
   }
 
   @override

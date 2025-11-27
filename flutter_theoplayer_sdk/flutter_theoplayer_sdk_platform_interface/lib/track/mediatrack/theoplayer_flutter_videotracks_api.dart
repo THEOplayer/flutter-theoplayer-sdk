@@ -9,7 +9,7 @@ class THEOplayerFlutterVideoTracksAPIImpl implements THEOplayerFlutterVideoTrack
   late final VideoTracksImpl _videoTracks;
 
   THEOplayerFlutterVideoTracksAPIImpl({BinaryMessenger? binaryMessenger}) {
-    THEOplayerFlutterVideoTracksAPI.setup(this, binaryMessenger: binaryMessenger);
+    THEOplayerFlutterVideoTracksAPI.setUp(this, binaryMessenger: binaryMessenger);
     _nativeVideoTrackAPI = THEOplayerNativeVideoTracksAPI(binaryMessenger: binaryMessenger);
     _videoTracks = VideoTracksImpl();
   }
