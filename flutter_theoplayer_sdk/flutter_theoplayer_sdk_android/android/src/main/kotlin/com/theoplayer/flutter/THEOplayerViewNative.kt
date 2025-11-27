@@ -158,10 +158,17 @@ class THEOplayerViewNative(
         audioTrackBridge.removeListeners()
         videoTrackBridge.removeListeners()
         theoLiveBridge.removeListeners()
+
         // Clean up native API
         setUp(pigeonMessenger, null)
+
+        // Remove view from parent and destroy player
+        theoplayerWrapper.removeView(tpv)
         tpv.onDestroy()
-        destroyListener?.onDestroyed();
+
+        // Notify destroy listener (this removes from factory registry)
+        destroyListener?.onDestroyed()
+        destroyListener = null
     }
 
     // activity lifecycle events
