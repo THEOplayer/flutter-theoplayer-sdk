@@ -19,7 +19,7 @@ class TextTrackBridge: THEOplayerNativeTextTracksAPI {
     private var textTrackDispatchObservers: [DispatchObserver] = []
     private var cueDispatchObservers: [DispatchObserver] = []
 
-    private let emptyCompletion: (Result<Void, FlutterError>) -> Void = {result in }
+    private let emptyCompletion: (Result<Void, PigeonError>) -> Void = {result in }
     
     init(theoplayer: THEOplayer, pigeonMessenger: PigeonBinaryMessengerWrapper) {
         self.theoplayer = theoplayer

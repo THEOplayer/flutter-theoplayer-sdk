@@ -22,7 +22,7 @@ struct SourceTransformer {
         )
     }
     
-    static func toFlutterTypedSource(typedSource: THEOplayerSDK.TypedSource?) -> PigeonTypedSource? {
+    static func toFlutterTypedSource(typedSource: THEOplayerSDK.TypedSource?) -> TypedSourcePigeon? {
         guard let typedSource = typedSource else {
             return nil
         }
@@ -32,7 +32,7 @@ struct SourceTransformer {
             flutterDRMConfiguration = toFlutterDRMConfiguration(drmConfiguration: drmConfiguration)
         }
         
-        return PigeonTypedSource(src: typedSource.src, type: typedSource.type, drm: flutterDRMConfiguration, headers: typedSource.headers)
+        return TypedSourcePigeon(src: typedSource.src, type: typedSource.type, drm: flutterDRMConfiguration, headers: typedSource.headers)
     }
     
     
@@ -78,7 +78,7 @@ struct SourceTransformer {
         )
     }
     
-    static func toTypedSource(typedSource: PigeonTypedSource?) -> THEOplayerSDK.TypedSource? {
+    static func toTypedSource(typedSource: TypedSourcePigeon?) -> THEOplayerSDK.TypedSource? {
         guard let typedSource = typedSource else {
             return nil
         }

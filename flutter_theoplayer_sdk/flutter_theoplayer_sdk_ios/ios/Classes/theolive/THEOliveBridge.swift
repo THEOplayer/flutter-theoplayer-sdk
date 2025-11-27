@@ -25,7 +25,7 @@ class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
     private var seekingEventListener: EventListener?
     private var seekedEventListener: EventListener?
     
-    private let emptyCompletion: (Result<Void, FlutterError>) -> Void = {result in }
+    private let emptyCompletion: (Result<Void, PigeonError>) -> Void = {result in }
     
     init(theoLive: THEOlive, pigeonMessenger: PigeonBinaryMessengerWrapper) {
         self.theoLive = theoLive

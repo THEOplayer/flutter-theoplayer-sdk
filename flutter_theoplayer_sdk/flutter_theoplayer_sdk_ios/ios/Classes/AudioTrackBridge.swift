@@ -19,7 +19,7 @@ class AudioTrackBridge: THEOplayerNativeAudioTracksAPI {
     private var removeAudioTrackListener: EventListener?
     private var audioTrackListChangeListener: EventListener?
     
-    private let emptyCompletion: (Result<Void, FlutterError>) -> Void = {result in }
+    private let emptyCompletion: (Result<Void, PigeonError>) -> Void = {result in }
     
     init(theoplayer: THEOplayer, pigeonMessenger: PigeonBinaryMessengerWrapper) {
         self.theoplayer = theoplayer
