@@ -35,14 +35,14 @@ void main() {
         'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setSource',
         (ByteData? message) async {
           if (message != null) {
-            final decoded = THEOplayerNativeAPI.codec.decodeMessage(message);
+            final decoded = THEOplayerNativeAPI.pigeonChannelCodec.decodeMessage(message);
             if (decoded is List && decoded.length == 1) {
               final source = decoded[0] as SourceDescription?;
               expect(source, isNotNull);
               expect(source!.sources.length, 1);
               expect(source.sources[0]!.src, 'https://example.com/video.m3u8');
               // Return success (empty response)
-              return THEOplayerNativeAPI.codec.encodeMessage(<Object?>[]);
+              return THEOplayerNativeAPI.pigeonChannelCodec.encodeMessage(<Object?>[]);
             }
           }
           return null;
@@ -50,7 +50,7 @@ void main() {
       );
 
       final source = SourceDescription(sources: [
-        PigeonTypedSource(
+        TypedSourcePigeon(
           src: 'https://example.com/video.m3u8',
           type: 'application/x-mpegurl',
         ),
@@ -61,7 +61,7 @@ void main() {
 
     test('getSource - retrieves source from native platform', () async {
       final expectedSource = SourceDescription(sources: [
-        PigeonTypedSource(
+        TypedSourcePigeon(
           src: 'https://example.com/video.m3u8',
           type: 'application/x-mpegurl',
         ),
@@ -71,7 +71,7 @@ void main() {
         'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getSource',
         (ByteData? message) async {
           // Return the source
-          return THEOplayerNativeAPI.codec.encodeMessage(<Object?>[expectedSource]);
+          return THEOplayerNativeAPI.pigeonChannelCodec.encodeMessage(<Object?>[expectedSource]);
         },
       );
 
@@ -88,10 +88,10 @@ void main() {
         'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setAutoplay',
         (ByteData? message) async {
           if (message != null) {
-            final decoded = THEOplayerNativeAPI.codec.decodeMessage(message);
+            final decoded = THEOplayerNativeAPI.pigeonChannelCodec.decodeMessage(message);
             if (decoded is List && decoded.length == 1) {
               receivedValue = decoded[0] as bool?;
-              return THEOplayerNativeAPI.codec.encodeMessage(<Object?>[]);
+              return THEOplayerNativeAPI.pigeonChannelCodec.encodeMessage(<Object?>[]);
             }
           }
           return null;
@@ -107,7 +107,7 @@ void main() {
         'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.isAutoplay',
         (ByteData? message) async {
           // Return autoplay = true
-          return THEOplayerNativeAPI.codec.encodeMessage(<Object?>[true]);
+          return THEOplayerNativeAPI.pigeonChannelCodec.encodeMessage(<Object?>[true]);
         },
       );
 
@@ -122,7 +122,7 @@ void main() {
         'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.play',
         (ByteData? message) async {
           playCalled = true;
-          return THEOplayerNativeAPI.codec.encodeMessage(<Object?>[]);
+          return THEOplayerNativeAPI.pigeonChannelCodec.encodeMessage(<Object?>[]);
         },
       );
 
@@ -137,7 +137,7 @@ void main() {
         'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.pause',
         (ByteData? message) async {
           pauseCalled = true;
-          return THEOplayerNativeAPI.codec.encodeMessage(<Object?>[]);
+          return THEOplayerNativeAPI.pigeonChannelCodec.encodeMessage(<Object?>[]);
         },
       );
 
@@ -149,7 +149,7 @@ void main() {
       registerMockHandler(
         'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.isPaused',
         (ByteData? message) async {
-          return THEOplayerNativeAPI.codec.encodeMessage(<Object?>[true]);
+          return THEOplayerNativeAPI.pigeonChannelCodec.encodeMessage(<Object?>[true]);
         },
       );
 
@@ -161,7 +161,7 @@ void main() {
       registerMockHandler(
         'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.getCurrentTime',
         (ByteData? message) async {
-          return THEOplayerNativeAPI.codec.encodeMessage(<Object?>[42.5]);
+          return THEOplayerNativeAPI.pigeonChannelCodec.encodeMessage(<Object?>[42.5]);
         },
       );
 
@@ -176,10 +176,10 @@ void main() {
         'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setCurrentTime',
         (ByteData? message) async {
           if (message != null) {
-            final decoded = THEOplayerNativeAPI.codec.decodeMessage(message);
+            final decoded = THEOplayerNativeAPI.pigeonChannelCodec.decodeMessage(message);
             if (decoded is List && decoded.length == 1) {
               receivedTime = decoded[0] as double?;
-              return THEOplayerNativeAPI.codec.encodeMessage(<Object?>[]);
+              return THEOplayerNativeAPI.pigeonChannelCodec.encodeMessage(<Object?>[]);
             }
           }
           return null;
@@ -205,10 +205,10 @@ void main() {
       );
 
       // Setup the Flutter API
-      THEOplayerFlutterAPI.setup(mockAPI);
+      THEOplayerFlutterAPI.setUp(mockAPI);
 
       // Simulate native calling the onPlay method
-      final codec = THEOplayerFlutterAPI.codec;
+      final codec = THEOplayerFlutterAPI.pigeonChannelCodec;
       final message = codec.encodeMessage(<Object?>[15.5]);
 
       await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -224,7 +224,7 @@ void main() {
       expect(receivedTime, 15.5);
 
       // Cleanup
-      THEOplayerFlutterAPI.setup(null);
+      THEOplayerFlutterAPI.setUp(null);
     });
 
     test('onPause callback - receives pause event from native', () async {
@@ -238,9 +238,9 @@ void main() {
         },
       );
 
-      THEOplayerFlutterAPI.setup(mockAPI);
+      THEOplayerFlutterAPI.setUp(mockAPI);
 
-      final codec = THEOplayerFlutterAPI.codec;
+      final codec = THEOplayerFlutterAPI.pigeonChannelCodec;
       final message = codec.encodeMessage(<Object?>[25.0]);
 
       await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -255,7 +255,7 @@ void main() {
       expect(onPauseCalled, true);
       expect(receivedTime, 25.0);
 
-      THEOplayerFlutterAPI.setup(null);
+      THEOplayerFlutterAPI.setUp(null);
     });
 
     test('onSourceChange callback - receives source change from native',
@@ -270,16 +270,16 @@ void main() {
         },
       );
 
-      THEOplayerFlutterAPI.setup(mockAPI);
+      THEOplayerFlutterAPI.setUp(mockAPI);
 
       final testSource = SourceDescription(sources: [
-        PigeonTypedSource(
+        TypedSourcePigeon(
           src: 'https://example.com/new-video.m3u8',
           type: 'application/x-mpegurl',
         ),
       ]);
 
-      final codec = THEOplayerFlutterAPI.codec;
+      final codec = THEOplayerFlutterAPI.pigeonChannelCodec;
       final message = codec.encodeMessage(<Object?>[testSource]);
 
       await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -296,7 +296,7 @@ void main() {
       expect(receivedSource!.sources[0]!.src,
           'https://example.com/new-video.m3u8');
 
-      THEOplayerFlutterAPI.setup(null);
+      THEOplayerFlutterAPI.setUp(null);
     });
 
     test('onError callback - receives error from native', () async {
@@ -310,9 +310,9 @@ void main() {
         },
       );
 
-      THEOplayerFlutterAPI.setup(mockAPI);
+      THEOplayerFlutterAPI.setUp(mockAPI);
 
-      final codec = THEOplayerFlutterAPI.codec;
+      final codec = THEOplayerFlutterAPI.pigeonChannelCodec;
       final message = codec.encodeMessage(<Object?>['Network error occurred']);
 
       await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
@@ -327,7 +327,7 @@ void main() {
       expect(onErrorCalled, true);
       expect(receivedError, 'Network error occurred');
 
-      THEOplayerFlutterAPI.setup(null);
+      THEOplayerFlutterAPI.setUp(null);
     });
   });
 
@@ -358,7 +358,7 @@ void main() {
       registerMockHandler(
         'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.setSource',
         (ByteData? message) async {
-          return THEOplayerNativeAPI.codec.encodeMessage(<Object?>[]);
+          return THEOplayerNativeAPI.pigeonChannelCodec.encodeMessage(<Object?>[]);
         },
       );
 
@@ -371,7 +371,7 @@ void main() {
         'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.play',
         (ByteData? message) async {
           // Return error response
-          return THEOplayerNativeAPI.codec.encodeMessage(<Object?>['ERROR_CODE', 'Error message', null]);
+          return THEOplayerNativeAPI.pigeonChannelCodec.encodeMessage(<Object?>['ERROR_CODE', 'Error message', null]);
         },
       );
 
