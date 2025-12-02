@@ -1,7 +1,7 @@
 class SourceDescription {
-  final List<PigeonTypedSource?> sources;
+  final List<TypedSourcePigeon?> sources;
 
-  const SourceDescription({required this.sources});
+  SourceDescription({required this.sources});
 }
 
 ///
@@ -9,14 +9,14 @@ class SourceDescription {
 /// Remarks:
 /// * Internal type, don't use it, it will be removed.
 ///
-class PigeonTypedSource {
+class TypedSourcePigeon {
   final String src;
   final String? type;
   final DRMConfiguration? drm;
   final SourceIntegrationId? integration;
   final Map<String?, String?>? headers;
 
-  const PigeonTypedSource({required this.src, this.type, this.drm, this.integration, this.headers});
+  TypedSourcePigeon({required this.src, this.type, this.drm, this.integration, this.headers});
 }
 
 enum SourceIntegrationId {

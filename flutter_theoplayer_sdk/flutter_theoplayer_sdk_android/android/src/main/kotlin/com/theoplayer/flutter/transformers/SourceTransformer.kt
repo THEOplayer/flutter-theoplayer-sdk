@@ -12,7 +12,7 @@ import com.theoplayer.flutter.pigeon.SourceIntegrationId
 import com.theoplayer.flutter.pigeon.WidevineDRMConfiguration
 
 typealias FlutterSourceDescription = com.theoplayer.flutter.pigeon.SourceDescription
-typealias FlutterTypedSource = com.theoplayer.flutter.pigeon.PigeonTypedSource
+typealias FlutterTypedSource = com.theoplayer.flutter.pigeon.TypedSourcePigeon
 typealias FlutterDRMConfiguration = com.theoplayer.flutter.pigeon.DRMConfiguration
 typealias FlutterWidevineDRMConfiguration = WidevineDRMConfiguration
 typealias FlutterFairPlayDRMConfiguration = FairPlayDRMConfiguration

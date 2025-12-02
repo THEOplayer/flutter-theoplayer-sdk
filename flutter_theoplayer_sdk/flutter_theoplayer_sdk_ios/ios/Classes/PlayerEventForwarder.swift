@@ -37,7 +37,7 @@ class PlayerEventForwarder {
     private var canPlayEventListener: EventListener?
     private var canPlayThroughEventListener: EventListener?
     
-    private let emptyCompletion: (Result<Void, FlutterError>) -> Void = {result in }
+    private let emptyCompletion: (Result<Void, PigeonError>) -> Void = {result in }
     
     init(theoplayer: THEOplayer, flutterAPI: THEOplayerFlutterAPI) {
         self.theoplayer = theoplayer
