@@ -27,7 +27,7 @@ import com.theoplayer.flutter.transformers.TrackTransformer
 
 class TextTrackBridge(
     private val player: Player,
-    pigeonMessenger: PigeonBinaryMessengerWrapper,
+    private val pigeonMessenger: PigeonBinaryMessengerWrapper,
 ) : THEOplayerNativeTextTracksAPI {
 
     private val flutterTextTracksAPI = THEOplayerFlutterTextTracksAPI(pigeonMessenger)
@@ -117,6 +117,9 @@ class TextTrackBridge(
         player.textTracks.forEach { track ->
             removeTrackListeners(track)
         }
+
+        // Clean up Pigeon API
+        setUp(pigeonMessenger, null)
     }
 
     private fun attachTrackListeners(track: TextTrack) {

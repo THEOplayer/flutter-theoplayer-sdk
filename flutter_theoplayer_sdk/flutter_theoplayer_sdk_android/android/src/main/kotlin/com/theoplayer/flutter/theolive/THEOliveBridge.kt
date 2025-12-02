@@ -13,7 +13,7 @@ import com.theoplayer.flutter.pigeon.THEOplayerFlutterTHEOliveAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeTHEOliveAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeTHEOliveAPI.Companion.setUp
 
-class THEOliveBridge(private val theoLive: TheoLive, pigeonMessenger: PigeonBinaryMessengerWrapper) : THEOplayerNativeTHEOliveAPI {
+class THEOliveBridge(private val theoLive: TheoLive, private val pigeonMessenger: PigeonBinaryMessengerWrapper) : THEOplayerNativeTHEOliveAPI {
 
     private val flutterTHEOliveAPI = THEOplayerFlutterTHEOliveAPI(pigeonMessenger)
     private val emptyCallback: (Result<Unit>) -> Unit = {}
@@ -69,6 +69,9 @@ class THEOliveBridge(private val theoLive: TheoLive, pigeonMessenger: PigeonBina
         this.theoLive.removeEventListener(TheoLiveEventTypes.ENDPOINTLOADED, endpointLoadedListener)
         this.theoLive.removeEventListener(TheoLiveEventTypes.DISTRIBUTIONOFFLINE, distributionOfflineListener)
         this.theoLive.removeEventListener(TheoLiveEventTypes.INTENTTOFALLBACK, intentToFallbackListener)
+
+        // Clean up Pigeon API
+        setUp(pigeonMessenger, null)
     }
 
 }

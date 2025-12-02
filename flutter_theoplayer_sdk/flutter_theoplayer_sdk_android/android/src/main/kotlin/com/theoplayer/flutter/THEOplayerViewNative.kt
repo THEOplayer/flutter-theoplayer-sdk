@@ -115,11 +115,7 @@ class THEOplayerViewNative(
 
         theoplayerWrapper = LinearLayout(context)
         theoplayerWrapper.layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
-        if (BuildConfig.DEBUG) {
-            theoplayerWrapper.setBackgroundColor(android.graphics.Color.BLUE)
-        } else {
-            theoplayerWrapper.setBackgroundColor(android.graphics.Color.BLACK)
-        }
+        theoplayerWrapper.setBackgroundColor(android.graphics.Color.BLACK)
 
         tpv = THEOplayerView(context, playerConfigBuilder.build())
         isFirstPlaying = false
@@ -158,8 +154,17 @@ class THEOplayerViewNative(
         audioTrackBridge.removeListeners()
         videoTrackBridge.removeListeners()
         theoLiveBridge.removeListeners()
+
+        // Clean up native API
+        setUp(pigeonMessenger, null)
+
+        // Remove view from parent and destroy player
+        theoplayerWrapper.removeView(tpv)
         tpv.onDestroy()
-        destroyListener?.onDestroyed();
+
+        // Notify destroy listener (this removes from factory registry)
+        destroyListener?.onDestroyed()
+        destroyListener = null
     }
 
     // activity lifecycle events

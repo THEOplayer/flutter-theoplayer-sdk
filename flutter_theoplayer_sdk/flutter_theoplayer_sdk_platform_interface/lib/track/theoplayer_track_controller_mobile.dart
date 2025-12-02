@@ -40,5 +40,6 @@ class THEOplayerTrackControllerMobile extends THEOplayerTrackControllerInterface
   void dispose() {
     _textTrackAPI.dispose();
     _audioTrackAPI.dispose();
+    _videoTrackAPI.dispose();
   }
 }
