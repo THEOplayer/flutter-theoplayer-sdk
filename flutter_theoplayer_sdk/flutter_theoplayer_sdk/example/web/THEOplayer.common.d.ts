@@ -2029,7 +2029,7 @@ interface CsaiAdDescription extends AdDescription {
  *
  * @public
  */
-type BufferSource = ArrayBufferView | ArrayBuffer;
+type BufferSource = ArrayBufferView<ArrayBuffer> | ArrayBuffer;
 
 /**
  * Describes the key system configuration.
@@ -2739,10 +2739,16 @@ interface RetryConfiguration {
 
 /**
  * The values that can be set to define hardware resources on Sony PlayStation® 5.
+ *
+ * @category Player
+ * @public
  */
 type PlayStation5PlayMode = '2K' | '4K';
 /**
  * Describes the configuration that is specific for playback on Sony PlayStation® 5.
+ *
+ * @category Player
+ * @public
  */
 interface PlayStation5Configuration {
     /**
@@ -2934,6 +2940,7 @@ type MutedAutoplayConfiguration = 'none' | 'all' | 'content';
 /**
  * A configuration to configure THEOlive playback.
  *
+ * @category THEOlive
  * @public
  */
 interface TheoLiveConfiguration {
@@ -3513,6 +3520,20 @@ interface HlsPlaybackConfiguration {
 }
 
 /**
+ * Describes the DVR configuration for a specific source.
+ *
+ * @category Source
+ * @category DVR
+ * @internal
+ */
+interface SourceDVRConfiguration {
+    /**
+     * The expected length of the DVR window, in seconds. It must be larger than 60 seconds to enable DVR seeking.
+     */
+    windowLength: number;
+}
+
+/**
  * Fired when a text track cue is entered.
  *
  * @category Media and Text Tracks
@@ -3817,6 +3838,278 @@ interface THEOplayerError extends Error {
 }
 
 /**
+ * The events fired by a {@link Quality}.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface QualityEventMap {
+    /**
+     * {@inheritDoc UpdateQualityEvent}
+     */
+    update: UpdateQualityEvent;
+}
+/**
+ * Fired when the quality updates.
+ *
+ * @category Media and Text Tracks
+ * @category Events
+ * @public
+ */
+interface UpdateQualityEvent extends Event<'update'> {
+    /**
+     * The quality which has been updated.
+     */
+    readonly quality: Quality;
+}
+/**
+ * Represents a quality of a media track.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface Quality extends EventDispatcher<QualityEventMap> {
+    /**
+     * The average bandwidth of the quality, in bits per second.
+     */
+    readonly averageBandwidth?: number;
+    /**
+     * The required bandwidth for the quality, in bits per second.
+     */
+    readonly bandwidth: number;
+    /**
+     * The codecs of the quality.
+     *
+     * @remarks
+     * <br/> - These are represented as a string containing the codecs as defined by the manifest.
+     */
+    readonly codecs: string;
+    /**
+     * The identifier for this quality. This identifier is tied to the stream's internal representation. It may be empty. For a unique id, use {@link Quality.uid}.
+     */
+    readonly id: string;
+    /**
+     * The unique identifier for this quality.
+     */
+    readonly uid: number;
+    /**
+     * The name of the quality.
+     */
+    readonly name: string;
+    /**
+     * The label of the quality.
+     */
+    label: string;
+    /**
+     * Whether the quality is available.
+     *
+     * @remarks
+     * <br/> - A quality can be unavailable due to a DRM restriction (e.g. HDCP).
+     */
+    readonly available: boolean;
+    /**
+     * The HLS SCORE attribute.
+     *
+     * @remarks
+     * <br/> - Available since v6.8.0.
+     * <br/> - Only for HLS streams.
+     */
+    readonly score: number | undefined;
+}
+/**
+ * Represents a quality of a video track.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface VideoQuality extends Quality {
+    /**
+     * The video height of the video quality, in pixels.
+     */
+    readonly height: number;
+    /**
+     * The video width of the video quality, in pixels.
+     */
+    readonly width: number;
+    /**
+     * The framerate of the video quality.
+     */
+    readonly frameRate: number;
+    /**
+     * The timestamp of the first frame of the video quality, in seconds.
+     */
+    readonly firstFrame: number;
+}
+/**
+ * Represents a quality of an audio track.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface AudioQuality extends Quality {
+    /**
+     * The sampling rate of the audio quality.
+     */
+    readonly audioSamplingRate: number | [number, number];
+}
+
+/**
+ * List of qualities.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface QualityList extends Array<Quality> {
+    /**
+     * Index signature to get the quality at the requested index in the list.
+     */
+    [index: number]: Quality;
+    /**
+     * Return the quality at the requested index in the list.
+     *
+     * @param index - A `number` representing the index of a quality in the list.
+     * @returns The quality with index `index` in the list.
+     */
+    item(index: number): Quality;
+}
+
+/**
+ * The type of a media track, represented by a value from the following list:
+ * <br/> - `'audio'`
+ * <br/> - `'video'`
+ * <br/> - `'text'`
+ * <br/> - `'image'`
+ * <br/> - `'unknown'`
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+type MediaTrackType = 'audio' | 'video' | 'text' | 'image' | 'unknown';
+/**
+ * A quality-related event fired by a {@link MediaTrack}.
+ *
+ * @category Media and Text Tracks
+ * @category Events
+ * @public
+ */
+interface QualityEvent<TType extends string> extends Event<TType> {
+    /**
+     * The quality.
+     */
+    readonly quality: Quality;
+}
+/**
+ * Fired when the media track's {@link MediaTrack.targetQuality | target quality} changes.
+ *
+ * @category Media and Text Tracks
+ * @category Events
+ * @public
+ */
+interface TargetQualityChangedEvent extends Event<'targetqualitychanged'> {
+    /**
+     * The new target quality.
+     */
+    readonly quality: Quality | undefined;
+    /**
+     * The new target qualities.
+     */
+    readonly qualities: Quality[];
+}
+/**
+ * The events fired by a {@link MediaTrack}.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface MediaTrackEventMap extends TrackEventMap {
+    /**
+     * Fired when the media track's {@link MediaTrack.activeQuality | active quality} changes.
+     */
+    activequalitychanged: QualityEvent<'activequalitychanged'>;
+    /**
+     * Fired when the media track's {@link MediaTrack.targetQuality | target quality} changes.
+     */
+    targetqualitychanged: TargetQualityChangedEvent;
+    /**
+     * Fired when a quality of the track becomes unavailable.
+     *
+     * @remarks
+     * <br/> - A Quality can become unavailable due to a DRM restriction (e.g. HDCP).
+     */
+    qualityunavailable: QualityEvent<'qualityunavailable'>;
+}
+/**
+ * Represents a media track (audio or video) of a media resource.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface MediaTrack extends Track, EventDispatcher<MediaTrackEventMap> {
+    /**
+     * Whether the track is enabled.
+     *
+     * @remarks
+     * <br/> - Only one track of the same type (e.g. video) can be enabled at the same time.
+     * <br/> - Enabling a track will disable all other tracks of the same type.
+     * <br/> - Disabling a track will not enable a different track of the same type.
+     */
+    enabled: boolean;
+    /**
+     * The identifier of the media track.
+     *
+     * @remarks
+     * <br/> - This identifier can be used to distinguish between related tracks, e.g. tracks in the same list.
+     */
+    readonly id: string;
+    /**
+     * A unique identifier of the media track.
+     *
+     * @remarks
+     * <br/> - This identifier is unique across tracks of a THEOplayer instance and can be used to distinguish between tracks.
+     * <br/> - This identifier is a randomly generated number.
+     */
+    readonly uid: number;
+    /**
+     * The kind of the media track, represented by a value from the following list:
+     * <br/> - `'main'`: The track is the default track for playback
+     * <br/> - `'alternative'`: The track is not the default track for playback
+     */
+    readonly kind: string;
+    /**
+     * The label of the media track.
+     */
+    label: string;
+    /**
+     * The language of the media track.
+     */
+    readonly language: string;
+    /**
+     * The active quality of the media track, i.e. the quality that is currently being played.
+     */
+    readonly activeQuality: Quality | undefined;
+    /**
+     * The qualities of the media track.
+     */
+    readonly qualities: QualityList;
+    /**
+     * One or more desired qualities of the media track.
+     *
+     * @remarks
+     * <br/> - If desired qualities are present, the Adaptive Bitrate mechanism of the player will limit itself to these qualities.
+     * <br/> - If one desired quality is present, the Adaptive Bitrate mechanism of the player will be disabled and the desired quality will be played back.
+     */
+    targetQuality: Quality | Quality[] | undefined;
+    /**
+     * {@inheritDoc EventDispatcher.addEventListener}
+     */
+    addEventListener<TType extends StringKeyOf<MediaTrackEventMap>>(type: TType | readonly TType[], listener: EventListener<MediaTrackEventMap[TType]>): void;
+    /**
+     * {@inheritDoc EventDispatcher.removeEventListener}
+     */
+    removeEventListener<TType extends StringKeyOf<MediaTrackEventMap>>(type: TType | readonly TType[], listener: EventListener<MediaTrackEventMap[TType]>): void;
+}
+
+/**
  * Fired when an error occurs.
  *
  * @category Errors
@@ -3834,6 +4127,68 @@ interface ErrorEvent extends Event<'error'> {
      * An error object containing additional information about the error.
      */
     errorObject: THEOplayerError;
+}
+/**
+ * Fired when a manifest cannot be loaded.
+ *
+ * @category Errors
+ * @category Events
+ * @public
+ */
+interface ManifestErrorEvent extends Event<'manifesterror'> {
+    /**
+     * The number of times the loading of a manifest has been tried.
+     */
+    retryCount: number;
+    /**
+     * The HTTP status code corresponding to the network error returned by the network request.
+     */
+    statusCode: number | undefined;
+    /**
+     * The network status message describing the error that occurred while requesting the manifest.
+     */
+    statusMessage: string | undefined;
+}
+/**
+ * Fired when a segment cannot be loaded.
+ *
+ * @category Errors
+ * @category Events
+ * @public
+ */
+interface SegmentErrorEvent extends Event<'segmenterror'> {
+    /**
+     * The general error message describing the error that occurred while requesting the manifest.
+     */
+    error: string;
+    /**
+     * The quality of the track that this segment belongs to, if available.
+     */
+    quality: Quality | undefined;
+    /**
+     * The number of times the loading of a manifest has been tried.
+     */
+    retryCount: number;
+    /**
+     * The time the segment starts in the stream, in seconds.
+     */
+    segmentStartTime: number;
+    /**
+     * The HTTP status code corresponding to the network error returned by the network request.
+     */
+    statusCode: number | undefined;
+    /**
+     * The network status message describing the error that occurred while requesting the manifest.
+     */
+    statusMessage: string | undefined;
+    /**
+     * The track that this segment belongs to, if available.
+     */
+    track: Track | undefined;
+    /**
+     * The type of track that this segment belongs to/
+     */
+    trackType: MediaTrackType;
 }
 
 /**
@@ -4166,6 +4521,7 @@ interface TextTrack extends Track, EventDispatcher<TextTrackEventMap> {
  * Represents a source for the THEOlive integration.
  *
  * @category Source
+ * @category THEOlive
  * @public
  */
 interface TheoLiveSource extends TypedSource {
@@ -4360,6 +4716,15 @@ interface SourceConfiguration {
      * @deprecated Superseded by {@link SourceConfiguration.contentProtection}.
      */
     drm?: DRMConfiguration;
+    /**
+     * Enables smooth DVR seeking for THEOlive and Millicast streams.
+     *
+     * THEOlive and Millicast sources normally only support live playback without DVR functionality. When enabled, this option allows the player to
+     * seamlessly switch to a fallback HLS or DASH source (specified in [SourceDescription.sources]) when the user seeks away from the live point.
+     *
+     * @internal
+     */
+    dvr?: SourceDVRConfiguration;
     /**
      * The poster of the media source.
      *
@@ -5089,266 +5454,6 @@ interface MediaError extends Error {
      * The key system specific error code, if any.
      */
     readonly systemCode?: number;
-}
-
-/**
- * The events fired by a {@link Quality}.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface QualityEventMap {
-    /**
-     * {@inheritDoc UpdateQualityEvent}
-     */
-    update: UpdateQualityEvent;
-}
-/**
- * Fired when the quality updates.
- *
- * @category Media and Text Tracks
- * @category Events
- * @public
- */
-interface UpdateQualityEvent extends Event<'update'> {
-    /**
-     * The quality which has been updated.
-     */
-    readonly quality: Quality;
-}
-/**
- * Represents a quality of a media track.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface Quality extends EventDispatcher<QualityEventMap> {
-    /**
-     * The average bandwidth of the quality, in bits per second.
-     */
-    readonly averageBandwidth?: number;
-    /**
-     * The required bandwidth for the quality, in bits per second.
-     */
-    readonly bandwidth: number;
-    /**
-     * The codecs of the quality.
-     *
-     * @remarks
-     * <br/> - These are represented as a string containing the codecs as defined by the manifest.
-     */
-    readonly codecs: string;
-    /**
-     * The identifier for this quality. This identifier is tied to the stream's internal representation. It may be empty. For a unique id, use {@link Quality.uid}.
-     */
-    readonly id: string;
-    /**
-     * The unique identifier for this quality.
-     */
-    readonly uid: number;
-    /**
-     * The name of the quality.
-     */
-    readonly name: string;
-    /**
-     * The label of the quality.
-     */
-    label: string;
-    /**
-     * Whether the quality is available.
-     *
-     * @remarks
-     * <br/> - A quality can be unavailable due to a DRM restriction (e.g. HDCP).
-     */
-    readonly available: boolean;
-    /**
-     * The HLS SCORE attribute.
-     *
-     * @remarks
-     * <br/> - Available since v6.8.0.
-     * <br/> - Only for HLS streams.
-     */
-    readonly score: number | undefined;
-}
-/**
- * Represents a quality of a video track.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface VideoQuality extends Quality {
-    /**
-     * The video height of the video quality, in pixels.
-     */
-    readonly height: number;
-    /**
-     * The video width of the video quality, in pixels.
-     */
-    readonly width: number;
-    /**
-     * The framerate of the video quality.
-     */
-    readonly frameRate: number;
-    /**
-     * The timestamp of the first frame of the video quality, in seconds.
-     */
-    readonly firstFrame: number;
-}
-/**
- * Represents a quality of an audio track.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface AudioQuality extends Quality {
-    /**
-     * The sampling rate of the audio quality.
-     */
-    readonly audioSamplingRate: number | [number, number];
-}
-
-/**
- * List of qualities.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface QualityList extends Array<Quality> {
-    /**
-     * Index signature to get the quality at the requested index in the list.
-     */
-    [index: number]: Quality;
-    /**
-     * Return the quality at the requested index in the list.
-     *
-     * @param index - A `number` representing the index of a quality in the list.
-     * @returns The quality with index `index` in the list.
-     */
-    item(index: number): Quality;
-}
-
-/**
- * A quality-related event fired by a {@link MediaTrack}.
- *
- * @category Media and Text Tracks
- * @category Events
- * @public
- */
-interface QualityEvent<TType extends string> extends Event<TType> {
-    /**
-     * The quality.
-     */
-    readonly quality: Quality;
-}
-/**
- * Fired when the media track's {@link MediaTrack.targetQuality | target quality} changes.
- *
- * @category Media and Text Tracks
- * @category Events
- * @public
- */
-interface TargetQualityChangedEvent extends Event<'targetqualitychanged'> {
-    /**
-     * The new target quality.
-     */
-    readonly quality: Quality | undefined;
-    /**
-     * The new target qualities.
-     */
-    readonly qualities: Quality[];
-}
-/**
- * The events fired by a {@link MediaTrack}.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface MediaTrackEventMap extends TrackEventMap {
-    /**
-     * Fired when the media track's {@link MediaTrack.activeQuality | active quality} changes.
-     */
-    activequalitychanged: QualityEvent<'activequalitychanged'>;
-    /**
-     * Fired when the media track's {@link MediaTrack.targetQuality | target quality} changes.
-     */
-    targetqualitychanged: TargetQualityChangedEvent;
-    /**
-     * Fired when a quality of the track becomes unavailable.
-     *
-     * @remarks
-     * <br/> - A Quality can become unavailable due to a DRM restriction (e.g. HDCP).
-     */
-    qualityunavailable: QualityEvent<'qualityunavailable'>;
-}
-/**
- * Represents a media track (audio or video) of a media resource.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface MediaTrack extends Track, EventDispatcher<MediaTrackEventMap> {
-    /**
-     * Whether the track is enabled.
-     *
-     * @remarks
-     * <br/> - Only one track of the same type (e.g. video) can be enabled at the same time.
-     * <br/> - Enabling a track will disable all other tracks of the same type.
-     * <br/> - Disabling a track will not enable a different track of the same type.
-     */
-    enabled: boolean;
-    /**
-     * The identifier of the media track.
-     *
-     * @remarks
-     * <br/> - This identifier can be used to distinguish between related tracks, e.g. tracks in the same list.
-     */
-    readonly id: string;
-    /**
-     * A unique identifier of the media track.
-     *
-     * @remarks
-     * <br/> - This identifier is unique across tracks of a THEOplayer instance and can be used to distinguish between tracks.
-     * <br/> - This identifier is a randomly generated number.
-     */
-    readonly uid: number;
-    /**
-     * The kind of the media track, represented by a value from the following list:
-     * <br/> - `'main'`: The track is the default track for playback
-     * <br/> - `'alternative'`: The track is not the default track for playback
-     */
-    readonly kind: string;
-    /**
-     * The label of the media track.
-     */
-    label: string;
-    /**
-     * The language of the media track.
-     */
-    readonly language: string;
-    /**
-     * The active quality of the media track, i.e. the quality that is currently being played.
-     */
-    readonly activeQuality: Quality | undefined;
-    /**
-     * The qualities of the media track.
-     */
-    readonly qualities: QualityList;
-    /**
-     * One or more desired qualities of the media track.
-     *
-     * @remarks
-     * <br/> - If desired qualities are present, the Adaptive Bitrate mechanism of the player will limit itself to these qualities.
-     * <br/> - If one desired quality is present, the Adaptive Bitrate mechanism of the player will be disabled and the desired quality will be played back.
-     */
-    targetQuality: Quality | Quality[] | undefined;
-    /**
-     * {@inheritDoc EventDispatcher.addEventListener}
-     */
-    addEventListener<TType extends StringKeyOf<MediaTrackEventMap>>(type: TType | readonly TType[], listener: EventListener<MediaTrackEventMap[TType]>): void;
-    /**
-     * {@inheritDoc EventDispatcher.removeEventListener}
-     */
-    removeEventListener<TType extends StringKeyOf<MediaTrackEventMap>>(type: TType | readonly TType[], listener: EventListener<MediaTrackEventMap[TType]>): void;
 }
 
 /**
@@ -6280,6 +6385,20 @@ interface HTTPHeaders {
     [headerName: string]: string;
 }
 /**
+ * An object that can be used to initialize a {@link HTTPHeaders}.
+ *
+ * Can be one of the following types:
+ * <ul>
+ *   <li>A plain object or a {@link Map} mapping <code>name</code>s to <code>value</code>s. For example: <code>\{ "Range": "bytes=0-100" \}</code></li>
+ *   <li>An array or iterable containing <code>[name, value]</code> pairs. For example: <code>[ ["Range", "bytes=0-100"] ]</code></li>
+ *   <li>A native {@linkcode https://developer.mozilla.org/en-US/docs/Web/API/Headers | Headers} object.</li>
+ * </ul>
+ *
+ * @category Network
+ * @public
+ */
+type HTTPHeadersInit = HTTPHeaders | Map<string, string> | ReadonlyArray<[string, string]> | Iterable<[string, string]>;
+/**
  * The possible types of an HTTP request body.
  *
  * @category Network
@@ -6468,10 +6587,14 @@ interface NetworkEstimatorController {
 interface NetworkEventMap {
     /**
      * Fired when the manifest is online.
+     *
+     * @deprecated use {@link PlayerEventMap.manifestupdate} instead
      */
     online: Event<'online'>;
     /**
      * Fired when the manifest is offline.
+     *
+     * @deprecated use {@link PlayerEventMap.manifesterror} instead
      */
     offline: Event<'offline'>;
 }
@@ -6514,7 +6637,7 @@ interface RequestInit {
      *
      * @defaultValue The original request's HTTP headers.
      */
-    headers?: HTTPHeaders;
+    headers?: HTTPHeadersInit;
     /**
      * The request's body.
      *
@@ -6585,7 +6708,7 @@ interface ResponseInit {
      *
      * @defaultValue The original response's HTTP headers.
      */
-    headers?: HTTPHeaders;
+    headers?: HTTPHeadersInit;
     /**
      * The response's body.
      *
@@ -8750,7 +8873,7 @@ interface HespApi extends EventDispatcher<HespApiEventMap> {
      * @remarks
      * <br/> - Undefined if no HESP source is configured.
      */
-    readonly manifest: Object | undefined;
+    readonly manifest: object | undefined;
     /**
      * Returns an overview of the latencies of different parts of the pipeline.
      *
@@ -9304,6 +9427,7 @@ interface TimeRanges {
 /**
  * Fired when the loading of a THEOlive distribution starts.
  *
+ * @category THEOlive
  * @public
  */
 interface DistributionLoadStartEvent extends Event<'distributionloadstart'> {
@@ -9313,6 +9437,7 @@ interface DistributionLoadStartEvent extends Event<'distributionloadstart'> {
  * Fired when the loading of a THEOlive endpoint is complete and playback can start. This event is dispatched on every endpoint load, when an error
  * is encountered and the player recovers by choosing a new one.
  *
+ * @category THEOlive
  * @public
  */
 interface EndpointLoadedEvent extends Event<'endpointloaded'> {
@@ -9324,6 +9449,7 @@ interface EndpointLoadedEvent extends Event<'endpointloaded'> {
 /**
  * Fired when loading a THEOlive distribution that cannot be played, for example because the publication is stopped or is still starting up.
  *
+ * @category THEOlive
  * @public
  */
 interface DistributionOfflineEvent extends Event<'distributionoffline'> {
@@ -9333,6 +9459,7 @@ interface DistributionOfflineEvent extends Event<'distributionoffline'> {
  * Fired when the player cannot play the current primary publication and would like to fallback. If a fallback has been configured it will fallback,
  * otherwise only the event is fired.
  *
+ * @category THEOlive
  * @public
  */
 interface IntentToFallbackEvent extends Event<'intenttofallback'> {
@@ -9344,6 +9471,7 @@ interface IntentToFallbackEvent extends Event<'intenttofallback'> {
 /**
  * Fired when the player enters bad network mode.
  *
+ * @category THEOlive
  * @public
  */
 interface EnterBadNetworkModeEvent extends Event<'enterbadnetworkmode'> {
@@ -9351,13 +9479,15 @@ interface EnterBadNetworkModeEvent extends Event<'enterbadnetworkmode'> {
 /**
  * Fired when the player exits bad network mode.
  *
+ * @category THEOlive
  * @public
  */
 interface ExitBadNetworkModeEvent extends Event<'exitbadnetworkmode'> {
 }
 /**
- * A collection of events dispatched by the THEOlive api.
+ * The events fired by the {@link TheoLiveApi}.
  *
+ * @category THEOlive
  * @public
  */
 interface TheoLiveApiEventMap {
@@ -9371,6 +9501,7 @@ interface TheoLiveApiEventMap {
 /**
  * A THEOlive publication.
  *
+ * @category THEOlive
  * @public
  */
 interface TheoLivePublication {
@@ -9379,6 +9510,7 @@ interface TheoLivePublication {
 /**
  * The THEOlive api.
  *
+ * @category THEOlive
  * @public
  */
 interface TheoLiveApi extends EventDispatcher<TheoLiveApiEventMap> {
@@ -9389,16 +9521,35 @@ interface TheoLiveApi extends EventDispatcher<TheoLiveApiEventMap> {
     authToken: string | undefined;
     preloadPublications(publicationIds: string[]): Promise<TheoLivePublication[]>;
 }
+/**
+ * A THEOlive endpoint.
+ *
+ * @category THEOlive
+ * @public
+ */
 interface Endpoint {
     hespSrc?: string;
     hlsSrc?: string;
+    millicastSrc?: ChannelMillicastSource;
     adSrc?: string;
     daiAssetKey?: string;
     cdn?: string;
     weight: number;
     priority: number;
     contentProtection?: ChannelDrmConfigResponse;
+    dvrWindow?: number;
 }
+interface ChannelMillicastSource {
+    accountId: string;
+    name: string;
+    subscriberToken?: string;
+}
+/**
+ * The DRM configuration of a THEOlive endpoint.
+ *
+ * @category THEOlive
+ * @public
+ */
 interface ChannelDrmConfigResponse {
     integration: string;
     widevine?: {
@@ -9765,7 +9916,10 @@ interface Interstitial {
     adTagParameters: Record<string, string>;
 }
 /**
- *  The layout of the THEOad.
+ * The layout of a THEOads {@link AdBreakInterstitial}.
+ *
+ * @category THEOads
+ * @public
  */
 type TheoAdsLayout = 'single' | 'l-shape' | 'double';
 /**
@@ -9849,14 +10003,27 @@ interface OverlaySize {
  * See the {@link https://millicast.github.io/millicast-sdk/global.html#ConnectionStats | Millicast SDK API reference} for details on the
  * connection stats included in the event.
  *
+ * @category Millicast
  * @public
  */
 interface MillicastStatsEvent extends Event<'stats'> {
     stats: Record<string, any>;
 }
+/**
+ * The events fired by the {@link Millicast} API.
+ *
+ * @category Millicast
+ * @public
+ */
 interface MillicastEventMap {
     stats: MillicastStatsEvent;
 }
+/**
+ * The Millicast API.
+ *
+ * @category Millicast
+ * @public
+ */
 interface Millicast extends EventDispatcher<MillicastEventMap> {
     /**
      * Returns diagnostics information about the Millicast connection and environment, formatted according to the specified parameters.
@@ -10013,12 +10180,21 @@ interface PlayerEventMap {
      */
     manifestupdate: Event<'manifestupdate'>;
     /**
-     * Fired when a segment can not be found.
+     * Fired when the manifest cannot be loaded or parsed.
+     */
+    manifesterror: Event<'manifesterror'>;
+    /**
+     * Fired when a segment cannot be found.
      *
      * @remarks
      * <br/> - Only fired on DASH streams.
+     * @deprecated use {@link PlayerEventMap.segmenterror} instead
      */
     segmentnotfound: Event<'segmentnotfound'>;
+    /**
+     * Fired when a segment cannot be found.
+     */
+    segmenterror: Event<'segmenterror'>;
     /**
      * Fired when the player encounters key system initialization data in the media data.
      *
@@ -13681,4 +13857,4 @@ declare function registerContentProtectionIntegration(integrationId: string, key
  */
 declare const utils: CommonUtils;
 
-export { ABRConfiguration, ABRMetadata, ABRStrategy, ABRStrategyConfiguration, ABRStrategyType, AES128KeySystemConfiguration, AccessibilityRole, Ad, AdBreak, AdBreakEvent, AdBreakInit, AdBreakInterstitial, AdBufferingEvent, AdDescription, AdEvent, AdInit, AdIntegrationKind, AdMetadataEvent, AdPreloadType, AdReadyState, AdSkipEvent, AdSource, AdSourceType, AdType, AddCachingTaskEvent, AddTrackEvent, AddViewEvent, Ads, AdsConfiguration, AdsEventMap, AdsManagerLoadedEvent, AgamaAnalyticsIntegrationID, AgamaConfiguration, AgamaLogLevelType, AgamaPlayerConfiguration, AgamaServiceName, AgamaSourceConfiguration, AgamaStreamType, AirPlay, AnalyticsDescription, AnalyticsIntegrationID, AudioQuality, AxinomDRMConfiguration, AxinomIntegrationID, AzureDRMConfiguration, AzureIntegrationID, Base64Util, BaseSource, Boundary, BoundaryC3, BoundaryC7, BoundaryHalftime, BoundaryInfo, BufferSource, BufferedSegments, Cache, CacheEventMap, CacheStatus, CacheTaskStatus, CachingTask, CachingTaskEventMap, CachingTaskLicense, CachingTaskList, CachingTaskListEventMap, CachingTaskParameters, CanPlayEvent, CanPlayThroughEvent, Canvas, Cast, CastConfiguration, CastEventMap, CastState, CastStateChangeEvent, CertificateRequest, CertificateResponse, ChannelDrmConfigResponse, Chromecast, ChromecastConfiguration, ChromecastConnectionCallback, ChromecastError, ChromecastErrorCode, ChromecastErrorEvent, ChromecastEventMap, ChromecastMetadataDescription, ChromecastMetadataImage, ChromecastMetadataType, ChromelessPlayer, ClearkeyDecryptionKey, ClearkeyKeySystemConfiguration, Clip, ClipEventMap, ClosedCaptionFile, ComcastDRMConfiguration, ComcastIntegrationID, CommonUtils, CompanionAd, ConaxDRMConfiguration, ConaxIntegrationID, ContentProtectionError, ContentProtectionErrorCode, ContentProtectionErrorEvent, ContentProtectionIntegration, ContentProtectionIntegrationFactory, ContentProtectionRequest, ContentProtectionRequestSubType, ContentProtectionResponse, CrossOriginSetting, CsaiAdDescription, CurrentSourceChangeEvent, CustomAdIntegrationKind, CustomTextTrackMap, CustomTextTrackOptions, CustomWebVTTTextTrack, DAIAvailabilityType, DRMConfiguration, DRMTodayDRMConfiguration, DRMTodayIntegrationID, DashPlaybackConfiguration, DateRangeCue, DeliveryType, DeviceBasedTitaniumDRMConfiguration, DimensionChangeEvent, DirectionChangeEvent, DistributionLoadStartEvent, DistributionOfflineEvent, DurationChangeEvent, EdgeStyle, EmptiedEvent, EmsgCue, EncryptedEvent, EndedEvent, Endpoint, EndpointLoadedEvent, EnterBadNetworkModeEvent, ErrorCategory, ErrorCode, ErrorEvent, Event, EventDispatcher, EventListener, EventMap, EventStreamCue, EventedList, ExitBadNetworkModeEvent, ExpressPlayDRMConfiguration, ExpressPlayIntegrationID, EzdrmDRMConfiguration, EzdrmIntegrationID, FairPlayKeySystemConfiguration, FreeWheelAdDescription, FreeWheelAdUnitType, FreeWheelCue, FullscreenOptions$1 as FullscreenOptions, Geo, GlobalCast, GlobalChromecast, GoogleDAI, GoogleDAIConfiguration, GoogleDAILiveConfiguration, GoogleDAISSAIIntegrationID, GoogleDAITypedSource, GoogleDAIVodConfiguration, GoogleImaAd, GoogleImaConfiguration, HTTPHeaders, HespApi, HespApiEventMap, HespMediaType, HespSourceConfiguration, HespTypedSource, HlsDiscontinuityAlignment, HlsPlaybackConfiguration, ID3AttachedPicture, ID3BaseFrame, ID3Comments, ID3CommercialFrame, ID3Cue, ID3Frame, ID3GenericEncapsulatedObject, ID3InvolvedPeopleList, ID3PositionSynchronisationFrame, ID3PrivateFrame, ID3SynchronizedLyricsText, ID3TermsOfUse, ID3Text, ID3UniqueFileIdentifier, ID3Unknown, ID3UnsynchronisedLyricsTextTranscription, ID3UrlLink, ID3UserDefinedText, ID3UserDefinedUrlLink, ID3Yospace, IMAAdDescription, IntentToFallbackEvent, InterceptableRequest, InterceptableResponse, Interstitial, InterstitialEvent, InterstitialType, IrdetoDRMConfiguration, IrdetoIntegrationID, JoinStrategy, KeyOSDRMConfiguration, KeyOSFairplayKeySystemConfiguration, KeyOSIntegrationID, KeyOSKeySystemConfiguration, KeySystemConfiguration, KeySystemId, Latencies, LatencyConfiguration, LatencyManager, LayoutChangeEvent, LicenseRequest, LicenseResponse, LicenseType, LinearAd, List, LoadedDataEvent, LoadedMetadataEvent, MaybeAsync, MeasurableNetworkEstimator, MediaError, MediaErrorCode, MediaFile, MediaMelonConfiguration, MediaTailorSource, MediaTrack, MediaTrackEventMap, MediaTrackList, MediaType, MetadataDescription, Metrics, Millicast, MillicastEventMap, MillicastMetadataCue, MillicastSource, MillicastStatsEvent, MoatAnalyticsIntegrationID, MoatConfiguration, MultiViewPlayer, MultiViewPlayerEventMap, MultiViewPlayerLayout, MutedAutoplayConfiguration, Network, NetworkEstimator, NetworkEstimatorController, NetworkEventMap, NetworkInterceptorController, NodeStyleVoidCallback, NonLinearAd, OverlayInterstitial, OverlayPosition, OverlaySize, PauseEvent, PiPConfiguration, PiPPosition, PlayEvent, PlayReadyKeySystemConfiguration, PlayStation5Configuration, PlayStation5PlayMode, PlayerConfiguration, PlayerEventMap, PlayerList, PlayingEvent, PreloadType, Presentation, PresentationEventMap, PresentationMode, PresentationModeChangeEvent, ProgressEvent, Quality, QualityEvent, QualityEventMap, QualityList, RateChangeEvent, ReadyStateChangeEvent, RelatedChangeEvent, RelatedContent, RelatedContentEventMap, RelatedContentSource, RelatedHideEvent, RelatedShowEvent, RemoveCachingTaskEvent, RemoveTrackEvent, RemoveViewEvent, Representation, RepresentationChangeEvent, Request, RequestBody, RequestInit, RequestInterceptor, RequestLike, RequestMeasurer, RequestMethod, RequestSubType, RequestType, ResponseBody, ResponseInit, ResponseInterceptor, ResponseLike, ResponseType, RetryConfiguration, SSAIIntegrationId, SeamlessPeriodSwitchStrategy, SeamlessSwitchStrategy, SeekedEvent, SeekingEvent, ServerSideAdInsertionConfiguration, ServerSideAdIntegrationController, ServerSideAdIntegrationFactory, ServerSideAdIntegrationHandler, SkippedAdStrategy, SmartSightConfiguration, SmartSightIntegrationID, Source, SourceAbrConfiguration, SourceChangeEvent, SourceConfiguration, SourceDescription, SourceIntegrationId, SourceLatencyConfiguration, Sources, SpotXAdDescription, SpotxData, SpotxQueryParameter, StateChangeEvent, StereoChangeEvent, StreamOneAnalyticsIntegrationID, StreamOneConfiguration, StreamType, StringKeyOf, StylePropertyRecord, SupportedCustomTextTrackCueTypes, THEOplayerError, TTMLCue, TTMLExtent, TargetQualityChangedEvent, TextTrack, TextTrackAddCueEvent, TextTrackCue, TextTrackCueChangeEvent, TextTrackCueEnterEvent, TextTrackCueEventMap, TextTrackCueExitEvent, TextTrackCueList, TextTrackCueUpdateEvent, TextTrackDescription, TextTrackEnterCueEvent, TextTrackError, TextTrackErrorCode, TextTrackErrorEvent, TextTrackEventMap, TextTrackExitCueEvent, TextTrackReadyState, TextTrackReadyStateChangeEvent, TextTrackRemoveCueEvent, TextTrackStyle, TextTrackStyleEventMap, TextTrackType, TextTrackTypeChangeEvent, TextTrackUpdateCueEvent, TextTracksList, TheoAdDescription, TheoAds, TheoAdsEventsMap, TheoAdsLayout, TheoAdsLayoutOverride, TheoLiveApi, TheoLiveApiEventMap, TheoLiveConfiguration, TheoLivePublication, TheoLiveSource, ThumbnailResolution, TimeRanges, TimeUpdateEvent, TitaniumDRMConfiguration, TitaniumIntegrationID, TokenBasedTitaniumDRMConfiguration, Track, TrackChangeEvent, TrackEventMap, TrackList, TrackListEventMap, TrackUpdateEvent, TypedSource, UIConfiguration, UILanguage, UIPlayerConfiguration, UIRelatedContent, UIRelatedContentEventMap, UniversalAdId, UpdateQualityEvent, Uplynk, UplynkAd, UplynkAdBeginEvent, UplynkAdBreak, UplynkAdBreakBeginEvent, UplynkAdBreakEndEvent, UplynkAdBreakEventMap, UplynkAdBreakList, UplynkAdBreakListEventMap, UplynkAdBreakSkipEvent, UplynkAdCompleteEvent, UplynkAdEndEvent, UplynkAdEventMap, UplynkAdFirstQuartileEvent, UplynkAdList, UplynkAdListEventMap, UplynkAdMidpointEvent, UplynkAdThirdQuartileEvent, UplynkAddAdBreakEvent, UplynkAddAssetEvent, UplynkAds, UplynkAsset, UplynkAssetEventMap, UplynkAssetId, UplynkAssetInfoResponse, UplynkAssetInfoResponseEvent, UplynkAssetList, UplynkAssetMovieRating, UplynkAssetTvRating, UplynkAssetType, UplynkConfiguration, UplynkDRMConfiguration, UplynkEventMap, UplynkExternalId, UplynkIntegrationID, UplynkPingConfiguration, UplynkPingErrorEvent, UplynkPingResponse, UplynkPingResponseEvent, UplynkPreplayBaseResponse, UplynkPreplayLiveResponse, UplynkPreplayResponse, UplynkPreplayResponseEvent, UplynkPreplayResponseType, UplynkPreplayVodResponse, UplynkRemoveAdBreakEvent, UplynkRemoveAdEvent, UplynkRemoveAssetEvent, UplynkResponseDrm, UplynkResponseLiveAd, UplynkResponseLiveAdBreak, UplynkResponseLiveAds, UplynkResponseVodAd, UplynkResponseVodAdBreak, UplynkResponseVodAdBreakOffset, UplynkResponseVodAdPlaceholder, UplynkResponseVodAds, UplynkSource, UplynkUiConfiguration, UplynkUpdateAdBreakEvent, UserActions, VPAIDMode, VR, VRConfiguration, VRDirection, VREventMap, VRPanoramaMode, VRState, VRStereoMode, VTTAlignSetting, VTTDirectionSetting, VTTLine, VTTLineAlignSetting, VTTPosition, VTTPositionAlignSetting, VTTScrollSetting, VastExtension, VendorCast, VendorCastEventMap, VerimatrixDRMConfiguration, VerimatrixIntegrationID, VideoFrameCallbackMetadata, VideoFrameRequestCallback, VideoQuality, View, ViewChangeEvent, ViewPositionChangeEvent, VimondDRMConfiguration, VimondIntegrationID, Visibility, VisibilityObserver, VisibilityObserverCallback, VoidPromiseCallback, VolumeChangeEvent, VudrmDRMConfiguration, VudrmIntegrationID, WaitUntilCallback, WaitingEvent, WebAudio, WebVTTCue, WebVTTRegion, WidevineKeySystemConfiguration, XstreamDRMConfiguration, XstreamIntegrationID, YospaceId, YouboraAnalyticsIntegrationID, YouboraOptions, cache, cast, features, players, registerContentProtectionIntegration, utils, version, videojs };
+export { ABRConfiguration, ABRMetadata, ABRStrategy, ABRStrategyConfiguration, ABRStrategyType, AES128KeySystemConfiguration, AccessibilityRole, Ad, AdBreak, AdBreakEvent, AdBreakInit, AdBreakInterstitial, AdBufferingEvent, AdDescription, AdEvent, AdInit, AdIntegrationKind, AdMetadataEvent, AdPreloadType, AdReadyState, AdSkipEvent, AdSource, AdSourceType, AdType, AddCachingTaskEvent, AddTrackEvent, AddViewEvent, Ads, AdsConfiguration, AdsEventMap, AdsManagerLoadedEvent, AgamaAnalyticsIntegrationID, AgamaConfiguration, AgamaLogLevelType, AgamaPlayerConfiguration, AgamaServiceName, AgamaSourceConfiguration, AgamaStreamType, AirPlay, AnalyticsDescription, AnalyticsIntegrationID, AudioQuality, AxinomDRMConfiguration, AxinomIntegrationID, AzureDRMConfiguration, AzureIntegrationID, Base64Util, BaseSource, Boundary, BoundaryC3, BoundaryC7, BoundaryHalftime, BoundaryInfo, BufferSource, BufferedSegments, Cache, CacheEventMap, CacheStatus, CacheTaskStatus, CachingTask, CachingTaskEventMap, CachingTaskLicense, CachingTaskList, CachingTaskListEventMap, CachingTaskParameters, CanPlayEvent, CanPlayThroughEvent, Canvas, Cast, CastConfiguration, CastEventMap, CastState, CastStateChangeEvent, CertificateRequest, CertificateResponse, ChannelDrmConfigResponse, ChannelMillicastSource, Chromecast, ChromecastConfiguration, ChromecastConnectionCallback, ChromecastError, ChromecastErrorCode, ChromecastErrorEvent, ChromecastEventMap, ChromecastMetadataDescription, ChromecastMetadataImage, ChromecastMetadataType, ChromelessPlayer, ClearkeyDecryptionKey, ClearkeyKeySystemConfiguration, Clip, ClipEventMap, ClosedCaptionFile, ComcastDRMConfiguration, ComcastIntegrationID, CommonUtils, CompanionAd, ConaxDRMConfiguration, ConaxIntegrationID, ContentProtectionError, ContentProtectionErrorCode, ContentProtectionErrorEvent, ContentProtectionIntegration, ContentProtectionIntegrationFactory, ContentProtectionRequest, ContentProtectionRequestSubType, ContentProtectionResponse, CrossOriginSetting, CsaiAdDescription, CurrentSourceChangeEvent, CustomAdIntegrationKind, CustomTextTrackMap, CustomTextTrackOptions, CustomWebVTTTextTrack, DAIAvailabilityType, DRMConfiguration, DRMTodayDRMConfiguration, DRMTodayIntegrationID, DashPlaybackConfiguration, DateRangeCue, DeliveryType, DeviceBasedTitaniumDRMConfiguration, DimensionChangeEvent, DirectionChangeEvent, DistributionLoadStartEvent, DistributionOfflineEvent, DurationChangeEvent, EdgeStyle, EmptiedEvent, EmsgCue, EncryptedEvent, EndedEvent, Endpoint, EndpointLoadedEvent, EnterBadNetworkModeEvent, ErrorCategory, ErrorCode, ErrorEvent, Event, EventDispatcher, EventListener, EventMap, EventStreamCue, EventedList, ExitBadNetworkModeEvent, ExpressPlayDRMConfiguration, ExpressPlayIntegrationID, EzdrmDRMConfiguration, EzdrmIntegrationID, FairPlayKeySystemConfiguration, FreeWheelAdDescription, FreeWheelAdUnitType, FreeWheelCue, FullscreenOptions$1 as FullscreenOptions, Geo, GlobalCast, GlobalChromecast, GoogleDAI, GoogleDAIConfiguration, GoogleDAILiveConfiguration, GoogleDAISSAIIntegrationID, GoogleDAITypedSource, GoogleDAIVodConfiguration, GoogleImaAd, GoogleImaConfiguration, HTTPHeaders, HTTPHeadersInit, HespApi, HespApiEventMap, HespMediaType, HespSourceConfiguration, HespTypedSource, HlsDiscontinuityAlignment, HlsPlaybackConfiguration, ID3AttachedPicture, ID3BaseFrame, ID3Comments, ID3CommercialFrame, ID3Cue, ID3Frame, ID3GenericEncapsulatedObject, ID3InvolvedPeopleList, ID3PositionSynchronisationFrame, ID3PrivateFrame, ID3SynchronizedLyricsText, ID3TermsOfUse, ID3Text, ID3UniqueFileIdentifier, ID3Unknown, ID3UnsynchronisedLyricsTextTranscription, ID3UrlLink, ID3UserDefinedText, ID3UserDefinedUrlLink, ID3Yospace, IMAAdDescription, IntentToFallbackEvent, InterceptableRequest, InterceptableResponse, Interstitial, InterstitialEvent, InterstitialType, IrdetoDRMConfiguration, IrdetoIntegrationID, JoinStrategy, KeyOSDRMConfiguration, KeyOSFairplayKeySystemConfiguration, KeyOSIntegrationID, KeyOSKeySystemConfiguration, KeySystemConfiguration, KeySystemId, Latencies, LatencyConfiguration, LatencyManager, LayoutChangeEvent, LicenseRequest, LicenseResponse, LicenseType, LinearAd, List, LoadedDataEvent, LoadedMetadataEvent, ManifestErrorEvent, MaybeAsync, MeasurableNetworkEstimator, MediaError, MediaErrorCode, MediaFile, MediaMelonConfiguration, MediaTailorSource, MediaTrack, MediaTrackEventMap, MediaTrackList, MediaTrackType, MediaType, MetadataDescription, Metrics, Millicast, MillicastEventMap, MillicastMetadataCue, MillicastSource, MillicastStatsEvent, MoatAnalyticsIntegrationID, MoatConfiguration, MultiViewPlayer, MultiViewPlayerEventMap, MultiViewPlayerLayout, MutedAutoplayConfiguration, Network, NetworkEstimator, NetworkEstimatorController, NetworkEventMap, NetworkInterceptorController, NodeStyleVoidCallback, NonLinearAd, OverlayInterstitial, OverlayPosition, OverlaySize, PauseEvent, PiPConfiguration, PiPPosition, PlayEvent, PlayReadyKeySystemConfiguration, PlayStation5Configuration, PlayStation5PlayMode, PlayerConfiguration, PlayerEventMap, PlayerList, PlayingEvent, PreloadType, Presentation, PresentationEventMap, PresentationMode, PresentationModeChangeEvent, ProgressEvent, Quality, QualityEvent, QualityEventMap, QualityList, RateChangeEvent, ReadyStateChangeEvent, RelatedChangeEvent, RelatedContent, RelatedContentEventMap, RelatedContentSource, RelatedHideEvent, RelatedShowEvent, RemoveCachingTaskEvent, RemoveTrackEvent, RemoveViewEvent, Representation, RepresentationChangeEvent, Request, RequestBody, RequestInit, RequestInterceptor, RequestLike, RequestMeasurer, RequestMethod, RequestSubType, RequestType, ResponseBody, ResponseInit, ResponseInterceptor, ResponseLike, ResponseType, RetryConfiguration, SSAIIntegrationId, SeamlessPeriodSwitchStrategy, SeamlessSwitchStrategy, SeekedEvent, SeekingEvent, SegmentErrorEvent, ServerSideAdInsertionConfiguration, ServerSideAdIntegrationController, ServerSideAdIntegrationFactory, ServerSideAdIntegrationHandler, SkippedAdStrategy, SmartSightConfiguration, SmartSightIntegrationID, Source, SourceAbrConfiguration, SourceChangeEvent, SourceConfiguration, SourceDescription, SourceIntegrationId, SourceLatencyConfiguration, Sources, SpotXAdDescription, SpotxData, SpotxQueryParameter, StateChangeEvent, StereoChangeEvent, StreamOneAnalyticsIntegrationID, StreamOneConfiguration, StreamType, StringKeyOf, StylePropertyRecord, SupportedCustomTextTrackCueTypes, THEOplayerError, TTMLCue, TTMLExtent, TargetQualityChangedEvent, TextTrack, TextTrackAddCueEvent, TextTrackCue, TextTrackCueChangeEvent, TextTrackCueEnterEvent, TextTrackCueEventMap, TextTrackCueExitEvent, TextTrackCueList, TextTrackCueUpdateEvent, TextTrackDescription, TextTrackEnterCueEvent, TextTrackError, TextTrackErrorCode, TextTrackErrorEvent, TextTrackEventMap, TextTrackExitCueEvent, TextTrackReadyState, TextTrackReadyStateChangeEvent, TextTrackRemoveCueEvent, TextTrackStyle, TextTrackStyleEventMap, TextTrackType, TextTrackTypeChangeEvent, TextTrackUpdateCueEvent, TextTracksList, TheoAdDescription, TheoAds, TheoAdsEventsMap, TheoAdsLayout, TheoAdsLayoutOverride, TheoLiveApi, TheoLiveApiEventMap, TheoLiveConfiguration, TheoLivePublication, TheoLiveSource, ThumbnailResolution, TimeRanges, TimeUpdateEvent, TitaniumDRMConfiguration, TitaniumIntegrationID, TokenBasedTitaniumDRMConfiguration, Track, TrackChangeEvent, TrackEventMap, TrackList, TrackListEventMap, TrackUpdateEvent, TypedSource, UIConfiguration, UILanguage, UIPlayerConfiguration, UIRelatedContent, UIRelatedContentEventMap, UniversalAdId, UpdateQualityEvent, Uplynk, UplynkAd, UplynkAdBeginEvent, UplynkAdBreak, UplynkAdBreakBeginEvent, UplynkAdBreakEndEvent, UplynkAdBreakEventMap, UplynkAdBreakList, UplynkAdBreakListEventMap, UplynkAdBreakSkipEvent, UplynkAdCompleteEvent, UplynkAdEndEvent, UplynkAdEventMap, UplynkAdFirstQuartileEvent, UplynkAdList, UplynkAdListEventMap, UplynkAdMidpointEvent, UplynkAdThirdQuartileEvent, UplynkAddAdBreakEvent, UplynkAddAssetEvent, UplynkAds, UplynkAsset, UplynkAssetEventMap, UplynkAssetId, UplynkAssetInfoResponse, UplynkAssetInfoResponseEvent, UplynkAssetList, UplynkAssetMovieRating, UplynkAssetTvRating, UplynkAssetType, UplynkConfiguration, UplynkDRMConfiguration, UplynkEventMap, UplynkExternalId, UplynkIntegrationID, UplynkPingConfiguration, UplynkPingErrorEvent, UplynkPingResponse, UplynkPingResponseEvent, UplynkPreplayBaseResponse, UplynkPreplayLiveResponse, UplynkPreplayResponse, UplynkPreplayResponseEvent, UplynkPreplayResponseType, UplynkPreplayVodResponse, UplynkRemoveAdBreakEvent, UplynkRemoveAdEvent, UplynkRemoveAssetEvent, UplynkResponseDrm, UplynkResponseLiveAd, UplynkResponseLiveAdBreak, UplynkResponseLiveAds, UplynkResponseVodAd, UplynkResponseVodAdBreak, UplynkResponseVodAdBreakOffset, UplynkResponseVodAdPlaceholder, UplynkResponseVodAds, UplynkSource, UplynkUiConfiguration, UplynkUpdateAdBreakEvent, UserActions, VPAIDMode, VR, VRConfiguration, VRDirection, VREventMap, VRPanoramaMode, VRState, VRStereoMode, VTTAlignSetting, VTTDirectionSetting, VTTLine, VTTLineAlignSetting, VTTPosition, VTTPositionAlignSetting, VTTScrollSetting, VastExtension, VendorCast, VendorCastEventMap, VerimatrixDRMConfiguration, VerimatrixIntegrationID, VideoFrameCallbackMetadata, VideoFrameRequestCallback, VideoQuality, View, ViewChangeEvent, ViewPositionChangeEvent, VimondDRMConfiguration, VimondIntegrationID, Visibility, VisibilityObserver, VisibilityObserverCallback, VoidPromiseCallback, VolumeChangeEvent, VudrmDRMConfiguration, VudrmIntegrationID, WaitUntilCallback, WaitingEvent, WebAudio, WebVTTCue, WebVTTRegion, WidevineKeySystemConfiguration, XstreamDRMConfiguration, XstreamIntegrationID, YospaceId, YouboraAnalyticsIntegrationID, YouboraOptions, cache, cast, features, players, registerContentProtectionIntegration, utils, version, videojs };
