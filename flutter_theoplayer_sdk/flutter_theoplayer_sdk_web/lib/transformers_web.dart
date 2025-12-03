@@ -32,7 +32,7 @@ PlatformInterface.SourceDescription? toFlutterSourceDescription(SourceDescriptio
     return null;
   }
 
-  List<PlatformInterface.PigeonTypedSource> typedSources = [];
+  List<PlatformInterface.TypedSourcePigeon> typedSources = [];
   final sources = sourceDescription.sources;
   for (var i = 0; i < sources.getLength(); i++) {
     final typedSource = sources.getItem(i) as TypedSource;
@@ -49,7 +49,7 @@ PlatformInterface.SourceDescription? toFlutterSourceDescription(SourceDescriptio
     }
 
     typedSources.add(
-        PlatformInterface.PigeonTypedSource(
+        PlatformInterface.TypedSourcePigeon(
             src: typedSource.src,
             type: typedSource.type,
             drm: PlatformInterface.DRMConfiguration(fairplay: fairPlayDRMConfiguration, widevine: widevineDRMConfiguration)

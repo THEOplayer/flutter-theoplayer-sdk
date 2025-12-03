@@ -8,7 +8,7 @@ class THEOplayerFlutterAPIImpl implements THEOplayerFlutterAPI, EventDispatcher 
   final EventManager _eventManager = EventManager();
 
   THEOplayerFlutterAPIImpl({BinaryMessenger? binaryMessenger}) {
-    THEOplayerFlutterAPI.setup(this, binaryMessenger: binaryMessenger);
+    THEOplayerFlutterAPI.setUp(this, binaryMessenger: binaryMessenger);
   }
 
   @override

@@ -9,7 +9,7 @@ class THEOplayerFlutterAudioTracksAPIImpl implements THEOplayerFlutterAudioTrack
   late final AudioTracksImpl _audioTracks;
 
   THEOplayerFlutterAudioTracksAPIImpl({BinaryMessenger? binaryMessenger}) {
-    THEOplayerFlutterAudioTracksAPI.setup(this, binaryMessenger: binaryMessenger);
+    THEOplayerFlutterAudioTracksAPI.setUp(this, binaryMessenger: binaryMessenger);
     _nativeAudioTrackAPI = THEOplayerNativeAudioTracksAPI(binaryMessenger: binaryMessenger);
     _audioTracks = AudioTracksImpl();
   }

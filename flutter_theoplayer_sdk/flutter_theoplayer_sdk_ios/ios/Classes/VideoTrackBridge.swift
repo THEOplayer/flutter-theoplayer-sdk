@@ -19,7 +19,7 @@ class VideoTrackBridge: THEOplayerNativeVideoTracksAPI {
     private var removeVideoTrackListener: EventListener?
     private var videoTrackListChangeListener: EventListener?
     
-    private let emptyCompletion: (Result<Void, FlutterError>) -> Void = {result in }
+    private let emptyCompletion: (Result<Void, PigeonError>) -> Void = {result in }
     
     init(theoplayer: THEOplayer, pigeonMessenger: PigeonBinaryMessengerWrapper) {
         self.theoplayer = theoplayer

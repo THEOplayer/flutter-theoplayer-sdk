@@ -38,11 +38,23 @@ class THEOplayerViewNativeFactory(private val messenger: BinaryMessenger) : Plat
     private fun savePlayer(tpv: THEOplayerViewNative) {
         players.put(tpv.id, tpv)
 
+        val playerId = tpv.id
+
         tpv.destroyListener = THEOplayerViewNative.DestroyListener {
-            Log.e("TheoplayerPlugin", "destroyListener - entry: ${tpv.id}")
-            players.remove(tpv.id);
-            surfaces.remove(tpv.id);
-            tpv.destroyListener = null;
+            Log.e("TheoplayerPlugin", "destroyListener - entry: $playerId")
+
+            val toBeRemovedSurface = surfaces.get(playerId)
+            if (toBeRemovedSurface != null) {
+                toBeRemovedSurface.release()
+                surfaces.remove(playerId)
+            }
+
+            val toBeRemovedTPV = players.get(playerId)
+            if (toBeRemovedTPV != null) {
+                // Clear the listener on the removed instance
+                toBeRemovedTPV.destroyListener = null
+                players.remove(playerId)
+            }
         }
     }
 

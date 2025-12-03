@@ -6,7 +6,7 @@ class AndroidTypedSourceConfiguration {
 }
 
 /// TypedSource
-class TypedSource extends PigeonTypedSource {
+class TypedSource extends TypedSourcePigeon {
   final AndroidTypedSourceConfiguration? androidSourceConfiguration;
 
   /// Sets the headers to be added to all requests associated with this source,
@@ -27,19 +27,32 @@ class TypedSource extends PigeonTypedSource {
   ///
   /// Note:
   /// - Supported MIME types may differ across native SDK implementations.
-  
+
   String? type;
 
   TypedSource({
-    required super.src,
+    required String src,
     this.type,
-    super.drm,
-    super.integration,
+    DRMConfiguration? drm,
+    SourceIntegrationId? integration,
     this.androidSourceConfiguration,
     this.headers
-  }) : super();
+  }) : super(src: src, type: type, drm: drm, integration: integration, headers: headers);
 }
+
 /// THEOlive TypedSource
 class TheoLiveSource extends TypedSource {
-  TheoLiveSource({required super.src, super.type, super.drm, super.integration = SourceIntegrationId.theolive, super.androidSourceConfiguration});
+  TheoLiveSource({
+    required String src,
+    String? type,
+    DRMConfiguration? drm,
+    SourceIntegrationId? integration = SourceIntegrationId.theolive,
+    AndroidTypedSourceConfiguration? androidSourceConfiguration
+  }) : super(
+    src: src,
+    type: type,
+    drm: drm,
+    integration: integration,
+    androidSourceConfiguration: androidSourceConfiguration
+  );
 }
