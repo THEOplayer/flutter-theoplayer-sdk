@@ -2281,6 +2281,17 @@ interface DRMConfiguration {
      * Default value is false.
      */
     useOipfDrmAgent?: boolean;
+    /**
+     * Record of default query parameters for the license acquisition request.
+     * Each entry contains a query parameter name with associated value.
+     *
+     * @remarks
+     * <br/> - These parameters will be merged with any query parameters specified in
+     * the individual key system configurations, with the latter taking precedence.
+     */
+    queryParameters?: {
+        [key: string]: any;
+    };
 }
 /**
  * The id of a key system. Possible values are 'widevine', 'fairplay' and 'playready'.
@@ -3530,7 +3541,7 @@ interface SourceDVRConfiguration {
     /**
      * The expected length of the DVR window, in seconds. It must be larger than 60 seconds to enable DVR seeking.
      */
-    windowLength: number;
+    windowSize: number;
 }
 
 /**
@@ -4525,7 +4536,12 @@ interface TextTrack extends Track, EventDispatcher<TextTrackEventMap> {
  * @public
  */
 interface TheoLiveSource extends TypedSource {
+    src: string;
     type: 'theolive';
+    /**
+     * The profile identifier is included as a query parameter in the discovery request to obtain a response specific to that profile.
+     */
+    profile?: string;
 }
 
 /**
@@ -5142,6 +5158,18 @@ interface TypedSource extends BaseSource {
      */
     type?: string;
     /**
+     * The source URL of the media resource that will be played during airplay.
+     *
+     * @internal
+     */
+    airplaySrc?: string;
+    /**
+     * The content type (MIME type) of the media resource that will be played during airplay.
+     *
+     * @internal
+     */
+    airplaySrcType?: string;
+    /**
      * The content protection parameters for the media resource.
      *
      * @remarks
@@ -5546,748 +5574,475 @@ interface VendorCast extends EventDispatcher<VendorCastEventMap> {
 }
 
 /**
- * The events fired by the Chromecast API.
+ * Represents a DASH representation.
  *
- * @category Casting
+ * @category Media and Text Tracks
  * @public
  */
-interface ChromecastEventMap extends VendorCastEventMap {
+interface Representation {
     /**
-     * Fired when an error occurs while casting or trying to cast.
+     * The identifier for the representation.
      */
-    error: ChromecastErrorEvent;
+    id: string;
+    /**
+     * The type of the representation, represented by a value from the following list:
+     * <br/> - `'audio'`
+     * <br/> - `'video'`
+     * <br/> - `'text'`
+     * <br/> - `'image'`
+     * <br/> - `'unknown'`
+     */
+    type: string;
+    /**
+     * The required bandwidth for the representation, in bits per second.
+     */
+    bandwidth: number;
+    /**
+     * The video height of the representation, in pixels.
+     */
+    height: number;
+    /**
+     * The video width of the representation, in pixels.
+     */
+    width: number;
+    /**
+     * The framerate of the representation, in frames per seconds.
+     */
+    frameRate: number;
+    /**
+     * The audio sampling rate of the representation, in Hertz.
+     *
+     * @remarks
+     * <br/> - Either a single value or a list of two values corresponding to the minimum and maximum sampling rate.
+     */
+    audioSamplingRate: number | [number, number];
 }
+
 /**
- * The Chromecast API.
+ * An error code whose category is `ErrorCategory.CONTENT_PROTECTION`.
  *
- * @category Casting
- * @public
- */
-interface Chromecast extends VendorCast, EventDispatcher<ChromecastEventMap> {
-    /**
-     * The last error that occurred during casting, if any.
-     */
-    error: ChromecastError | undefined;
-    /**
-     * The name of the Chromecast device that the player is casting to, if any.
-     */
-    receiverName: string | undefined;
-    /**
-     * The source of the active casting session, if any.
-     *
-     * @deprecated Superseded by {@link Chromecast.connectionCallback}.
-     */
-    source: SourceDescription | undefined;
-    /**
-     * The callback for the Chromecast connection changes.
-     */
-    connectionCallback: ChromecastConnectionCallback | undefined;
-    /**
-     * Join an active casting session.
-     */
-    join(): void;
-    /**
-     * Leave the active casting session.
-     *
-     * @remarks
-     * <br/> - Does not stop the session when other devices are connected.
-     * <br/> - Use {@link VendorCast.stop} to fully stop the session.
-     */
-    leave(): void;
-    /**
-     * {@inheritDoc EventDispatcher.addEventListener}
-     */
-    addEventListener<TType extends StringKeyOf<ChromecastEventMap>>(type: TType | readonly TType[], listener: EventListener<ChromecastEventMap[TType]>): void;
-    /**
-     * {@inheritDoc EventDispatcher.removeEventListener}
-     */
-    removeEventListener<TType extends StringKeyOf<ChromecastEventMap>>(type: TType | readonly TType[], listener: EventListener<ChromecastEventMap[TType]>): void;
-}
-/**
- * The ChromecastConnectionCallback.
- *
- * @category Casting
- * @public
- */
-interface ChromecastConnectionCallback {
-    /**
-     * Called after the player has started the connection to the receiver.
-     *
-     * @remarks
-     * <br/> - At this point we are trying to load the media from the sender to the receiver.
-     * <br/> - Returning null will behave same as returning the provided SourceDescription.
-     *
-     * @param sourceDescription - The current SourceDescription on the sender device.
-     * @returns The SourceDescription to be loaded on the receiver device.
-     */
-    onStart(sourceDescription: SourceDescription | undefined): SourceDescription | undefined;
-    /**
-     * Called after the player has stopped the connection to the receiver.
-     *
-     * @remarks
-     * <br/> - At this point we are trying to load the media from the receiver to the sender.
-     * <br/> - Returning null will behave same as returning the provided SourceDescription.
-     *
-     * @param sourceDescription - The current SourceDescription on the receiver device.
-     * @returns The SourceDescription to be loaded on the sender device.
-     */
-    onStop(sourceDescription: SourceDescription | undefined): SourceDescription | undefined;
-    /**
-     * Called after the player has joined an already existing connection to the receiver.
-     *
-     * @remarks
-     * <br/> - At this point it's possible to load a new media from the sender to the receiver.
-     * <br/> - Returning null will not change the source on the receiver.
-     *
-     * @param sourceDescription - The current SourceDescription on the current sender device.
-     * @returns The SourceDescription to be loaded on the receiver device.
-     */
-    onJoin(sourceDescription: SourceDescription | undefined): SourceDescription | undefined;
-    /**
-     * Called after the player has left the connection to the receiver.
-     *
-     * @remarks
-     * <br/> - At this point we are trying to load the media from the receiver to the sender.
-     * <br/> - Returning null will behave same as returning the provided SourceDescription.
-     *
-     * @param sourceDescription - The current SourceDescription on the receiver device.
-     * @returns The SourceDescription to be loaded on the sender device.
-     */
-    onLeave(sourceDescription: SourceDescription | undefined): SourceDescription | undefined;
-}
-/**
- * The global Chromecast API.
- *
- * @category Casting
- * @public
- */
-interface GlobalChromecast {
-    /**
-     * Initialize the Chromecast framework.
-     *
-     * @remarks
-     * <br/> - If this method is not called, then the first created THEOplayer instance will automatically initialize the Chromecast framework.
-     *
-     * @param configuration - Describes Chromecast specific options.
-     */
-    initialize(configuration?: ChromecastConfiguration): PromiseLike<void>;
-    /**
-     * Start a casting session without a source.
-     *
-     * @remarks
-     * <br/> - The Chromecast framework must be {@link GlobalChromecast.initialize | initialized} before starting a session.
-     */
-    startSession(): PromiseLike<void>;
-    /**
-     * Stop the active casting session.
-     */
-    endSession(): void;
-}
-/**
- * An error that occurred while casting or attempting to cast to Chromecast.
- *
- * @category Casting
+ * @category Content Protection
  * @category Errors
  * @public
  */
-interface ChromecastError {
+type ContentProtectionErrorCode = ErrorCode.CONTENT_PROTECTION_ERROR | ErrorCode.CONTENT_PROTECTION_NOT_SUPPORTED | ErrorCode.CONTENT_PROTECTION_CONFIGURATION_MISSING | ErrorCode.CONTENT_PROTECTION_CONFIGURATION_INVALID | ErrorCode.CONTENT_PROTECTION_INITIALIZATION_INVALID | ErrorCode.CONTENT_PROTECTION_CERTIFICATE_ERROR | ErrorCode.CONTENT_PROTECTION_CERTIFICATE_INVALID | ErrorCode.CONTENT_PROTECTION_LICENSE_ERROR | ErrorCode.CONTENT_PROTECTION_LICENSE_INVALID | ErrorCode.CONTENT_PROTECTION_KEY_EXPIRED | ErrorCode.CONTENT_PROTECTION_KEY_MISSING | ErrorCode.CONTENT_PROTECTION_OUTPUT_RESTRICTED | ErrorCode.CONTENT_PROTECTION_INTERNAL_ERROR;
+/**
+ * An error related to content protection.
+ *
+ * @category Content Protection
+ * @category Errors
+ * @public
+ */
+interface ContentProtectionError extends THEOplayerError {
     /**
-     * The error code of the error.
+     * {@inheritDoc THEOplayerError.code}
      */
-    errorCode: ChromecastErrorCode;
+    readonly code: ContentProtectionErrorCode;
     /**
-     * The human-readable description of the error.
+     * The URL that was used in the request.
+     *
+     * @remarks
+     * <br/> - Only available when {@link ContentProtectionError.code} is {@link ErrorCode.CONTENT_PROTECTION_CERTIFICATE_ERROR} or {@link ErrorCode.CONTENT_PROTECTION_LICENSE_ERROR}.
      */
-    description: string;
+    readonly url?: string;
+    /**
+     * The status code from the HTTP response.
+     *
+     * @remarks
+     * <br/> - Only available when {@link ContentProtectionError.code} is {@link ErrorCode.CONTENT_PROTECTION_CERTIFICATE_ERROR} or {@link ErrorCode.CONTENT_PROTECTION_LICENSE_ERROR}.
+     */
+    readonly status?: number;
+    /**
+     * The status text from the HTTP response.
+     *
+     * @remarks
+     * <br/> - Only available when {@link ContentProtectionError.code} is {@link ErrorCode.CONTENT_PROTECTION_CERTIFICATE_ERROR} or {@link ErrorCode.CONTENT_PROTECTION_LICENSE_ERROR}.
+     */
+    readonly statusText?: string;
+    /**
+     * The body contained in the HTTP response.
+     *
+     * @remarks
+     * <br/> - Only available when {@link ContentProtectionError.code} is {@link ErrorCode.CONTENT_PROTECTION_CERTIFICATE_ERROR} or {@link ErrorCode.CONTENT_PROTECTION_LICENSE_ERROR}.
+     */
+    readonly response?: string;
+    /**
+     * The internal error code from the CDM.
+     *
+     * @remarks
+     * <br/> - Only available when {@link ContentProtectionError.code} is {@link ErrorCode.CONTENT_PROTECTION_INTERNAL_ERROR}.
+     */
+    readonly systemCode?: number;
 }
+
 /**
- * The chromecast error code, represented by a value from the following list:
- * <br/> - `'CANCEL'`: The operation was canceled by the user.
- * <br/> - `'TIMEOUT'`: The operation timed out.
- * <br/> - `'API_NOT_INITIALIZED'`: The API is not initialized.
- * <br/> - `'INVALID_PARAMETER'`: The parameters to the operation were not valid.
- * <br/> - `'EXTENSION_NOT_COMPATIBLE'`: The API script is not compatible with the installed Cast extension.
- * <br/> - `'EXTENSION_MISSING'`: The Cast extension is not available.
- * <br/> - `'RECEIVER_UNAVAILABLE'`: No receiver was compatible with the session request.
- * <br/> - `'SESSION_ERROR'`: A session could not be created, or a session was invalid.
- * <br/> - `'CHANNEL_ERROR'`: A channel to the receiver is not available.
- * <br/> - `'LOAD_MEDIA_FAILED'`: Load media failed.
+ * Fired when an error related to content protection occurs.
  *
- * @remarks
- * <br/> - The error codes correspond to the error codes documented in the {@link https://developers.google.com/cast/docs/reference/chrome/chrome.cast.html#.ErrorCode | Chromecast API reference}.
- *
- * @category Casting
+ * @category Content Protection
+ * @category Errors
+ * @category Events
  * @public
  */
-type ChromecastErrorCode = 'CANCEL' | 'TIMEOUT' | 'API_NOT_INITIALIZED' | 'INVALID_PARAMETER' | 'EXTENSION_NOT_COMPATIBLE' | 'EXTENSION_MISSING' | 'RECEIVER_UNAVAILABLE' | 'SESSION_ERROR' | 'CHANNEL_ERROR' | 'LOAD_MEDIA_FAILED';
-/**
- * Fired when an error occurs while casting or trying to cast.
- *
- * @category Casting
- * @public
- */
-interface ChromecastErrorEvent extends Event<'error'> {
+interface ContentProtectionErrorEvent extends Event<'contentprotectionerror'> {
     /**
      * The error that occurred.
+     *
+     * @deprecated use {@link ContentProtectionErrorEvent.errorObject | errorObject.message} instead
      */
-    readonly error: ChromecastError;
+    error: string;
+    /**
+     * An error object containing additional information about the error.
+     */
+    errorObject: ContentProtectionError;
+    /**
+     * @deprecated use {@link ContentProtectionError.url | errorObject.url} instead
+     */
+    readonly licenseAcquisitionURL?: string;
+    /**
+     * @deprecated use {@link ContentProtectionError.status | errorObject.status} instead
+     */
+    readonly status?: number;
+    /**
+     * @deprecated use {@link ContentProtectionError.statusText | errorObject.statusText} instead
+     */
+    readonly statusText?: string;
+    /**
+     * @deprecated use {@link ContentProtectionError.response | errorObject.response} instead
+     */
+    readonly licenseAcquisitionMessage?: string;
+    /**
+     * @deprecated use {@link ContentProtectionError.systemCode | errorObject.systemCode} instead
+     */
+    readonly systemCode?: number;
 }
 
 /**
- * The AirPlay API.
+ * Fired when `ChromelessPlayer.source` changes.
  *
- * @category Casting
- * @public
- */
-interface AirPlay extends VendorCast {
-}
-
-/**
- * The events fired by the {@link Cast | cast API}.
- *
- * @category Casting
- * @public
- */
-interface CastEventMap {
-    /**
-     * Fired when {@link Cast.casting} changes.
-     */
-    castingchange: Event<'castingchange'>;
-}
-/**
- * The cast API.
- *
- * @category Casting
- * @public
- */
-interface Cast extends EventDispatcher<CastEventMap> {
-    /**
-     * Whether the player is connected with a casting device.
-     */
-    casting: boolean;
-    /**
-     * The Airplay integration API.
-     *
-     * @remarks
-     * <br/> - Only available with the feature `'airplay'`.
-     */
-    airplay?: AirPlay;
-    /**
-     * The Chromecast integration API.
-     *
-     * @remarks
-     * <br/> - Only available with the feature `'chromecast'`.
-     */
-    chromecast?: Chromecast;
-}
-/**
- * The global cast API.
- *
- * @category Casting
- * @public
- */
-interface GlobalCast {
-    /**
-     * The global Chromecast integration API.
-     *
-     * @remarks
-     * <br/> - Only available with the feature `'chromecast'`.
-     */
-    chromecast?: GlobalChromecast;
-}
-
-/**
- * Represents a direction in the VR feature.
- *
- * @category VR
- * @public
- */
-interface VRDirection {
-    /**
-     * The rotational position around the Z-axis.
-     *
-     * @remarks
-     * <br/> - This number is in the range of [-180, 180].
-     */
-    yaw: number;
-    /**
-     * The rotational position around the X-axis.
-     *
-     * @remarks
-     * <br/> - This number is in the range of [-180, 180].
-     */
-    roll: number;
-    /**
-     * The rotational position around the Y-axis.
-     *
-     * @remarks
-     * <br/> - This number is in the range of [-180, 180].
-     */
-    pitch: number;
-}
-/**
- * The state of the VR feature, represented by a value from the following list:
- * <br/> - `'unavailable'`
- * <br/> - `'available'`
- * <br/> - `'presenting'`
- *
- * @category VR
- * @public
- */
-type VRState = 'unavailable' | 'available' | 'presenting';
-/**
- * Fired when the {@link VR.direction} changes.
- *
- * @category VR
  * @category Events
  * @public
  */
-type DirectionChangeEvent = Event<'directionchange'>;
+interface SourceChangeEvent extends Event<'sourcechange'> {
+    /**
+     * The player's new source.
+     */
+    readonly source: SourceDescription | undefined;
+}
 /**
- * Fired when the {@link VR.state} changes.
+ * Fired when the current source, which is chosen from {@link SourceDescription.sources | ChromelessPlayer.source.sources}, changes.
  *
- * @category VR
  * @category Events
  * @public
  */
-type StateChangeEvent = Event<'statechange'>;
+interface CurrentSourceChangeEvent extends Event<'currentsourcechange'> {
+    /**
+     * The player's new current source.
+     */
+    readonly currentSource: TypedSource | undefined;
+}
 /**
- * Fired when the {@link VR.stereo} changes.
+ * Fired when `ChromelessPlayer.paused` changes to `false`.
  *
- * @category VR
  * @category Events
  * @public
  */
-type StereoChangeEvent = Event<'stereochange'>;
-/**
- * The events fired by the {@link VR | VR API}.
- *
- * @category VR
- * @public
- */
-interface VREventMap {
+interface PlayEvent extends Event<'play'> {
     /**
-     * {@inheritDoc DirectionChangeEvent}
+     * The player's current time.
      */
-    directionchange: DirectionChangeEvent;
-    /**
-     * {@inheritDoc StateChangeEvent}
-     */
-    statechange: StateChangeEvent;
-    /**
-     * {@inheritDoc StereoChangeEvent}
-     */
-    stereochange: StereoChangeEvent;
-    /**
-     * {@inheritDoc ErrorEvent}
-     */
-    error: ErrorEvent;
+    readonly currentTime: number;
 }
 /**
- * The virtual reality API which allows you to control the display of 360° VR videos.
+ * Fired when `ChromelessPlayer.paused` changes to `true`.
  *
- * @remarks
- * <br/> - See {@link VRConfiguration} to configure a source.
- * <br/> - The player utilises the {@link Canvas | Canvas API} internally to render 360° content and is restricted to the same limitations.
- * <br/> - To access `devicemotion` events on mobile devices, a page needs to be served over https on modern browsers.
- * <br/> - To access `devicemotion` events on Safari for iOS 13+ you need to request user permission using the {@link https://www.w3.org/TR/orientation-event/#dom-devicemotionevent-requestpermission | DeviceMotionEvent.requestPermission API}
- * <br/> - iPhone support requires iOS 10: On iOS 9 and lower, iPhone forces HTML5 video to play in fullscreen. As a result, the canvas used by THEOplayer VR will not be visible during playback, since it will be behind the fullscreen video. iPhone users must upgrade to iOS 10 or higher for the full VR experience. Note that iPad is unaffected: VR is supported even on iOS 9 and lower.
- * <br/> - Cross-origin iframes on iOS: iOS blocks cross-origin iframes from accessing `devicemotion` events {@link https://bugs.webkit.org/show_bug.cgi?id=152299 | WebKit bug #152299}. As a result, when using THEOplayer inside a cross-origin iframe, the player cannot rotate the VR display to align with the device's physical orientation. Fortunately, this can be worked around by listening for `devicemotion` events on the top frame and forwarding them as messages to the iframe. THEOplayer will automatically handle these messages as if they were native `devicemotion` events:
- *
- * @example
- * ```
- * const playerIframe = document.querySelector('iframe');
- * window.addEventListener('devicemotion', function (event) {
- *    playerIframe.contentWindow.postMessage({
- *        type : 'devicemotion',
- *        deviceMotionEvent : {
- *            acceleration : event.acceleration,
- *            accelerationIncludingGravity : event.accelerationIncludingGravity,
- *            interval : event.interval,
- *            rotationRate : event.rotationRate,
- *            timeStamp : event.timeStamp
- *        }
- *    }, '*');
- * });
- * ```
- *
- * @category VR
- * @public
- */
-interface VR extends EventDispatcher<VREventMap> {
-    /**
-     * Whether stereo mode is enabled.
-     *
-     * @remarks
-     * <br/> - Setting it to `true` renders the video in VR.
-     *
-     * @defaultValue `false`
-     */
-    stereo: boolean;
-    /**
-     * Whether controls using device motion on mobile devices is enabled when not viewing in stereo mode.
-     *
-     * @remarks
-     * <br/> - This performs actions that require user consent, so setting this to true has to be behind a button press.
-     * <br/> - Changes only take effect when `stereo` is `false`.
-     *
-     * @defaultValue `false`
-     */
-    useDeviceMotionControls: boolean;
-    /**
-     * The viewing direction.
-     */
-    direction: VRDirection;
-    /**
-     * The vertical field of view in VR, in degress.
-     *
-     * @remarks
-     * <br/> - It should be a number in the range of [0, 180].
-     *
-     * @defaultValue `72`
-     */
-    verticalFOV: number;
-    /**
-     * Whether the player can present in VR mode.
-     */
-    readonly canPresentVR: boolean;
-    /**
-     * The state of the VR feature.
-     */
-    readonly state: VRState;
-}
-
-/**
- * The canvas API which allows drawing the player's current frame to a 2D or WebGL context.
- *
- * @remarks
- * This allows for advanced usages of the images, like transformations, drawing and cropping.
- *
- * Cross-origin restrictions:
- * Browsers place additional security restrictions for cross-origin video content drawn to a canvas.
- * When you draw video content retrieved without proper cross-origin settings to a canvas, the canvas becomes "tainted".
- * A {@link https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image#What_is_a_tainted_canvas | tainted canvas}
- * can still be used, but will throw errors when attempting to read pixel data from it (for example when calling
- * {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getImageData | `getImageData`} or
- * {@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob | `toBlob`}).
- *
- * In order to avoid tainting the canvas, the video content must be retrieved with the proper CORS settings.
- * Set `crossOrigin` to `"anonymous"` or `"use-credentials"` in the {@link TypedSource} of your {@link SourceDescription}
- * when loading the video source into THEOplayer.
- * This ensures that the content is always retrieved with CORS-enabled HTTP requests, and will not taint the canvas when drawn.
- *
- * Drawing cross-origin content to WebGL context on iOS 10 and lower:
- * iOS version 10 and lower has a bug that prevents drawing cross-origin video content to a
- * {@link https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext | `WebGLRenderingContext`},
- * even when the proper CORS settings are provided ({@link https://bugs.webkit.org/show_bug.cgi?id=135379 | WebKit bug #135379}).
- * In particular, cross-origin 360° videos (using the {@link VR | VR API}) only render correctly in iOS 11 and higher.
- *
- * If you need to support iOS 10 and below, we recommend loading the stream from the same origin as the web page.
- *
- * DRM protected content:
- * It is not possible to render DRM protected content to a canvas.
- *
- * Available since v2.12.0.
- *
- * @category Canvas
- * @public
- */
-interface Canvas {
-    /**
-     * Draw the current frame to a 2D Canvas context.
-     *
-     * @remarks
-     * <br/> - If the video hasn't loaded yet, nothing will be drawn.
-     * <br/> - The first argument is the destination 2D context for the draw operation. The other arguments are passed to the native CanvasRenderingContext2D.drawImage method.
-     * <br/> - see {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage | CanvasRenderingContext2D.drawImage()}.
-     *
-     * @param context2D - The 2D destination context.
-     * @param dx - The x-axis coordinate in the destination canvas at which to place the top-left corner of the source image.
-     * @param dy - The y-axis coordinate in the destination canvas at which to place the top-left corner of the source image.
-     */
-    drawImage(context2D: CanvasRenderingContext2D, dx: number, dy: number): boolean;
-    /**
-     * Draw the current frame to a 2D Canvas context.
-     *
-     * @remarks
-     * <br/> - If the video hasn't loaded yet, nothing will be drawn.
-     * <br/> - The first argument is the destination 2D context for the draw operation. The other arguments are passed to the native CanvasRenderingContext2D.drawImage method.
-     * <br/> - see {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage | CanvasRenderingContext2D.drawImage()}.
-     *
-     * @param context2D - The 2D destination context.
-     * @param dx - The x-axis coordinate in the destination canvas at which to place the top-left corner of the source image.
-     * @param dy - The y-axis coordinate in the destination canvas at which to place the top-left corner of the source image.
-     * @param dWidth - The width to draw the image in the destination canvas. This allows scaling of the drawn image. If not specified, the image is not scaled in width when drawn.
-     * @param dHeight - The height to draw the image in the destination canvas. This allows scaling of the drawn image. If not specified, the image is not scaled in height when drawn.
-     */
-    drawImage(context2D: CanvasRenderingContext2D, dx: number, dy: number, dWidth: number, dHeight: number): boolean;
-    /**
-     * Draw the current frame to a 2D Canvas context.
-     *
-     * @remarks
-     * <br/> - If the video hasn't loaded yet, nothing will be drawn.
-     * <br/> - The first argument is the destination 2D context for the draw operation. The other arguments are passed to the native CanvasRenderingContext2D.drawImage method.
-     * <br/> - see {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage | CanvasRenderingContext2D.drawImage()}.
-     *
-     * @param context2D - The 2D destination context.
-     * @param sx - The x-axis coordinate of the top left corner of the sub-rectangle of the source image to draw into the destination context.
-     * @param sy - The y-axis coordinate of the top left corner of the sub-rectangle of the source image to draw into the destination context.
-     * @param sWidth - The width of the sub-rectangle of the source image to draw into the destination context. If not specified, the entire rectangle from the coordinates specified by sx and sy to the bottom-right corner of the image is used.
-     * @param sHeight - The height of the sub-rectangle of the source image to draw into the destination context.
-     * @param dx - The x-axis coordinate in the destination canvas at which to place the top-left corner of the source image.
-     * @param dy - The y-axis coordinate in the destination canvas at which to place the top-left corner of the source image.
-     * @param dWidth - The width to draw the image in the destination canvas. This allows scaling of the drawn image. If not specified, the image is not scaled in width when drawn.
-     * @param dHeight - The height to draw the image in the destination canvas. This allows scaling of the drawn image. If not specified, the image is not scaled in height when drawn.
-     */
-    drawImage(context2D: CanvasRenderingContext2D, sx: number, sy: number, sWidth: number, sHeight: number, dx: number, dy: number, dWidth: number, dHeight: number): boolean;
-    /**
-     * Draw the current frame as a 2D texture to a 3D WebGL context.
-     *
-     * @remarks
-     * <br/> - If the video hasn't loaded yet, nothing will be drawn.
-     * <br/> - The first argument is the destination WebGL context for the draw operation. The other arguments are passed to the native WebGLRenderingContext.texImage2D method.
-     * <br/> - See {@link https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texImage2D | WebGLRenderingContext.texImage2D()}.
-     *
-     * @param contextWebGL - The WebGL context.
-     * @param target - A GLenum specifying the binding point (target) of the active texture.
-     * @param level - A GLint specifying the level of detail. Level 0 is the base image level and level n is the nth mipmap reduction level.
-     * @param internalformat - A GLenum specifying the color components in the texture.
-     * @param format - A GLenum specifying the format of the texel data.
-     * @param type - A GLenum specifying the data type of the texel data.
-     */
-    texImage2D(contextWebGL: WebGLRenderingContext, target: GLenum, level: GLint, internalformat: GLint, format: GLenum, type: GLenum): boolean;
-    /**
-     * Registers a callback to be fired the next time a frame is presented to the compositor.
-     *
-     * @remarks
-     * <br/> - Will fall back to `requestAnimationFrame` if `requestVideoFrameCallback` is not natively supported.
-     * <br/> - See {@link https://wicg.github.io/video-rvfc/ | HTMLVideoElement.requestVideoFrameCallback()}.
-     *
-     * @param callback - The callback function.
-     * @returns A handle that can (optionally) be cancelled with {@link Canvas.cancelVideoFrameCallback}.
-     */
-    requestVideoFrameCallback(callback: VideoFrameRequestCallback): number;
-    /**
-     * Cancels an existing video frame request callback given its handle.
-     *
-     * @param handle - The handle of the callback to cancel.
-     */
-    cancelVideoFrameCallback(handle: number): void;
-}
-/**
- * A callback to be fired the next time a frame is presented to the compositor,
- * used by {@link Canvas.requestVideoFrameCallback}.
- *
- * @param now - The current time in milliseconds, see {@link https://developer.mozilla.org/en-US/docs/Web/API/Performance/now | performance.now()}.
- * @param metadata - The video frame metadata. If `requestVideoFrameCallback()` is not natively supported, this is `undefined`.
- *
- * @category Canvas
- * @public
- */
-type VideoFrameRequestCallback = (now: DOMHighResTimeStamp, metadata?: VideoFrameCallbackMetadata) => void;
-/**
- * The metadata of a {@link VideoFrameRequestCallback}.
- *
- * @remarks
- * <br/> - See {@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLVideoElement/requestVideoFrameCallback#parameters | requestVideoFrameCallback} for more information.
- *
- * @category Canvas
- * @public
- */
-interface VideoFrameCallbackMetadata {
-    captureTime?: DOMHighResTimeStamp;
-    expectedDisplayTime: DOMHighResTimeStamp;
-    height: number;
-    mediaTime: number;
-    presentationTime: DOMHighResTimeStamp;
-    presentedFrames: number;
-    processingDuration?: number;
-    receiveTime?: DOMHighResTimeStamp;
-    rtpTimestamp?: number;
-    width: number;
-}
-
-/**
- * A callback for a visibility observer.
- *
- * @param ratio - Describes the ratio of visible pixels of the player.
- *
- * @category Player
- * @public
- */
-type VisibilityObserverCallback = (ratio: number) => void;
-/**
- * The visibility API.
- *
- * @category Player
- * @public
- */
-interface Visibility {
-    /**
-     * Whether the {@link Visibility.ratio} of visible pixels is exceeded.
-     */
-    readonly visible: boolean;
-    /**
-     * The ratio of pixels of the player that are within the viewport.
-     */
-    readonly ratio: number;
-    /**
-     * The threshold that the ratio must exceed for the player to be visible.
-     *
-     * @remarks
-     * <br/> - This number is in the range of [0, 1].
-     */
-    visibleThreshold: number;
-    /**
-     * Add a visibility observer to monitor the player.
-     *
-     * @remarks
-     * <br/> - The callback is triggered every time the ratio of visible pixels crosses a threshold, and receives the ratio of visible pixels as first argument.
-     * <br/> - The list of thresholds is evenly distributed between 0 and 1, with the distance between every two consecutive thresholds determined by the given step.
-     *
-     * @param step - The step between every threshold. This number is in the range of ]0, 1].
-     * @param callback - The callback to be triggered every time a threshold is crossed.
-     * @returns A new visibility observer.
-     */
-    addObserver(step: number, callback: VisibilityObserverCallback): VisibilityObserver;
-    /**
-     * Remove a visibility observer.
-     *
-     * The observer will stop monitoring player visibility,
-     * and will no longer trigger its callback.
-     *
-     * @param observer - The observer to remove.
-     */
-    removeObserver(observer: VisibilityObserver): void;
-}
-/**
- * Represents a visibility observer.
- *
- * @category Player
- * @public
- */
-interface VisibilityObserver {
-    /**
-     * The ratio of pixels of the player that are within the viewport.
-     *
-     * @remarks
-     * <br/> - This value is updated every time an observed threshold is crossed. It is accurate up to the size of this observer's step.
-     */
-    readonly ratio: number;
-    /**
-     * List of thresholds which are monitored by the observer.
-     */
-    readonly thresholds: ReadonlyArray<number>;
-}
-
-/**
- * The Web Audio API.
- *
- * @remarks
- * The Web Audio API allows you to reroute the audio output of THEOplayer to a Web Audio context.
- * This is done by providing a Web Audio source node which outputs the player's audio.
- * Using Web Audio allows developers to apply a variety of effects and transformations to the player's audio output,
- * e.g. equalization, volume normalization, ...
- *
- * The way the Web Audio standard was designed has a few consequences.
- *
- * Once the player has created an AudioNode within a given AudioContext,
- * you must connect it to an output node in the graph, directly or indirectly,
- * or the output will be silent. The flow of audio from the created node has to
- * reach an output node, one way or another. Of course, the player's output can
- * pass through an arbitrary number of intermediary nodes before it reaches an output node.
- *
- * Once the player's is rerouted, there is no way back: the audio cannot be released
- * from its AudioContext, as Web Audio specifies no way to release audio resources which are piped through.
- * This means that you cannot change the AudioContext of the output node, nor can you stop piping
- * the player audio to Web Audio. In a well-designed Web Audio setup, this should not matter,
- * as there should be exactly one AudioContext per page, and there should be no need to stop piping to Web Audio.
- *
- * For advertisements, due to technical limitations, not all the audio can be rerouted using Web Audio.
- * Notably, Google IMA ads do not allow their audio to be rerouted, and therefore will not pass through the Web
- * Audio graph as specified by the developer.
- *
- * Available since v2.19.4.
- *
- * @category Player
- * @public
- */
-interface WebAudio {
-    /**
-     * Create an AudioNode in the given AudioContext.
-     *
-     * @remarks
-     * <br/> - Audio playback from the player will be re-routed into the processing graph of the AudioContext.
-     */
-    createAudioSourceNode(audioCtx: AudioContext): AudioNode;
-}
-
-/**
- * The presentation mode of the player, represented by a value from the following list:
- * <br/> - `'inline'`: The player is shown in its original location on the page.
- * <br/> - `'fullscreen'`: The player fills the entire screen.
- * <br/> - `'picture-in-picture'`: The player is shown on top of the page (see {@link PiPConfiguration} for more options).
- * <br/> - `'native-picture-in-picture'`: [Experimental] The player requests out-of-app picture-in-picture mode. Not supported on Firefox.
- *
- * @category Player
- * @public
- */
-type PresentationMode = 'inline' | 'fullscreen' | 'picture-in-picture' | 'native-picture-in-picture';
-/**
- * Fired when the presentation mode changes.
- *
- * @category Player
  * @category Events
  * @public
  */
-interface PresentationModeChangeEvent extends Event<'presentationmodechange'> {
+interface PauseEvent extends Event<'pause'> {
     /**
-     * The new presentation mode.
+     * The player's current time.
      */
-    readonly presentationMode: PresentationMode;
+    readonly currentTime: number;
 }
 /**
- * The events fired by the {@link Presentation | presentation API}.
+ * Fired when `ChromelessPlayer.seeking` changes to `true`, and the player has started seeking to a new position.
  *
- * @category Player
+ * @category Events
  * @public
  */
-interface PresentationEventMap {
+interface SeekingEvent extends Event<'seeking'> {
     /**
-     * {@inheritDoc PresentationModeChangeEvent}
+     * The player's current time.
      */
-    presentationmodechange: PresentationModeChangeEvent;
-    /**
-     * {@inheritDoc ErrorEvent}
-     */
-    error: ErrorEvent;
+    readonly currentTime: number;
 }
 /**
- * The presentation API.
+ * Fired when `ChromelessPlayer.seeking` changes to `false` after the current playback position was changed.
  *
- * @category Player
+ * @category Events
  * @public
  */
-interface Presentation extends EventDispatcher<PresentationEventMap> {
+interface SeekedEvent extends Event<'seeked'> {
     /**
-     * The active presentation mode of the player.
-     *
-     * @defaultValue `'inline'`
+     * The player's current time.
      */
-    readonly currentMode: PresentationMode;
+    readonly currentTime: number;
+}
+/**
+ * Fired when the current playback position changed as part of normal playback or in an especially interesting way, for example discontinuously.
+ *
+ * @category Events
+ * @public
+ */
+interface TimeUpdateEvent extends Event<'timeupdate'> {
     /**
-     * Change the presentation mode of the player.
-     *
-     * @param mode - The requested presentation mode.
+     * The player's current time.
      */
-    requestMode(mode: PresentationMode): void;
+    readonly currentTime: number;
     /**
-     * Whether the player supports the provided presentation mode.
-     *
-     * @param mode - The presentation mode to verify.
-     * @returns Whether the player supports `mode`.
+     * The player's current program date time.
      */
-    supportsMode(mode: PresentationMode): boolean;
+    readonly currentProgramDateTime: Date | undefined;
+}
+/**
+ * Fired when playback has stopped because the end of the media resource was reached.
+ *
+ * @category Events
+ * @public
+ */
+interface EndedEvent extends Event<'ended'> {
+    /**
+     * The player's current time.
+     */
+    readonly currentTime: number;
+}
+/**
+ * Fired when playback is ready to start after having been paused or delayed due to lack of media data.
+ *
+ * @category Events
+ * @public
+ */
+interface PlayingEvent extends Event<'playing'> {
+    /**
+     * The player's current time.
+     */
+    readonly currentTime: number;
+}
+/**
+ * Fired when playback has stopped because the next frame is not available, but the player expects that frame to become available in due course.
+ *
+ * @category Events
+ * @public
+ */
+interface WaitingEvent extends Event<'waiting'> {
+    /**
+     * The player's current time.
+     */
+    readonly currentTime: number;
+}
+/**
+ * Fired when `ChromelessPlayer.readyState` changes.
+ *
+ * @category Events
+ * @public
+ */
+interface ReadyStateChangeEvent extends Event<'readystatechange'> {
+    /**
+     * The player's current time.
+     */
+    readonly currentTime: number;
+    /**
+     * The player's new ready state, represented by a value from the following list:
+     * <br/> - 0 (HAVE_NOTHING): The player has no information about the duration of its source.
+     * <br/> - 1 (HAVE_METADATA): The player has information about the duration of its source.
+     * <br/> - 2 (HAVE_CURRENT_DATA): The player has its current frame in its buffer.
+     * <br/> - 3 (HAVE_FUTURE_DATA): The player has enough data for immediate playback.
+     * <br/> - 4 (HAVE_ENOUGH_DATA): The player has enough data for continuous playback.
+     *
+     * @remarks
+     * <br/> - See the {@link https://html.spec.whatwg.org/multipage/media.html#ready-states | HTML Media Specification}
+     */
+    readonly readyState: number;
+}
+/**
+ * Fired when the player determines the duration and dimensions of the media resource.
+ *
+ * @category Events
+ * @public
+ */
+interface LoadedMetadataEvent extends Event<'loadedmetadata'> {
+    /**
+     * The player's current time.
+     */
+    readonly currentTime: number;
+    /**
+     * The player's new ready state.
+     */
+    readonly readyState: number;
+}
+/**
+ * Fired when the player can render the media data at the current playback position for the first time.
+ *
+ * @category Events
+ * @public
+ */
+interface LoadedDataEvent extends Event<'loadeddata'> {
+    /**
+     * The player's current time.
+     */
+    readonly currentTime: number;
+    /**
+     * The player's new ready state.
+     */
+    readonly readyState: number;
+}
+/**
+ * Fired when the player can resume playback of the media data.
+ *
+ * @category Events
+ * @public
+ */
+interface CanPlayEvent extends Event<'canplay'> {
+    /**
+     * The player's current time.
+     */
+    readonly currentTime: number;
+    /**
+     * The player's new ready state.
+     */
+    readonly readyState: number;
+}
+/**
+ * Fired when the player can resume playback of the media data and buffering is unlikely.
+ *
+ * @category Events
+ * @public
+ */
+interface CanPlayThroughEvent extends Event<'canplaythrough'> {
+    /**
+     * The player's current time.
+     */
+    readonly currentTime: number;
+    /**
+     * The player's new ready state.
+     */
+    readonly readyState: number;
+}
+/**
+ * Fired when the player's source is cleared.
+ *
+ * @category Events
+ * @public
+ */
+interface EmptiedEvent extends Event<'emptied'> {
+    /**
+     * The player's current time.
+     */
+    readonly currentTime: number;
+    /**
+     * The player's new ready state.
+     */
+    readonly readyState: number;
+}
+/**
+ * Fired when the player loaded media data.
+ *
+ * @category Events
+ * @public
+ */
+interface ProgressEvent extends Event<'progress'> {
+    /**
+     * The player's current time.
+     */
+    readonly currentTime: number;
+}
+/**
+ * Fired when `ChromelessPlayer.duration` changes.
+ *
+ * @category Events
+ * @public
+ */
+interface DurationChangeEvent extends Event<'durationchange'> {
+    /**
+     * The player's new duration.
+     */
+    readonly duration: number;
+}
+/**
+ * Fired when `ChromelessPlayer.volume` changes.
+ *
+ * @category Events
+ * @public
+ */
+interface VolumeChangeEvent extends Event<'volumechange'> {
+    /**
+     * The player's new volume.
+     */
+    readonly volume: number;
+}
+/**
+ * Fired when the current representation changes.
+ *
+ * @category Events
+ * @public
+ */
+interface RepresentationChangeEvent extends Event<'representationchange'> {
+    /**
+     * The player's current representation.
+     */
+    readonly representation: Representation | undefined;
+    /**
+     * The player's previous representation.
+     */
+    readonly previousRepresentation: Representation | undefined;
+}
+/**
+ * Fired when `ChromelessPlayer.playbackRate` changes.
+ *
+ * @category Events
+ * @public
+ */
+interface RateChangeEvent extends Event<'ratechange'> {
+    /**
+     * The player's new playback rate.
+     */
+    readonly playbackRate: number;
+}
+/**
+ * Fired when the dimensions of the HTML element changes.
+ *
+ * @category Events
+ * @public
+ */
+interface DimensionChangeEvent extends Event<'dimensionchange'> {
+    /**
+     * The current width of the player's HTML element, in pixels.
+     */
+    readonly width: number;
+    /**
+     * The current height of the player's HTML element, in pixels.
+     */
+    readonly height: number;
+}
+/**
+ * Fired when the player encounters key system initialization data in the media data.
+ *
+ * @category Events
+ * @public
+ */
+interface EncryptedEvent extends Event<'encrypted'> {
+    /**
+     * The player's current time.
+     */
+    readonly currentTime: number;
+    /**
+     * The type of the initialization data.
+     */
+    readonly initDataType: string;
+    /**
+     * The initialization data.
+     */
+    readonly initData: ArrayBuffer;
 }
 
 /**
@@ -6910,4406 +6665,6 @@ interface InterceptableResponse {
      * @param promise - {@link https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise| `PromiseLike`}.
      */
     waitUntil(promise: PromiseLike<any>): void;
-}
-
-/**
- * Events fired by the {@link TextTrackStyle | TextTrackStyle API}.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface TextTrackStyleEventMap {
-    /**
-     * Fired when any of the {@link TextTrackStyle | TextTrackStyle's properties} changes.
-     */
-    change: Event<'change'>;
-}
-/**
- * The text track style API.
- *
- * @remarks
- * <br/> - Available since v2.27.4.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface TextTrackStyle extends EventDispatcher<TextTrackStyleEventMap> {
-    /**
-     * The font family for the text track.
-     */
-    fontFamily: string | undefined;
-    /**
-     * The font color for the text track.
-     *
-     * @example
-     * <br/> - `red` will set the color of the text to red.
-     * <br/> - `#ff0000` will set the color of the text to red.
-     * <br/> - `rgba(255,0,0,0.5)` will set the color of the text to red, with 50% opacity.
-     */
-    fontColor: string | undefined;
-    /**
-     * The font size for the text track.
-     *
-     * @remarks
-     * Can be a percentage value such as '50%', '75%', '100%', '150%' or '200%'.
-     */
-    fontSize: string | undefined;
-    /**
-     * The background color for the text track.
-     *
-     * @remarks
-     * This targets the area directly behind the text.
-     *
-     * @example
-     * <br/> - `red` will set the background color of the text track to red.
-     * <br/> - `#ff0000` will set the background color of the text track to red.
-     * <br/> - `rgba(255,0,0,0.5)` will set the background color of the text track to red, with 50% opacity.
-     */
-    backgroundColor: string | undefined;
-    /**
-     * The window color for the text track.
-     *
-     * @remarks
-     * This targets the area covering the full width of the text track.
-     *
-     * @example
-     * <br/> - `red` will set the background color of the window of the text track to red.
-     * <br/> - `#ff0000` will set the background color of the window of the text track to red.
-     * <br/> - `rgba(255,0,0,0.5)` will set the background color of the window of the text track to red, with 50% opacity.
-     */
-    windowColor: string | undefined;
-    /**
-     * The edge style of the text, represented by a value from the following list:
-     * <br/> - `'none'`
-     * <br/> - `'dropshadow'`
-     * <br/> - `'raised'`
-     * <br/> - `'depressed'`
-     * <br/> - `'uniform`
-     */
-    edgeStyle: EdgeStyle | undefined;
-    /**
-     * The top margin of the area where subtitles are being rendered.
-     *
-     * @remarks
-     * <br/> - Available since v4.2.0
-     * <br/> - The margin is in number of pixels.
-     * <br/> - Useful for pushing the subtitles down, so they don't overlap with the UI.
-     */
-    marginTop: number | undefined;
-    /**
-     * The bottom margin of the area where subtitles are being rendered.
-     *
-     * @remarks
-     * <br/> - Available since v4.2.0
-     * <br/> - The margin is in number of pixels.
-     * <br/> - Useful for pushing the subtitles up, so they don't overlap with the UI.
-     */
-    marginBottom: number | undefined;
-    /**
-     * The left margin of the area where subtitles are being rendered.
-     *
-     * @remarks
-     * <br/> - Available since v4.2.0
-     * <br/> - The margin is in number of pixels.
-     * <br/> - Useful for pushing the subtitles right, so they don't overlap with the UI.
-     */
-    marginLeft: number | undefined;
-    /**
-     * The right margin  of the area where subtitles are being rendered.
-     *
-     * @remarks
-     * <br/> - Available since v4.2.0
-     * <br/> - The margin is in number of pixels.
-     * <br/> - Useful for pushing the subtitles left, so they don't overlap with the UI.
-     */
-    marginRight: number | undefined;
-}
-/**
- * The style of the edge, represented by a value from the following list:
- * <br/> - `'none'`
- * <br/> - `'dropshadow'`
- * <br/> - `'raised'`
- * <br/> - `'depressed'`
- * <br/> - `'uniform'`
- *
- * @category Media and Text Tracks
- * @public
- */
-type EdgeStyle = 'none' | 'dropshadow' | 'raised' | 'depressed' | 'uniform';
-
-/**
- * The adaptive bitrate strategy of the first segment, represented by a value from the following list:
- * <br/> - `'performance'`: The player will optimize ABR behavior to focus on the performance of the player. This strategy initiates playback with the lowest quality suitable for the device which means faster start-up time.
- * <br/> - `'quality'`: The player will optimize ABR behavior to focus displaying the best visual quality to the end-user. This strategy initiates playback with the highest bit rate suitable for the device.
- * <br/> - `'bandwidth'`: The player will optimize the ABR behavior to focus on displaying the most optimal quality based on historic data of available bandwidth and knowledge of the network conditions. When no historic data is available, the player will start playback at a medium bitrate quality (up to 2.5 Mbps).
- *
- * @category ABR
- * @public
- */
-type ABRStrategyType = 'performance' | 'quality' | 'bandwidth';
-/**
- * Describes the metadata of the adaptive bitrate strategy.
- *
- * @category ABR
- * @public
- */
-interface ABRMetadata {
-    /**
-     * The initial bitrate, in bits per second.
-     *
-     * @defaultValue Bitrate available to the browser.
-     */
-    bitrate?: number;
-}
-/**
- * Describes the configuration of the adaptive bitrate strategy.
- *
- * @category ABR
- * @public
- */
-interface ABRStrategyConfiguration {
-    /**
-     * The strategy for initial playback.
-     */
-    type: ABRStrategyType;
-    /**
-     * The metadata for the initial playback strategy.
-     *
-     * @defaultValue A {@link ABRMetadata} object with default values.
-     */
-    metadata?: ABRMetadata;
-}
-/**
- * The adaptive bitrate strategy.
- *
- * @category ABR
- * @public
- */
-type ABRStrategy = ABRStrategyConfiguration | ABRStrategyType;
-/**
- * Describes the adaptive bitrate configuration.
- *
- * @remarks
- * <br/> - Available since v2.30.0.
- *
- * @category ABR
- * @public
- */
-interface ABRConfiguration {
-    /**
-     * The adaptive bitrate strategy.
-     *
-     * @defaultValue `'bandwidth'`
-     */
-    strategy?: ABRStrategy;
-    /**
-     * The amount which the player should buffer ahead of the current playback position, in seconds.
-     *
-     * @remarks
-     * <br/> - Before v4.3.0: This duration has a maximum of 60 seconds.
-     * <br/> - After v4.3.0: This duration has no maximum.
-     * <br/> - The player might reduce or ignore the configured amount because of device or performance constraints.
-     *
-     * @defaultValue `20`
-     */
-    targetBuffer?: number;
-    /**
-     * The amount of data which the player should keep in its buffer before the current playback position, in seconds.
-     * This configuration option can be used to reduce the memory footprint on memory restricted devices or on devices
-     * which don't automatically prune decoder buffers.
-     *
-     * Note that the player can decide to keep less data in the decoder buffer in case memory is running low.
-     * A value of 0 or lower is not accepted and will be treated as default.
-     *
-     * @defaultValue `30`
-     */
-    bufferLookbackWindow?: number;
-    /**
-     * The maximum length of the player's buffer, in seconds.
-     *
-     * The player will initially buffer up to {@link ABRConfiguration.targetBuffer} seconds of media data.
-     * If the player detects that the decoder is unable to hold so much data,
-     * it will reduce `maxBufferLength` and restrict `targetBuffer` to be less than
-     * this maximum.
-     *
-     * @defaultValue `Infinity`
-     */
-    readonly maxBufferLength: number;
-    /**
-     * Clears the buffer when setting a single target quality on a MediaTrack.
-     *
-     * @remarks
-     * <br/> - Available since v6.8.0 for HLS streams only.
-     *
-     * @defaultValue `false`
-     */
-    clearBufferWhenSettingTargetQuality: boolean;
-}
-
-/**
- * The events fired by the {@link Clip | clip API}.
- *
- * @category Clipping
- * @public
- */
-interface ClipEventMap {
-    /**
-     * Fired when the {@link Clip.startTime} or {@link Clip.endTime} changed.
-     */
-    change: Event<'change'>;
-}
-/**
- * The clip API which can be used to clip the playback window of a source.
- *
- * @category Clipping
- * @public
- */
-interface Clip extends EventDispatcher<ClipEventMap> {
-    /**
-     * The start time of the clip's window, in seconds.
-     */
-    startTime: number;
-    /**
-     * The end time of the clip's window, in seconds.
-     */
-    endTime: number;
-}
-
-/**
- * The number of audio and video segments in the buffer.
- *
- * @category Analytics
- * @public
- */
-interface BufferedSegments {
-    amountOfBufferedAudioSegments: number;
-    amountOfBufferedVideoSegments: number;
-}
-/**
- * The metrics API which can be used to gather information related to the quality-of-service and video playback experience.
- *
- * @remarks
- * <br/> - Available since v2.46.0.
- *
- * @category Analytics
- * @public
- */
-interface Metrics {
-    /**
-     * The total number of video frames that could not be decoded.
-     *
-     * @remarks
-     * <br/> - This value resets on a source change.
-     */
-    corruptedVideoFrames: number;
-    /**
-     * The total number of dropped video frames.
-     *
-     * @remarks
-     * <br/> - This value resets on a source change.
-     */
-    droppedVideoFrames: number;
-    /**
-     * The total number of video frames.
-     *
-     * @remarks
-     * <br/> - This value resets on a source change.
-     */
-    totalVideoFrames: number;
-    /**
-     * The bandwidth in bits per second estimated to be currently available as used for ABR decisions.
-     */
-    currentBandwidthEstimate: number;
-    /**
-     * The total bytes received in response to all media segments since loading the current source.
-     */
-    totalBytesLoaded: number;
-    /**
-     * The total number of audio and video segments in the buffer.
-     *
-     * @remarks
-     * <br/> - This value is currently available only for DASH.
-     */
-    bufferedSegments: BufferedSegments;
-}
-
-/**
- * The preload type of the player, represented by a value from the following list:
- * <br/> - `'none'`: The player will not load anything on source change.
- * <br/> - `'metadata'`: The player will immediately load metadata on source change.
- * <br/> - `'auto'`: The player will immediately load metadata and media on source change.
- *
- * @remarks
- * <br/> - `'metadata'` loads enough resources to be able to determine the {@link ChromelessPlayer.duration}.
- * <br/> - `'auto'` loads media up to {@link ABRConfiguration.targetBuffer}.
- *
- * @category Player
- * @public
- */
-type PreloadType = 'none' | 'metadata' | 'auto' | '';
-
-/**
- * Fired when the ad break begins.
- *
- * @category Uplynk
- * @category Events
- * @public
- */
-interface UplynkAdBreakBeginEvent extends Event<'adbreakbegin'> {
-    /**
-     * The ad break which began.
-     */
-    readonly adBreak: UplynkAdBreak;
-}
-
-/**
- * Fired when the ad break ends.
- *
- * @category Uplynk
- * @category Events
- * @public
- */
-interface UplynkAdBreakEndEvent extends Event<'adbreakend'> {
-    /**
-     * The ad break which ended.
-     */
-    readonly adBreak: UplynkAdBreak;
-}
-
-/**
- * Fired when the ad break is skipped.
- *
- * @category Uplynk
- * @category Events
- * @public
- */
-interface UplynkAdBreakSkipEvent extends Event<'adbreakskip'> {
-    /**
-     * The ad break which has been skipped.
-     */
-    readonly adBreak: UplynkAdBreak;
-}
-
-/**
- * Fired when the ad break is updated.
- *
- * @category Uplynk
- * @category Events
- * @public
- */
-interface UplynkUpdateAdBreakEvent extends Event<'updateadbreak'> {
-    /**
-     * The ad break which has been updated.
-     */
-    readonly adBreak: UplynkAdBreak;
-}
-
-/**
- * List of generic items.
- *
- * @public
- */
-interface List<T> extends Array<T> {
-    /**
-     * The number of items in the list.
-     */
-    length: number;
-    /**
-     * Returns the object representing the nth item in the list.
-     * @param index - The index of the item to retrieve.
-     */
-    item(index: number): T | undefined;
-    /**
-     * The object representing the nth in the list.
-     */
-    [index: number]: T;
-}
-/**
- * List of generic items which can dispatch events.
- *
- * @public
- */
-interface EventedList<T, M extends EventMap<StringKeyOf<M>>> extends List<T>, EventDispatcher<M> {
-}
-
-/**
- * Fired when an ad begins.
- *
- * @category Uplynk
- * @category Events
- * @public
- */
-interface UplynkAdBeginEvent extends Event<'adbegin'> {
-    /**
-     * The ad which began.
-     */
-    readonly ad: UplynkAd;
-}
-
-/**
- * Fired when the ad ends.
- *
- * @category Uplynk
- * @category Events
- * @public
- */
-interface UplynkAdEndEvent extends Event<'adend'> {
-    /**
-     * The ad which has ended.
-     */
-    readonly ad: UplynkAd;
-}
-
-/**
- * Fired when the ad reaches the first quartile.
- *
- * @category Uplynk
- * @category Events
- * @public
- */
-interface UplynkAdFirstQuartileEvent extends Event<'adfirstquartile'> {
-    /**
-     * The ad which has progressed.
-     */
-    readonly ad: UplynkAd;
-}
-/**
- * Fired when the ad reaches the mid point.
- *
- * @category Uplynk
- * @category Events
- * @public
- */
-interface UplynkAdMidpointEvent extends Event<'admidpoint'> {
-    /**
-     * The ad which has progressed.
-     */
-    readonly ad: UplynkAd;
-}
-/**
- * Fired when the ad reaches the third quartile.
- *
- * @category Uplynk
- * @category Events
- * @public
- */
-interface UplynkAdThirdQuartileEvent extends Event<'adthirdquartile'> {
-    /**
-     * The ad which has progressed.
-     */
-    readonly ad: UplynkAd;
-}
-/**
- * Fired when the ad is completed.
- *
- * @category Uplynk
- * @category Events
- * @public
- */
-interface UplynkAdCompleteEvent extends Event<'adcomplete'> {
-    /**
-     * The ad which has progressed.
-     */
-    readonly ad: UplynkAd;
-}
-
-/**
- * The events fired by the {@link UplynkAd}.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkAdEventMap {
-    /**
-     * {@inheritDoc UplynkAdBeginEvent}
-     */
-    adbegin: UplynkAdBeginEvent;
-    /**
-     * {@inheritDoc UplynkAdEndEvent}
-     */
-    adend: UplynkAdEndEvent;
-    /**
-     * {@inheritDoc UplynkAdFirstQuartileEvent}
-     */
-    adfirstquartile: UplynkAdFirstQuartileEvent;
-    /**
-     * {@inheritDoc UplynkAdMidpointEvent}
-     */
-    admidpoint: UplynkAdMidpointEvent;
-    /**
-     * {@inheritDoc UplynkAdThirdQuartileEvent}
-     */
-    adthirdquartile: UplynkAdThirdQuartileEvent;
-    /**
-     * {@inheritDoc UplynkAdCompleteEvent}
-     */
-    adcomplete: UplynkAdCompleteEvent;
-}
-/**
- * Represents an Uplynk ad.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkAd extends EventDispatcher<UplynkAdEventMap> {
-    /**
-     * The start time of the ad, in seconds.
-     */
-    readonly startTime: number;
-    /**
-     * The end time of the ad, in seconds.
-     */
-    readonly endTime: number;
-    /**
-     * The duration of the ad, in seconds.
-     */
-    readonly duration: number;
-    /**
-     * The API framework, if any.
-     *
-     * @remarks
-     * <br/> - If the value is 'VPAID', then the ad is a VPAID ad.
-     * <br/> - Otherwise the ad is an Uplynk CMS asset.
-     */
-    readonly apiFramework: string | undefined;
-    /**
-     * The identifier of the creative.
-     *
-     * @remarks
-     * <br/> - Either a VPAID URL if the API framework is `'VPAID'`.
-     * <br/> - Otherwise an asset ID from the Uplynk CMS.
-     */
-    readonly creative: string;
-    /**
-     * The creative's mime type.
-     *
-     * @remarks
-     * <br/> - Either 'application/javascript' if the API framework is `'VPAID'`.
-     * <br/> - Otherwise 'uplynk/m3u8'.
-     */
-    readonly mimeType: string;
-    /**
-     * The width of the ad, in pixels.
-     *
-     * @remarks
-     * <br/> - Returns `0` when this is not a companion.
-     */
-    readonly width: number;
-    /**
-     * The height of the ad, in pixels.
-     *
-     * @remarks
-     * <br/> - Returns `0` when this is not a companion.
-     */
-    readonly height: number;
-    /**
-     * A record of all VAST 3.0 tracking events for this ad.
-     * Each entry contains all related tracking URLs.
-     */
-    readonly events: Record<string, string[]>;
-    /**
-     * List of companion ads of the ad.
-     */
-    readonly companions: ReadonlyArray<UplynkAd>;
-    /**
-     * List of VAST extensions returned by the ad server.
-     */
-    readonly extensions: ReadonlyArray<object>;
-    /**
-     * Record of FreeWheel-defined creative parameters.
-     * Each entry contains the parameter name together with the associated value.
-     */
-    readonly freeWheelParameters: Record<string, string>;
-}
-
-/**
- * Fired when the ad is removed.
- *
- * @category Uplynk
- * @category Events
- * @public
- */
-interface UplynkRemoveAdEvent extends Event<'removead'> {
-    readonly ad: UplynkAd;
-}
-
-/**
- * Events fired by the {@link UplynkAdList}.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkAdListEventMap {
-    /**
-     *{@inheritDoc UplynkRemoveAdEvent}
-     */
-    removead: UplynkRemoveAdEvent;
-}
-/**
- * List of Uplynk ads.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkAdList extends EventedList<UplynkAd, UplynkAdListEventMap> {
-}
-
-/**
- * The events fired by the {@link UplynkAdBreak}.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkAdBreakEventMap {
-    /**
-     * {@inheritDoc UplynkAdBreakBeginEvent}
-     */
-    adbreakbegin: UplynkAdBreakBeginEvent;
-    /**
-     * {@inheritDoc UplynkAdBreakEndEvent}
-     */
-    adbreakend: UplynkAdBreakEndEvent;
-    /**
-     * {@inheritDoc UplynkAdBreakSkipEvent}
-     */
-    adbreakskip: UplynkAdBreakSkipEvent;
-    /**
-     * {@inheritDoc UplynkUpdateAdBreakEvent}
-     */
-    updateadbreak: UplynkUpdateAdBreakEvent;
-}
-/**
- * Represents an Uplynk ad break.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkAdBreak extends EventDispatcher<UplynkAdBreakEventMap> {
-    /**
-     * The start time of the ad break, in seconds.
-     */
-    readonly startTime: number;
-    /**
-     * The end time of the ad break, in seconds.
-     *
-     * @remarks
-     * <br/> - For channels it can return `undefined` when the end time has not yet been signaled.
-     */
-    readonly endTime: number | undefined;
-    /**
-     * The duration of the ad break, in seconds.
-     *
-     * @remarks
-     * <br/> - For channels it can return `undefined` when the duration has not yet been signaled.
-     */
-    readonly duration: number | undefined;
-    /**
-     * List of ads in the ad break.
-     */
-    readonly ads: UplynkAdList;
-    /**
-     * Offset after which the ad break may be skipped, in seconds.
-     *
-     * @remarks
-     * If the offset is -1, the ad is unskippable.
-     * If the offset is 0, the ad is immediately skippable.
-     * Otherwise, it must be a positive number indicating the offset.
-     * Skipping the ad in live streams is unsupported.
-     *
-     * @example
-     * To be able to skip the first ad after 10 seconds use: `10`.
-     *
-     * @defaultValue The {@link UplynkConfiguration.defaultSkipOffset}.
-     */
-    skipOffset: number;
-}
-
-/**
- * Fired when the ad break is added.
- *
- * @category Uplynk
- * @category Events
- * @public
- */
-interface UplynkAddAdBreakEvent extends Event<'addadbreak'> {
-    /**
-     * The ad break which has been added.
-     */
-    readonly adBreak: UplynkAdBreak;
-}
-
-/**
- * Fired when the ad break is removed.
- *
- * @category Uplynk
- * @category Events
- * @public
- */
-interface UplynkRemoveAdBreakEvent extends Event<'removeadbreak'> {
-    /**
-     * The ad break which has been removed.
-     */
-    readonly adBreak: UplynkAdBreak;
-}
-
-/**
- * The events fired by the {@link UplynkAdBreakList}.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkAdBreakListEventMap {
-    /**
-     * {@inheritDoc UplynkAddAdBreakEvent}
-     */
-    addadbreak: UplynkAddAdBreakEvent;
-    /**
-     * {@inheritDoc UplynkRemoveAdBreakEvent}
-     */
-    removeadbreak: UplynkRemoveAdBreakEvent;
-}
-/**
- * List with Uplynk ad breaks.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkAdBreakList extends EventedList<UplynkAdBreak, UplynkAdBreakListEventMap> {
-}
-
-/**
- * The Uplynk ads API.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkAds {
-    /**
-     * List of ad breaks.
-     */
-    readonly adBreaks: UplynkAdBreakList;
-    /**
-     * The currently playing ad break.
-     */
-    readonly currentAdBreak: UplynkAdBreak | undefined;
-    /**
-     * The currently playing ads.
-     *
-     * @remarks
-     * <br/> - These will always be part of the {@link UplynkAds.currentAdBreak | current ad break}.
-     */
-    readonly currentAds: UplynkAdList;
-    /**
-     * Seek to the end of the ad if it is skippable.
-     *
-     * @remarks
-     * <br/> - The ad is skippable when it is currently playing and the ad break's offset is reached.
-     */
-    skip(): void;
-}
-
-/**
- * Represents an Uplynk response with advertisement information for VOD assets.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkResponseVodAds {
-    /**
-     * List of ad break information.
-     *
-     * @remarks
-     * <br/> - This includes both linear and non-linear ads.
-     */
-    breaks: UplynkResponseVodAdBreak[];
-    /**
-     * List of ad break offset information.
-     */
-    breakOffsets?: UplynkResponseVodAdBreakOffset[];
-    /**
-     * List of placeholder offset information.
-     */
-    placeholderOffsets?: UplynkResponseVodAdPlaceholder[];
-}
-/**
- * Represents an Uplynk response with ad break information for VOD assets.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkResponseVodAdBreak {
-    /**
-     * The type of the ad break.
-     */
-    type: 'linear' | 'nonlinear';
-    /**
-     * The position of the ad break, represented by a value from the following list:
-     * <br/> - `'preroll'`: Ad break that plays before the content.
-     * <br/> - `'midroll'`: Ad break that plays during the content.
-     * <br/> - `'postroll'`: Ad break that plays after the content.
-     * <br/> - `'pause'`: Ad break that should be shown when the player is paused.
-     * <br/> - `'overlay'`: Non-linear ad break that is shown over the player.
-     * <br/> - `''`: Unknown ad break position.
-     */
-    position: 'preroll' | 'midroll' | 'postroll' | 'pause' | 'overlay' | '';
-    /**
-     * The time offset of the ad break, in seconds.
-     */
-    timeOffset: number;
-    /**
-     * The duration of the ad break, in seconds.
-     */
-    duration: number;
-    /**
-     * List of ad information.
-     */
-    ads: UplynkResponseVodAd[];
-    /**
-     * A record of all VAST 3.0 tracking events for the ad break.
-     * Each entry contains an event name with associated tracking URLs.
-     */
-    events: Record<string, string[]>;
-}
-/**
- * The Uplynk response with ad information for VOD assets.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkResponseVodAd {
-    /**
-     * The duration of the ad, in seconds.
-     */
-    duration: number;
-    /**
-     * The API framework, if any.
-     *
-     * @remarks
-     * <br/> - If the value is 'VPAID', then the ad is a VPAID ad.
-     * <br/> - Otherwise the ad is an Uplynk CMS asset.
-     */
-    apiFramework: string | null;
-    /**
-     * The creative identifier.
-     *
-     * @remarks
-     * <br/> - Either a VPAID URL if the API framework is `'VPAID'`.
-     * <br/> - Otherwise an asset ID from the Uplynk CMS.
-     */
-    creative: string;
-    /**
-     * The creative's mime type.
-     *
-     * @remarks
-     * <br/> - Either 'application/javascript' if the API framework is `'VPAID'`.
-     * <br/> - Otherwise 'uplynk/m3u8'.
-     */
-    mimeType: string;
-    /**
-     * The width of the ad, in pixels.
-     *
-     * @remarks
-     * <br/> - Returns `0` when this is not a companion.
-     */
-    width: number;
-    /**
-     * The height of the ad, in pixels.
-     *
-     * @remarks
-     * <br/> - Returns `0` when this is not a companion.
-     */
-    height: number;
-    /**
-     * List of companion ads of the ad.
-     */
-    companions: UplynkResponseVodAd[];
-    /**
-     * List of VAST extensions returned by the ad server.
-     */
-    extensions?: object[];
-    /**
-     * Record of FreeWheel-defined creative parameters.
-     * Each entry contains the parameter name together with the associated value.
-     */
-    fw_parameters?: Record<string, string>;
-    /**
-     * A record of all VAST 3.0 tracking events for the ad.
-     * Each entry contains an event name with associated tracking URLs.
-     */
-    events: Record<string, string[]>;
-}
-/**
- * Represents the offset of an Uplynk ad break.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkResponseVodAdBreakOffset {
-    /**
-     * The index of the ad break in the ads.breaks array.
-     */
-    index: number;
-    /**
-     * The time offset of the ad break, in seconds.
-     */
-    timeOffset: number;
-}
-/**
- * Represents an Uplynk response with a placeholder for an ad for VOD assets.
- *
- * @remarks
- * A placeholder is an ad which
- * <br/> - is a short blank video for non-video ads (e.g. VPAID ads).
- * <br/> - is a system asset which is potentially subject to change.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkResponseVodAdPlaceholder {
-    /**
-     * The index of the placeholder's ad break in the `ads.breaks` array.
-     */
-    breaksIndex: number;
-    /**
-     * The index of the placeholder in the `ads.breaks.ads` array.
-     */
-    adsIndex: number;
-    /**
-     * The start time of the placeholder, in seconds.
-     */
-    startTime: number;
-    /**
-     * The end time of the placeholder, in seconds.
-     */
-    endTime: number;
-}
-
-/**
- * The response type of the Uplynk Preplay request, represented by a value from the following list:
- * <br/> - `'vod'`
- * <br/> - `'live'`
- *
- * @category Uplynk
- * @public
- */
-type UplynkPreplayResponseType = 'vod' | 'live';
-/**
- * Type of an Uplynk Preplay response.
- *
- * @category Uplynk
- * @public
- */
-type UplynkPreplayResponse = UplynkPreplayVodResponse | UplynkPreplayLiveResponse;
-/**
- * Represents an Uplynk Preplay base response.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkPreplayBaseResponse {
-    /**
-     * The response type of the request.
-     */
-    type: UplynkPreplayResponseType;
-    /**
-     * The manifest's URL.
-     */
-    playURL: string;
-    /**
-     * The zone prefix for the viewer's session.
-     *
-     * @remarks
-     * <br/> - Use this prefix when submitting playback or API requests for this session.
-     *
-     * @example
-     * E.g. 'https://content-ause2.uplynk.com/'
-     */
-    prefix: string;
-    /**
-     * The identifier of the viewer's session.
-     */
-    sid: string;
-    /**
-     * The content protection information.
-     *
-     * @remarks
-     * <br/> - Currently, this only contains the Fairplay certificate URL.
-     * <br/> - Widevine will default to 'https://content.uplynk.com/wv'.
-     * <br/> - Playready will default to 'https://content.uplynk.com/pr'.
-     */
-    drm?: UplynkResponseDrm;
-}
-/**
- * Represents an Uplynk DRM response.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkResponseDrm {
-    /**
-     * Indicates whether {@link https://api-docs.uplynk.com/#Develop/Studio-DRM-API.htm%3FTocPath%3D_____11 | Studio DRM} is required for playback.
-     */
-    required?: boolean;
-    /**
-     * The Fairplay certificate URL.
-     */
-    fairplayCertificateURL?: string;
-    /**
-     * The Widevine certificate URL.
-     */
-    widevineLicenseURL?: string;
-    /**
-     * The PlayReady certificate URL.
-     */
-    playreadyLicenseURL?: string;
-}
-/**
- * Represents an Uplynk Preplay response for VOD assets.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkPreplayVodResponse extends UplynkPreplayBaseResponse {
-    /**
-     * The response type of the request.
-     */
-    type: 'vod';
-    /**
-     * The advertisement information.
-     */
-    ads: UplynkResponseVodAds;
-    /**
-     * The URL to the interstitial information
-     *
-     * @remarks
-     * <br/> - This is an XML file.
-     * <br/> - This parameter reports `null` when ads are not found.
-     * <br/> - It should only be used on Apple TV.
-     */
-    interstitialURL: string | null | undefined;
-}
-/**
- * Represents an Uplynk Preplay response for live assets.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkPreplayLiveResponse extends UplynkPreplayBaseResponse {
-    /**
-     * The response type of the request.
-     */
-    type: 'live';
-}
-
-/**
- * Fired when a Preplay response is received.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkPreplayResponseEvent extends Event<'preplayresponse'> {
-    /**
-     * The response which has been received.
-     */
-    readonly response: UplynkPreplayResponse;
-}
-
-/**
- * Represents an Uplynk Asset Info Response.
- *
- * @remarks
- * <br/> - See {@link https://api-docs.uplynk.com/#Develop/AssetInfo.htm | Asset Info}.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkAssetInfoResponse {
-    /**
-     * Returns 1 when the asset is audio only.
-     *
-     * @remarks
-     * Valid values are: `0` | `1`.
-     */
-    audio_only: number;
-    /**
-     * List of objects which contain information for the boundaries for the asset.
-     */
-    boundary_details: Boundary[] | undefined;
-    /**
-     * Returns 1 when an error occurred with the asset.
-     *
-     * @remarks
-     * Valid values are: `0` | `1`.
-     */
-    error: number;
-    /**
-     * The TV rating of the asset, represented by a value from the following list:
-     * <br/> - `-1`: Not Available.
-     * <br/> - `0`: Not Rated.
-     * <br/> - `1`: TV-Y.
-     * <br/> - `2`: TV-Y7.
-     * <br/> - `3`: TV-G.
-     * <br/> - `4`: TV-PG.
-     * <br/> - `5`: TV-14.
-     * <br/> - `6`: TV-MA.
-     * <br/> - `7`: Not Rated.
-     */
-    tv_rating: UplynkAssetTvRating;
-    /**
-     * The number of slices available for the asset.
-     */
-    max_slice: number;
-    /**
-     * The base URL to the {@link https://api-docs.uplynk.com/Content/Develop/AssetInfo.htm#Thumbnails | thumbnails}.
-     */
-    thumb_prefix: string;
-    /**
-     * The average slice duration, in seconds.
-     */
-    slice_dur: number;
-    /**
-     * The movie rating of the asset, represented by a value from the following list:
-     * <br/> - `-1`: Not Available.
-     * <br/> - `0`: Not Applicable.
-     * <br/> - `1`: G.
-     * <br/> - `2`: PG.
-     * <br/> - `3`: PG-13.
-     * <br/> - `4`: R.
-     * <br/> - `5`: NC-17.
-     * <br/> - `6`: X.
-     * <br/> - `7`: Not Rated.
-     */
-    movie_rating: UplynkAssetMovieRating;
-    /**
-     * The identifier of the owner.
-     */
-    owner: string;
-    /**
-     * The metadata attached to the asset.
-     *
-     * @remarks
-     * <br/> - Metadata may be added via the CMS.
-     */
-    meta: object;
-    /**
-     * The available bitrates of the asset.
-     */
-    rates: number[];
-    /**
-     * List of thumbnail resolutions of the asset.
-     */
-    thumbs: ThumbnailResolution[];
-    /**
-     * The poster URL of the asset.
-     */
-    poster_url: string;
-    /**
-     * The duration of the asset, in seconds.
-     */
-    duration: number;
-    /**
-     * The default poster URL created for the asset.
-     */
-    readonly default_poster_url: string;
-    /**
-     * The description of the asset.
-     */
-    desc: string;
-    /**
-     * The ratings for the asset, as bitwise flags.
-     *
-     * @remarks
-     * These available flags are the following:
-     * - D: Drug-related themes are present
-     * - V: Violence is present
-     * - S: Sexual situations are present
-     * - L: Adult Language is present
-     *
-     * This number is a bitwise number to indicate if one or more of these values are present.
-     * - [&nbsp;&nbsp;][&nbsp;&nbsp;][&nbsp;&nbsp;][&nbsp;&nbsp;] - 0: No rating flag.
-     * - [&nbsp;&nbsp;][&nbsp;&nbsp;][&nbsp;&nbsp;][L] - 1: Language flag.
-     * - [&nbsp;&nbsp;][&nbsp;&nbsp;][S][&nbsp;&nbsp;] - 2: Sex flag.
-     * - [&nbsp;&nbsp;][V][&nbsp;&nbsp;][&nbsp;&nbsp;] - 4: Violence flag.
-     * - [D][&nbsp;&nbsp;][&nbsp;&nbsp;][&nbsp;&nbsp;] - 8: Drugs flag.
-     * - [D][V][S][L] - 15: All flags are on.
-     */
-    rating_flags: number;
-    /**
-     * The identifier of the external source.
-     */
-    external_id: string;
-    /**
-     * Returns 1 when asset is an ad.
-     *
-     * @remarks
-     * Valid values are: `0` | `1`.
-     */
-    is_ad: number;
-    /**
-     * The identifier of the asset.
-     */
-    asset: string;
-}
-/**
- * A boundary can be one of 3 possible types:
- * - `c3`: An ad that is relevant for up to 3 days after the original airing.
- * - `c7`: An ad that is relevant for up to 7 days after the original airing.
- * - `halftime`: Identifies special content.
- *
- * @remarks
- * <br/> - See {@link https://api-docs.uplynk.com/index.html#Setup/Boundaries-Setup-Playback.htm | Boundaries }
- *
- * @category Uplynk
- * @public
- */
-type Boundary = BoundaryC3 | BoundaryC7 | BoundaryHalftime;
-/**
- * Represents the information of an ad boundary.
- *
- * @category Uplynk
- * @public
- */
-interface BoundaryInfo {
-    /**
-     * The duration of this boundary, in seconds.
-     */
-    duration: number;
-    /**
-     * The offset for this boundary, in seconds.
-     */
-    offset: number;
-}
-/**
- * Represents the boundary of an ad that is relevant for up to three days after the original airing.
- *
- * @category Uplynk
- * @public
- */
-interface BoundaryC3 {
-    c3: BoundaryInfo;
-}
-/**
- * Represents the boundary of an ad that is relevant for up to seven days after the original airing.
- *
- * @category Uplynk
- * @public
- */
-interface BoundaryC7 {
-    c7: BoundaryInfo;
-}
-/**
- * Represents the boundary that identifies special content.
- *
- * @category Uplynk
- * @public
- */
-interface BoundaryHalftime {
-    halftime: BoundaryInfo;
-}
-/**
- * Represents the resolution of an Uplynk thumbnail.
- *
- * @category Uplynk
- * @public
- */
-interface ThumbnailResolution {
-    /**
-     * The width of the thumbnail, in pixels.
-     */
-    width?: number;
-    /**
-     * The prefix of the thumbnail.
-     */
-    prefix: string;
-    /**
-     * The requested width, in pixels.
-     *
-     * @remarks
-     * <br/> - This can differ from the actual width because images are not stretched.
-     */
-    bw: number;
-    /**
-     * The requested height, in pixels.
-     *
-     * @remarks
-     * <br/> - This can differ from the actual width because images are not stretched.
-     */
-    bh: number;
-    /**
-     * The height of the thumbnail, in pixels.
-     */
-    height?: number;
-}
-/**
- * The TV rating of an asset, represented by a value from the following list:
- * <br/> - `-1` (NOT_AVAILABLE)
- * <br/> - `0` (NOT_APPLICABLE)
- * <br/> - `1` (TV_Y)
- * <br/> - `2` (TV_Y7)
- * <br/> - `3` (TV_G)
- * <br/> - `4` (TV_PG)
- * <br/> - `5` (TV_14)
- * <br/> - `6` (TV_MA)
- * <br/> - `7` (NOT_RATED)
- *
- * @remarks
- * In the online documentation the value for 0 is also "NOT RATED". Since this is counter-intuitive, we have assumed
- * this to be erronous and have modeled this according to the Movie Ratings, with 0 being "NOT APPLICABLE".
- *
- * @category Uplynk
- * @public
- */
-type UplynkAssetTvRating = -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
-/**
- * The movie rating of an asset, represented by a value from the following list:
- * <br/> - `-1` (NOT_AVAILABLE)
- * <br/> - `0` (NOT_APPLICABLE)
- * <br/> - `1` (G)
- * <br/> - `2` (PG)
- * <br/> - `3` (PG_13)
- * <br/> - `4` (R)
- * <br/> - `5` (NC_17)
- * <br/> - `6` (X)
- * <br/> - `7` (NOT_RATED)
- *
- * @category Uplynk
- * @public
- */
-type UplynkAssetMovieRating = -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
-
-/**
- * Fired when an asset info response is received.
- *
- * @category Uplynk
- * @category Events
- * @public
- */
-interface UplynkAssetInfoResponseEvent extends Event<'assetinforesponse'> {
-    /**
-     * The response which has been received.
-     */
-    readonly response: UplynkAssetInfoResponse;
-}
-
-/**
- * Represents an Uplynk response with advertisement information for live assets.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkResponseLiveAds {
-    /**
-     * List of ad break information.
-     *
-     * @remarks
-     * <br/> - This includes both linear and non-linear ads.
-     */
-    breaks: UplynkResponseLiveAdBreak[];
-}
-/**
- * Represents an Uplynk response for live ad breaks.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkResponseLiveAdBreak {
-    /**
-     * The identifier of the ad break.
-     */
-    breakId: string;
-    /**
-     * List of ad information.
-     */
-    ads: UplynkResponseLiveAd[];
-    /**
-     * The type of the ad break.
-     */
-    type: 'linear' | 'nonlinear';
-    /**
-     * The position of the ad break, represented by a value from the following list:
-     * <br/> - `'preroll'`: Ad break that plays before the content.
-     * <br/> - `'midroll'`: Ad break that plays during the content.
-     * <br/> - `'postroll'`: Ad break that plays after the content.
-     * <br/> - `'pause'`: Ad break that should be shown when the player is paused.
-     * <br/> - `'overlay'`: Non-linear ad break that is shown over the player.
-     * <br/> - `''`: Unknown ad break position.
-     */
-    position: 'preroll' | 'midroll' | 'postroll' | 'pause' | 'overlay' | '';
-    /**
-     * The time offset of the ad break, in seconds.
-     */
-    timeOffset: number;
-    /**
-     * The duration of the ad break, in seconds.
-     */
-    duration: number;
-    /**
-     * The height of the ads in the ad break, in pixels.
-     *
-     * @remarks
-     * <br/> - Each ad can override this value.
-     */
-    height?: number;
-    /**
-     * The width of the ads in the ad break, in pixels.
-     *
-     * @remarks
-     * <br/> - Each ad can override this value.
-     */
-    width?: number;
-    /**
-     * A record of all VAST 3.0 tracking events for this ad.
-     * Each entry contains an event name with associated tracking URLs.
-     */
-    events: Record<string, string[]>;
-}
-/**
- * Represents an Uplynk response with live ads.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkResponseLiveAd {
-    /**
-     * Identifier for the ad.
-     */
-    ad_id: string;
-    /**
-     * The API framework, if any.
-     *
-     * @remarks
-     * <br/> - If the value is 'VPAID', then the ad is a VPAID ad.
-     * <br/> - Otherwise the ad is an Uplynk CMS asset.
-     */
-    apiFramework: string | null;
-    /**
-     * List of companion ads of the ad.
-     */
-    companions: UplynkResponseLiveAd[];
-    /**
-     * The creative identifier.
-     *
-     * @remarks
-     * <br/> - Either a VPAID URL if the API framework is `'VPAID'`.
-     * <br/> - Otherwise an asset ID from the Uplynk CMS.
-     */
-    creative: string;
-    /**
-     * The duration of the ad, in seconds.
-     */
-    duration: number;
-    /**
-     * The creative's mime type.
-     *
-     * @remarks
-     * <br/> - Either 'application/javascript' if the API framework is `'VPAID'`.
-     * <br/> - Otherwise 'uplynk/m3u8'.
-     */
-    mimeType: string;
-    /**
-     * The height of the ad, in pixels.
-     *
-     * @remarks
-     * <br/> - Returns `0` when this is not a companion.
-     */
-    height: number;
-    /**
-     * The width of the ad, in pixels.
-     *
-     * @remarks
-     * <br/> - Returns `0` when this is not a companion.
-     */
-    width: number;
-    /**
-     * List of VAST extensions returned by the ad server.
-     */
-    extensions?: object[];
-    /**
-     * Record of FreeWheel-defined creative parameters.
-     * Each entry contains the parameter name together with the associated value.
-     */
-    fw_parameters?: Record<string, string>;
-}
-
-/**
- * Represents an Uplynk Ping response.
- *
- * @remarks
- * <br/> - See {@link https://api-docs.uplynk.com/#Develop/Pingv2.htm%3FTocPath%3DClient%2520(Media%2520Player)%7C_____3 | Ping API (Version 2)}.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkPingResponse {
-    /**
-     * The playback position at which the next ping request must be made, in seconds.
-     *
-     * @remarks
-     * <br/> - Ping requests should stop after receiving `-1`.
-     */
-    next_time: number;
-    /**
-     * The live ad information.
-     */
-    ads?: UplynkResponseLiveAds;
-    /**
-     * Whether {@link UplynkAds.currentAdBreak} is ending.
-     *
-     * @remarks
-     * <br/> - False if `0`, true otherwise.
-     */
-    currentBreakEnd?: number;
-    /**
-     * List of VAST extensions returned by the ad server.
-     */
-    extensions?: object[];
-    /**
-     * The last error that occurred, if any.
-     */
-    error?: string;
-}
-
-/**
- * Fired when a Ping response is received.
- *
- * @category Uplynk
- * @category Events
- * @public
- */
-interface UplynkPingResponseEvent extends Event<'pingresponse'> {
-    /**
-     * The response which has been received.
-     */
-    readonly response: UplynkPingResponse;
-}
-
-/**
- * Fired when an error or invalid response is received from the Ping API.
- *
- * @category Uplynk
- * @category Events
- * @public
- */
-interface UplynkPingErrorEvent extends Event<'pingerror'> {
-    /**
-     * The error message.
-     */
-    readonly error: string;
-}
-
-/**
- * Represents an Uplynk asset.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkAsset {
-    /**
-     * The start time of the asset, in seconds.
-     */
-    startTime: number;
-    /**
-     * The end time of the asset, in seconds.
-     *
-     * @remarks
-     * <br> - The end time is the sum of {@link UplynkAsset.startTime}, {@link UplynkAsset.duration} and the {@link UplynkAdBreak.duration} of the ad breaks scheduled during the asset.
-     */
-    endTime: number;
-    /**
-     * The duration of the asset, in seconds.
-     */
-    duration: number;
-    /**
-     * Whether the asset is audio only.
-     */
-    audioOnly: boolean;
-    /**
-     * List of boundaries of the asset.
-     *
-     * @remarks
-     * <br/> - See {@link https://api-docs.uplynk.com/index.html#Setup/Boundaries-Setup-Playback.htm | Boundaries}
-     */
-    boundaryDetails: Boundary[] | undefined;
-    /**
-     * Whether an error occurred with the asset.
-     */
-    error: boolean;
-    /**
-     * The tv-rating of the asset, represented by a value from the following list:
-     * <br/> - `-1`: Not Available.
-     * <br/> - `0`: Not Rated.
-     * <br/> - `1`: TV-Y.
-     * <br/> - `2`: TV-Y7.
-     * <br/> - `3`: TV-G.
-     * <br/> - `4`: TV-PG.
-     * <br/> - `5`: TV-14.
-     * <br/> - `6`: TV-MA.
-     * <br/> - `7`: Not Rated.
-     */
-    tvRating: number;
-    /**
-     * The number of slices available for the asset.
-     */
-    maxSlice: number;
-    /**
-     * The prefix URL to the thumbnails.
-     */
-    thumbPrefix: string;
-    /**
-     * The average slice duration, in seconds.
-     */
-    sliceDuration: number;
-    /**
-     * The movie rating of the asset, represented by a value from the following list:
-     * <br/> - `-1`: Not Available.
-     * <br/> - `0`: Not Applicable.
-     * <br/> - `1`: G.
-     * <br/> - `2`: PG.
-     * <br/> - `3`: PG-13.
-     * <br/> - `4`: R.
-     * <br/> - `5`: NC-17.
-     * <br/> - `6`: X.
-     * <br/> - `7`: Not Rated.
-     */
-    movieRating: number;
-    /**
-     * The identifier of the owner.
-     */
-    ownerId: string;
-    /**
-     * The metadata attached to the asset.
-     *
-     * @remarks
-     * <br/> - Metadata may be added via the CMS.
-     */
-    metadata: object;
-    /**
-     * The available bitrates of the asset.
-     */
-    rates: number[];
-    /**
-     * List of thumbnail resolutions of the asset.
-     */
-    thumbnailResolutions: ThumbnailResolution[];
-    /**
-     * The poster URL.
-     */
-    posterUrl: string;
-    /**
-     * The default poster URL created for the asset.
-     */
-    defaultPosterUrl: string;
-    /**
-     * The description of the asset.
-     */
-    description: string;
-    /**
-     * Whether the asset contains adult language.
-     */
-    hasAdultLanguage: boolean;
-    /**
-     * Whether the asset contains sexual situations.
-     */
-    hasSexualSituations: boolean;
-    /**
-     * Whether the asset contains violence.
-     */
-    hasViolence: boolean;
-    /**
-     * Whether the asset contains drug situations.
-     */
-    hasDrugSituations: boolean;
-    /**
-     * The identifier of the external source.
-     */
-    externalId: string;
-    /**
-     * Whether the asset is an ad.
-     */
-    isAd: boolean;
-    /**
-     * The identifier of the asset.
-     */
-    assetId: string;
-}
-
-/**
- * Fired when an asset is added.
- *
- * @category Uplynk
- * @category Events
- * @public
- */
-interface UplynkAddAssetEvent extends Event<'addasset'> {
-    /**
-     * The asset which has been added.
-     */
-    readonly asset: UplynkAsset;
-}
-
-/**
- * Fired when an asset is removed.
- *
- * @category Uplynk
- * @category Events
- * @public
- */
-interface UplynkRemoveAssetEvent extends Event<'removeasset'> {
-    /**
-     * The asset which has been removed.
-     */
-    readonly asset: UplynkAsset;
-}
-
-/**
- * The events fired by the {@link UplynkAssetList}.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkAssetEventMap {
-    /**
-     * {@inheritDoc UplynkAddAssetEvent}
-     */
-    addasset: UplynkAddAssetEvent;
-    /**
-     * {@inheritDoc UplynkRemoveAssetEvent}
-     */
-    removeasset: UplynkRemoveAssetEvent;
-}
-/**
- * List of Uplynk assets.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkAssetList extends EventedList<UplynkAsset, UplynkAssetEventMap> {
-}
-
-/**
- * The events fired by the {@link Uplynk | Uplynk API}.
- *
- * @category Uplynk
- * @public
- */
-interface UplynkEventMap {
-    /**
-     * {@inheritDoc UplynkPreplayResponseEvent}
-     */
-    preplayresponse: UplynkPreplayResponseEvent;
-    /**
-     * {@inheritDoc UplynkAssetInfoResponseEvent}
-     */
-    assetinforesponse: UplynkAssetInfoResponseEvent;
-    /**
-     * {@inheritDoc UplynkPingResponseEvent}
-     */
-    pingresponse: UplynkPingResponseEvent;
-    /**
-     * {@inheritDoc UplynkPingErrorEvent}
-     */
-    pingerror: UplynkPingErrorEvent;
-}
-/**
- * The Uplynk API.
- *
- * @remarks
- * <br/> - Only available with the feature 'uplynk'.
- *
- * @category Uplynk
- * @public
- */
-interface Uplynk extends EventDispatcher<UplynkEventMap> {
-    /**
-     * The Uplynk SSAI API.
-     */
-    readonly ads: UplynkAds;
-    /**
-     * List of Uplynk assets.
-     */
-    readonly assets: UplynkAssetList;
-}
-
-/**
- * An error code whose category is `ErrorCategory.CONTENT_PROTECTION`.
- *
- * @category Content Protection
- * @category Errors
- * @public
- */
-type ContentProtectionErrorCode = ErrorCode.CONTENT_PROTECTION_ERROR | ErrorCode.CONTENT_PROTECTION_NOT_SUPPORTED | ErrorCode.CONTENT_PROTECTION_CONFIGURATION_MISSING | ErrorCode.CONTENT_PROTECTION_CONFIGURATION_INVALID | ErrorCode.CONTENT_PROTECTION_INITIALIZATION_INVALID | ErrorCode.CONTENT_PROTECTION_CERTIFICATE_ERROR | ErrorCode.CONTENT_PROTECTION_CERTIFICATE_INVALID | ErrorCode.CONTENT_PROTECTION_LICENSE_ERROR | ErrorCode.CONTENT_PROTECTION_LICENSE_INVALID | ErrorCode.CONTENT_PROTECTION_KEY_EXPIRED | ErrorCode.CONTENT_PROTECTION_KEY_MISSING | ErrorCode.CONTENT_PROTECTION_OUTPUT_RESTRICTED | ErrorCode.CONTENT_PROTECTION_INTERNAL_ERROR;
-/**
- * An error related to content protection.
- *
- * @category Content Protection
- * @category Errors
- * @public
- */
-interface ContentProtectionError extends THEOplayerError {
-    /**
-     * {@inheritDoc THEOplayerError.code}
-     */
-    readonly code: ContentProtectionErrorCode;
-    /**
-     * The URL that was used in the request.
-     *
-     * @remarks
-     * <br/> - Only available when {@link ContentProtectionError.code} is {@link ErrorCode.CONTENT_PROTECTION_CERTIFICATE_ERROR} or {@link ErrorCode.CONTENT_PROTECTION_LICENSE_ERROR}.
-     */
-    readonly url?: string;
-    /**
-     * The status code from the HTTP response.
-     *
-     * @remarks
-     * <br/> - Only available when {@link ContentProtectionError.code} is {@link ErrorCode.CONTENT_PROTECTION_CERTIFICATE_ERROR} or {@link ErrorCode.CONTENT_PROTECTION_LICENSE_ERROR}.
-     */
-    readonly status?: number;
-    /**
-     * The status text from the HTTP response.
-     *
-     * @remarks
-     * <br/> - Only available when {@link ContentProtectionError.code} is {@link ErrorCode.CONTENT_PROTECTION_CERTIFICATE_ERROR} or {@link ErrorCode.CONTENT_PROTECTION_LICENSE_ERROR}.
-     */
-    readonly statusText?: string;
-    /**
-     * The body contained in the HTTP response.
-     *
-     * @remarks
-     * <br/> - Only available when {@link ContentProtectionError.code} is {@link ErrorCode.CONTENT_PROTECTION_CERTIFICATE_ERROR} or {@link ErrorCode.CONTENT_PROTECTION_LICENSE_ERROR}.
-     */
-    readonly response?: string;
-    /**
-     * The internal error code from the CDM.
-     *
-     * @remarks
-     * <br/> - Only available when {@link ContentProtectionError.code} is {@link ErrorCode.CONTENT_PROTECTION_INTERNAL_ERROR}.
-     */
-    readonly systemCode?: number;
-}
-
-/**
- * Fired when an error related to content protection occurs.
- *
- * @category Content Protection
- * @category Errors
- * @category Events
- * @public
- */
-interface ContentProtectionErrorEvent extends Event<'contentprotectionerror'> {
-    /**
-     * The error that occurred.
-     *
-     * @deprecated use {@link ContentProtectionErrorEvent.errorObject | errorObject.message} instead
-     */
-    error: string;
-    /**
-     * An error object containing additional information about the error.
-     */
-    errorObject: ContentProtectionError;
-    /**
-     * @deprecated use {@link ContentProtectionError.url | errorObject.url} instead
-     */
-    readonly licenseAcquisitionURL?: string;
-    /**
-     * @deprecated use {@link ContentProtectionError.status | errorObject.status} instead
-     */
-    readonly status?: number;
-    /**
-     * @deprecated use {@link ContentProtectionError.statusText | errorObject.statusText} instead
-     */
-    readonly statusText?: string;
-    /**
-     * @deprecated use {@link ContentProtectionError.response | errorObject.response} instead
-     */
-    readonly licenseAcquisitionMessage?: string;
-    /**
-     * @deprecated use {@link ContentProtectionError.systemCode | errorObject.systemCode} instead
-     */
-    readonly systemCode?: number;
-}
-
-/**
- * The events fired by the {@link HespApi}.
- * @remarks
- * <br/> - Note: This API is in an experimental stage and may be subject to breaking changes.
- * <br/> - Only available with the feature `'hesp'`.
- * <br/> - Only available when an HESP source is playing.
- *
- * @category HESP
- * @public
- */
-interface HespApiEventMap {
-    /**
-     * Fired when the player enters the HESP live playback mode.
-     */
-    golive: Event<'golive'>;
-    /**
-     * Fired when the player seeks back to live to recover from the latency being too high.
-     */
-    latencyrecoveryseek: Event<'latencyrecoveryseek'>;
-}
-/**
- * The HESP API.
- * @remarks
- * <br/> - Note: This API is in an experimental stage and may be subject to breaking changes.
- * <br/> - Only available with the feature `'hesp'`.
- *
- * @category HESP
- * @public
- */
-interface HespApi extends EventDispatcher<HespApiEventMap> {
-    /**
-     * Seeks the player to the live point.
-     * @remarks
-     * <br/> - Only works during HESP playback.
-     */
-    goLive(): void;
-    /**
-     * True if the HESP playback is in live mode.
-     */
-    readonly isLive: boolean;
-    /**
-     * Returns the manifest for the current HESP source.
-     * @remarks
-     * <br/> - Undefined if no HESP source is configured.
-     */
-    readonly manifest: object | undefined;
-    /**
-     * Returns an overview of the latencies of different parts of the pipeline.
-     *
-     * @internal
-     */
-    readonly latencies: Latencies | undefined;
-    /**
-     * Returns an overview of the video latencies of different parts of the pipeline.
-     *
-     * @internal
-     */
-    readonly videoLatencies: Latencies | undefined;
-    /**
-     * Returns an overview of the audio latencies of different parts of the pipeline.
-     *
-     * @internal
-     */
-    readonly audioLatencies: Latencies | undefined;
-}
-/**
- * Specific source configuration for an HESP media resource.
- * @remarks
- * <br/> - Note: This API is in an experimental stage and may be subject to breaking changes.
- * <br/> - Only available with the feature `'hesp'`.
- * <br/> - Only applicable when configuring an HESP source.
- *
- * @category HESP
- * @category Source
- * @public
- */
-interface HespSourceConfiguration {
-}
-/**
- * Specific {@link TypedSource} variant for an HESP media resource.
- * @remarks
- * <br/> - Note: This API is in an experimental stage and may be subject to breaking changes.
- * <br/> - Only available with the feature `'hesp'`.
- * <br/> - Only applicable when configuring an HESP source.
- *
- * @category HESP
- * @category Source
- * @public
- */
-interface HespTypedSource extends TypedSource {
-    type: 'application/vnd.theo.hesp+json';
-    /**
-     * Specific source configuration for an HESP media resource.
-     * @remarks
-     * <br/> - Note: This API is in an experimental stage and may be subject to breaking changes.
-     * <br/> - Only available with the feature `'hesp'`.
-     * <br/> - Only applicable when configuring an HESP source.
-     */
-    hesp?: HespSourceConfiguration;
-}
-/**
- * An overview of different latencies in the pipeline.
- *
- * @internal
- */
-interface Latencies {
-    /**
-     * The total latency between a frame entering the transcoder and being displayed on the screen.
-     */
-    readonly theolive: number;
-    /**
-     * The latency a frame spends in the transcoding and packaging step.
-     */
-    readonly engine: number;
-    /**
-     * The latency between a frame exiting the packager and being received by the player.
-     */
-    readonly distribution: number;
-    /**
-     * The latency added by the player in the form of buffer.
-     */
-    readonly player: number;
-}
-
-/**
- * Represents a DASH representation.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface Representation {
-    /**
-     * The identifier for the representation.
-     */
-    id: string;
-    /**
-     * The type of the representation, represented by a value from the following list:
-     * <br/> - `'audio'`
-     * <br/> - `'video'`
-     * <br/> - `'text'`
-     * <br/> - `'image'`
-     * <br/> - `'unknown'`
-     */
-    type: string;
-    /**
-     * The required bandwidth for the representation, in bits per second.
-     */
-    bandwidth: number;
-    /**
-     * The video height of the representation, in pixels.
-     */
-    height: number;
-    /**
-     * The video width of the representation, in pixels.
-     */
-    width: number;
-    /**
-     * The framerate of the representation, in frames per seconds.
-     */
-    frameRate: number;
-    /**
-     * The audio sampling rate of the representation, in Hertz.
-     *
-     * @remarks
-     * <br/> - Either a single value or a list of two values corresponding to the minimum and maximum sampling rate.
-     */
-    audioSamplingRate: number | [number, number];
-}
-
-/**
- * Fired when `ChromelessPlayer.source` changes.
- *
- * @category Events
- * @public
- */
-interface SourceChangeEvent extends Event<'sourcechange'> {
-    /**
-     * The player's new source.
-     */
-    readonly source: SourceDescription | undefined;
-}
-/**
- * Fired when the current source, which is chosen from {@link SourceDescription.sources | ChromelessPlayer.source.sources}, changes.
- *
- * @category Events
- * @public
- */
-interface CurrentSourceChangeEvent extends Event<'currentsourcechange'> {
-    /**
-     * The player's new current source.
-     */
-    readonly currentSource: TypedSource | undefined;
-}
-/**
- * Fired when `ChromelessPlayer.paused` changes to `false`.
- *
- * @category Events
- * @public
- */
-interface PlayEvent extends Event<'play'> {
-    /**
-     * The player's current time.
-     */
-    readonly currentTime: number;
-}
-/**
- * Fired when `ChromelessPlayer.paused` changes to `true`.
- *
- * @category Events
- * @public
- */
-interface PauseEvent extends Event<'pause'> {
-    /**
-     * The player's current time.
-     */
-    readonly currentTime: number;
-}
-/**
- * Fired when `ChromelessPlayer.seeking` changes to `true`, and the player has started seeking to a new position.
- *
- * @category Events
- * @public
- */
-interface SeekingEvent extends Event<'seeking'> {
-    /**
-     * The player's current time.
-     */
-    readonly currentTime: number;
-}
-/**
- * Fired when `ChromelessPlayer.seeking` changes to `false` after the current playback position was changed.
- *
- * @category Events
- * @public
- */
-interface SeekedEvent extends Event<'seeked'> {
-    /**
-     * The player's current time.
-     */
-    readonly currentTime: number;
-}
-/**
- * Fired when the current playback position changed as part of normal playback or in an especially interesting way, for example discontinuously.
- *
- * @category Events
- * @public
- */
-interface TimeUpdateEvent extends Event<'timeupdate'> {
-    /**
-     * The player's current time.
-     */
-    readonly currentTime: number;
-    /**
-     * The player's current program date time.
-     */
-    readonly currentProgramDateTime: Date | undefined;
-}
-/**
- * Fired when playback has stopped because the end of the media resource was reached.
- *
- * @category Events
- * @public
- */
-interface EndedEvent extends Event<'ended'> {
-    /**
-     * The player's current time.
-     */
-    readonly currentTime: number;
-}
-/**
- * Fired when playback is ready to start after having been paused or delayed due to lack of media data.
- *
- * @category Events
- * @public
- */
-interface PlayingEvent extends Event<'playing'> {
-    /**
-     * The player's current time.
-     */
-    readonly currentTime: number;
-}
-/**
- * Fired when playback has stopped because the next frame is not available, but the player expects that frame to become available in due course.
- *
- * @category Events
- * @public
- */
-interface WaitingEvent extends Event<'waiting'> {
-    /**
-     * The player's current time.
-     */
-    readonly currentTime: number;
-}
-/**
- * Fired when `ChromelessPlayer.readyState` changes.
- *
- * @category Events
- * @public
- */
-interface ReadyStateChangeEvent extends Event<'readystatechange'> {
-    /**
-     * The player's current time.
-     */
-    readonly currentTime: number;
-    /**
-     * The player's new ready state, represented by a value from the following list:
-     * <br/> - 0 (HAVE_NOTHING): The player has no information about the duration of its source.
-     * <br/> - 1 (HAVE_METADATA): The player has information about the duration of its source.
-     * <br/> - 2 (HAVE_CURRENT_DATA): The player has its current frame in its buffer.
-     * <br/> - 3 (HAVE_FUTURE_DATA): The player has enough data for immediate playback.
-     * <br/> - 4 (HAVE_ENOUGH_DATA): The player has enough data for continuous playback.
-     *
-     * @remarks
-     * <br/> - See the {@link https://html.spec.whatwg.org/multipage/media.html#ready-states | HTML Media Specification}
-     */
-    readonly readyState: number;
-}
-/**
- * Fired when the player determines the duration and dimensions of the media resource.
- *
- * @category Events
- * @public
- */
-interface LoadedMetadataEvent extends Event<'loadedmetadata'> {
-    /**
-     * The player's current time.
-     */
-    readonly currentTime: number;
-    /**
-     * The player's new ready state.
-     */
-    readonly readyState: number;
-}
-/**
- * Fired when the player can render the media data at the current playback position for the first time.
- *
- * @category Events
- * @public
- */
-interface LoadedDataEvent extends Event<'loadeddata'> {
-    /**
-     * The player's current time.
-     */
-    readonly currentTime: number;
-    /**
-     * The player's new ready state.
-     */
-    readonly readyState: number;
-}
-/**
- * Fired when the player can resume playback of the media data.
- *
- * @category Events
- * @public
- */
-interface CanPlayEvent extends Event<'canplay'> {
-    /**
-     * The player's current time.
-     */
-    readonly currentTime: number;
-    /**
-     * The player's new ready state.
-     */
-    readonly readyState: number;
-}
-/**
- * Fired when the player can resume playback of the media data and buffering is unlikely.
- *
- * @category Events
- * @public
- */
-interface CanPlayThroughEvent extends Event<'canplaythrough'> {
-    /**
-     * The player's current time.
-     */
-    readonly currentTime: number;
-    /**
-     * The player's new ready state.
-     */
-    readonly readyState: number;
-}
-/**
- * Fired when the player's source is cleared.
- *
- * @category Events
- * @public
- */
-interface EmptiedEvent extends Event<'emptied'> {
-    /**
-     * The player's current time.
-     */
-    readonly currentTime: number;
-    /**
-     * The player's new ready state.
-     */
-    readonly readyState: number;
-}
-/**
- * Fired when the player loaded media data.
- *
- * @category Events
- * @public
- */
-interface ProgressEvent extends Event<'progress'> {
-    /**
-     * The player's current time.
-     */
-    readonly currentTime: number;
-}
-/**
- * Fired when `ChromelessPlayer.duration` changes.
- *
- * @category Events
- * @public
- */
-interface DurationChangeEvent extends Event<'durationchange'> {
-    /**
-     * The player's new duration.
-     */
-    readonly duration: number;
-}
-/**
- * Fired when `ChromelessPlayer.volume` changes.
- *
- * @category Events
- * @public
- */
-interface VolumeChangeEvent extends Event<'volumechange'> {
-    /**
-     * The player's new volume.
-     */
-    readonly volume: number;
-}
-/**
- * Fired when the current representation changes.
- *
- * @category Events
- * @public
- */
-interface RepresentationChangeEvent extends Event<'representationchange'> {
-    /**
-     * The player's current representation.
-     */
-    readonly representation: Representation | undefined;
-    /**
-     * The player's previous representation.
-     */
-    readonly previousRepresentation: Representation | undefined;
-}
-/**
- * Fired when `ChromelessPlayer.playbackRate` changes.
- *
- * @category Events
- * @public
- */
-interface RateChangeEvent extends Event<'ratechange'> {
-    /**
-     * The player's new playback rate.
-     */
-    readonly playbackRate: number;
-}
-/**
- * Fired when the dimensions of the HTML element changes.
- *
- * @category Events
- * @public
- */
-interface DimensionChangeEvent extends Event<'dimensionchange'> {
-    /**
-     * The current width of the player's HTML element, in pixels.
-     */
-    readonly width: number;
-    /**
-     * The current height of the player's HTML element, in pixels.
-     */
-    readonly height: number;
-}
-/**
- * Fired when the player encounters key system initialization data in the media data.
- *
- * @category Events
- * @public
- */
-interface EncryptedEvent extends Event<'encrypted'> {
-    /**
-     * The player's current time.
-     */
-    readonly currentTime: number;
-    /**
-     * The type of the initialization data.
-     */
-    readonly initDataType: string;
-    /**
-     * The initialization data.
-     */
-    readonly initData: ArrayBuffer;
-}
-
-/**
- * The latency manager, used to control low-latency live playback.
- *
- * @remarks This is only used for live playback.
- *
- * @category Player
- * @public
- */
-interface LatencyManager {
-    /**
-     * Whether the latency manager is enabled.
-     */
-    enabled: boolean;
-    /**
-     * Whether the latency manager is monitoring to stay within the {@link LatencyManager.currentConfiguration | live playback configuration}.
-     *
-     * @remarks
-     * <br/> - Can only be monitored for live playback.
-     */
-    readonly monitoringLivePlayback: boolean;
-    /**
-     * The current latency.
-     *
-     * @remarks
-     * <br/> - Only available during live playback.
-     */
-    readonly currentLatency: number | undefined;
-    /**
-     * The current latency configuration for the current source, if available.
-     *
-     * @remarks
-     * <br/> - The initial value will be based on {@link BaseSource.latencyConfiguration}
-     * <br/> - If {@link BaseSource.latencyConfiguration} is not set, the player will determine the configuration for your live stream.
-     * <br/> - The player might change the latency configuration based on playback events like stalls.
-     */
-    readonly currentConfiguration: LatencyConfiguration | undefined;
-}
-/**
- * The latency configuration for managing the live offset of the player.
- *
- * @category Player
- * @public
- */
-interface LatencyConfiguration {
-    /**
-     * The start of the target live window.
-     * If the live offset becomes smaller than this value, the player will slow down in order to increase the latency.
-     */
-    readonly minimumOffset: number;
-    /**
-     * The end of the target live window.
-     * If the live offset becomes higher than this value, the player will speed up in order to decrease the latency.
-     */
-    readonly maximumOffset: number;
-    /**
-     * The live offset that the player will aim for. When correcting the offset by tuning the playbackRate,
-     * the player will stop correcting when it reaches this value.
-     */
-    readonly targetOffset: number;
-    /**
-     * The live offset at which the player will automatically trigger a live seek.
-     */
-    readonly forceSeekOffset: number;
-    /**
-     * Indicates the minimum playbackRate used to slow down the player.
-     */
-    readonly minimumPlaybackRate: number;
-    /**
-     * Indicates the maximum playbackRate used to speed up the player.
-     */
-    readonly maximumPlaybackRate: number;
-}
-
-/**
- * Represents one or more ranges of time, each specified by a start time and an end time.
- *
- * @remarks
- * This is equivalent to the {@link https://developer.mozilla.org/en-US/docs/Web/API/TimeRanges | TimeRanges} interface used by an HTML video element.
- *
- * @public
- */
-interface TimeRanges {
-    /** Returns the number of ranges in the object. */
-    readonly length: number;
-    /**
-     * Returns the time for the start of the range with the given index.
-     *
-     * @throws Throws an Error if the index is out of bounds.
-     */
-    start(index: number): number;
-    /**
-     * Returns the time for the end of the range with the given index.
-     *
-     * @throws Throws an Error if the index is out of bounds.
-     */
-    end(index: number): number;
-}
-
-/**
- * Fired when the loading of a THEOlive distribution starts.
- *
- * @category THEOlive
- * @public
- */
-interface DistributionLoadStartEvent extends Event<'distributionloadstart'> {
-    readonly distributionId: string;
-}
-/**
- * Fired when the loading of a THEOlive endpoint is complete and playback can start. This event is dispatched on every endpoint load, when an error
- * is encountered and the player recovers by choosing a new one.
- *
- * @category THEOlive
- * @public
- */
-interface EndpointLoadedEvent extends Event<'endpointloaded'> {
-    /**
-     * The endpoint that has been loaded.
-     */
-    readonly endpoint: Endpoint;
-}
-/**
- * Fired when loading a THEOlive distribution that cannot be played, for example because the publication is stopped or is still starting up.
- *
- * @category THEOlive
- * @public
- */
-interface DistributionOfflineEvent extends Event<'distributionoffline'> {
-    readonly distributionId: string;
-}
-/**
- * Fired when the player cannot play the current primary publication and would like to fallback. If a fallback has been configured it will fallback,
- * otherwise only the event is fired.
- *
- * @category THEOlive
- * @public
- */
-interface IntentToFallbackEvent extends Event<'intenttofallback'> {
-    /**
-     * The reason why the player chose to fallback.
-     */
-    readonly reason?: THEOplayerError;
-}
-/**
- * Fired when the player enters bad network mode.
- *
- * @category THEOlive
- * @public
- */
-interface EnterBadNetworkModeEvent extends Event<'enterbadnetworkmode'> {
-}
-/**
- * Fired when the player exits bad network mode.
- *
- * @category THEOlive
- * @public
- */
-interface ExitBadNetworkModeEvent extends Event<'exitbadnetworkmode'> {
-}
-/**
- * The events fired by the {@link TheoLiveApi}.
- *
- * @category THEOlive
- * @public
- */
-interface TheoLiveApiEventMap {
-    readonly distributionloadstart: DistributionLoadStartEvent;
-    readonly endpointloaded: EndpointLoadedEvent;
-    readonly distributionoffline: DistributionOfflineEvent;
-    readonly intenttofallback: IntentToFallbackEvent;
-    readonly enterbadnetworkmode: EnterBadNetworkModeEvent;
-    readonly exitbadnetworkmode: ExitBadNetworkModeEvent;
-}
-/**
- * A THEOlive publication.
- *
- * @category THEOlive
- * @public
- */
-interface TheoLivePublication {
-    readonly name: string;
-}
-/**
- * The THEOlive api.
- *
- * @category THEOlive
- * @public
- */
-interface TheoLiveApi extends EventDispatcher<TheoLiveApiEventMap> {
-    badNetworkMode: boolean;
-    /**
-     * Get or set the auth token that will be used when requesting a manifest or segment.
-     */
-    authToken: string | undefined;
-    preloadPublications(publicationIds: string[]): Promise<TheoLivePublication[]>;
-}
-/**
- * A THEOlive endpoint.
- *
- * @category THEOlive
- * @public
- */
-interface Endpoint {
-    hespSrc?: string;
-    hlsSrc?: string;
-    millicastSrc?: ChannelMillicastSource;
-    adSrc?: string;
-    daiAssetKey?: string;
-    cdn?: string;
-    weight: number;
-    priority: number;
-    contentProtection?: ChannelDrmConfigResponse;
-    dvrWindow?: number;
-}
-interface ChannelMillicastSource {
-    accountId: string;
-    name: string;
-    subscriberToken?: string;
-}
-/**
- * The DRM configuration of a THEOlive endpoint.
- *
- * @category THEOlive
- * @public
- */
-interface ChannelDrmConfigResponse {
-    integration: string;
-    widevine?: {
-        licenseUrl: string;
-    };
-    playready?: {
-        licenseUrl: string;
-    };
-    fairplay?: {
-        licenseUrl: string;
-        certificateUrl: string;
-    };
-}
-
-/**
- * A WebVTT-defined region scroll setting, represented by a value from the following list:
- * <br/> - `''`: None. Cues in the region stay fixed at the location they were first painted in.
- * <br/> - `'up'`: Up. Cues in the region will be added at the bottom of the region and push any already displayed cues in the region up until all lines of the new cue are visible in the region.
- *
- * @category Media and Text Tracks
- * @public
- */
-type VTTScrollSetting = '' | /* none */ 'up';
-/**
- * Represents a WebVTT region.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface WebVTTRegion {
-    /**
-     * The identifier of the region.
-     */
-    readonly id: string;
-    /**
-     * The number of lines in the region.
-     */
-    readonly lines: number;
-    /**
-     * The horizontal coordinate of the anchor point of the region to the viewport, as a percentage of the video width.
-     */
-    readonly regionAnchorX: number;
-    /**
-     * The vertical coordinate of the anchor point of the region to the viewport, as a percentage of the video height.
-     */
-    readonly regionAnchorY: number;
-    /**
-     * The scroll setting of the region.
-     */
-    readonly scrollValue: VTTScrollSetting;
-    /**
-     * The horizontal coordinate of the point of the viewport the anchor point of the region is anchored to, as a percentage of the video width.
-     */
-    readonly viewportAnchorX: number;
-    /**
-     * The veritcal coordinate of the point of the viewport the anchor point of the region is anchored to, as a percentage of the video height.
-     */
-    readonly viewportAnchorY: number;
-    /**
-     * The width of the region, as a percentage of the video width.
-     */
-    readonly width: number;
-}
-
-/**
- * A WebVTT-defined writing direction, represented by a value from the following list:
- * <br/> - `''`: Horizontal. A line extends horizontally and is offset vertically from the video viewport’s top edge, with consecutive lines displayed below each other.
- * <br/> - `'rl'`: Vertical right-to-left. A line extends vertically and is offset horizontally from the video viewport’s right edge, with consecutive lines displayed to the left of each other.
- * <br/> - `'lr'`: vertical left-to-right. A line extends vertically and is offset horizontally from the video viewport’s left edge, with consecutive lines displayed to the right of each other.
- *
- * @category Media and Text Tracks
- * @public
- */
-type VTTDirectionSetting = '' | 'rl' | 'lr';
-/**
- * A WebVTT-defined line alignment, represented by a value from the following list:
- * <br/> - `'start'`: The cue box's start is aligned at a specified line.
- * <br/> - `'center'`: The cue box's center is aligned at a specified line.
- * <br/> - `'end'`: The cue box's end is aligned at a specified line.
- *
- * @category Media and Text Tracks
- * @public
- */
-type VTTLineAlignSetting = 'start' | 'center' | 'end';
-/**
- * A WebVTT-defined text alignment, represented by a value from the following list:
- * <br/> - `'start'`: The text of each line is aligned towards the start side of the box.
- * <br/> - `'center'`: The text of each line is aligned at the center of the box.
- * <br/> - `'end'`: The text of each line is aligned towards the end side of the box.
- * <br/> - `'left'`: The text of each line is aligned to the box’s left side for horizontal cues, or top side otherwise.
- * <br/> - `'right'`: The text of each line is aligned to the box’s right side for horizontal cues, or bottom side otherwise.
- *
- * @category Media and Text Tracks
- * @public
- */
-type VTTAlignSetting = 'start' | 'center' | 'end' | 'left' | 'right';
-/**
- * A WebVTT-defined position alignment, represented by a value from the following list:
- * <br/> - `'line-left'`: The cue box's start is aligned at a specified position.
- * <br/> - `'center'`: The cue box's center is aligned at a specified position.
- * <br/> - `'line-right'`: The cue box's end is aligned at a specified position.
- * <br/> - `'auto'`: The cue box's alignment is dependent on its text alignment setting.
- *
- * @category Media and Text Tracks
- * @public
- */
-type VTTPositionAlignSetting = 'line-left' | 'center' | 'line-right' | 'auto';
-/**
- * A WebVTT-defined line offset, represented by a value from the following list:
- * <br/> - a `number`: The line offset is expressed in a number of text lines or a percentage of the video viewport height or width.
- * <br/> - `'auto'`: The line offset depends on the other showing tracks.
- *
- * @remarks
- * <br/> - The semantics of the `number` variant are dependent on {@link WebVTTCue.snapToLines}.
- *
- * @category Media and Text Tracks
- * @public
- */
-type VTTLine = number | 'auto';
-/**
- * A WebVTT-defined position, represented by a value from the following list:
- * <br/> - a number: The position is expressed as a percentage value.
- * <br/> - `'auto'`: The position depends on the text alignment of the cue.
- *
- * @category Media and Text Tracks
- * @public
- */
-type VTTPosition = number | 'auto';
-/**
- * Represents a cue of a {@link https://www.w3.org/TR/webvtt1/ | WebVTT} text track.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface WebVTTCue extends TextTrackCue {
-    /**
-     * The text alignment of the cue.
-     */
-    align: VTTAlignSetting;
-    /**
-     * The content of the cue in raw unparsed form.
-     */
-    content: string;
-    /**
-     * The line offset of the cue.
-     */
-    line: VTTLine;
-    /**
-     * The line alignment of the cue.
-     */
-    lineAlign: VTTLineAlignSetting;
-    /**
-     * The position of the cue.
-     */
-    position: VTTPosition;
-    /**
-     * The position alignment of the cue.
-     */
-    positionAlign: VTTPositionAlignSetting;
-    /**
-     * The region of the cue.
-     */
-    region: WebVTTRegion | null;
-    /**
-     * Whether snap-to-lines is enabled for the cue.
-     *
-     * @remarks
-     * <br/> - This property indicates whether {@link WebVTTCue.line} is an integer number of lines or a percentage of the dimension of the video.
-     */
-    snapToLines: boolean;
-    /**
-     * The size of the cue's box.
-     *
-     * @remarks
-     * <br/> - This property is to be interpreted as a percentage of the video, relative to the cue direction stated by {@link WebVTTCue.vertical}.
-     */
-    size: number;
-    /**
-     * The text of the cue in raw unparsed form.
-     */
-    text: string;
-    /**
-     * The writing direction of the cue.
-     */
-    vertical: VTTDirectionSetting;
-}
-
-/**
- * Represents a text track of a media resource that can be filled with cues during playback.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface CustomWebVTTTextTrack extends TextTrack {
-    /**
-     * The kind of the text track.
-     */
-    readonly type: 'webvtt';
-    /**
-     * Adds a cue to the text track.
-     * @param startTime The start time of the cue.
-     * @param endTime The end time of the cue.
-     * @param content The content of the cue.
-     */
-    addCue(startTime: number, endTime: number, content: string): WebVTTCue;
-    /**
-     * Removed a cue from the text track.
-     * @param cue The cue to be removed.
-     */
-    removeCue(cue: WebVTTCue): void;
-}
-
-/**
- * Options for creating a custom text track.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface CustomTextTrackOptions {
-    /**
-     * The type of cues this track will support.
-     */
-    type: SupportedCustomTextTrackCueTypes;
-    /**
-     * The kind of the text track, represented by a value from the following list:
-     * <br/> - `'subtitles'`: The track contains subtitles.
-     * <br/> - `'captions'`: The track contains closed captions, a translation of dialogue and sound effects.
-     * <br/> - `'descriptions'`: The track contains descriptions, a textual description of the video.
-     * <br/> - `'chapters'`: The track contains chapter titles.
-     * <br/> - `'metadata'`: The track contains metadata. This track will not serve display purposes.
-     */
-    kind: string;
-    /**
-     * The label of the text track.
-     */
-    label?: string;
-    /**
-     * The language of the text track.
-     */
-    language?: string;
-}
-/**
- * The supported cue types for custom text tracks.
- *
- * @category Media and Text Tracks
- * @public
- */
-type SupportedCustomTextTrackCueTypes = 'webvtt';
-/**
- * The mapping between the type in {@link CustomTextTrackOptions} and which kind of TextTrack the `player.addTextTrack()` API will return.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface CustomTextTrackMap {
-    webvtt: CustomWebVTTTextTrack;
-}
-
-/**
- * The THEOads API.
- *
- * @remarks
- * <br/> - Available since v8.12.0.
- *
- * @category THEOads
- * @public
- */
-interface TheoAds extends EventDispatcher<TheoAdsEventsMap> {
-    /**
-     * The currently playing interstitials.
-     */
-    currentInterstitials: readonly Interstitial[];
-    /**
-     * List of interstitials which still need to be played.
-     */
-    scheduledInterstitials: readonly Interstitial[];
-    /**
-     * Replaces all the ad tag parameters used for upcoming ad requests for a live stream.
-     *
-     * @param adTagParameters - The new ad tag parameters.
-     *
-     * @remarks
-     * <br/> - If set, this value overrides any parameters set on the {@link TheoAdDescription.adTagParameters}.
-     */
-    replaceAdTagParameters(adTagParameters?: Record<string, string>): void;
-}
-/**
- * The events fired by the {@link TheoAds | THEOads API}.
- *
- * @category THEOads
- * @public
- */
-interface TheoAdsEventsMap {
-    /**
-     * Fired when an interstitial is added.
-     */
-    addinterstitial: InterstitialEvent<'addinterstitial'>;
-    /**
-     * Fired when an interstitial begins.
-     */
-    interstitialbegin: InterstitialEvent<'interstitialbegin'>;
-    /**
-     * Fired when an interstitial ends.
-     */
-    interstitialend: InterstitialEvent<'interstitialend'>;
-    /**
-     * Fired when an interstitial is updated.
-     */
-    interstitialupdate: InterstitialEvent<'interstitialupdate'>;
-    /**
-     * Fired when an interstitial has errored.
-     */
-    interstitialerror: InterstitialEvent<'interstitialerror'>;
-}
-/**
- * Base type for events related to an interstitial.
- *
- * @category THEOads
- * @category Events
- * @public
- */
-interface InterstitialEvent<TType extends string> extends Event<TType> {
-    /**
-     * The interstitial.
-     */
-    readonly interstitial: Interstitial;
-}
-/**
- * The type of the interstitial.
- *
- * @category THEOads
- * @public
- */
-type InterstitialType = 'adbreak' | 'overlay';
-/**
- * The THEOads interstitial.
- *
- * @category THEOads
- * @public
- */
-interface Interstitial {
-    /**
-     * The type of the interstitial.
-     */
-    type: InterstitialType;
-    /**
-     * The identifier of the interstitial.
-     */
-    id: string;
-    /**
-     * The start time at which the interstitial will start.
-     */
-    startTime: number;
-    /**
-     * The duration of the interstitial, in seconds.
-     *
-     */
-    duration: number | undefined;
-    /**
-     * The ad tag parameters that are used for this specific ad break.
-     * @remarks
-     * <br/> - The set values are combined and potentially override parameters set on the {@link TheoAdDescription.adTagParameters} or through {@link TheoAds.replaceAdTagParameters}.
-     */
-    adTagParameters: Record<string, string>;
-}
-/**
- * The layout of a THEOads {@link AdBreakInterstitial}.
- *
- * @category THEOads
- * @public
- */
-type TheoAdsLayout = 'single' | 'l-shape' | 'double';
-/**
- * The THEOads interstitial that corresponds with ad playback.
- *
- * @category THEOads
- * @public
- */
-interface AdBreakInterstitial extends Interstitial {
-    type: 'adbreak';
-    /**
-     * The layout which is used to play the ads of the interstitial.
-     */
-    layout: TheoAdsLayout;
-    /**
-     * The background when playing an ad.
-     *
-     * @remarks
-     * - <br/> This is only available when playing in double or l-shape layout.
-     */
-    backdropUri: string | undefined;
-    /**
-     * The ads that are part of the interstitial.
-     *
-     * @remarks
-     * - <br/> - Only available during ad playback.
-     */
-    ads: readonly Ad[];
-}
-/**
- * The THEOads interstitial that corresponds with overlay playback.
- *
- * @category THEOads
- * @public
- */
-interface OverlayInterstitial extends Interstitial {
-    type: 'overlay';
-    /**
-     * The url of the image of the overlay.
-     */
-    imageUrl: string | undefined;
-    /**
-     * The clickThrough url of the overlay.
-     */
-    clickThrough: string | undefined;
-    /**
-     * The position of the overlay.
-     */
-    position: OverlayPosition;
-    /**
-     * The size of the overlay.
-     */
-    size: OverlaySize;
-}
-/**
- * The position information of the overlay.
- *
- * @category THEOads
- * @public
- */
-interface OverlayPosition {
-    left?: number;
-    right?: number;
-    top?: number;
-    bottom?: number;
-}
-/**
- * The size information of the overlay.
- *
- * @category THEOads
- * @public
- */
-interface OverlaySize {
-    width?: number;
-    height?: number;
-}
-
-/**
- * Event containing statistics on the current Millicast source configured on the player.
- * Dispatched only when the Millicast source is loaded and at an interval configured using {@link MillicastSource.statsIntervalMs}.
- * See the {@link https://millicast.github.io/millicast-sdk/global.html#ConnectionStats | Millicast SDK API reference} for details on the
- * connection stats included in the event.
- *
- * @category Millicast
- * @public
- */
-interface MillicastStatsEvent extends Event<'stats'> {
-    stats: Record<string, any>;
-}
-/**
- * The events fired by the {@link Millicast} API.
- *
- * @category Millicast
- * @public
- */
-interface MillicastEventMap {
-    stats: MillicastStatsEvent;
-}
-/**
- * The Millicast API.
- *
- * @category Millicast
- * @public
- */
-interface Millicast extends EventDispatcher<MillicastEventMap> {
-    /**
-     * Returns diagnostics information about the Millicast connection and environment, formatted according to the specified parameters.
-     * See the {@link https://millicast.github.io/millicast-sdk/module-Logger.html#~diagnose | Millicast SDK API reference} for details on the
-     * configuration paramater and diagnostic info return type.
-     *
-     * @public
-     */
-    diagnose(config: Record<string, any>): Record<string, any>;
-}
-
-/**
- * The events fired by the {@link ChromelessPlayer}.
- *
- * @category Player
- * @public
- */
-interface PlayerEventMap {
-    /**
-     * Fired when {@link ChromelessPlayer.source} changes.
-     */
-    sourcechange: SourceChangeEvent;
-    /**
-     * Fired when the current source, which is chosen from {@link SourceDescription.sources | ChromelessPlayer.source.sources}, changes.
-     */
-    currentsourcechange: CurrentSourceChangeEvent;
-    /**
-     * Fired when {@link ChromelessPlayer.paused} changes to `false`.
-     *
-     * @remarks
-     * <br/> - Either fired after the play() method has returned, or when the {@link ChromelessPlayer.autoplay} attribute has caused playback to begin.
-     */
-    play: PlayEvent;
-    /**
-     * Fired when {@link ChromelessPlayer.paused} changes to `true`.
-     *
-     * @remarks
-     * <br/> - Fired after the `pause()` method has returned.
-     */
-    pause: PauseEvent;
-    /**
-     * Fired when {@link ChromelessPlayer.seeking} changes to `true`, and the player has started seeking to a new position.
-     */
-    seeking: SeekingEvent;
-    /**
-     * Fired when {@link ChromelessPlayer.seeking} changes to `false` after the current playback position was changed.
-     */
-    seeked: SeekedEvent;
-    /**
-     * Fired when the current playback position changed as part of normal playback or in an especially interesting way, for example discontinuously.
-     */
-    timeupdate: TimeUpdateEvent;
-    /**
-     * Fired when playback has stopped because the end of the media resource was reached.
-     */
-    ended: EndedEvent;
-    /**
-     * Fired when playback is ready to start after having been paused or delayed due to lack of media data.
-     */
-    playing: PlayingEvent;
-    /**
-     * Fired when playback has stopped because the next frame is not available, but the player expects that frame to become available in due course.
-     */
-    waiting: WaitingEvent;
-    /**
-     * Fired when {@link ChromelessPlayer.readyState} changes.
-     */
-    readystatechange: ReadyStateChangeEvent;
-    /**
-     * Fired when the player determines the duration and dimensions of the media resource.
-     *
-     * @remarks
-     * <br/> - See {@link https://html.spec.whatwg.org/multipage/media.html#mediaevents:dom-media-readystate | HTML media - network state events}.
-     * <br/> - The {@link ChromelessPlayer.seekable | seekable range} should be available as soon as the {@link ChromelessPlayer.duration | duration} is known. However, certain browsers (e.g. Safari) do not make it available until the `loadeddata` event is fired.
-     */
-    loadedmetadata: LoadedMetadataEvent;
-    /**
-     * Fired when the player can render the media data at the current playback position for the first time.
-     *
-     * @remarks
-     * <br/> - See {@link https://html.spec.whatwg.org/multipage/media.html#mediaevents:dom-media-readystate | HTML media - network state events}.
-     */
-    loadeddata: LoadedDataEvent;
-    /**
-     * Fired when the player can resume playback of the media data.
-     *
-     * @remarks
-     * <br/> - In comparison to `canplaythrough`, the player estimates that if playback were to be started now, the media resource could not be rendered at the current playback rate up to its end without having to stop for further buffering of content.
-     * <br/> - See {@link https://html.spec.whatwg.org/multipage/media.html#mediaevents:dom-media-readystate | HTML media - network state events}.
-     */
-    canplay: CanPlayEvent;
-    /**
-     * Fired when the player can resume playback of the media data and buffering is unlikely.
-     *
-     * @remarks
-     * <br/> - In comparison to `canplay`, the player estimates that if playback were to be started now, the media resource could be rendered at the current playback rate all the way to its end without having to stop for further buffering.
-     * <br/> - See {@link https://html.spec.whatwg.org/multipage/media.html#mediaevents:dom-media-readystate | HTML media - network state events}.
-     */
-    canplaythrough: CanPlayThroughEvent;
-    /**
-     * Fired when the player starts loading the manifest.
-     *
-     * @remarks
-     * <br/> - See {@link https://html.spec.whatwg.org/multipage/media.html#mediaevents:dom-media-networkstate | HTML media - network state events}.
-     */
-    loadstart: Event<'loadstart'>;
-    /**
-     * Fired when the player loaded media data.
-     *
-     * @remarks
-     * <br/> - For DASH streams, the event is fired every 350ms or for every byte received whichever is least frequent.
-     * <br/> - See {@link https://html.spec.whatwg.org/multipage/media.html#mediaevents:dom-media-networkstate | HTML media - network state events}.
-     */
-    progress: ProgressEvent;
-    /**
-     * Fired when the player's source is cleared.
-     *
-     * @remarks
-     * <br/> - See {@link https://html.spec.whatwg.org/multipage/media.html#mediaevents:dom-media-networkstate | HTML media - network state events}.
-     */
-    emptied: EmptiedEvent;
-    /**
-     * Fired when {@link ChromelessPlayer.duration} changes.
-     *
-     * @remarks
-     * <br/> - Fired after {@link ChromelessPlayer.readyState} has loaded metadata, or when the last segment is appended and there is a mismatch with the original duration.
-     */
-    durationchange: DurationChangeEvent;
-    /**
-     * Fired when {@link ChromelessPlayer.volume} changes.
-     */
-    volumechange: VolumeChangeEvent;
-    /**
-     * Fired when the current representation changes.
-     */
-    representationchange: RepresentationChangeEvent;
-    /**
-     * Fired when {@link ChromelessPlayer.playbackRate} changes.
-     */
-    ratechange: RateChangeEvent;
-    /**
-     * Fired when the dimensions of the HTML element changes.
-     *
-     * @remarks
-     * <br/> - See {@link https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect | Element.getBoundingClientRect()}.
-     */
-    dimensionchange: DimensionChangeEvent;
-    /**
-     * Fired when either {@link ChromelessPlayer.videoWidth} or {@link ChromelessPlayer.videoHeight} changes.
-     */
-    resize: Event<'resize'>;
-    /**
-     * Fired when the manifest is updated.
-     */
-    manifestupdate: Event<'manifestupdate'>;
-    /**
-     * Fired when the manifest cannot be loaded or parsed.
-     */
-    manifesterror: Event<'manifesterror'>;
-    /**
-     * Fired when a segment cannot be found.
-     *
-     * @remarks
-     * <br/> - Only fired on DASH streams.
-     * @deprecated use {@link PlayerEventMap.segmenterror} instead
-     */
-    segmentnotfound: Event<'segmentnotfound'>;
-    /**
-     * Fired when a segment cannot be found.
-     */
-    segmenterror: Event<'segmenterror'>;
-    /**
-     * Fired when the player encounters key system initialization data in the media data.
-     *
-     * @remarks
-     * <br/> - See {@link https://www.w3.org/TR/encrypted-media/#dom-evt-encrypted | Encrypted Media Extensions}.
-     */
-    encrypted: EncryptedEvent;
-    /**
-     * Fired when the key is usable for decryption.
-     *
-     * @remarks
-     * <br/> - A key is `usable` if the CDM is certain the key can decrypt one or more blocks of media data.
-     * <br/> - See {@link https://www.w3.org/TR/encrypted-media/#usable-for-decryption | Encrypted Media Extension - usable for decryption}.
-     */
-    contentprotectionsuccess: Event<'contentprotectionsuccess'>;
-    /**
-     * Fired when an error related to content protection occurs.
-     */
-    contentprotectionerror: ContentProtectionErrorEvent;
-    /**
-     * Fired when an {@link ChromelessPlayer.error | error} occurs.
-     */
-    error: ErrorEvent;
-    /**
-     * Fired when the player is destroyed.
-     *
-     * @remarks
-     * <br/> - Available since v2.33.3.
-     */
-    destroy: Event<'destroy'>;
-    /** @internal */
-    airplaychanged_: Event<'airplaychanged_'>;
-    /** @internal */
-    fullscreenVideoElementChange_: Event<'fullscreenVideoElementChange_'>;
-    /** @internal */
-    imagesourcechange_: Event<'imagesourcechange_'>;
-    /** @internal */
-    nosupportedrepresentationfound: Event<'nosupportedrepresentationfound'>;
-    /** @internal */
-    metricschange: Event<'metricschange'>;
-    /** @internal */
-    offline: Event<'offline'>;
-    /** @internal */
-    online: Event<'online'>;
-    /** @internal */
-    presentationmodechange: Event<'presentationmodechange'>;
-    /** @internal */
-    segmentrequest_: Event<'segmentrequest_'>;
-    /** @internal */
-    segmentresponse_: Event<'segmentresponse_'>;
-    /** @internal */
-    manifestnotfound_: Event<'manifestnotfound_'>;
-}
-/**
- * The player API.
- *
- * @category API
- * @category Player
- * @public
- */
-declare class ChromelessPlayer implements EventDispatcher<PlayerEventMap> {
-    constructor(element: HTMLElement, configuration?: PlayerConfiguration);
-    /**
-     * The adaptive bitrate configuration.
-     */
-    readonly abr: ABRConfiguration;
-    /**
-     * List of audio tracks of the current source.
-     */
-    audioTracks: MediaTrackList;
-    /**
-     * Whether the player should immediately start playback after source change.
-     *
-     * @remarks
-     * <br/> - To autoplay with sound on certain platforms, {@link ChromelessPlayer.prepareWithUserAction} must be called at least once.
-     * <br/> - To autoplay without sound, {@link PlayerConfiguration.mutedAutoplay} must be configured.
-     */
-    autoplay: boolean;
-    /**
-     * Returns a TimeRanges object that represents the ranges of the media resource that the player has buffered.
-     */
-    readonly buffered: TimeRanges;
-    /**
-     * The clip API.
-     */
-    readonly clip: Clip;
-    /**
-     * The current playback position of the media, as a timestamp.
-     *
-     * @remarks
-     * <br/> - The relation between {@link ChromelessPlayer.currentProgramDateTime} and {@link ChromelessPlayer.currentTime} is determined by the manifest.
-     */
-    currentProgramDateTime: Date | null;
-    /**
-     * The current playback position of the media, in seconds.
-     */
-    currentTime: number;
-    /**
-     * The duration of the media, in seconds.
-     *
-     * @remarks
-     * <br/> - On source change, duration becomes available after {@link ChromelessPlayer.readyState} is at least `1` (HAVE_METADATA).
-     */
-    duration: number;
-    /**
-     * The HTML element containing the player.
-     */
-    element: HTMLElement;
-    /**
-     * Whether playback of the media is ended.
-     *
-     * @remarks
-     * <br/> - Playback is ended when the current playback position is at the end of the media, and the player does not {@link ChromelessPlayer.loop}.
-     */
-    ended: boolean;
-    /**
-     * The last error that occurred for the current source, if any.
-     *
-     * @deprecated use {@link ChromelessPlayer.errorObject} instead
-     */
-    error: MediaError | undefined;
-    /**
-     * The last error that occurred for the current source, if any.
-     *
-     * @remarks
-     * <br/> - This will equal the {@link ErrorEvent.errorObject} property from the last {@link ErrorEvent}.
-     */
-    errorObject: THEOplayerError | undefined;
-    /**
-     * Whether playback of the media is looped.
-     *
-     * @remarks
-     * <br/> - When playback is looped, upon reaching the end of the media, playback immediately continues at the start of the media.
-     * <br/> - Looped media is never {@link ChromelessPlayer.ended}.
-     */
-    loop: boolean;
-    /**
-     * The current source which describes desired playback of a media resource.
-     *
-     * @remarks
-     * <br/> - Changing source might {@link ChromelessPlayer.preload} and {@link ChromelessPlayer.autoplay}.
-     * <br/> - Changing source will {@link ChromelessPlayer.stop} the previous source.
-     */
-    source: SourceDescription | undefined;
-    /**
-     * The current URL of the media resource.
-     *
-     * @remarks
-     * <br/> - Prefer {@link ChromelessPlayer.source} instead.
-     */
-    src: string | undefined;
-    /**
-     * Whether audio is muted.
-     *
-     * @remarks
-     * <br/> - This affects capabilities of {@link ChromelessPlayer.autoplay}.
-     */
-    muted: boolean;
-    /**
-     * The metrics API.
-     */
-    readonly metrics: Metrics;
-    /**
-     * Whether the player is paused.
-     */
-    paused: boolean;
-    /**
-     * The playback rate of the media.
-     *
-     * @example
-     * <br/> - `playbackRate = 0.70` will slow down the playback rate of the media by 30%.
-     * <br/> - `playbackRate = 1.25` will speed up the playback rate of the media by 25%.
-     *
-     * @remarks
-     * <br/> - Playback rate is represented by a number where `1` is default playback speed.
-     * <br/> - Playback rate must be a positive number.
-     * <br/> - It is recommended that you limit the range to between 0.5 and 4.
-     */
-    playbackRate: number;
-    /**
-     * Returns a TimeRanges object that represents the ranges of the media resource that the player has played.
-     */
-    played: TimeRanges;
-    /**
-     * The poster of the current source.
-     *
-     * @remarks
-     * <br/> - An empty string (`''`) clears the current poster.
-     * <br/> - The {@link SourceConfiguration.poster} has priority over this poster.
-     */
-    poster: string;
-    /**
-     * The preload setting of the player.
-     */
-    preload: PreloadType;
-    /**
-     * The ready state of the player, represented by a value from the following list:
-     * <br/> - `0` (HAVE_NOTHING): The player has no information about the duration of its source.
-     * <br/> - `1` (HAVE_METADATA): The player has information about the duration of its source.
-     * <br/> - `2` (HAVE_CURRENT_DATA): The player has its current frame in its buffer.
-     * <br/> - `3` (HAVE_FUTURE_DATA): The player has enough data for immediate playback.
-     * <br/> - `4` (HAVE_ENOUGH_DATA): The player has enough data for continuous playback.
-     *
-     * @remarks
-     * <br/> - See the {@link https://html.spec.whatwg.org/multipage/media.html#ready-states | HTML Media Specification}
-     */
-    readyState: number;
-    /**
-     * Returns a TimeRanges object that represents the ranges of the media resource that are seekable by the player.
-     *
-     * @remarks
-     * <br/> - On source change, seekable becomes available after {@link ChromelessPlayer.readyState} is at least `1`.
-     */
-    seekable: TimeRanges;
-    /**
-     * Whether the player is seeking.
-     */
-    seeking: boolean;
-    /**
-     * List of text tracks of the current source.
-     */
-    textTracks: TextTracksList;
-    /**
-     * The text track style API.
-     *
-     */
-    readonly textTrackStyle: TextTrackStyle;
-    readonly theoLive?: TheoLiveApi;
-    /**
-     * Unique ID of the player.
-     */
-    uid: number;
-    /**
-     * The height of the active video rendition, in pixels.
-     */
-    videoHeight: number;
-    /**
-     * List of video tracks of the current source.
-     */
-    videoTracks: MediaTrackList;
-    /**
-     * The width of the active video rendition, in pixels.
-     */
-    videoWidth: number;
-    /**
-     * The volume of the audio.
-     *
-     * @example
-     * <br/> - `volume = 0.7` will reduce the audio volume of the media by 30%.
-     *
-     * @remarks
-     * <br/> - Volume is represented by a floating point number between `0.0` and `1.0`.
-     */
-    volume: number;
-    /**
-     * The latency manager for low latency live playback.
-     */
-    latency: LatencyManager;
-    /**
-     * The canvas of the player.
-     */
-    readonly canvas: Canvas;
-    /**
-     * The network API.
-     */
-    readonly network: Network;
-    /**
-     * The presentation API.
-     */
-    readonly presentation: Presentation;
-    /**
-     * Destroy the player.
-     *
-     * @remarks
-     * <br/> - Available since v2.26.
-     * <br/> - All resources associated with the current source are released.
-     * <br/> - All resources associated with the player are released.
-     * <br/> - The player can no longer be used.
-     */
-    destroy(): void;
-    /**
-     * Start or resume playback.
-     */
-    play(): void;
-    /**
-     * Pause playback.
-     */
-    pause(): void;
-    /**
-     * Stop playback.
-     *
-     * @remarks
-     * <br/> - All resources associated with the current source are released.
-     * <br/> - The player can be reused by setting a new {@link ChromelessPlayer.source}.
-     */
-    stop(): void;
-    /**
-     * Prepare the player to {@link ChromelessPlayer.autoplay} on platforms where autoplay is restricted without user action.
-     *
-     * @remarks
-     * <br/> - Any invocation must happen on user action.
-     * <br/> - Affected platforms include all mobile platforms and Safari 11+.
-     */
-    prepareWithUserAction(): void;
-    /**
-     * Set current source which describes desired playback of a media resource.
-     *
-     * @deprecated Superseded by {@link ChromelessPlayer.source}.
-     */
-    setSource(sourceDescription: SourceDescription | undefined): void;
-    /**
-     * {@inheritDoc EventDispatcher.addEventListener}
-     */
-    addEventListener<TType extends StringKeyOf<PlayerEventMap>>(type: TType | readonly TType[], listener: EventListener<PlayerEventMap[TType]>): void;
-    /**
-     * {@inheritDoc EventDispatcher.removeEventListener}
-     */
-    removeEventListener<TType extends StringKeyOf<PlayerEventMap>>(type: TType | readonly TType[], listener: EventListener<PlayerEventMap[TType]>): void;
-    /**
-     * Adds a new custom text track to the player where cues can be added externally.
-     *
-     * @param options The options for creating the track.
-     *
-     * @remarks
-     * <br/> - This needs to be called after the player dispatches a `loadedmetadata` event.
-     * <br/> - All text tracks added using this method will be cleared when the source of the player changes.
-     */
-    addTextTrack<TOptions extends CustomTextTrackOptions>(options: TOptions): CustomTextTrackMap[TOptions['type']];
-    /**
-     * The web audio API.
-     *
-     * @remarks
-     * <br/> - Only available with the feature `'webaudio'`.
-     */
-    readonly audio?: WebAudio;
-    /**
-     * The ads API.
-     *
-     * @remarks
-     * <br/> - Only available with the feature `'ads'`.
-     */
-    readonly ads?: Ads;
-    /**
-     * The cast API.
-     *
-     * @remarks
-     * <br/> - Only available with the feature `'airplay'` or `'chromecast'`.
-     */
-    readonly cast?: Cast;
-    /**
-     * The related content API.
-     *
-     * @remarks
-     * <br/> - Only available with the feature `'relatedcontent'`.
-     */
-    readonly related?: RelatedContent;
-    /**
-     * The VR API.
-     *
-     * @remarks
-     * <br/> - Only available with the feature `'vr'`.
-     */
-    readonly vr?: VR;
-    /**
-     * The visibility API.
-     */
-    readonly visibility: Visibility;
-    /**
-     * The Uplynk API.
-     *
-     * @remarks
-     * <br/> - Only available with the feature `'uplynk'`.
-     */
-    readonly uplynk?: Uplynk;
-    /**
-     * The HESP API.
-     * @remarks
-     * <br/> - Note: This API is in an experimental stage and may be subject to breaking changes.
-     * <br/> - Only available with the feature `'hesp'`.
-     */
-    readonly hesp?: HespApi;
-    /**
-     * The THEOads API.
-     *
-     * @remarks
-     * <br/> - Only available with the feature `'theoads''`.
-     */
-    readonly theoads?: TheoAds;
-    /**
-     * The Millicast API.
-     */
-    readonly millicast: Millicast;
-}
-
-/**
- * The picture-in-picture position, represented by a value from the following list:
- * <br/> - `'top-left'`
- * <br/> - `'top-right'`
- * <br/> - `'bottom-left'`
- * <br/> - `'bottom-right'`
- *
- * @category UI
- * @public
- */
-type PiPPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
-/**
- * Describes the configuration of the picture-in-picture feature.
- *
- * @category UI
- * @public
- */
-interface PiPConfiguration {
-    /**
-     * The corner in which the player should be shown while in picture-in-picture.
-     *
-     * @defaultValue `'bottom-right'`
-     */
-    position?: PiPPosition;
-    /**
-     * The maximum percentage of the original player position that should be visible to enable picture-in-picture automatically.
-     *
-     * @remarks
-     * <br/> - If not configured, picture-in-picture can only be activated by calling {@link Presentation.requestMode} with the `'picture-in-picture'` argument.
-     *
-     * @defaultValue `undefined`
-     */
-    visibility?: number | undefined;
-    /**
-     * Whether the presentation mode should be retained on source changes.
-     *
-     * @defaultValue `false`
-     */
-    retainPresentationModeOnSourceChange?: boolean;
-}
-
-/**
- * Describes the UI related configuration of the player.
- *
- * @category UI
- * @public
- */
-interface UIPlayerConfiguration extends PlayerConfiguration {
-    /**
-     * The user interface configuration.
-     */
-    ui?: UIConfiguration;
-    /**
-     * The picture-in-picture configuration.
-     */
-    pip?: PiPConfiguration;
-    /**
-     * @deprecated use ui.width
-     */
-    width?: number | string;
-    /**
-     * @deprecated use ui.height
-     */
-    height?: number | string;
-    /**
-     * @deprecated use ui.fluid
-     */
-    fluid?: boolean;
-}
-/**
- * Describes the UI configuration of the player.
- *
- * @category UI
- * @public
- */
-interface UIConfiguration {
-    /**
-     * The width of the player.
-     *
-     * @remarks
-     * Possible formats
-     * <br/> - A number as the amount of pixels.
-     * <br/> - A percentage string (XX%).
-     */
-    width?: number | string;
-    /**
-     * The height of the player.
-     *
-     * @remarks
-     * Possible formats
-     * <br/> - A number as the amount of pixels.
-     * <br/> - A percentage string (XX%).
-     */
-    height?: number | string;
-    /**
-     * Whether the UI of the player is responsive.
-     *
-     * @defaultValue `false`
-     */
-    fluid?: boolean;
-    /**
-     * The language which is used for localization.
-     *
-     * @remarks
-     * <br/> - This can be a {@link UILanguage | language map}.
-     * <br/> - Otherwise it can be a language code which is the key to a {@link UILanguage | language map} in {@link UIConfiguration.languages}.
-     *
-     * @example
-     * Localize statically to one language.
-     * ```
-     * ui: {
-     *   language: {
-     *     "Play": "Reproducir",
-     *     "Pause": "Pausa",
-     *     "Current Time": "Tiempo actual",
-     *     // [...]
-     *   }
-     * }
-     * ```
-     *
-     * @example
-     * Localize dynamically to one of multiple languages.
-     * ```
-     * ui: {
-     *   language: 'es',
-     *   languages: {
-     *     "es": {
-     *       "Play": "Reproducir",
-     *       "Pause": "Pausa",
-     *       "Current Time": "Tiempo actual",
-     *       // [...]
-     *     },
-     *     "fr": {
-     *       // [...]
-     *     }
-     *   }
-     * }
-     * ```
-     */
-    language?: string | UILanguage;
-    /**
-     * A record used to localize to multiple languages.
-     * Each entry contains a language code with associated {@link UILanguage | language map}.
-     */
-    languages?: Record<string, UILanguage>;
-    /**
-     * Options to control transitions to fullscreen mode.
-     *
-     * @remarks
-     * <br/> - Available since v2.90.0.
-     */
-    fullscreenOptions?: FullscreenOptions$1;
-    /**
-     * Actions that define the behavior of the player.
-     *
-     * @remarks
-     * <br/> - Available since v4.3.0
-     */
-    userActions?: UserActions;
-}
-/**
- * A record used to map localization.
- * Each entry contains a translation of an English string.
- *
- * @category UI
- * @public
- */
-type UILanguage = Record<string, string>;
-/**
- * Options to control transitions to fullscreen mode.
- *
- * @remarks
- * <br/> - Available since v2.90.0.
- *
- * @category UI
- * @public
- */
-interface FullscreenOptions$1 {
-    /**
-     * Whether to show navigation UI while in fullscreen.
-     *
-     * @remarks
-     * <p>On mobile devices, the platform may want to show a native on-screen navigation UI (such as a back button or home button)
-     * while the player is in fullscreen mode. This setting controls whether or not this should be shown:
-     * <br/> - If set to "show", then the native navigation UI is preferred.
-     * <br/> - If set to "hide", then more screen space for the player is preferred.
-     * <br/> - If set to "auto", then the choice is left to the platform.
-     * <p>By default, the player prefers to hide the on-screen navigation UI, since it already provides its own "exit fullscreen" button
-     * on its control bar.
-     *
-     * @defaultValue `"hide"`
-     * @public
-     */
-    navigationUI?: 'auto' | 'show' | 'hide';
-}
-/**
- * Actions that define the behavior of the player.
- *
- * @remarks
- * <br/> - Available since v4.3.0
- *
- * @category UI
- * @public
- */
-interface UserActions {
-    /**
-     * Whether clicking the player element will play/pause the player.
-     *
-     * @defaultValue `true`
-     * @public
-     */
-    click?: boolean | ((event: any) => void);
-}
-
-/**
- * List of players.
- *
- * @category Player
- * @public
- */
-interface PlayerList extends Array<ChromelessPlayer> {
-    /**
-     * Length of the list.
-     */
-    length: number;
-    [index: number]: ChromelessPlayer;
-    /**
-     * Return the player with corresponding UID, if any.
-     *
-     * @param UID - The UID of the requested player.
-     * @returns The player with the given `UID`, if any.
-     */
-    getPlayerByUID(UID: number): ChromelessPlayer | undefined;
-}
-
-/**
- * The {@link CachingTask}'s license API.
- *
- * @category Caching
- * @public
- */
-interface CachingTaskLicense {
-    /**
-     * Renew all the licenses associated with this task.
-     *
-     * @param drmConfiguration - The DRM configuration used for license renewals. Defaults to the DRM configuration of the original sourceDescription when omitted.
-     */
-    renew(drmConfiguration?: DRMConfiguration): void;
-}
-
-/**
- * Describes the configuration of a caching task.
- *
- * @category Caching
- * @public
- */
-interface CachingTaskParameters {
-    /**
-     * The amount of data to cache for the given stream.
-     *
-     * @remarks
-     * Possible formats:
-     * <br/> - A number in seconds.
-     * <br/> - A percentage string (XX%) for a proportion of the content duration.
-     */
-    amount: number | string;
-    /**
-     * The expiration date of the cached data.
-     *
-     * @remarks
-     * <br/> - Must be a date in the future.
-     * <br/> - Data might be removed by the browser if it runs out of disk space.
-     *
-     * @defaultValue 30 minutes after starting the caching task.
-     */
-    expirationDate?: Date;
-    /**
-     * Upper bandwidth limit of the quality to cache.
-     *
-     * @remarks
-     * <br/> - This will take the quality with the highest bandwidth that is lower than the specified bandwidth.
-     * <br/> - It should be a value between zero and infinity.
-     *
-     * @defaultValue Infinity
-     */
-    bandwidth?: number;
-}
-
-/**
- * The cache task status, represented by a value from the following list:
- * <br/> - `'idle'`: The task has been created, but has not started downloading content.
- * <br/> - `'loading'`: The task is currently downloading the content.
- * <br/> - `'done'`: The task has finished downloading all content.
- * <br/> - `'error'`: The task has encountered an error while downloading or evicting content.
- * <br/> - `'evicted'`: All data associated with the task has been removed because the task expired or the user invoked the {@link CachingTask.remove|remove} method.
- *
- * @category Caching
- * @public
- */
-type CacheTaskStatus = 'idle' | 'loading' | 'done' | 'error' | 'evicted';
-/**
- * The events fired by the {@link CachingTask}.
- *
- * @category Caching
- * @public
- */
-interface CachingTaskEventMap {
-    /**
-     * Fired when a segment is added to the cache.
-     */
-    progress: Event<'progress'>;
-    /**
-     * Fired when {@link CachingTask.status} changes.
-     */
-    statechange: Event<'statechange'>;
-}
-/**
- * Represents a caching task.
- *
- * @category Caching
- * @public
- */
-interface CachingTask extends EventDispatcher<CachingTaskEventMap> {
-    /**
-     * The generated identifier for the task.
-     */
-    readonly id: string;
-    /**
-     * The current status of the task.
-     */
-    readonly status: CacheTaskStatus;
-    /**
-     * The media source associated with the task.
-     */
-    readonly source: SourceDescription;
-    /**
-     * The configuration of the task.
-     */
-    readonly parameters: CachingTaskParameters;
-    /**
-     * The requested cached duration of the media, in seconds.
-     */
-    readonly duration: number;
-    /**
-     * The time ranges cached.
-     */
-    readonly cached: TimeRanges;
-    /**
-     * The duration cached, in seconds.
-     */
-    readonly secondsCached: number;
-    /**
-     * The percentage cached.
-     */
-    readonly percentageCached: number;
-    /**
-     * The estimation of the amount this task will download and store, in bytes.
-     *
-     * @remarks
-     * <br/> - Returns -1 if the estimate is not available yet.
-     */
-    readonly bytes: number;
-    /**
-     * The amount downloaded and stored, in bytes.
-     */
-    readonly bytesCached: number;
-    /**
-     * The API for license related queries and operations
-     */
-    readonly license: CachingTaskLicense;
-    /**
-     * Start caching the media.
-     */
-    start(): void;
-    /**
-     * Remove the cached media.
-     */
-    remove(): void;
-    /**
-     * Pause caching the media.
-     *
-     * @remarks
-     * <br/> - A paused task can be resumed with {@link CachingTask.start}.
-     */
-    pause(): void;
-}
-
-/**
- * Fired when a caching task is added.
- *
- * @category Caching
- * @category Events
- * @public
- */
-interface AddCachingTaskEvent extends Event<'addtask'> {
-    /**
-     * The task which has been added.
-     */
-    readonly task: CachingTask;
-}
-
-/**
- * Fired when a caching task is removed.
- *
- * @category Caching
- * @category Events
- * @public
- */
-interface RemoveCachingTaskEvent extends Event<'removetask'> {
-    /**
-     * The task which has been removed.
-     */
-    readonly task: CachingTask;
-}
-
-/**
- * The events fired by the {@link CachingTaskList}.
- *
- * @category Caching
- * @public
- */
-interface CachingTaskListEventMap {
-    /**
-     * {@inheritDoc AddCachingTaskEvent}
-     */
-    addtask: AddCachingTaskEvent;
-    /**
-     * {@inheritDoc AddCachingTaskEvent}
-     */
-    removetask: RemoveCachingTaskEvent;
-}
-/**
- * List of caching tasks.
- *
- * @category Caching
- * @public
- */
-interface CachingTaskList extends EventedList<CachingTask, CachingTaskListEventMap> {
-}
-
-/**
- * The cache status, represented by a value from the following list:
- * <br/> - `'uninitialised'`: Previously stored caching tasks are unavailable.
- * <br/> - `'initialised'`: Previously stored caching tasks are now available.
- *
- * @category Caching
- * @public
- */
-type CacheStatus = 'uninitialised' | 'initialised';
-/**
- * The events fired by the {@link Cache | cache API}.
- *
- * @category Caching
- * @public
- */
-interface CacheEventMap {
-    /**
-     * Fired when {@link Cache.status} changes.
-     */
-    statechange: Event<'statechange'>;
-}
-/**
- * The media caching API.
- *
- * @remarks
- * <br/> - Available since v2.26.
- *
- * @category Caching
- * @public
- */
-interface Cache extends EventDispatcher<CacheEventMap> {
-    /**
-     * List of caching tasks which control the caching of media.
-     */
-    readonly tasks: CachingTaskList;
-    /**
-     * The current status of the cache.
-     */
-    readonly status: CacheStatus;
-    /**
-     * The cache's network API which allows intercepting requests and responses made by the cache.
-     */
-    readonly network: NetworkInterceptorController;
-    /**
-     * Create a caching task which controls the caching of media.
-     *
-     * @param source - Describes the media source to be cached.
-     * @param parameters - Contains caching task related options.
-     */
-    createTask(source: SourceDescription, parameters: CachingTaskParameters): CachingTask;
-}
-
-/**
- * Util for encoding binary data as base64 string and vice versa.
- *
- * @public
- */
-interface Base64Util {
-    encode(value: Uint8Array): string;
-    decode(value: string): Uint8Array;
-}
-/**
- * Utils that serve common use cases. For example encoding and decoding a base64 string to Uint8Array and vice versa.
- *
- * @public
- */
-interface CommonUtils {
-    readonly base64: Base64Util;
-}
-
-/**
- * A request, either for a certificate or a license.
- * @category Content Protection
- * @public
- */
-interface ContentProtectionRequest {
-    /**
-     * The URL for the certificate server. By default, this will equal the certificate URL configured in the
-     * `{@link KeySystemConfiguration}`.
-     */
-    url: string;
-    /**
-     * The method of the HTTP request, for example: GET, POST or PUT.
-     *
-     * @remarks
-     * <br/> - Will be equal to GET for Fairplay certificate requests and POST for Widevine certificate requests.
-     * <br/> - Will be equal to POST for all license requests.
-     */
-    method: string;
-    /**
-     * The HTTP request headers to be sent to the server.
-     */
-    headers: {
-        [headerName: string]: string;
-    };
-    /**
-     * The body of the certificate request.
-     *
-     * @remarks
-     * <br/> - For GET requests (such as with Fairplay), the body will be empty (null).
-     * <br/> - For POST requests (such as with Widevine): the body will contain the two bytes in an array as specified in the certificate request protocol.
-     */
-    body: Uint8Array | null;
-    /**
-     * Whether the player is allowed to use credentials for cross-origin requests.
-     */
-    useCredentials: boolean;
-}
-/**
- * A request for a certificate.
- *
- * @category Content Protection
- * @public
- */
-type CertificateRequest = ContentProtectionRequest;
-/**
- * A request for a license.
- * @category Content Protection
- * @public
- */
-interface LicenseRequest extends ContentProtectionRequest {
-    /**
-     * The SKD URL (for example skd://fb64ba7c5bd34bf188cf9ba76ab8370e) as extracted from the #EXT-X-KEY tag in the HLS playlist.
-     *
-     * @remarks
-     * <br/> - Only available for Fairplay license requests. The value will be `undefined` otherwise.
-     */
-    fairplaySkdUrl: string | undefined;
-}
-
-/**
- * The response, either of a license or for a certificate request.
- * @category Content Protection
- * @public
- */
-interface ContentProtectionResponse {
-    /**
-     * The request for which the response is being returned.
-     */
-    request: ContentProtectionRequest;
-    /**
-     * The URL from which the response was returned. This might have been redirected transparently.
-     */
-    url: string;
-    /**
-     * The status code as returned in the HTTP response.
-     */
-    status: number;
-    /**
-     * The status text as returned in the HTTP response.
-     */
-    statusText: string;
-    /**
-     * The HTTP headers as returned by the server.
-     *
-     * @remarks
-     * <br/> - On web not all headers might be shown due to Cross Origin Resource Sharing restrictions.
-     */
-    headers: {
-        [headerName: string]: string;
-    };
-    /**
-     * The body of the response.
-     */
-    body: Uint8Array;
-}
-/**
- * The response of a certificate request.
- * @category Content Protection
- * @public
- */
-interface CertificateResponse extends ContentProtectionResponse {
-    /**
-     * The request for which the response is being returned.
-     */
-    request: CertificateRequest;
-}
-/**
- * The response of a license request.
- * @category Content Protection
- * @public
- */
-interface LicenseResponse extends ContentProtectionResponse {
-    /**
-     * The request for which the response is being returned.
-     */
-    request: LicenseRequest;
-}
-
-/**
- * This ContentProtectionIntegration defines some methods to alter license and certificate requests and responses.
- *
- * @category Content Protection
- * @public
- */
-interface ContentProtectionIntegration {
-    /**
-     * Handler which will be called when a HTTP request for a new certificate is about to be sent.
-     *
-     * @remarks
-     * If a valid certificate was provided as part of the {@link KeySystemConfiguration.certificate}, this handler will not be called.
-     * The handler must return either a request or a raw certificate. When a (possibly modified) request is returned,
-     * the player will send that request instead of the original request. When a raw certificate is returned,
-     * the request is skipped entirely and the certificate is used directly. If no handler is provided, the player sends the original request.
-     *
-     * For example, an integration may want to “wrap” the request body in a different format (e.g. JSON or XML) for
-     * certain DRM vendors, or add additional authentication tokens to the request.
-     * Alternatively, an integration may want to send the HTTP request using its own network stack,
-     * and return the final certificate response to the player.
-     *
-     * @param request - The {@link CertificateRequest} that is about to be sent.
-     */
-    onCertificateRequest?(request: CertificateRequest): MaybeAsync<Partial<CertificateRequest> | BufferSource>;
-    /**
-     * Handler which will be called when a HTTP request for a certificate returns a response.
-     *
-     * @remarks
-     * The handler will be called regardless of the HTTP status code on the response (i.e. also for unsuccessful statuses outside of the 200-299 range).
-     * The handler must return the raw certificate, in a manner suitable for further processing by the CDM.
-     * If no handler is provided, the player uses the response body as raw certificate, but only if the response’s status indicates success.
-     *
-     * For example, an integration may want to “unwrap” a wrapped JSON or XML response body, turning it into a raw certificate.
-     *
-     * @param response - The {@link CertificateResponse} that was returned from the certificate request.
-     */
-    onCertificateResponse?(response: CertificateResponse): MaybeAsync<BufferSource>;
-    /**
-     * Handler which will be called when a HTTP request for a new license is about to be sent.
-     *
-     * @remarks
-     * The handler must return either a request or a raw license. When a (possibly modified) request is returned,
-     * the player will send that request instead of the original request. When a raw license is returned,
-     * the request is skipped entirely and the license is used directly. If no handler is provided, the player sends the original request.
-     *
-     * For example, an integration may want to “wrap” the request body in a different format (e.g. JSON or XML) for certain DRM vendors,
-     * or add additional authentication tokens to the request. Alternatively, an integration may want to send the HTTP request using its own network stack,
-     * and return the final license response to the player.
-     *
-     * @param request - The {@link LicenseRequest} that is about to be sent.
-     */
-    onLicenseRequest?(request: LicenseRequest): MaybeAsync<Partial<LicenseRequest> | BufferSource>;
-    /**
-     * Handler which will be called when a HTTP request for a license returns an response.
-     *
-     * @remarks
-     * The handler will be called regardless of the HTTP status code on the response (i.e. also for unsuccessful statuses outside of the 200-299 range).
-     * The handler must return the raw license, in a manner suitable for further processing by the CDM.
-     * If no handler is provided, the player uses the response body as raw license, but only if the response’s status indicates success.
-     *
-     * For example, an integration may want to “unwrap” a wrapped JSON or XML response body, turning it into a raw license.
-     *
-     * @param response - The {@link LicenseResponse} that was returned from the license request.
-     */
-    onLicenseResponse?(response: LicenseResponse): MaybeAsync<BufferSource>;
-    /**
-     * A function to extract the Fairplay content ID from the key URI, as given by the URI attribute of the `#EXT-X-KEY` tag in the HLS playlist (m3u8).
-     *
-     * @remarks
-     * In order to start a Fairplay license request, the player must provide the initialization data, the content ID and the certificate to the CDM.
-     * The content ID is usually contained in the key URI in some vendor-specific way, for example in the host name (e.g. `skd://123456789`)
-     * or in the URL query (e.g. `skd://vendor?123456789`). This function should extract this content ID from the key URI.
-     * This method is required only for Fairplay integrations. It is ignored for other key systems.
-     *
-     * @param skdUrl - The key URI.
-     */
-    extractFairplayContentId?(skdUrl: string): MaybeAsync<string>;
-}
-
-/**
- * Factory pattern to create {@link ContentProtectionIntegration}s.
- *
- * @category Content Protection
- * @public
- */
-interface ContentProtectionIntegrationFactory {
-    /**
-     * Build a new {@link ContentProtectionIntegration} based on the given {@link DRMConfiguration}.
-     *
-     * @param configuration - The {@link DRMConfiguration} of the currently loading source.
-     */
-    build(configuration: DRMConfiguration): ContentProtectionIntegration;
 }
 
 /**
@@ -12123,6 +7478,219 @@ interface MediaTailorSource extends TypedSource {
 }
 
 /**
+ * A request, either for a certificate or a license.
+ * @category Content Protection
+ * @public
+ */
+interface ContentProtectionRequest {
+    /**
+     * The URL for the certificate server. By default, this will equal the certificate URL configured in the
+     * `{@link KeySystemConfiguration}`.
+     */
+    url: string;
+    /**
+     * The method of the HTTP request, for example: GET, POST or PUT.
+     *
+     * @remarks
+     * <br/> - Will be equal to GET for Fairplay certificate requests and POST for Widevine certificate requests.
+     * <br/> - Will be equal to POST for all license requests.
+     */
+    method: string;
+    /**
+     * The HTTP request headers to be sent to the server.
+     */
+    headers: {
+        [headerName: string]: string;
+    };
+    /**
+     * The body of the certificate request.
+     *
+     * @remarks
+     * <br/> - For GET requests (such as with Fairplay), the body will be empty (null).
+     * <br/> - For POST requests (such as with Widevine): the body will contain the two bytes in an array as specified in the certificate request protocol.
+     */
+    body: Uint8Array | null;
+    /**
+     * Whether the player is allowed to use credentials for cross-origin requests.
+     */
+    useCredentials: boolean;
+}
+/**
+ * A request for a certificate.
+ *
+ * @category Content Protection
+ * @public
+ */
+type CertificateRequest = ContentProtectionRequest;
+/**
+ * A request for a license.
+ * @category Content Protection
+ * @public
+ */
+interface LicenseRequest extends ContentProtectionRequest {
+    /**
+     * The SKD URL (for example skd://fb64ba7c5bd34bf188cf9ba76ab8370e) as extracted from the #EXT-X-KEY tag in the HLS playlist.
+     *
+     * @remarks
+     * <br/> - Only available for Fairplay license requests. The value will be `undefined` otherwise.
+     */
+    fairplaySkdUrl: string | undefined;
+}
+
+/**
+ * The response, either of a license or for a certificate request.
+ * @category Content Protection
+ * @public
+ */
+interface ContentProtectionResponse {
+    /**
+     * The request for which the response is being returned.
+     */
+    request: ContentProtectionRequest;
+    /**
+     * The URL from which the response was returned. This might have been redirected transparently.
+     */
+    url: string;
+    /**
+     * The status code as returned in the HTTP response.
+     */
+    status: number;
+    /**
+     * The status text as returned in the HTTP response.
+     */
+    statusText: string;
+    /**
+     * The HTTP headers as returned by the server.
+     *
+     * @remarks
+     * <br/> - On web not all headers might be shown due to Cross Origin Resource Sharing restrictions.
+     */
+    headers: {
+        [headerName: string]: string;
+    };
+    /**
+     * The body of the response.
+     */
+    body: Uint8Array;
+}
+/**
+ * The response of a certificate request.
+ * @category Content Protection
+ * @public
+ */
+interface CertificateResponse extends ContentProtectionResponse {
+    /**
+     * The request for which the response is being returned.
+     */
+    request: CertificateRequest;
+}
+/**
+ * The response of a license request.
+ * @category Content Protection
+ * @public
+ */
+interface LicenseResponse extends ContentProtectionResponse {
+    /**
+     * The request for which the response is being returned.
+     */
+    request: LicenseRequest;
+}
+
+/**
+ * This ContentProtectionIntegration defines some methods to alter license and certificate requests and responses.
+ *
+ * @category Content Protection
+ * @public
+ */
+interface ContentProtectionIntegration {
+    /**
+     * Handler which will be called when a HTTP request for a new certificate is about to be sent.
+     *
+     * @remarks
+     * If a valid certificate was provided as part of the {@link KeySystemConfiguration.certificate}, this handler will not be called.
+     * The handler must return either a request or a raw certificate. When a (possibly modified) request is returned,
+     * the player will send that request instead of the original request. When a raw certificate is returned,
+     * the request is skipped entirely and the certificate is used directly. If no handler is provided, the player sends the original request.
+     *
+     * For example, an integration may want to “wrap” the request body in a different format (e.g. JSON or XML) for
+     * certain DRM vendors, or add additional authentication tokens to the request.
+     * Alternatively, an integration may want to send the HTTP request using its own network stack,
+     * and return the final certificate response to the player.
+     *
+     * @param request - The {@link CertificateRequest} that is about to be sent.
+     */
+    onCertificateRequest?(request: CertificateRequest): MaybeAsync<Partial<CertificateRequest> | BufferSource>;
+    /**
+     * Handler which will be called when a HTTP request for a certificate returns a response.
+     *
+     * @remarks
+     * The handler will be called regardless of the HTTP status code on the response (i.e. also for unsuccessful statuses outside of the 200-299 range).
+     * The handler must return the raw certificate, in a manner suitable for further processing by the CDM.
+     * If no handler is provided, the player uses the response body as raw certificate, but only if the response’s status indicates success.
+     *
+     * For example, an integration may want to “unwrap” a wrapped JSON or XML response body, turning it into a raw certificate.
+     *
+     * @param response - The {@link CertificateResponse} that was returned from the certificate request.
+     */
+    onCertificateResponse?(response: CertificateResponse): MaybeAsync<BufferSource>;
+    /**
+     * Handler which will be called when a HTTP request for a new license is about to be sent.
+     *
+     * @remarks
+     * The handler must return either a request or a raw license. When a (possibly modified) request is returned,
+     * the player will send that request instead of the original request. When a raw license is returned,
+     * the request is skipped entirely and the license is used directly. If no handler is provided, the player sends the original request.
+     *
+     * For example, an integration may want to “wrap” the request body in a different format (e.g. JSON or XML) for certain DRM vendors,
+     * or add additional authentication tokens to the request. Alternatively, an integration may want to send the HTTP request using its own network stack,
+     * and return the final license response to the player.
+     *
+     * @param request - The {@link LicenseRequest} that is about to be sent.
+     */
+    onLicenseRequest?(request: LicenseRequest): MaybeAsync<Partial<LicenseRequest> | BufferSource>;
+    /**
+     * Handler which will be called when a HTTP request for a license returns an response.
+     *
+     * @remarks
+     * The handler will be called regardless of the HTTP status code on the response (i.e. also for unsuccessful statuses outside of the 200-299 range).
+     * The handler must return the raw license, in a manner suitable for further processing by the CDM.
+     * If no handler is provided, the player uses the response body as raw license, but only if the response’s status indicates success.
+     *
+     * For example, an integration may want to “unwrap” a wrapped JSON or XML response body, turning it into a raw license.
+     *
+     * @param response - The {@link LicenseResponse} that was returned from the license request.
+     */
+    onLicenseResponse?(response: LicenseResponse): MaybeAsync<BufferSource>;
+    /**
+     * A function to extract the Fairplay content ID from the key URI, as given by the URI attribute of the `#EXT-X-KEY` tag in the HLS playlist (m3u8).
+     *
+     * @remarks
+     * In order to start a Fairplay license request, the player must provide the initialization data, the content ID and the certificate to the CDM.
+     * The content ID is usually contained in the key URI in some vendor-specific way, for example in the host name (e.g. `skd://123456789`)
+     * or in the URL query (e.g. `skd://vendor?123456789`). This function should extract this content ID from the key URI.
+     * This method is required only for Fairplay integrations. It is ignored for other key systems.
+     *
+     * @param skdUrl - The key URI.
+     */
+    extractFairplayContentId?(skdUrl: string): MaybeAsync<string>;
+}
+
+/**
+ * Factory pattern to create {@link ContentProtectionIntegration}s.
+ *
+ * @category Content Protection
+ * @public
+ */
+interface ContentProtectionIntegrationFactory {
+    /**
+     * Build a new {@link ContentProtectionIntegration} based on the given {@link DRMConfiguration}.
+     *
+     * @param configuration - The {@link DRMConfiguration} of the currently loading source.
+     */
+    build(configuration: DRMConfiguration): ContentProtectionIntegration;
+}
+
+/**
  * Represents a cue of a HLS date range metadata text track.
  *
  * @category Media and Text Tracks
@@ -12716,6 +8284,304 @@ interface ID3Cue extends TextTrackCue {
 }
 
 /**
+ * Events fired by the {@link TextTrackStyle | TextTrackStyle API}.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface TextTrackStyleEventMap {
+    /**
+     * Fired when any of the {@link TextTrackStyle | TextTrackStyle's properties} changes.
+     */
+    change: Event<'change'>;
+}
+/**
+ * The text track style API.
+ *
+ * @remarks
+ * <br/> - Available since v2.27.4.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface TextTrackStyle extends EventDispatcher<TextTrackStyleEventMap> {
+    /**
+     * The font family for the text track.
+     */
+    fontFamily: string | undefined;
+    /**
+     * The font color for the text track.
+     *
+     * @example
+     * <br/> - `red` will set the color of the text to red.
+     * <br/> - `#ff0000` will set the color of the text to red.
+     * <br/> - `rgba(255,0,0,0.5)` will set the color of the text to red, with 50% opacity.
+     */
+    fontColor: string | undefined;
+    /**
+     * The font size for the text track.
+     *
+     * @remarks
+     * Can be a percentage value such as '50%', '75%', '100%', '150%' or '200%'.
+     */
+    fontSize: string | undefined;
+    /**
+     * The background color for the text track.
+     *
+     * @remarks
+     * This targets the area directly behind the text.
+     *
+     * @example
+     * <br/> - `red` will set the background color of the text track to red.
+     * <br/> - `#ff0000` will set the background color of the text track to red.
+     * <br/> - `rgba(255,0,0,0.5)` will set the background color of the text track to red, with 50% opacity.
+     */
+    backgroundColor: string | undefined;
+    /**
+     * The window color for the text track.
+     *
+     * @remarks
+     * This targets the area covering the full width of the text track.
+     *
+     * @example
+     * <br/> - `red` will set the background color of the window of the text track to red.
+     * <br/> - `#ff0000` will set the background color of the window of the text track to red.
+     * <br/> - `rgba(255,0,0,0.5)` will set the background color of the window of the text track to red, with 50% opacity.
+     */
+    windowColor: string | undefined;
+    /**
+     * The edge style of the text, represented by a value from the following list:
+     * <br/> - `'none'`
+     * <br/> - `'dropshadow'`
+     * <br/> - `'raised'`
+     * <br/> - `'depressed'`
+     * <br/> - `'uniform`
+     */
+    edgeStyle: EdgeStyle | undefined;
+    /**
+     * The top margin of the area where subtitles are being rendered.
+     *
+     * @remarks
+     * <br/> - Available since v4.2.0
+     * <br/> - The margin is in number of pixels.
+     * <br/> - Useful for pushing the subtitles down, so they don't overlap with the UI.
+     */
+    marginTop: number | undefined;
+    /**
+     * The bottom margin of the area where subtitles are being rendered.
+     *
+     * @remarks
+     * <br/> - Available since v4.2.0
+     * <br/> - The margin is in number of pixels.
+     * <br/> - Useful for pushing the subtitles up, so they don't overlap with the UI.
+     */
+    marginBottom: number | undefined;
+    /**
+     * The left margin of the area where subtitles are being rendered.
+     *
+     * @remarks
+     * <br/> - Available since v4.2.0
+     * <br/> - The margin is in number of pixels.
+     * <br/> - Useful for pushing the subtitles right, so they don't overlap with the UI.
+     */
+    marginLeft: number | undefined;
+    /**
+     * The right margin  of the area where subtitles are being rendered.
+     *
+     * @remarks
+     * <br/> - Available since v4.2.0
+     * <br/> - The margin is in number of pixels.
+     * <br/> - Useful for pushing the subtitles left, so they don't overlap with the UI.
+     */
+    marginRight: number | undefined;
+}
+/**
+ * The style of the edge, represented by a value from the following list:
+ * <br/> - `'none'`
+ * <br/> - `'dropshadow'`
+ * <br/> - `'raised'`
+ * <br/> - `'depressed'`
+ * <br/> - `'uniform'`
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+type EdgeStyle = 'none' | 'dropshadow' | 'raised' | 'depressed' | 'uniform';
+
+/**
+ * A WebVTT-defined region scroll setting, represented by a value from the following list:
+ * <br/> - `''`: None. Cues in the region stay fixed at the location they were first painted in.
+ * <br/> - `'up'`: Up. Cues in the region will be added at the bottom of the region and push any already displayed cues in the region up until all lines of the new cue are visible in the region.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+type VTTScrollSetting = '' | /* none */ 'up';
+/**
+ * Represents a WebVTT region.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface WebVTTRegion {
+    /**
+     * The identifier of the region.
+     */
+    readonly id: string;
+    /**
+     * The number of lines in the region.
+     */
+    readonly lines: number;
+    /**
+     * The horizontal coordinate of the anchor point of the region to the viewport, as a percentage of the video width.
+     */
+    readonly regionAnchorX: number;
+    /**
+     * The vertical coordinate of the anchor point of the region to the viewport, as a percentage of the video height.
+     */
+    readonly regionAnchorY: number;
+    /**
+     * The scroll setting of the region.
+     */
+    readonly scrollValue: VTTScrollSetting;
+    /**
+     * The horizontal coordinate of the point of the viewport the anchor point of the region is anchored to, as a percentage of the video width.
+     */
+    readonly viewportAnchorX: number;
+    /**
+     * The veritcal coordinate of the point of the viewport the anchor point of the region is anchored to, as a percentage of the video height.
+     */
+    readonly viewportAnchorY: number;
+    /**
+     * The width of the region, as a percentage of the video width.
+     */
+    readonly width: number;
+}
+
+/**
+ * A WebVTT-defined writing direction, represented by a value from the following list:
+ * <br/> - `''`: Horizontal. A line extends horizontally and is offset vertically from the video viewport’s top edge, with consecutive lines displayed below each other.
+ * <br/> - `'rl'`: Vertical right-to-left. A line extends vertically and is offset horizontally from the video viewport’s right edge, with consecutive lines displayed to the left of each other.
+ * <br/> - `'lr'`: vertical left-to-right. A line extends vertically and is offset horizontally from the video viewport’s left edge, with consecutive lines displayed to the right of each other.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+type VTTDirectionSetting = '' | 'rl' | 'lr';
+/**
+ * A WebVTT-defined line alignment, represented by a value from the following list:
+ * <br/> - `'start'`: The cue box's start is aligned at a specified line.
+ * <br/> - `'center'`: The cue box's center is aligned at a specified line.
+ * <br/> - `'end'`: The cue box's end is aligned at a specified line.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+type VTTLineAlignSetting = 'start' | 'center' | 'end';
+/**
+ * A WebVTT-defined text alignment, represented by a value from the following list:
+ * <br/> - `'start'`: The text of each line is aligned towards the start side of the box.
+ * <br/> - `'center'`: The text of each line is aligned at the center of the box.
+ * <br/> - `'end'`: The text of each line is aligned towards the end side of the box.
+ * <br/> - `'left'`: The text of each line is aligned to the box’s left side for horizontal cues, or top side otherwise.
+ * <br/> - `'right'`: The text of each line is aligned to the box’s right side for horizontal cues, or bottom side otherwise.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+type VTTAlignSetting = 'start' | 'center' | 'end' | 'left' | 'right';
+/**
+ * A WebVTT-defined position alignment, represented by a value from the following list:
+ * <br/> - `'line-left'`: The cue box's start is aligned at a specified position.
+ * <br/> - `'center'`: The cue box's center is aligned at a specified position.
+ * <br/> - `'line-right'`: The cue box's end is aligned at a specified position.
+ * <br/> - `'auto'`: The cue box's alignment is dependent on its text alignment setting.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+type VTTPositionAlignSetting = 'line-left' | 'center' | 'line-right' | 'auto';
+/**
+ * A WebVTT-defined line offset, represented by a value from the following list:
+ * <br/> - a `number`: The line offset is expressed in a number of text lines or a percentage of the video viewport height or width.
+ * <br/> - `'auto'`: The line offset depends on the other showing tracks.
+ *
+ * @remarks
+ * <br/> - The semantics of the `number` variant are dependent on {@link WebVTTCue.snapToLines}.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+type VTTLine = number | 'auto';
+/**
+ * A WebVTT-defined position, represented by a value from the following list:
+ * <br/> - a number: The position is expressed as a percentage value.
+ * <br/> - `'auto'`: The position depends on the text alignment of the cue.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+type VTTPosition = number | 'auto';
+/**
+ * Represents a cue of a {@link https://www.w3.org/TR/webvtt1/ | WebVTT} text track.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface WebVTTCue extends TextTrackCue {
+    /**
+     * The text alignment of the cue.
+     */
+    align: VTTAlignSetting;
+    /**
+     * The content of the cue in raw unparsed form.
+     */
+    content: string;
+    /**
+     * The line offset of the cue.
+     */
+    line: VTTLine;
+    /**
+     * The line alignment of the cue.
+     */
+    lineAlign: VTTLineAlignSetting;
+    /**
+     * The position of the cue.
+     */
+    position: VTTPosition;
+    /**
+     * The position alignment of the cue.
+     */
+    positionAlign: VTTPositionAlignSetting;
+    /**
+     * The region of the cue.
+     */
+    region: WebVTTRegion | null;
+    /**
+     * Whether snap-to-lines is enabled for the cue.
+     *
+     * @remarks
+     * <br/> - This property indicates whether {@link WebVTTCue.line} is an integer number of lines or a percentage of the dimension of the video.
+     */
+    snapToLines: boolean;
+    /**
+     * The size of the cue's box.
+     *
+     * @remarks
+     * <br/> - This property is to be interpreted as a percentage of the video, relative to the cue direction stated by {@link WebVTTCue.vertical}.
+     */
+    size: number;
+    /**
+     * The text of the cue in raw unparsed form.
+     */
+    text: string;
+    /**
+     * The writing direction of the cue.
+     */
+    vertical: VTTDirectionSetting;
+}
+
+/**
  * Record of style properties.
  * Each entry contains the style property name with associated value.
  *
@@ -12785,6 +8651,77 @@ interface TTMLCue extends TextTrackCue {
 }
 
 /**
+ * Represents a text track of a media resource that can be filled with cues during playback.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface CustomWebVTTTextTrack extends TextTrack {
+    /**
+     * The kind of the text track.
+     */
+    readonly type: 'webvtt';
+    /**
+     * Adds a cue to the text track.
+     * @param startTime The start time of the cue.
+     * @param endTime The end time of the cue.
+     * @param content The content of the cue.
+     */
+    addCue(startTime: number, endTime: number, content: string): WebVTTCue;
+    /**
+     * Removed a cue from the text track.
+     * @param cue The cue to be removed.
+     */
+    removeCue(cue: WebVTTCue): void;
+}
+
+/**
+ * Options for creating a custom text track.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface CustomTextTrackOptions {
+    /**
+     * The type of cues this track will support.
+     */
+    type: SupportedCustomTextTrackCueTypes;
+    /**
+     * The kind of the text track, represented by a value from the following list:
+     * <br/> - `'subtitles'`: The track contains subtitles.
+     * <br/> - `'captions'`: The track contains closed captions, a translation of dialogue and sound effects.
+     * <br/> - `'descriptions'`: The track contains descriptions, a textual description of the video.
+     * <br/> - `'chapters'`: The track contains chapter titles.
+     * <br/> - `'metadata'`: The track contains metadata. This track will not serve display purposes.
+     */
+    kind: string;
+    /**
+     * The label of the text track.
+     */
+    label?: string;
+    /**
+     * The language of the text track.
+     */
+    language?: string;
+}
+/**
+ * The supported cue types for custom text tracks.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+type SupportedCustomTextTrackCueTypes = 'webvtt';
+/**
+ * The mapping between the type in {@link CustomTextTrackOptions} and which kind of TextTrack the `player.addTextTrack()` API will return.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface CustomTextTrackMap {
+    webvtt: CustomWebVTTTextTrack;
+}
+
+/**
  * Represents a metadata cue of a Millicast source.
  *
  * @remarks
@@ -12824,6 +8761,333 @@ interface MillicastMetadataCue extends TextTrackCue {
      *         Otherwise, it's the raw data as a {@link Uint8Array}.
      */
     readonly unregistered: object | Uint8Array | undefined;
+}
+
+/**
+ * Represents one or more ranges of time, each specified by a start time and an end time.
+ *
+ * @remarks
+ * This is equivalent to the {@link https://developer.mozilla.org/en-US/docs/Web/API/TimeRanges | TimeRanges} interface used by an HTML video element.
+ *
+ * @public
+ */
+interface TimeRanges {
+    /** Returns the number of ranges in the object. */
+    readonly length: number;
+    /**
+     * Returns the time for the start of the range with the given index.
+     *
+     * @throws Throws an Error if the index is out of bounds.
+     */
+    start(index: number): number;
+    /**
+     * Returns the time for the end of the range with the given index.
+     *
+     * @throws Throws an Error if the index is out of bounds.
+     */
+    end(index: number): number;
+}
+
+/**
+ * The adaptive bitrate strategy of the first segment, represented by a value from the following list:
+ * <br/> - `'performance'`: The player will optimize ABR behavior to focus on the performance of the player. This strategy initiates playback with the lowest quality suitable for the device which means faster start-up time.
+ * <br/> - `'quality'`: The player will optimize ABR behavior to focus displaying the best visual quality to the end-user. This strategy initiates playback with the highest bit rate suitable for the device.
+ * <br/> - `'bandwidth'`: The player will optimize the ABR behavior to focus on displaying the most optimal quality based on historic data of available bandwidth and knowledge of the network conditions. When no historic data is available, the player will start playback at a medium bitrate quality (up to 2.5 Mbps).
+ *
+ * @category ABR
+ * @public
+ */
+type ABRStrategyType = 'performance' | 'quality' | 'bandwidth';
+/**
+ * Describes the metadata of the adaptive bitrate strategy.
+ *
+ * @category ABR
+ * @public
+ */
+interface ABRMetadata {
+    /**
+     * The initial bitrate, in bits per second.
+     *
+     * @defaultValue Bitrate available to the browser.
+     */
+    bitrate?: number;
+}
+/**
+ * Describes the configuration of the adaptive bitrate strategy.
+ *
+ * @category ABR
+ * @public
+ */
+interface ABRStrategyConfiguration {
+    /**
+     * The strategy for initial playback.
+     */
+    type: ABRStrategyType;
+    /**
+     * The metadata for the initial playback strategy.
+     *
+     * @defaultValue A {@link ABRMetadata} object with default values.
+     */
+    metadata?: ABRMetadata;
+}
+/**
+ * The adaptive bitrate strategy.
+ *
+ * @category ABR
+ * @public
+ */
+type ABRStrategy = ABRStrategyConfiguration | ABRStrategyType;
+/**
+ * Describes the adaptive bitrate configuration.
+ *
+ * @remarks
+ * <br/> - Available since v2.30.0.
+ *
+ * @category ABR
+ * @public
+ */
+interface ABRConfiguration {
+    /**
+     * The adaptive bitrate strategy.
+     *
+     * @defaultValue `'bandwidth'`
+     */
+    strategy?: ABRStrategy;
+    /**
+     * The amount which the player should buffer ahead of the current playback position, in seconds.
+     *
+     * @remarks
+     * <br/> - Before v4.3.0: This duration has a maximum of 60 seconds.
+     * <br/> - After v4.3.0: This duration has no maximum.
+     * <br/> - The player might reduce or ignore the configured amount because of device or performance constraints.
+     *
+     * @defaultValue `20`
+     */
+    targetBuffer?: number;
+    /**
+     * The amount of data which the player should keep in its buffer before the current playback position, in seconds.
+     * This configuration option can be used to reduce the memory footprint on memory restricted devices or on devices
+     * which don't automatically prune decoder buffers.
+     *
+     * Note that the player can decide to keep less data in the decoder buffer in case memory is running low.
+     * A value of 0 or lower is not accepted and will be treated as default.
+     *
+     * @defaultValue `30`
+     */
+    bufferLookbackWindow?: number;
+    /**
+     * The maximum length of the player's buffer, in seconds.
+     *
+     * The player will initially buffer up to {@link ABRConfiguration.targetBuffer} seconds of media data.
+     * If the player detects that the decoder is unable to hold so much data,
+     * it will reduce `maxBufferLength` and restrict `targetBuffer` to be less than
+     * this maximum.
+     *
+     * @defaultValue `Infinity`
+     */
+    readonly maxBufferLength: number;
+    /**
+     * Clears the buffer when setting a single target quality on a MediaTrack.
+     *
+     * @remarks
+     * <br/> - Available since v6.8.0 for HLS streams only.
+     *
+     * @defaultValue `false`
+     */
+    clearBufferWhenSettingTargetQuality: boolean;
+}
+
+/**
+ * The THEOads API.
+ *
+ * @remarks
+ * <br/> - Available since v8.12.0.
+ *
+ * @category THEOads
+ * @public
+ */
+interface TheoAds extends EventDispatcher<TheoAdsEventsMap> {
+    /**
+     * The currently playing interstitials.
+     */
+    currentInterstitials: readonly Interstitial[];
+    /**
+     * List of interstitials which still need to be played.
+     */
+    scheduledInterstitials: readonly Interstitial[];
+    /**
+     * Replaces all the ad tag parameters used for upcoming ad requests for a live stream.
+     *
+     * @param adTagParameters - The new ad tag parameters.
+     *
+     * @remarks
+     * <br/> - If set, this value overrides any parameters set on the {@link TheoAdDescription.adTagParameters}.
+     */
+    replaceAdTagParameters(adTagParameters?: Record<string, string>): void;
+}
+/**
+ * The events fired by the {@link TheoAds | THEOads API}.
+ *
+ * @category THEOads
+ * @public
+ */
+interface TheoAdsEventsMap {
+    /**
+     * Fired when an interstitial is added.
+     */
+    addinterstitial: InterstitialEvent<'addinterstitial'>;
+    /**
+     * Fired when an interstitial begins.
+     */
+    interstitialbegin: InterstitialEvent<'interstitialbegin'>;
+    /**
+     * Fired when an interstitial ends.
+     */
+    interstitialend: InterstitialEvent<'interstitialend'>;
+    /**
+     * Fired when an interstitial is updated.
+     */
+    interstitialupdate: InterstitialEvent<'interstitialupdate'>;
+    /**
+     * Fired when an interstitial has errored.
+     */
+    interstitialerror: InterstitialEvent<'interstitialerror'>;
+    /**
+     * Fired when falling back from THEOads to the configured Google DAI fallback source.
+     */
+    fallback: Event<'fallback'>;
+}
+/**
+ * Base type for events related to an interstitial.
+ *
+ * @category THEOads
+ * @category Events
+ * @public
+ */
+interface InterstitialEvent<TType extends string> extends Event<TType> {
+    /**
+     * The interstitial.
+     */
+    readonly interstitial: Interstitial;
+}
+/**
+ * The type of the interstitial.
+ *
+ * @category THEOads
+ * @public
+ */
+type InterstitialType = 'adbreak' | 'overlay';
+/**
+ * The THEOads interstitial.
+ *
+ * @category THEOads
+ * @public
+ */
+interface Interstitial {
+    /**
+     * The type of the interstitial.
+     */
+    type: InterstitialType;
+    /**
+     * The identifier of the interstitial.
+     */
+    id: string;
+    /**
+     * The start time at which the interstitial will start.
+     */
+    startTime: number;
+    /**
+     * The duration of the interstitial, in seconds.
+     *
+     */
+    duration: number | undefined;
+    /**
+     * The ad tag parameters that are used for this specific ad break.
+     * @remarks
+     * <br/> - The set values are combined and potentially override parameters set on the {@link TheoAdDescription.adTagParameters} or through {@link TheoAds.replaceAdTagParameters}.
+     */
+    adTagParameters: Record<string, string>;
+}
+/**
+ * The layout of a THEOads {@link AdBreakInterstitial}.
+ *
+ * @category THEOads
+ * @public
+ */
+type TheoAdsLayout = 'single' | 'l-shape' | 'double';
+/**
+ * The THEOads interstitial that corresponds with ad playback.
+ *
+ * @category THEOads
+ * @public
+ */
+interface AdBreakInterstitial extends Interstitial {
+    type: 'adbreak';
+    /**
+     * The layout which is used to play the ads of the interstitial.
+     */
+    layout: TheoAdsLayout;
+    /**
+     * The background when playing an ad.
+     *
+     * @remarks
+     * - <br/> This is only available when playing in double or l-shape layout.
+     */
+    backdropUri: string | undefined;
+    /**
+     * The ads that are part of the interstitial.
+     *
+     * @remarks
+     * - <br/> - Only available during ad playback.
+     */
+    ads: readonly Ad[];
+}
+/**
+ * The THEOads interstitial that corresponds with overlay playback.
+ *
+ * @category THEOads
+ * @public
+ */
+interface OverlayInterstitial extends Interstitial {
+    type: 'overlay';
+    /**
+     * The url of the image of the overlay.
+     */
+    imageUrl: string | undefined;
+    /**
+     * The clickThrough url of the overlay.
+     */
+    clickThrough: string | undefined;
+    /**
+     * The position of the overlay.
+     */
+    position: OverlayPosition;
+    /**
+     * The size of the overlay.
+     */
+    size: OverlaySize;
+}
+/**
+ * The position information of the overlay.
+ *
+ * @category THEOads
+ * @public
+ */
+interface OverlayPosition {
+    left?: number;
+    right?: number;
+    top?: number;
+    bottom?: number;
+}
+/**
+ * The size information of the overlay.
+ *
+ * @category THEOads
+ * @public
+ */
+interface OverlaySize {
+    width?: number;
+    height?: number;
 }
 
 /**
@@ -12895,9 +9159,19 @@ interface TheoAdDescription extends AdDescription {
      *
      * @remarks
      * <br/> - Only applicable for specific use-cases.
-     * <br/> - Contact THEO Technologies for more information.
+     * <br/> - Contact Dolby Optiview for more information.
      */
     useId3?: boolean;
+    /**
+     * Whether to use the EMSG based operating mode.
+     *
+     * @defaultValue `false`
+     *
+     * @remarks
+     * <br/> - Only applicable for specific use-cases.
+     * <br/> - Contact Dolby Optiview for more information.
+     */
+    useEMSG?: boolean;
     /**
      * The URI from where to retrieve the PodID's as returned from the EABN service from Google.
      *
@@ -12931,10 +9205,1348 @@ interface TheoAdDescription extends AdDescription {
 type TheoAdsLayoutOverride = TheoAdsLayout | 'single-if-mobile';
 
 /**
+ * Represents an Uplynk response with advertisement information for VOD assets.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkResponseVodAds {
+    /**
+     * List of ad break information.
+     *
+     * @remarks
+     * <br/> - This includes both linear and non-linear ads.
+     */
+    breaks: UplynkResponseVodAdBreak[];
+    /**
+     * List of ad break offset information.
+     */
+    breakOffsets?: UplynkResponseVodAdBreakOffset[];
+    /**
+     * List of placeholder offset information.
+     */
+    placeholderOffsets?: UplynkResponseVodAdPlaceholder[];
+}
+/**
+ * Represents an Uplynk response with ad break information for VOD assets.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkResponseVodAdBreak {
+    /**
+     * The type of the ad break.
+     */
+    type: 'linear' | 'nonlinear';
+    /**
+     * The position of the ad break, represented by a value from the following list:
+     * <br/> - `'preroll'`: Ad break that plays before the content.
+     * <br/> - `'midroll'`: Ad break that plays during the content.
+     * <br/> - `'postroll'`: Ad break that plays after the content.
+     * <br/> - `'pause'`: Ad break that should be shown when the player is paused.
+     * <br/> - `'overlay'`: Non-linear ad break that is shown over the player.
+     * <br/> - `''`: Unknown ad break position.
+     */
+    position: 'preroll' | 'midroll' | 'postroll' | 'pause' | 'overlay' | '';
+    /**
+     * The time offset of the ad break, in seconds.
+     */
+    timeOffset: number;
+    /**
+     * The duration of the ad break, in seconds.
+     */
+    duration: number;
+    /**
+     * List of ad information.
+     */
+    ads: UplynkResponseVodAd[];
+    /**
+     * A record of all VAST 3.0 tracking events for the ad break.
+     * Each entry contains an event name with associated tracking URLs.
+     */
+    events: Record<string, string[]>;
+}
+/**
+ * The Uplynk response with ad information for VOD assets.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkResponseVodAd {
+    /**
+     * The duration of the ad, in seconds.
+     */
+    duration: number;
+    /**
+     * The API framework, if any.
+     *
+     * @remarks
+     * <br/> - If the value is 'VPAID', then the ad is a VPAID ad.
+     * <br/> - Otherwise the ad is an Uplynk CMS asset.
+     */
+    apiFramework: string | null;
+    /**
+     * The creative identifier.
+     *
+     * @remarks
+     * <br/> - Either a VPAID URL if the API framework is `'VPAID'`.
+     * <br/> - Otherwise an asset ID from the Uplynk CMS.
+     */
+    creative: string;
+    /**
+     * The creative's mime type.
+     *
+     * @remarks
+     * <br/> - Either 'application/javascript' if the API framework is `'VPAID'`.
+     * <br/> - Otherwise 'uplynk/m3u8'.
+     */
+    mimeType: string;
+    /**
+     * The width of the ad, in pixels.
+     *
+     * @remarks
+     * <br/> - Returns `0` when this is not a companion.
+     */
+    width: number;
+    /**
+     * The height of the ad, in pixels.
+     *
+     * @remarks
+     * <br/> - Returns `0` when this is not a companion.
+     */
+    height: number;
+    /**
+     * List of companion ads of the ad.
+     */
+    companions: UplynkResponseVodAd[];
+    /**
+     * List of VAST extensions returned by the ad server.
+     */
+    extensions?: object[];
+    /**
+     * Record of FreeWheel-defined creative parameters.
+     * Each entry contains the parameter name together with the associated value.
+     */
+    fw_parameters?: Record<string, string>;
+    /**
+     * A record of all VAST 3.0 tracking events for the ad.
+     * Each entry contains an event name with associated tracking URLs.
+     */
+    events: Record<string, string[]>;
+}
+/**
+ * Represents the offset of an Uplynk ad break.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkResponseVodAdBreakOffset {
+    /**
+     * The index of the ad break in the ads.breaks array.
+     */
+    index: number;
+    /**
+     * The time offset of the ad break, in seconds.
+     */
+    timeOffset: number;
+}
+/**
+ * Represents an Uplynk response with a placeholder for an ad for VOD assets.
+ *
+ * @remarks
+ * A placeholder is an ad which
+ * <br/> - is a short blank video for non-video ads (e.g. VPAID ads).
+ * <br/> - is a system asset which is potentially subject to change.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkResponseVodAdPlaceholder {
+    /**
+     * The index of the placeholder's ad break in the `ads.breaks` array.
+     */
+    breaksIndex: number;
+    /**
+     * The index of the placeholder in the `ads.breaks.ads` array.
+     */
+    adsIndex: number;
+    /**
+     * The start time of the placeholder, in seconds.
+     */
+    startTime: number;
+    /**
+     * The end time of the placeholder, in seconds.
+     */
+    endTime: number;
+}
+
+/**
+ * The response type of the Uplynk Preplay request, represented by a value from the following list:
+ * <br/> - `'vod'`
+ * <br/> - `'live'`
+ *
+ * @category Uplynk
+ * @public
+ */
+type UplynkPreplayResponseType = 'vod' | 'live';
+/**
+ * Type of an Uplynk Preplay response.
+ *
+ * @category Uplynk
+ * @public
+ */
+type UplynkPreplayResponse = UplynkPreplayVodResponse | UplynkPreplayLiveResponse;
+/**
+ * Represents an Uplynk Preplay base response.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkPreplayBaseResponse {
+    /**
+     * The response type of the request.
+     */
+    type: UplynkPreplayResponseType;
+    /**
+     * The manifest's URL.
+     */
+    playURL: string;
+    /**
+     * The zone prefix for the viewer's session.
+     *
+     * @remarks
+     * <br/> - Use this prefix when submitting playback or API requests for this session.
+     *
+     * @example
+     * E.g. 'https://content-ause2.uplynk.com/'
+     */
+    prefix: string;
+    /**
+     * The identifier of the viewer's session.
+     */
+    sid: string;
+    /**
+     * The content protection information.
+     *
+     * @remarks
+     * <br/> - Currently, this only contains the Fairplay certificate URL.
+     * <br/> - Widevine will default to 'https://content.uplynk.com/wv'.
+     * <br/> - Playready will default to 'https://content.uplynk.com/pr'.
+     */
+    drm?: UplynkResponseDrm;
+}
+/**
+ * Represents an Uplynk DRM response.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkResponseDrm {
+    /**
+     * Indicates whether {@link https://api-docs.uplynk.com/#Develop/Studio-DRM-API.htm%3FTocPath%3D_____11 | Studio DRM} is required for playback.
+     */
+    required?: boolean;
+    /**
+     * The Fairplay certificate URL.
+     */
+    fairplayCertificateURL?: string;
+    /**
+     * The Widevine certificate URL.
+     */
+    widevineLicenseURL?: string;
+    /**
+     * The PlayReady certificate URL.
+     */
+    playreadyLicenseURL?: string;
+}
+/**
+ * Represents an Uplynk Preplay response for VOD assets.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkPreplayVodResponse extends UplynkPreplayBaseResponse {
+    /**
+     * The response type of the request.
+     */
+    type: 'vod';
+    /**
+     * The advertisement information.
+     */
+    ads: UplynkResponseVodAds;
+    /**
+     * The URL to the interstitial information
+     *
+     * @remarks
+     * <br/> - This is an XML file.
+     * <br/> - This parameter reports `null` when ads are not found.
+     * <br/> - It should only be used on Apple TV.
+     */
+    interstitialURL: string | null | undefined;
+}
+/**
+ * Represents an Uplynk Preplay response for live assets.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkPreplayLiveResponse extends UplynkPreplayBaseResponse {
+    /**
+     * The response type of the request.
+     */
+    type: 'live';
+}
+
+/**
+ * Fired when a Preplay response is received.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkPreplayResponseEvent extends Event<'preplayresponse'> {
+    /**
+     * The response which has been received.
+     */
+    readonly response: UplynkPreplayResponse;
+}
+
+/**
+ * Represents a direction in the VR feature.
+ *
+ * @category VR
+ * @public
+ */
+interface VRDirection {
+    /**
+     * The rotational position around the Z-axis.
+     *
+     * @remarks
+     * <br/> - This number is in the range of [-180, 180].
+     */
+    yaw: number;
+    /**
+     * The rotational position around the X-axis.
+     *
+     * @remarks
+     * <br/> - This number is in the range of [-180, 180].
+     */
+    roll: number;
+    /**
+     * The rotational position around the Y-axis.
+     *
+     * @remarks
+     * <br/> - This number is in the range of [-180, 180].
+     */
+    pitch: number;
+}
+/**
+ * The state of the VR feature, represented by a value from the following list:
+ * <br/> - `'unavailable'`
+ * <br/> - `'available'`
+ * <br/> - `'presenting'`
+ *
+ * @category VR
+ * @public
+ */
+type VRState = 'unavailable' | 'available' | 'presenting';
+/**
+ * Fired when the {@link VR.direction} changes.
+ *
+ * @category VR
+ * @category Events
+ * @public
+ */
+type DirectionChangeEvent = Event<'directionchange'>;
+/**
+ * Fired when the {@link VR.state} changes.
+ *
+ * @category VR
+ * @category Events
+ * @public
+ */
+type StateChangeEvent = Event<'statechange'>;
+/**
+ * Fired when the {@link VR.stereo} changes.
+ *
+ * @category VR
+ * @category Events
+ * @public
+ */
+type StereoChangeEvent = Event<'stereochange'>;
+/**
+ * The events fired by the {@link VR | VR API}.
+ *
+ * @category VR
+ * @public
+ */
+interface VREventMap {
+    /**
+     * {@inheritDoc DirectionChangeEvent}
+     */
+    directionchange: DirectionChangeEvent;
+    /**
+     * {@inheritDoc StateChangeEvent}
+     */
+    statechange: StateChangeEvent;
+    /**
+     * {@inheritDoc StereoChangeEvent}
+     */
+    stereochange: StereoChangeEvent;
+    /**
+     * {@inheritDoc ErrorEvent}
+     */
+    error: ErrorEvent;
+}
+/**
+ * The virtual reality API which allows you to control the display of 360° VR videos.
+ *
+ * @remarks
+ * <br/> - See {@link VRConfiguration} to configure a source.
+ * <br/> - The player utilises the {@link Canvas | Canvas API} internally to render 360° content and is restricted to the same limitations.
+ * <br/> - To access `devicemotion` events on mobile devices, a page needs to be served over https on modern browsers.
+ * <br/> - To access `devicemotion` events on Safari for iOS 13+ you need to request user permission using the {@link https://www.w3.org/TR/orientation-event/#dom-devicemotionevent-requestpermission | DeviceMotionEvent.requestPermission API}
+ * <br/> - iPhone support requires iOS 10: On iOS 9 and lower, iPhone forces HTML5 video to play in fullscreen. As a result, the canvas used by THEOplayer VR will not be visible during playback, since it will be behind the fullscreen video. iPhone users must upgrade to iOS 10 or higher for the full VR experience. Note that iPad is unaffected: VR is supported even on iOS 9 and lower.
+ * <br/> - Cross-origin iframes on iOS: iOS blocks cross-origin iframes from accessing `devicemotion` events {@link https://bugs.webkit.org/show_bug.cgi?id=152299 | WebKit bug #152299}. As a result, when using THEOplayer inside a cross-origin iframe, the player cannot rotate the VR display to align with the device's physical orientation. Fortunately, this can be worked around by listening for `devicemotion` events on the top frame and forwarding them as messages to the iframe. THEOplayer will automatically handle these messages as if they were native `devicemotion` events:
+ *
+ * @example
+ * ```
+ * const playerIframe = document.querySelector('iframe');
+ * window.addEventListener('devicemotion', function (event) {
+ *    playerIframe.contentWindow.postMessage({
+ *        type : 'devicemotion',
+ *        deviceMotionEvent : {
+ *            acceleration : event.acceleration,
+ *            accelerationIncludingGravity : event.accelerationIncludingGravity,
+ *            interval : event.interval,
+ *            rotationRate : event.rotationRate,
+ *            timeStamp : event.timeStamp
+ *        }
+ *    }, '*');
+ * });
+ * ```
+ *
+ * @category VR
+ * @public
+ */
+interface VR extends EventDispatcher<VREventMap> {
+    /**
+     * Whether stereo mode is enabled.
+     *
+     * @remarks
+     * <br/> - Setting it to `true` renders the video in VR.
+     *
+     * @defaultValue `false`
+     */
+    stereo: boolean;
+    /**
+     * Whether controls using device motion on mobile devices is enabled when not viewing in stereo mode.
+     *
+     * @remarks
+     * <br/> - This performs actions that require user consent, so setting this to true has to be behind a button press.
+     * <br/> - Changes only take effect when `stereo` is `false`.
+     *
+     * @defaultValue `false`
+     */
+    useDeviceMotionControls: boolean;
+    /**
+     * The viewing direction.
+     */
+    direction: VRDirection;
+    /**
+     * The vertical field of view in VR, in degress.
+     *
+     * @remarks
+     * <br/> - It should be a number in the range of [0, 180].
+     *
+     * @defaultValue `72`
+     */
+    verticalFOV: number;
+    /**
+     * Whether the player can present in VR mode.
+     */
+    readonly canPresentVR: boolean;
+    /**
+     * The state of the VR feature.
+     */
+    readonly state: VRState;
+}
+
+/**
+ * The number of audio and video segments in the buffer.
+ *
+ * @category Analytics
+ * @public
+ */
+interface BufferedSegments {
+    amountOfBufferedAudioSegments: number;
+    amountOfBufferedVideoSegments: number;
+}
+/**
+ * The metrics API which can be used to gather information related to the quality-of-service and video playback experience.
+ *
+ * @remarks
+ * <br/> - Available since v2.46.0.
+ *
+ * @category Analytics
+ * @public
+ */
+interface Metrics {
+    /**
+     * The total number of video frames that could not be decoded.
+     *
+     * @remarks
+     * <br/> - This value resets on a source change.
+     */
+    corruptedVideoFrames: number;
+    /**
+     * The total number of dropped video frames.
+     *
+     * @remarks
+     * <br/> - This value resets on a source change.
+     */
+    droppedVideoFrames: number;
+    /**
+     * The total number of video frames.
+     *
+     * @remarks
+     * <br/> - This value resets on a source change.
+     */
+    totalVideoFrames: number;
+    /**
+     * The bandwidth in bits per second estimated to be currently available as used for ABR decisions.
+     */
+    currentBandwidthEstimate: number;
+    /**
+     * The total bytes received in response to all media segments since loading the current source.
+     */
+    totalBytesLoaded: number;
+    /**
+     * The total number of audio and video segments in the buffer.
+     *
+     * @remarks
+     * <br/> - This value is currently available only for DASH.
+     */
+    bufferedSegments: BufferedSegments;
+}
+
+/**
+ * The picture-in-picture position, represented by a value from the following list:
+ * <br/> - `'top-left'`
+ * <br/> - `'top-right'`
+ * <br/> - `'bottom-left'`
+ * <br/> - `'bottom-right'`
+ *
+ * @category UI
+ * @public
+ */
+type PiPPosition = 'top-left' | 'top-right' | 'bottom-left' | 'bottom-right';
+/**
+ * Describes the configuration of the picture-in-picture feature.
+ *
+ * @category UI
+ * @public
+ */
+interface PiPConfiguration {
+    /**
+     * The corner in which the player should be shown while in picture-in-picture.
+     *
+     * @defaultValue `'bottom-right'`
+     */
+    position?: PiPPosition;
+    /**
+     * The maximum percentage of the original player position that should be visible to enable picture-in-picture automatically.
+     *
+     * @remarks
+     * <br/> - If not configured, picture-in-picture can only be activated by calling {@link Presentation.requestMode} with the `'picture-in-picture'` argument.
+     *
+     * @defaultValue `undefined`
+     */
+    visibility?: number | undefined;
+    /**
+     * Whether the presentation mode should be retained on source changes.
+     *
+     * @defaultValue `false`
+     */
+    retainPresentationModeOnSourceChange?: boolean;
+}
+
+/**
+ * Describes the UI related configuration of the player.
+ *
+ * @category UI
+ * @public
+ */
+interface UIPlayerConfiguration extends PlayerConfiguration {
+    /**
+     * The user interface configuration.
+     */
+    ui?: UIConfiguration;
+    /**
+     * The picture-in-picture configuration.
+     */
+    pip?: PiPConfiguration;
+    /**
+     * @deprecated use ui.width
+     */
+    width?: number | string;
+    /**
+     * @deprecated use ui.height
+     */
+    height?: number | string;
+    /**
+     * @deprecated use ui.fluid
+     */
+    fluid?: boolean;
+}
+/**
+ * Describes the UI configuration of the player.
+ *
+ * @category UI
+ * @public
+ */
+interface UIConfiguration {
+    /**
+     * The width of the player.
+     *
+     * @remarks
+     * Possible formats
+     * <br/> - A number as the amount of pixels.
+     * <br/> - A percentage string (XX%).
+     */
+    width?: number | string;
+    /**
+     * The height of the player.
+     *
+     * @remarks
+     * Possible formats
+     * <br/> - A number as the amount of pixels.
+     * <br/> - A percentage string (XX%).
+     */
+    height?: number | string;
+    /**
+     * Whether the UI of the player is responsive.
+     *
+     * @defaultValue `false`
+     */
+    fluid?: boolean;
+    /**
+     * The language which is used for localization.
+     *
+     * @remarks
+     * <br/> - This can be a {@link UILanguage | language map}.
+     * <br/> - Otherwise it can be a language code which is the key to a {@link UILanguage | language map} in {@link UIConfiguration.languages}.
+     *
+     * @example
+     * Localize statically to one language.
+     * ```
+     * ui: {
+     *   language: {
+     *     "Play": "Reproducir",
+     *     "Pause": "Pausa",
+     *     "Current Time": "Tiempo actual",
+     *     // [...]
+     *   }
+     * }
+     * ```
+     *
+     * @example
+     * Localize dynamically to one of multiple languages.
+     * ```
+     * ui: {
+     *   language: 'es',
+     *   languages: {
+     *     "es": {
+     *       "Play": "Reproducir",
+     *       "Pause": "Pausa",
+     *       "Current Time": "Tiempo actual",
+     *       // [...]
+     *     },
+     *     "fr": {
+     *       // [...]
+     *     }
+     *   }
+     * }
+     * ```
+     */
+    language?: string | UILanguage;
+    /**
+     * A record used to localize to multiple languages.
+     * Each entry contains a language code with associated {@link UILanguage | language map}.
+     */
+    languages?: Record<string, UILanguage>;
+    /**
+     * Options to control transitions to fullscreen mode.
+     *
+     * @remarks
+     * <br/> - Available since v2.90.0.
+     */
+    fullscreenOptions?: FullscreenOptions$1;
+    /**
+     * Actions that define the behavior of the player.
+     *
+     * @remarks
+     * <br/> - Available since v4.3.0
+     */
+    userActions?: UserActions;
+}
+/**
+ * A record used to map localization.
+ * Each entry contains a translation of an English string.
+ *
+ * @category UI
+ * @public
+ */
+type UILanguage = Record<string, string>;
+/**
+ * Options to control transitions to fullscreen mode.
+ *
+ * @remarks
+ * <br/> - Available since v2.90.0.
+ *
+ * @category UI
+ * @public
+ */
+interface FullscreenOptions$1 {
+    /**
+     * Whether to show navigation UI while in fullscreen.
+     *
+     * @remarks
+     * <p>On mobile devices, the platform may want to show a native on-screen navigation UI (such as a back button or home button)
+     * while the player is in fullscreen mode. This setting controls whether or not this should be shown:
+     * <br/> - If set to "show", then the native navigation UI is preferred.
+     * <br/> - If set to "hide", then more screen space for the player is preferred.
+     * <br/> - If set to "auto", then the choice is left to the platform.
+     * <p>By default, the player prefers to hide the on-screen navigation UI, since it already provides its own "exit fullscreen" button
+     * on its control bar.
+     *
+     * @defaultValue `"hide"`
+     * @public
+     */
+    navigationUI?: 'auto' | 'show' | 'hide';
+}
+/**
+ * Actions that define the behavior of the player.
+ *
+ * @remarks
+ * <br/> - Available since v4.3.0
+ *
+ * @category UI
+ * @public
+ */
+interface UserActions {
+    /**
+     * Whether clicking the player element will play/pause the player.
+     *
+     * @defaultValue `true`
+     * @public
+     */
+    click?: boolean | ((event: any) => void);
+}
+
+/**
+ * The {@link CachingTask}'s license API.
+ *
+ * @category Caching
+ * @public
+ */
+interface CachingTaskLicense {
+    /**
+     * Renew all the licenses associated with this task.
+     *
+     * @param drmConfiguration - The DRM configuration used for license renewals. Defaults to the DRM configuration of the original sourceDescription when omitted.
+     */
+    renew(drmConfiguration?: DRMConfiguration): void;
+}
+
+/**
+ * Describes the configuration of a caching task.
+ *
+ * @category Caching
+ * @public
+ */
+interface CachingTaskParameters {
+    /**
+     * The amount of data to cache for the given stream.
+     *
+     * @remarks
+     * Possible formats:
+     * <br/> - A number in seconds.
+     * <br/> - A percentage string (XX%) for a proportion of the content duration.
+     */
+    amount: number | string;
+    /**
+     * The expiration date of the cached data.
+     *
+     * @remarks
+     * <br/> - Must be a date in the future.
+     * <br/> - Data might be removed by the browser if it runs out of disk space.
+     *
+     * @defaultValue 30 minutes after starting the caching task.
+     */
+    expirationDate?: Date;
+    /**
+     * Upper bandwidth limit of the quality to cache.
+     *
+     * @remarks
+     * <br/> - This will take the quality with the highest bandwidth that is lower than the specified bandwidth.
+     * <br/> - It should be a value between zero and infinity.
+     *
+     * @defaultValue Infinity
+     */
+    bandwidth?: number;
+}
+
+/**
+ * The cache task status, represented by a value from the following list:
+ * <br/> - `'idle'`: The task has been created, but has not started downloading content.
+ * <br/> - `'loading'`: The task is currently downloading the content.
+ * <br/> - `'done'`: The task has finished downloading all content.
+ * <br/> - `'error'`: The task has encountered an error while downloading or evicting content.
+ * <br/> - `'evicted'`: All data associated with the task has been removed because the task expired or the user invoked the {@link CachingTask.remove|remove} method.
+ *
+ * @category Caching
+ * @public
+ */
+type CacheTaskStatus = 'idle' | 'loading' | 'done' | 'error' | 'evicted';
+/**
+ * The events fired by the {@link CachingTask}.
+ *
+ * @category Caching
+ * @public
+ */
+interface CachingTaskEventMap {
+    /**
+     * Fired when a segment is added to the cache.
+     */
+    progress: Event<'progress'>;
+    /**
+     * Fired when {@link CachingTask.status} changes.
+     */
+    statechange: Event<'statechange'>;
+}
+/**
+ * Represents a caching task.
+ *
+ * @category Caching
+ * @public
+ */
+interface CachingTask extends EventDispatcher<CachingTaskEventMap> {
+    /**
+     * The generated identifier for the task.
+     */
+    readonly id: string;
+    /**
+     * The current status of the task.
+     */
+    readonly status: CacheTaskStatus;
+    /**
+     * The media source associated with the task.
+     */
+    readonly source: SourceDescription;
+    /**
+     * The configuration of the task.
+     */
+    readonly parameters: CachingTaskParameters;
+    /**
+     * The requested cached duration of the media, in seconds.
+     */
+    readonly duration: number;
+    /**
+     * The time ranges cached.
+     */
+    readonly cached: TimeRanges;
+    /**
+     * The duration cached, in seconds.
+     */
+    readonly secondsCached: number;
+    /**
+     * The percentage cached.
+     */
+    readonly percentageCached: number;
+    /**
+     * The estimation of the amount this task will download and store, in bytes.
+     *
+     * @remarks
+     * <br/> - Returns -1 if the estimate is not available yet.
+     */
+    readonly bytes: number;
+    /**
+     * The amount downloaded and stored, in bytes.
+     */
+    readonly bytesCached: number;
+    /**
+     * The API for license related queries and operations
+     */
+    readonly license: CachingTaskLicense;
+    /**
+     * Start caching the media.
+     */
+    start(): void;
+    /**
+     * Remove the cached media.
+     */
+    remove(): void;
+    /**
+     * Pause caching the media.
+     *
+     * @remarks
+     * <br/> - A paused task can be resumed with {@link CachingTask.start}.
+     */
+    pause(): void;
+}
+
+/**
+ * The events fired by the {@link HespApi}.
+ * @remarks
+ * <br/> - Note: This API is in an experimental stage and may be subject to breaking changes.
+ * <br/> - Only available with the feature `'hesp'`.
+ * <br/> - Only available when an HESP source is playing.
+ *
+ * @category HESP
+ * @public
+ */
+interface HespApiEventMap {
+    /**
+     * Fired when the player enters the HESP live playback mode.
+     */
+    golive: Event<'golive'>;
+    /**
+     * Fired when the player seeks back to live to recover from the latency being too high.
+     */
+    latencyrecoveryseek: Event<'latencyrecoveryseek'>;
+}
+/**
+ * The HESP API.
+ * @remarks
+ * <br/> - Note: This API is in an experimental stage and may be subject to breaking changes.
+ * <br/> - Only available with the feature `'hesp'`.
+ *
+ * @category HESP
+ * @public
+ */
+interface HespApi extends EventDispatcher<HespApiEventMap> {
+    /**
+     * Seeks the player to the live point.
+     * @remarks
+     * <br/> - Only works during HESP playback.
+     */
+    goLive(): void;
+    /**
+     * True if the HESP playback is in live mode.
+     */
+    readonly isLive: boolean;
+    /**
+     * Returns the manifest for the current HESP source.
+     * @remarks
+     * <br/> - Undefined if no HESP source is configured.
+     */
+    readonly manifest: object | undefined;
+    /**
+     * Returns an overview of the latencies of different parts of the pipeline.
+     *
+     * @internal
+     */
+    readonly latencies: Latencies | undefined;
+    /**
+     * Returns an overview of the video latencies of different parts of the pipeline.
+     *
+     * @internal
+     */
+    readonly videoLatencies: Latencies | undefined;
+    /**
+     * Returns an overview of the audio latencies of different parts of the pipeline.
+     *
+     * @internal
+     */
+    readonly audioLatencies: Latencies | undefined;
+}
+/**
+ * Specific source configuration for an HESP media resource.
+ * @remarks
+ * <br/> - Note: This API is in an experimental stage and may be subject to breaking changes.
+ * <br/> - Only available with the feature `'hesp'`.
+ * <br/> - Only applicable when configuring an HESP source.
+ *
+ * @category HESP
+ * @category Source
+ * @public
+ */
+interface HespSourceConfiguration {
+}
+/**
+ * Specific {@link TypedSource} variant for an HESP media resource.
+ * @remarks
+ * <br/> - Note: This API is in an experimental stage and may be subject to breaking changes.
+ * <br/> - Only available with the feature `'hesp'`.
+ * <br/> - Only applicable when configuring an HESP source.
+ *
+ * @category HESP
+ * @category Source
+ * @public
+ */
+interface HespTypedSource extends TypedSource {
+    type: 'application/vnd.theo.hesp+json';
+    /**
+     * Specific source configuration for an HESP media resource.
+     * @remarks
+     * <br/> - Note: This API is in an experimental stage and may be subject to breaking changes.
+     * <br/> - Only available with the feature `'hesp'`.
+     * <br/> - Only applicable when configuring an HESP source.
+     */
+    hesp?: HespSourceConfiguration;
+}
+/**
+ * An overview of different latencies in the pipeline.
+ *
+ * @internal
+ */
+interface Latencies {
+    /**
+     * The total latency between a frame entering the transcoder and being displayed on the screen.
+     */
+    readonly theolive: number;
+    /**
+     * The latency a frame spends in the transcoding and packaging step.
+     */
+    readonly engine: number;
+    /**
+     * The latency between a frame exiting the packager and being received by the player.
+     */
+    readonly distribution: number;
+    /**
+     * The latency added by the player in the form of buffer.
+     */
+    readonly player: number;
+}
+
+/**
  * @category HESP
  * @public
  */
 type HespMediaType = 'audio' | 'video' | 'metadata';
+
+/**
+ * The latency manager, used to control low-latency live playback.
+ *
+ * @remarks This is only used for live playback.
+ *
+ * @category Player
+ * @public
+ */
+interface LatencyManager {
+    /**
+     * Whether the latency manager is enabled.
+     */
+    enabled: boolean;
+    /**
+     * Whether the latency manager is monitoring to stay within the {@link LatencyManager.currentConfiguration | live playback configuration}.
+     *
+     * @remarks
+     * <br/> - Can only be monitored for live playback.
+     */
+    readonly monitoringLivePlayback: boolean;
+    /**
+     * The current latency.
+     *
+     * @remarks
+     * <br/> - Only available during live playback.
+     */
+    readonly currentLatency: number | undefined;
+    /**
+     * The current latency configuration for the current source, if available.
+     *
+     * @remarks
+     * <br/> - The initial value will be based on {@link BaseSource.latencyConfiguration}
+     * <br/> - If {@link BaseSource.latencyConfiguration} is not set, the player will determine the configuration for your live stream.
+     * <br/> - The player might change the latency configuration based on playback events like stalls.
+     */
+    readonly currentConfiguration: LatencyConfiguration | undefined;
+}
+/**
+ * The latency configuration for managing the live offset of the player.
+ *
+ * @category Player
+ * @public
+ */
+interface LatencyConfiguration {
+    /**
+     * The start of the target live window.
+     * If the live offset becomes smaller than this value, the player will slow down in order to increase the latency.
+     */
+    readonly minimumOffset: number;
+    /**
+     * The end of the target live window.
+     * If the live offset becomes higher than this value, the player will speed up in order to decrease the latency.
+     */
+    readonly maximumOffset: number;
+    /**
+     * The live offset that the player will aim for. When correcting the offset by tuning the playbackRate,
+     * the player will stop correcting when it reaches this value.
+     */
+    readonly targetOffset: number;
+    /**
+     * The live offset at which the player will automatically trigger a live seek.
+     */
+    readonly forceSeekOffset: number;
+    /**
+     * Indicates the minimum playbackRate used to slow down the player.
+     */
+    readonly minimumPlaybackRate: number;
+    /**
+     * Indicates the maximum playbackRate used to speed up the player.
+     */
+    readonly maximumPlaybackRate: number;
+}
+
+/**
+ * Fired when the loading of a THEOlive distribution starts.
+ *
+ * @category THEOlive
+ * @public
+ */
+interface DistributionLoadStartEvent extends Event<'distributionloadstart'> {
+    readonly distributionId: string;
+}
+/**
+ * Fired when the loading of a THEOlive endpoint is complete and playback can start. This event is dispatched on every endpoint load, when an error
+ * is encountered and the player recovers by choosing a new one.
+ *
+ * @category THEOlive
+ * @public
+ */
+interface EndpointLoadedEvent extends Event<'endpointloaded'> {
+    /**
+     * The endpoint that has been loaded.
+     */
+    readonly endpoint: Endpoint;
+}
+/**
+ * Fired when loading a THEOlive distribution that cannot be played, for example because the publication is stopped or is still starting up.
+ *
+ * @category THEOlive
+ * @public
+ */
+interface DistributionOfflineEvent extends Event<'distributionoffline'> {
+    readonly distributionId: string;
+}
+/**
+ * Fired when the player cannot play the current primary publication and would like to fallback. If a fallback has been configured it will fallback,
+ * otherwise only the event is fired.
+ *
+ * @category THEOlive
+ * @public
+ */
+interface IntentToFallbackEvent extends Event<'intenttofallback'> {
+    /**
+     * The reason why the player chose to fallback.
+     */
+    readonly reason?: THEOplayerError;
+}
+/**
+ * Fired when the player enters bad network mode.
+ *
+ * @category THEOlive
+ * @public
+ */
+interface EnterBadNetworkModeEvent extends Event<'enterbadnetworkmode'> {
+}
+/**
+ * Fired when the player exits bad network mode.
+ *
+ * @category THEOlive
+ * @public
+ */
+interface ExitBadNetworkModeEvent extends Event<'exitbadnetworkmode'> {
+}
+/**
+ * The events fired by the {@link TheoLiveApi}.
+ *
+ * @category THEOlive
+ * @public
+ */
+interface TheoLiveApiEventMap {
+    readonly distributionloadstart: DistributionLoadStartEvent;
+    readonly endpointloaded: EndpointLoadedEvent;
+    readonly distributionoffline: DistributionOfflineEvent;
+    readonly intenttofallback: IntentToFallbackEvent;
+    readonly enterbadnetworkmode: EnterBadNetworkModeEvent;
+    readonly exitbadnetworkmode: ExitBadNetworkModeEvent;
+}
+/**
+ * A THEOlive publication.
+ *
+ * @category THEOlive
+ * @public
+ */
+interface TheoLivePublication {
+    readonly name: string;
+}
+/**
+ * The THEOlive api.
+ *
+ * @category THEOlive
+ * @public
+ */
+interface TheoLiveApi extends EventDispatcher<TheoLiveApiEventMap> {
+    badNetworkMode: boolean;
+    /**
+     * Get or set the auth token that will be used when requesting a manifest or segment.
+     */
+    authToken: string | undefined;
+    /**
+     * @deprecated This will be removed in a future version.
+     */
+    preloadPublications(publicationIds: string[]): Promise<TheoLivePublication[]>;
+}
+/**
+ * A THEOlive endpoint.
+ *
+ * @category THEOlive
+ * @public
+ */
+interface Endpoint {
+    hespSrc?: string;
+    hlsSrc?: string;
+    hlsMpegTsSrc?: string;
+    millicastSrc?: ChannelMillicastSource;
+    adSrc?: string;
+    daiAssetKey?: string;
+    cdn?: string;
+    weight: number;
+    priority: number;
+    contentProtection?: ChannelDrmConfigResponse;
+}
+interface ChannelMillicastSource {
+    accountId: string;
+    name: string;
+    subscriberToken?: string;
+    directorUrl?: string;
+}
+/**
+ * The DRM configuration of a THEOlive endpoint.
+ *
+ * @category THEOlive
+ * @public
+ */
+interface ChannelDrmConfigResponse {
+    integration: string;
+    widevine?: {
+        licenseUrl: string;
+    };
+    playready?: {
+        licenseUrl: string;
+    };
+    fairplay?: {
+        licenseUrl: string;
+        certificateUrl: string;
+    };
+}
+
+/**
+ * The presentation mode of the player, represented by a value from the following list:
+ * <br/> - `'inline'`: The player is shown in its original location on the page.
+ * <br/> - `'fullscreen'`: The player fills the entire screen.
+ * <br/> - `'picture-in-picture'`: The player is shown on top of the page (see {@link PiPConfiguration} for more options).
+ * <br/> - `'native-picture-in-picture'`: [Experimental] The player requests out-of-app picture-in-picture mode. Not supported on Firefox.
+ *
+ * @category Player
+ * @public
+ */
+type PresentationMode = 'inline' | 'fullscreen' | 'picture-in-picture' | 'native-picture-in-picture';
+/**
+ * Fired when the presentation mode changes.
+ *
+ * @category Player
+ * @category Events
+ * @public
+ */
+interface PresentationModeChangeEvent extends Event<'presentationmodechange'> {
+    /**
+     * The new presentation mode.
+     */
+    readonly presentationMode: PresentationMode;
+}
+/**
+ * The events fired by the {@link Presentation | presentation API}.
+ *
+ * @category Player
+ * @public
+ */
+interface PresentationEventMap {
+    /**
+     * {@inheritDoc PresentationModeChangeEvent}
+     */
+    presentationmodechange: PresentationModeChangeEvent;
+    /**
+     * {@inheritDoc ErrorEvent}
+     */
+    error: ErrorEvent;
+}
+/**
+ * The presentation API.
+ *
+ * @category Player
+ * @public
+ */
+interface Presentation extends EventDispatcher<PresentationEventMap> {
+    /**
+     * The active presentation mode of the player.
+     *
+     * @defaultValue `'inline'`
+     */
+    readonly currentMode: PresentationMode;
+    /**
+     * Change the presentation mode of the player.
+     *
+     * @param mode - The requested presentation mode.
+     */
+    requestMode(mode: PresentationMode): void;
+    /**
+     * Whether the player supports the provided presentation mode.
+     *
+     * @param mode - The presentation mode to verify.
+     * @returns Whether the player supports `mode`.
+     */
+    supportsMode(mode: PresentationMode): boolean;
+}
+
+/**
+ * Event containing statistics on the current Millicast source configured on the player.
+ * Dispatched only when the Millicast source is loaded and at an interval configured using {@link MillicastSource.statsIntervalMs}.
+ * See the {@link https://millicast.github.io/millicast-sdk/global.html#ConnectionStats | Millicast SDK API reference} for details on the
+ * connection stats included in the event.
+ *
+ * @category Millicast
+ * @public
+ */
+interface MillicastStatsEvent extends Event<'stats'> {
+    stats: Record<string, any>;
+}
+/**
+ * The events fired by the {@link Millicast} API.
+ *
+ * @category Millicast
+ * @public
+ */
+interface MillicastEventMap {
+    stats: MillicastStatsEvent;
+}
+/**
+ * The Millicast API.
+ *
+ * @category Millicast
+ * @public
+ */
+interface Millicast extends EventDispatcher<MillicastEventMap> {
+    /**
+     * Returns diagnostics information about the Millicast connection and environment, formatted according to the specified parameters.
+     * See the {@link https://millicast.github.io/millicast-sdk/module-Logger.html#~diagnose | Millicast SDK API reference} for details on the
+     * configuration paramater and diagnostic info return type.
+     *
+     * @public
+     */
+    diagnose(config: Record<string, any>): Record<string, any>;
+}
 
 /**
  * The identifier of the Agama integration.
@@ -13334,6 +10946,327 @@ interface YouboraOptions extends AnalyticsDescription {
     [key: string]: string | {
         [key: string]: string;
     };
+}
+
+/**
+ * Fired when a caching task is added.
+ *
+ * @category Caching
+ * @category Events
+ * @public
+ */
+interface AddCachingTaskEvent extends Event<'addtask'> {
+    /**
+     * The task which has been added.
+     */
+    readonly task: CachingTask;
+}
+
+/**
+ * Fired when a caching task is removed.
+ *
+ * @category Caching
+ * @category Events
+ * @public
+ */
+interface RemoveCachingTaskEvent extends Event<'removetask'> {
+    /**
+     * The task which has been removed.
+     */
+    readonly task: CachingTask;
+}
+
+/**
+ * List of generic items.
+ *
+ * @public
+ */
+interface List<T> extends Array<T> {
+    /**
+     * The number of items in the list.
+     */
+    length: number;
+    /**
+     * Returns the object representing the nth item in the list.
+     * @param index - The index of the item to retrieve.
+     */
+    item(index: number): T | undefined;
+    /**
+     * The object representing the nth in the list.
+     */
+    [index: number]: T;
+}
+/**
+ * List of generic items which can dispatch events.
+ *
+ * @public
+ */
+interface EventedList<T, M extends EventMap<StringKeyOf<M>>> extends List<T>, EventDispatcher<M> {
+}
+
+/**
+ * The events fired by the {@link CachingTaskList}.
+ *
+ * @category Caching
+ * @public
+ */
+interface CachingTaskListEventMap {
+    /**
+     * {@inheritDoc AddCachingTaskEvent}
+     */
+    addtask: AddCachingTaskEvent;
+    /**
+     * {@inheritDoc AddCachingTaskEvent}
+     */
+    removetask: RemoveCachingTaskEvent;
+}
+/**
+ * List of caching tasks.
+ *
+ * @category Caching
+ * @public
+ */
+interface CachingTaskList extends EventedList<CachingTask, CachingTaskListEventMap> {
+}
+
+/**
+ * The cache status, represented by a value from the following list:
+ * <br/> - `'uninitialised'`: Previously stored caching tasks are unavailable.
+ * <br/> - `'initialised'`: Previously stored caching tasks are now available.
+ *
+ * @category Caching
+ * @public
+ */
+type CacheStatus = 'uninitialised' | 'initialised';
+/**
+ * The events fired by the {@link Cache | cache API}.
+ *
+ * @category Caching
+ * @public
+ */
+interface CacheEventMap {
+    /**
+     * Fired when {@link Cache.status} changes.
+     */
+    statechange: Event<'statechange'>;
+}
+/**
+ * The media caching API.
+ *
+ * @remarks
+ * <br/> - Available since v2.26.
+ *
+ * @category Caching
+ * @public
+ */
+interface Cache extends EventDispatcher<CacheEventMap> {
+    /**
+     * List of caching tasks which control the caching of media.
+     */
+    readonly tasks: CachingTaskList;
+    /**
+     * The current status of the cache.
+     */
+    readonly status: CacheStatus;
+    /**
+     * The cache's network API which allows intercepting requests and responses made by the cache.
+     */
+    readonly network: NetworkInterceptorController;
+    /**
+     * Create a caching task which controls the caching of media.
+     *
+     * @param source - Describes the media source to be cached.
+     * @param parameters - Contains caching task related options.
+     */
+    createTask(source: SourceDescription, parameters: CachingTaskParameters): CachingTask;
+}
+
+/**
+ * The canvas API which allows drawing the player's current frame to a 2D or WebGL context.
+ *
+ * @remarks
+ * This allows for advanced usages of the images, like transformations, drawing and cropping.
+ *
+ * Cross-origin restrictions:
+ * Browsers place additional security restrictions for cross-origin video content drawn to a canvas.
+ * When you draw video content retrieved without proper cross-origin settings to a canvas, the canvas becomes "tainted".
+ * A {@link https://developer.mozilla.org/en-US/docs/Web/HTML/CORS_enabled_image#What_is_a_tainted_canvas | tainted canvas}
+ * can still be used, but will throw errors when attempting to read pixel data from it (for example when calling
+ * {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/getImageData | `getImageData`} or
+ * {@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLCanvasElement/toBlob | `toBlob`}).
+ *
+ * In order to avoid tainting the canvas, the video content must be retrieved with the proper CORS settings.
+ * Set `crossOrigin` to `"anonymous"` or `"use-credentials"` in the {@link TypedSource} of your {@link SourceDescription}
+ * when loading the video source into THEOplayer.
+ * This ensures that the content is always retrieved with CORS-enabled HTTP requests, and will not taint the canvas when drawn.
+ *
+ * Drawing cross-origin content to WebGL context on iOS 10 and lower:
+ * iOS version 10 and lower has a bug that prevents drawing cross-origin video content to a
+ * {@link https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext | `WebGLRenderingContext`},
+ * even when the proper CORS settings are provided ({@link https://bugs.webkit.org/show_bug.cgi?id=135379 | WebKit bug #135379}).
+ * In particular, cross-origin 360° videos (using the {@link VR | VR API}) only render correctly in iOS 11 and higher.
+ *
+ * If you need to support iOS 10 and below, we recommend loading the stream from the same origin as the web page.
+ *
+ * DRM protected content:
+ * It is not possible to render DRM protected content to a canvas.
+ *
+ * Available since v2.12.0.
+ *
+ * @category Canvas
+ * @public
+ */
+interface Canvas {
+    /**
+     * Draw the current frame to a 2D Canvas context.
+     *
+     * @remarks
+     * <br/> - If the video hasn't loaded yet, nothing will be drawn.
+     * <br/> - The first argument is the destination 2D context for the draw operation. The other arguments are passed to the native CanvasRenderingContext2D.drawImage method.
+     * <br/> - see {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage | CanvasRenderingContext2D.drawImage()}.
+     *
+     * @param context2D - The 2D destination context.
+     * @param dx - The x-axis coordinate in the destination canvas at which to place the top-left corner of the source image.
+     * @param dy - The y-axis coordinate in the destination canvas at which to place the top-left corner of the source image.
+     */
+    drawImage(context2D: CanvasRenderingContext2D, dx: number, dy: number): boolean;
+    /**
+     * Draw the current frame to a 2D Canvas context.
+     *
+     * @remarks
+     * <br/> - If the video hasn't loaded yet, nothing will be drawn.
+     * <br/> - The first argument is the destination 2D context for the draw operation. The other arguments are passed to the native CanvasRenderingContext2D.drawImage method.
+     * <br/> - see {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage | CanvasRenderingContext2D.drawImage()}.
+     *
+     * @param context2D - The 2D destination context.
+     * @param dx - The x-axis coordinate in the destination canvas at which to place the top-left corner of the source image.
+     * @param dy - The y-axis coordinate in the destination canvas at which to place the top-left corner of the source image.
+     * @param dWidth - The width to draw the image in the destination canvas. This allows scaling of the drawn image. If not specified, the image is not scaled in width when drawn.
+     * @param dHeight - The height to draw the image in the destination canvas. This allows scaling of the drawn image. If not specified, the image is not scaled in height when drawn.
+     */
+    drawImage(context2D: CanvasRenderingContext2D, dx: number, dy: number, dWidth: number, dHeight: number): boolean;
+    /**
+     * Draw the current frame to a 2D Canvas context.
+     *
+     * @remarks
+     * <br/> - If the video hasn't loaded yet, nothing will be drawn.
+     * <br/> - The first argument is the destination 2D context for the draw operation. The other arguments are passed to the native CanvasRenderingContext2D.drawImage method.
+     * <br/> - see {@link https://developer.mozilla.org/en-US/docs/Web/API/CanvasRenderingContext2D/drawImage | CanvasRenderingContext2D.drawImage()}.
+     *
+     * @param context2D - The 2D destination context.
+     * @param sx - The x-axis coordinate of the top left corner of the sub-rectangle of the source image to draw into the destination context.
+     * @param sy - The y-axis coordinate of the top left corner of the sub-rectangle of the source image to draw into the destination context.
+     * @param sWidth - The width of the sub-rectangle of the source image to draw into the destination context. If not specified, the entire rectangle from the coordinates specified by sx and sy to the bottom-right corner of the image is used.
+     * @param sHeight - The height of the sub-rectangle of the source image to draw into the destination context.
+     * @param dx - The x-axis coordinate in the destination canvas at which to place the top-left corner of the source image.
+     * @param dy - The y-axis coordinate in the destination canvas at which to place the top-left corner of the source image.
+     * @param dWidth - The width to draw the image in the destination canvas. This allows scaling of the drawn image. If not specified, the image is not scaled in width when drawn.
+     * @param dHeight - The height to draw the image in the destination canvas. This allows scaling of the drawn image. If not specified, the image is not scaled in height when drawn.
+     */
+    drawImage(context2D: CanvasRenderingContext2D, sx: number, sy: number, sWidth: number, sHeight: number, dx: number, dy: number, dWidth: number, dHeight: number): boolean;
+    /**
+     * Draw the current frame as a 2D texture to a 3D WebGL context.
+     *
+     * @remarks
+     * <br/> - If the video hasn't loaded yet, nothing will be drawn.
+     * <br/> - The first argument is the destination WebGL context for the draw operation. The other arguments are passed to the native WebGLRenderingContext.texImage2D method.
+     * <br/> - See {@link https://developer.mozilla.org/en-US/docs/Web/API/WebGLRenderingContext/texImage2D | WebGLRenderingContext.texImage2D()}.
+     *
+     * @param contextWebGL - The WebGL context.
+     * @param target - A GLenum specifying the binding point (target) of the active texture.
+     * @param level - A GLint specifying the level of detail. Level 0 is the base image level and level n is the nth mipmap reduction level.
+     * @param internalformat - A GLenum specifying the color components in the texture.
+     * @param format - A GLenum specifying the format of the texel data.
+     * @param type - A GLenum specifying the data type of the texel data.
+     */
+    texImage2D(contextWebGL: WebGLRenderingContext, target: GLenum, level: GLint, internalformat: GLint, format: GLenum, type: GLenum): boolean;
+    /**
+     * Registers a callback to be fired the next time a frame is presented to the compositor.
+     *
+     * @remarks
+     * <br/> - Will fall back to `requestAnimationFrame` if `requestVideoFrameCallback` is not natively supported.
+     * <br/> - See {@link https://wicg.github.io/video-rvfc/ | HTMLVideoElement.requestVideoFrameCallback()}.
+     *
+     * @param callback - The callback function.
+     * @returns A handle that can (optionally) be cancelled with {@link Canvas.cancelVideoFrameCallback}.
+     */
+    requestVideoFrameCallback(callback: VideoFrameRequestCallback): number;
+    /**
+     * Cancels an existing video frame request callback given its handle.
+     *
+     * @param handle - The handle of the callback to cancel.
+     */
+    cancelVideoFrameCallback(handle: number): void;
+}
+/**
+ * A callback to be fired the next time a frame is presented to the compositor,
+ * used by {@link Canvas.requestVideoFrameCallback}.
+ *
+ * @param now - The current time in milliseconds, see {@link https://developer.mozilla.org/en-US/docs/Web/API/Performance/now | performance.now()}.
+ * @param metadata - The video frame metadata. If `requestVideoFrameCallback()` is not natively supported, this is `undefined`.
+ *
+ * @category Canvas
+ * @public
+ */
+type VideoFrameRequestCallback = (now: DOMHighResTimeStamp, metadata?: VideoFrameCallbackMetadata) => void;
+/**
+ * The metadata of a {@link VideoFrameRequestCallback}.
+ *
+ * @remarks
+ * <br/> - See {@link https://developer.mozilla.org/en-US/docs/Web/API/HTMLVideoElement/requestVideoFrameCallback#parameters | requestVideoFrameCallback} for more information.
+ *
+ * @category Canvas
+ * @public
+ */
+interface VideoFrameCallbackMetadata {
+    captureTime?: DOMHighResTimeStamp;
+    expectedDisplayTime: DOMHighResTimeStamp;
+    height: number;
+    mediaTime: number;
+    presentationTime: DOMHighResTimeStamp;
+    presentedFrames: number;
+    processingDuration?: number;
+    receiveTime?: DOMHighResTimeStamp;
+    rtpTimestamp?: number;
+    width: number;
+}
+
+/**
+ * The AirPlay API.
+ *
+ * @category Casting
+ * @public
+ */
+interface AirPlay extends VendorCast {
+}
+
+/**
+ * The events fired by the {@link Clip | clip API}.
+ *
+ * @category Clipping
+ * @public
+ */
+interface ClipEventMap {
+    /**
+     * Fired when the {@link Clip.startTime} or {@link Clip.endTime} changed.
+     */
+    change: Event<'change'>;
+}
+/**
+ * The clip API which can be used to clip the playback window of a source.
+ *
+ * @category Clipping
+ * @public
+ */
+interface Clip extends EventDispatcher<ClipEventMap> {
+    /**
+     * The start time of the clip's window, in seconds.
+     */
+    startTime: number;
+    /**
+     * The end time of the clip's window, in seconds.
+     */
+    endTime: number;
 }
 
 /**
@@ -13790,6 +11723,2119 @@ interface LayoutChangeEvent extends Event<'layoutchange'> {
      * The new layout of the player.
      */
     readonly layout: MultiViewPlayerLayout;
+}
+
+/**
+ * Fired when the ad ends.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAdEndEvent extends Event<'adend'> {
+    /**
+     * The ad which has ended.
+     */
+    readonly ad: UplynkAd;
+}
+
+/**
+ * Fired when the ad reaches the first quartile.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAdFirstQuartileEvent extends Event<'adfirstquartile'> {
+    /**
+     * The ad which has progressed.
+     */
+    readonly ad: UplynkAd;
+}
+/**
+ * Fired when the ad reaches the mid point.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAdMidpointEvent extends Event<'admidpoint'> {
+    /**
+     * The ad which has progressed.
+     */
+    readonly ad: UplynkAd;
+}
+/**
+ * Fired when the ad reaches the third quartile.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAdThirdQuartileEvent extends Event<'adthirdquartile'> {
+    /**
+     * The ad which has progressed.
+     */
+    readonly ad: UplynkAd;
+}
+/**
+ * Fired when the ad is completed.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAdCompleteEvent extends Event<'adcomplete'> {
+    /**
+     * The ad which has progressed.
+     */
+    readonly ad: UplynkAd;
+}
+
+/**
+ * The events fired by the {@link UplynkAd}.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAdEventMap {
+    /**
+     * {@inheritDoc UplynkAdBeginEvent}
+     */
+    adbegin: UplynkAdBeginEvent;
+    /**
+     * {@inheritDoc UplynkAdEndEvent}
+     */
+    adend: UplynkAdEndEvent;
+    /**
+     * {@inheritDoc UplynkAdFirstQuartileEvent}
+     */
+    adfirstquartile: UplynkAdFirstQuartileEvent;
+    /**
+     * {@inheritDoc UplynkAdMidpointEvent}
+     */
+    admidpoint: UplynkAdMidpointEvent;
+    /**
+     * {@inheritDoc UplynkAdThirdQuartileEvent}
+     */
+    adthirdquartile: UplynkAdThirdQuartileEvent;
+    /**
+     * {@inheritDoc UplynkAdCompleteEvent}
+     */
+    adcomplete: UplynkAdCompleteEvent;
+}
+/**
+ * Represents an Uplynk ad.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAd extends EventDispatcher<UplynkAdEventMap> {
+    /**
+     * The start time of the ad, in seconds.
+     */
+    readonly startTime: number;
+    /**
+     * The end time of the ad, in seconds.
+     */
+    readonly endTime: number;
+    /**
+     * The duration of the ad, in seconds.
+     */
+    readonly duration: number;
+    /**
+     * The API framework, if any.
+     *
+     * @remarks
+     * <br/> - If the value is 'VPAID', then the ad is a VPAID ad.
+     * <br/> - Otherwise the ad is an Uplynk CMS asset.
+     */
+    readonly apiFramework: string | undefined;
+    /**
+     * The identifier of the creative.
+     *
+     * @remarks
+     * <br/> - Either a VPAID URL if the API framework is `'VPAID'`.
+     * <br/> - Otherwise an asset ID from the Uplynk CMS.
+     */
+    readonly creative: string;
+    /**
+     * The creative's mime type.
+     *
+     * @remarks
+     * <br/> - Either 'application/javascript' if the API framework is `'VPAID'`.
+     * <br/> - Otherwise 'uplynk/m3u8'.
+     */
+    readonly mimeType: string;
+    /**
+     * The width of the ad, in pixels.
+     *
+     * @remarks
+     * <br/> - Returns `0` when this is not a companion.
+     */
+    readonly width: number;
+    /**
+     * The height of the ad, in pixels.
+     *
+     * @remarks
+     * <br/> - Returns `0` when this is not a companion.
+     */
+    readonly height: number;
+    /**
+     * A record of all VAST 3.0 tracking events for this ad.
+     * Each entry contains all related tracking URLs.
+     */
+    readonly events: Record<string, string[]>;
+    /**
+     * List of companion ads of the ad.
+     */
+    readonly companions: ReadonlyArray<UplynkAd>;
+    /**
+     * List of VAST extensions returned by the ad server.
+     */
+    readonly extensions: ReadonlyArray<object>;
+    /**
+     * Record of FreeWheel-defined creative parameters.
+     * Each entry contains the parameter name together with the associated value.
+     */
+    readonly freeWheelParameters: Record<string, string>;
+}
+
+/**
+ * Fired when an ad begins.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAdBeginEvent extends Event<'adbegin'> {
+    /**
+     * The ad which began.
+     */
+    readonly ad: UplynkAd;
+}
+
+/**
+ * Fired when the ad is removed.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkRemoveAdEvent extends Event<'removead'> {
+    readonly ad: UplynkAd;
+}
+
+/**
+ * Fired when the ad break ends.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAdBreakEndEvent extends Event<'adbreakend'> {
+    /**
+     * The ad break which ended.
+     */
+    readonly adBreak: UplynkAdBreak;
+}
+
+/**
+ * Fired when the ad break is skipped.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAdBreakSkipEvent extends Event<'adbreakskip'> {
+    /**
+     * The ad break which has been skipped.
+     */
+    readonly adBreak: UplynkAdBreak;
+}
+
+/**
+ * Fired when the ad break is updated.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkUpdateAdBreakEvent extends Event<'updateadbreak'> {
+    /**
+     * The ad break which has been updated.
+     */
+    readonly adBreak: UplynkAdBreak;
+}
+
+/**
+ * Events fired by the {@link UplynkAdList}.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAdListEventMap {
+    /**
+     *{@inheritDoc UplynkRemoveAdEvent}
+     */
+    removead: UplynkRemoveAdEvent;
+}
+/**
+ * List of Uplynk ads.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAdList extends EventedList<UplynkAd, UplynkAdListEventMap> {
+}
+
+/**
+ * The events fired by the {@link UplynkAdBreak}.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAdBreakEventMap {
+    /**
+     * {@inheritDoc UplynkAdBreakBeginEvent}
+     */
+    adbreakbegin: UplynkAdBreakBeginEvent;
+    /**
+     * {@inheritDoc UplynkAdBreakEndEvent}
+     */
+    adbreakend: UplynkAdBreakEndEvent;
+    /**
+     * {@inheritDoc UplynkAdBreakSkipEvent}
+     */
+    adbreakskip: UplynkAdBreakSkipEvent;
+    /**
+     * {@inheritDoc UplynkUpdateAdBreakEvent}
+     */
+    updateadbreak: UplynkUpdateAdBreakEvent;
+}
+/**
+ * Represents an Uplynk ad break.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAdBreak extends EventDispatcher<UplynkAdBreakEventMap> {
+    /**
+     * The start time of the ad break, in seconds.
+     */
+    readonly startTime: number;
+    /**
+     * The end time of the ad break, in seconds.
+     *
+     * @remarks
+     * <br/> - For channels it can return `undefined` when the end time has not yet been signaled.
+     */
+    readonly endTime: number | undefined;
+    /**
+     * The duration of the ad break, in seconds.
+     *
+     * @remarks
+     * <br/> - For channels it can return `undefined` when the duration has not yet been signaled.
+     */
+    readonly duration: number | undefined;
+    /**
+     * List of ads in the ad break.
+     */
+    readonly ads: UplynkAdList;
+    /**
+     * Offset after which the ad break may be skipped, in seconds.
+     *
+     * @remarks
+     * If the offset is -1, the ad is unskippable.
+     * If the offset is 0, the ad is immediately skippable.
+     * Otherwise, it must be a positive number indicating the offset.
+     * Skipping the ad in live streams is unsupported.
+     *
+     * @example
+     * To be able to skip the first ad after 10 seconds use: `10`.
+     *
+     * @defaultValue The {@link UplynkConfiguration.defaultSkipOffset}.
+     */
+    skipOffset: number;
+}
+
+/**
+ * Fired when the ad break begins.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAdBreakBeginEvent extends Event<'adbreakbegin'> {
+    /**
+     * The ad break which began.
+     */
+    readonly adBreak: UplynkAdBreak;
+}
+
+/**
+ * Fired when the ad break is added.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAddAdBreakEvent extends Event<'addadbreak'> {
+    /**
+     * The ad break which has been added.
+     */
+    readonly adBreak: UplynkAdBreak;
+}
+
+/**
+ * Fired when the ad break is removed.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkRemoveAdBreakEvent extends Event<'removeadbreak'> {
+    /**
+     * The ad break which has been removed.
+     */
+    readonly adBreak: UplynkAdBreak;
+}
+
+/**
+ * The events fired by the {@link UplynkAdBreakList}.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAdBreakListEventMap {
+    /**
+     * {@inheritDoc UplynkAddAdBreakEvent}
+     */
+    addadbreak: UplynkAddAdBreakEvent;
+    /**
+     * {@inheritDoc UplynkRemoveAdBreakEvent}
+     */
+    removeadbreak: UplynkRemoveAdBreakEvent;
+}
+/**
+ * List with Uplynk ad breaks.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAdBreakList extends EventedList<UplynkAdBreak, UplynkAdBreakListEventMap> {
+}
+
+/**
+ * The Uplynk ads API.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAds {
+    /**
+     * List of ad breaks.
+     */
+    readonly adBreaks: UplynkAdBreakList;
+    /**
+     * The currently playing ad break.
+     */
+    readonly currentAdBreak: UplynkAdBreak | undefined;
+    /**
+     * The currently playing ads.
+     *
+     * @remarks
+     * <br/> - These will always be part of the {@link UplynkAds.currentAdBreak | current ad break}.
+     */
+    readonly currentAds: UplynkAdList;
+    /**
+     * Seek to the end of the ad if it is skippable.
+     *
+     * @remarks
+     * <br/> - The ad is skippable when it is currently playing and the ad break's offset is reached.
+     */
+    skip(): void;
+}
+
+/**
+ * Represents an Uplynk Asset Info Response.
+ *
+ * @remarks
+ * <br/> - See {@link https://api-docs.uplynk.com/#Develop/AssetInfo.htm | Asset Info}.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAssetInfoResponse {
+    /**
+     * Returns 1 when the asset is audio only.
+     *
+     * @remarks
+     * Valid values are: `0` | `1`.
+     */
+    audio_only: number;
+    /**
+     * List of objects which contain information for the boundaries for the asset.
+     */
+    boundary_details: Boundary[] | undefined;
+    /**
+     * Returns 1 when an error occurred with the asset.
+     *
+     * @remarks
+     * Valid values are: `0` | `1`.
+     */
+    error: number;
+    /**
+     * The TV rating of the asset, represented by a value from the following list:
+     * <br/> - `-1`: Not Available.
+     * <br/> - `0`: Not Rated.
+     * <br/> - `1`: TV-Y.
+     * <br/> - `2`: TV-Y7.
+     * <br/> - `3`: TV-G.
+     * <br/> - `4`: TV-PG.
+     * <br/> - `5`: TV-14.
+     * <br/> - `6`: TV-MA.
+     * <br/> - `7`: Not Rated.
+     */
+    tv_rating: UplynkAssetTvRating;
+    /**
+     * The number of slices available for the asset.
+     */
+    max_slice: number;
+    /**
+     * The base URL to the {@link https://api-docs.uplynk.com/Content/Develop/AssetInfo.htm#Thumbnails | thumbnails}.
+     */
+    thumb_prefix: string;
+    /**
+     * The average slice duration, in seconds.
+     */
+    slice_dur: number;
+    /**
+     * The movie rating of the asset, represented by a value from the following list:
+     * <br/> - `-1`: Not Available.
+     * <br/> - `0`: Not Applicable.
+     * <br/> - `1`: G.
+     * <br/> - `2`: PG.
+     * <br/> - `3`: PG-13.
+     * <br/> - `4`: R.
+     * <br/> - `5`: NC-17.
+     * <br/> - `6`: X.
+     * <br/> - `7`: Not Rated.
+     */
+    movie_rating: UplynkAssetMovieRating;
+    /**
+     * The identifier of the owner.
+     */
+    owner: string;
+    /**
+     * The metadata attached to the asset.
+     *
+     * @remarks
+     * <br/> - Metadata may be added via the CMS.
+     */
+    meta: object;
+    /**
+     * The available bitrates of the asset.
+     */
+    rates: number[];
+    /**
+     * List of thumbnail resolutions of the asset.
+     */
+    thumbs: ThumbnailResolution[];
+    /**
+     * The poster URL of the asset.
+     */
+    poster_url: string;
+    /**
+     * The duration of the asset, in seconds.
+     */
+    duration: number;
+    /**
+     * The default poster URL created for the asset.
+     */
+    readonly default_poster_url: string;
+    /**
+     * The description of the asset.
+     */
+    desc: string;
+    /**
+     * The ratings for the asset, as bitwise flags.
+     *
+     * @remarks
+     * These available flags are the following:
+     * - D: Drug-related themes are present
+     * - V: Violence is present
+     * - S: Sexual situations are present
+     * - L: Adult Language is present
+     *
+     * This number is a bitwise number to indicate if one or more of these values are present.
+     * - [&nbsp;&nbsp;][&nbsp;&nbsp;][&nbsp;&nbsp;][&nbsp;&nbsp;] - 0: No rating flag.
+     * - [&nbsp;&nbsp;][&nbsp;&nbsp;][&nbsp;&nbsp;][L] - 1: Language flag.
+     * - [&nbsp;&nbsp;][&nbsp;&nbsp;][S][&nbsp;&nbsp;] - 2: Sex flag.
+     * - [&nbsp;&nbsp;][V][&nbsp;&nbsp;][&nbsp;&nbsp;] - 4: Violence flag.
+     * - [D][&nbsp;&nbsp;][&nbsp;&nbsp;][&nbsp;&nbsp;] - 8: Drugs flag.
+     * - [D][V][S][L] - 15: All flags are on.
+     */
+    rating_flags: number;
+    /**
+     * The identifier of the external source.
+     */
+    external_id: string;
+    /**
+     * Returns 1 when asset is an ad.
+     *
+     * @remarks
+     * Valid values are: `0` | `1`.
+     */
+    is_ad: number;
+    /**
+     * The identifier of the asset.
+     */
+    asset: string;
+}
+/**
+ * A boundary can be one of 3 possible types:
+ * - `c3`: An ad that is relevant for up to 3 days after the original airing.
+ * - `c7`: An ad that is relevant for up to 7 days after the original airing.
+ * - `halftime`: Identifies special content.
+ *
+ * @remarks
+ * <br/> - See {@link https://api-docs.uplynk.com/index.html#Setup/Boundaries-Setup-Playback.htm | Boundaries }
+ *
+ * @category Uplynk
+ * @public
+ */
+type Boundary = BoundaryC3 | BoundaryC7 | BoundaryHalftime;
+/**
+ * Represents the information of an ad boundary.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface BoundaryInfo {
+    /**
+     * The duration of this boundary, in seconds.
+     */
+    duration: number;
+    /**
+     * The offset for this boundary, in seconds.
+     */
+    offset: number;
+}
+/**
+ * Represents the boundary of an ad that is relevant for up to three days after the original airing.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface BoundaryC3 {
+    c3: BoundaryInfo;
+}
+/**
+ * Represents the boundary of an ad that is relevant for up to seven days after the original airing.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface BoundaryC7 {
+    c7: BoundaryInfo;
+}
+/**
+ * Represents the boundary that identifies special content.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface BoundaryHalftime {
+    halftime: BoundaryInfo;
+}
+/**
+ * Represents the resolution of an Uplynk thumbnail.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface ThumbnailResolution {
+    /**
+     * The width of the thumbnail, in pixels.
+     */
+    width?: number;
+    /**
+     * The prefix of the thumbnail.
+     */
+    prefix: string;
+    /**
+     * The requested width, in pixels.
+     *
+     * @remarks
+     * <br/> - This can differ from the actual width because images are not stretched.
+     */
+    bw: number;
+    /**
+     * The requested height, in pixels.
+     *
+     * @remarks
+     * <br/> - This can differ from the actual width because images are not stretched.
+     */
+    bh: number;
+    /**
+     * The height of the thumbnail, in pixels.
+     */
+    height?: number;
+}
+/**
+ * The TV rating of an asset, represented by a value from the following list:
+ * <br/> - `-1` (NOT_AVAILABLE)
+ * <br/> - `0` (NOT_APPLICABLE)
+ * <br/> - `1` (TV_Y)
+ * <br/> - `2` (TV_Y7)
+ * <br/> - `3` (TV_G)
+ * <br/> - `4` (TV_PG)
+ * <br/> - `5` (TV_14)
+ * <br/> - `6` (TV_MA)
+ * <br/> - `7` (NOT_RATED)
+ *
+ * @remarks
+ * In the online documentation the value for 0 is also "NOT RATED". Since this is counter-intuitive, we have assumed
+ * this to be erronous and have modeled this according to the Movie Ratings, with 0 being "NOT APPLICABLE".
+ *
+ * @category Uplynk
+ * @public
+ */
+type UplynkAssetTvRating = -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+/**
+ * The movie rating of an asset, represented by a value from the following list:
+ * <br/> - `-1` (NOT_AVAILABLE)
+ * <br/> - `0` (NOT_APPLICABLE)
+ * <br/> - `1` (G)
+ * <br/> - `2` (PG)
+ * <br/> - `3` (PG_13)
+ * <br/> - `4` (R)
+ * <br/> - `5` (NC_17)
+ * <br/> - `6` (X)
+ * <br/> - `7` (NOT_RATED)
+ *
+ * @category Uplynk
+ * @public
+ */
+type UplynkAssetMovieRating = -1 | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+
+/**
+ * Represents an Uplynk asset.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAsset {
+    /**
+     * The start time of the asset, in seconds.
+     */
+    startTime: number;
+    /**
+     * The end time of the asset, in seconds.
+     *
+     * @remarks
+     * <br> - The end time is the sum of {@link UplynkAsset.startTime}, {@link UplynkAsset.duration} and the {@link UplynkAdBreak.duration} of the ad breaks scheduled during the asset.
+     */
+    endTime: number;
+    /**
+     * The duration of the asset, in seconds.
+     */
+    duration: number;
+    /**
+     * Whether the asset is audio only.
+     */
+    audioOnly: boolean;
+    /**
+     * List of boundaries of the asset.
+     *
+     * @remarks
+     * <br/> - See {@link https://api-docs.uplynk.com/index.html#Setup/Boundaries-Setup-Playback.htm | Boundaries}
+     */
+    boundaryDetails: Boundary[] | undefined;
+    /**
+     * Whether an error occurred with the asset.
+     */
+    error: boolean;
+    /**
+     * The tv-rating of the asset, represented by a value from the following list:
+     * <br/> - `-1`: Not Available.
+     * <br/> - `0`: Not Rated.
+     * <br/> - `1`: TV-Y.
+     * <br/> - `2`: TV-Y7.
+     * <br/> - `3`: TV-G.
+     * <br/> - `4`: TV-PG.
+     * <br/> - `5`: TV-14.
+     * <br/> - `6`: TV-MA.
+     * <br/> - `7`: Not Rated.
+     */
+    tvRating: number;
+    /**
+     * The number of slices available for the asset.
+     */
+    maxSlice: number;
+    /**
+     * The prefix URL to the thumbnails.
+     */
+    thumbPrefix: string;
+    /**
+     * The average slice duration, in seconds.
+     */
+    sliceDuration: number;
+    /**
+     * The movie rating of the asset, represented by a value from the following list:
+     * <br/> - `-1`: Not Available.
+     * <br/> - `0`: Not Applicable.
+     * <br/> - `1`: G.
+     * <br/> - `2`: PG.
+     * <br/> - `3`: PG-13.
+     * <br/> - `4`: R.
+     * <br/> - `5`: NC-17.
+     * <br/> - `6`: X.
+     * <br/> - `7`: Not Rated.
+     */
+    movieRating: number;
+    /**
+     * The identifier of the owner.
+     */
+    ownerId: string;
+    /**
+     * The metadata attached to the asset.
+     *
+     * @remarks
+     * <br/> - Metadata may be added via the CMS.
+     */
+    metadata: object;
+    /**
+     * The available bitrates of the asset.
+     */
+    rates: number[];
+    /**
+     * List of thumbnail resolutions of the asset.
+     */
+    thumbnailResolutions: ThumbnailResolution[];
+    /**
+     * The poster URL.
+     */
+    posterUrl: string;
+    /**
+     * The default poster URL created for the asset.
+     */
+    defaultPosterUrl: string;
+    /**
+     * The description of the asset.
+     */
+    description: string;
+    /**
+     * Whether the asset contains adult language.
+     */
+    hasAdultLanguage: boolean;
+    /**
+     * Whether the asset contains sexual situations.
+     */
+    hasSexualSituations: boolean;
+    /**
+     * Whether the asset contains violence.
+     */
+    hasViolence: boolean;
+    /**
+     * Whether the asset contains drug situations.
+     */
+    hasDrugSituations: boolean;
+    /**
+     * The identifier of the external source.
+     */
+    externalId: string;
+    /**
+     * Whether the asset is an ad.
+     */
+    isAd: boolean;
+    /**
+     * The identifier of the asset.
+     */
+    assetId: string;
+}
+
+/**
+ * Fired when an asset is added.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAddAssetEvent extends Event<'addasset'> {
+    /**
+     * The asset which has been added.
+     */
+    readonly asset: UplynkAsset;
+}
+
+/**
+ * Fired when an asset is removed.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkRemoveAssetEvent extends Event<'removeasset'> {
+    /**
+     * The asset which has been removed.
+     */
+    readonly asset: UplynkAsset;
+}
+
+/**
+ * The events fired by the {@link UplynkAssetList}.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAssetEventMap {
+    /**
+     * {@inheritDoc UplynkAddAssetEvent}
+     */
+    addasset: UplynkAddAssetEvent;
+    /**
+     * {@inheritDoc UplynkRemoveAssetEvent}
+     */
+    removeasset: UplynkRemoveAssetEvent;
+}
+/**
+ * List of Uplynk assets.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkAssetList extends EventedList<UplynkAsset, UplynkAssetEventMap> {
+}
+
+/**
+ * Fired when an asset info response is received.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkAssetInfoResponseEvent extends Event<'assetinforesponse'> {
+    /**
+     * The response which has been received.
+     */
+    readonly response: UplynkAssetInfoResponse;
+}
+
+/**
+ * Represents an Uplynk response with advertisement information for live assets.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkResponseLiveAds {
+    /**
+     * List of ad break information.
+     *
+     * @remarks
+     * <br/> - This includes both linear and non-linear ads.
+     */
+    breaks: UplynkResponseLiveAdBreak[];
+}
+/**
+ * Represents an Uplynk response for live ad breaks.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkResponseLiveAdBreak {
+    /**
+     * The identifier of the ad break.
+     */
+    breakId: string;
+    /**
+     * List of ad information.
+     */
+    ads: UplynkResponseLiveAd[];
+    /**
+     * The type of the ad break.
+     */
+    type: 'linear' | 'nonlinear';
+    /**
+     * The position of the ad break, represented by a value from the following list:
+     * <br/> - `'preroll'`: Ad break that plays before the content.
+     * <br/> - `'midroll'`: Ad break that plays during the content.
+     * <br/> - `'postroll'`: Ad break that plays after the content.
+     * <br/> - `'pause'`: Ad break that should be shown when the player is paused.
+     * <br/> - `'overlay'`: Non-linear ad break that is shown over the player.
+     * <br/> - `''`: Unknown ad break position.
+     */
+    position: 'preroll' | 'midroll' | 'postroll' | 'pause' | 'overlay' | '';
+    /**
+     * The time offset of the ad break, in seconds.
+     */
+    timeOffset: number;
+    /**
+     * The duration of the ad break, in seconds.
+     */
+    duration: number;
+    /**
+     * The height of the ads in the ad break, in pixels.
+     *
+     * @remarks
+     * <br/> - Each ad can override this value.
+     */
+    height?: number;
+    /**
+     * The width of the ads in the ad break, in pixels.
+     *
+     * @remarks
+     * <br/> - Each ad can override this value.
+     */
+    width?: number;
+    /**
+     * A record of all VAST 3.0 tracking events for this ad.
+     * Each entry contains an event name with associated tracking URLs.
+     */
+    events: Record<string, string[]>;
+}
+/**
+ * Represents an Uplynk response with live ads.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkResponseLiveAd {
+    /**
+     * Identifier for the ad.
+     */
+    ad_id: string;
+    /**
+     * The API framework, if any.
+     *
+     * @remarks
+     * <br/> - If the value is 'VPAID', then the ad is a VPAID ad.
+     * <br/> - Otherwise the ad is an Uplynk CMS asset.
+     */
+    apiFramework: string | null;
+    /**
+     * List of companion ads of the ad.
+     */
+    companions: UplynkResponseLiveAd[];
+    /**
+     * The creative identifier.
+     *
+     * @remarks
+     * <br/> - Either a VPAID URL if the API framework is `'VPAID'`.
+     * <br/> - Otherwise an asset ID from the Uplynk CMS.
+     */
+    creative: string;
+    /**
+     * The duration of the ad, in seconds.
+     */
+    duration: number;
+    /**
+     * The creative's mime type.
+     *
+     * @remarks
+     * <br/> - Either 'application/javascript' if the API framework is `'VPAID'`.
+     * <br/> - Otherwise 'uplynk/m3u8'.
+     */
+    mimeType: string;
+    /**
+     * The height of the ad, in pixels.
+     *
+     * @remarks
+     * <br/> - Returns `0` when this is not a companion.
+     */
+    height: number;
+    /**
+     * The width of the ad, in pixels.
+     *
+     * @remarks
+     * <br/> - Returns `0` when this is not a companion.
+     */
+    width: number;
+    /**
+     * List of VAST extensions returned by the ad server.
+     */
+    extensions?: object[];
+    /**
+     * Record of FreeWheel-defined creative parameters.
+     * Each entry contains the parameter name together with the associated value.
+     */
+    fw_parameters?: Record<string, string>;
+}
+
+/**
+ * Represents an Uplynk Ping response.
+ *
+ * @remarks
+ * <br/> - See {@link https://api-docs.uplynk.com/#Develop/Pingv2.htm%3FTocPath%3DClient%2520(Media%2520Player)%7C_____3 | Ping API (Version 2)}.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkPingResponse {
+    /**
+     * The playback position at which the next ping request must be made, in seconds.
+     *
+     * @remarks
+     * <br/> - Ping requests should stop after receiving `-1`.
+     */
+    next_time: number;
+    /**
+     * The live ad information.
+     */
+    ads?: UplynkResponseLiveAds;
+    /**
+     * Whether {@link UplynkAds.currentAdBreak} is ending.
+     *
+     * @remarks
+     * <br/> - False if `0`, true otherwise.
+     */
+    currentBreakEnd?: number;
+    /**
+     * List of VAST extensions returned by the ad server.
+     */
+    extensions?: object[];
+    /**
+     * The last error that occurred, if any.
+     */
+    error?: string;
+}
+
+/**
+ * Fired when a Ping response is received.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkPingResponseEvent extends Event<'pingresponse'> {
+    /**
+     * The response which has been received.
+     */
+    readonly response: UplynkPingResponse;
+}
+
+/**
+ * Fired when an error or invalid response is received from the Ping API.
+ *
+ * @category Uplynk
+ * @category Events
+ * @public
+ */
+interface UplynkPingErrorEvent extends Event<'pingerror'> {
+    /**
+     * The error message.
+     */
+    readonly error: string;
+}
+
+/**
+ * The events fired by the {@link Uplynk | Uplynk API}.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface UplynkEventMap {
+    /**
+     * {@inheritDoc UplynkPreplayResponseEvent}
+     */
+    preplayresponse: UplynkPreplayResponseEvent;
+    /**
+     * {@inheritDoc UplynkAssetInfoResponseEvent}
+     */
+    assetinforesponse: UplynkAssetInfoResponseEvent;
+    /**
+     * {@inheritDoc UplynkPingResponseEvent}
+     */
+    pingresponse: UplynkPingResponseEvent;
+    /**
+     * {@inheritDoc UplynkPingErrorEvent}
+     */
+    pingerror: UplynkPingErrorEvent;
+}
+/**
+ * The Uplynk API.
+ *
+ * @remarks
+ * <br/> - Only available with the feature 'uplynk'.
+ *
+ * @category Uplynk
+ * @public
+ */
+interface Uplynk extends EventDispatcher<UplynkEventMap> {
+    /**
+     * The Uplynk SSAI API.
+     */
+    readonly ads: UplynkAds;
+    /**
+     * List of Uplynk assets.
+     */
+    readonly assets: UplynkAssetList;
+}
+
+/**
+ * A callback for a visibility observer.
+ *
+ * @param ratio - Describes the ratio of visible pixels of the player.
+ *
+ * @category Player
+ * @public
+ */
+type VisibilityObserverCallback = (ratio: number) => void;
+/**
+ * The visibility API.
+ *
+ * @category Player
+ * @public
+ */
+interface Visibility {
+    /**
+     * Whether the {@link Visibility.ratio} of visible pixels is exceeded.
+     */
+    readonly visible: boolean;
+    /**
+     * The ratio of pixels of the player that are within the viewport.
+     */
+    readonly ratio: number;
+    /**
+     * The threshold that the ratio must exceed for the player to be visible.
+     *
+     * @remarks
+     * <br/> - This number is in the range of [0, 1].
+     */
+    visibleThreshold: number;
+    /**
+     * Add a visibility observer to monitor the player.
+     *
+     * @remarks
+     * <br/> - The callback is triggered every time the ratio of visible pixels crosses a threshold, and receives the ratio of visible pixels as first argument.
+     * <br/> - The list of thresholds is evenly distributed between 0 and 1, with the distance between every two consecutive thresholds determined by the given step.
+     *
+     * @param step - The step between every threshold. This number is in the range of ]0, 1].
+     * @param callback - The callback to be triggered every time a threshold is crossed.
+     * @returns A new visibility observer.
+     */
+    addObserver(step: number, callback: VisibilityObserverCallback): VisibilityObserver;
+    /**
+     * Remove a visibility observer.
+     *
+     * The observer will stop monitoring player visibility,
+     * and will no longer trigger its callback.
+     *
+     * @param observer - The observer to remove.
+     */
+    removeObserver(observer: VisibilityObserver): void;
+}
+/**
+ * Represents a visibility observer.
+ *
+ * @category Player
+ * @public
+ */
+interface VisibilityObserver {
+    /**
+     * The ratio of pixels of the player that are within the viewport.
+     *
+     * @remarks
+     * <br/> - This value is updated every time an observed threshold is crossed. It is accurate up to the size of this observer's step.
+     */
+    readonly ratio: number;
+    /**
+     * List of thresholds which are monitored by the observer.
+     */
+    readonly thresholds: ReadonlyArray<number>;
+}
+
+/**
+ * The Web Audio API.
+ *
+ * @remarks
+ * The Web Audio API allows you to reroute the audio output of THEOplayer to a Web Audio context.
+ * This is done by providing a Web Audio source node which outputs the player's audio.
+ * Using Web Audio allows developers to apply a variety of effects and transformations to the player's audio output,
+ * e.g. equalization, volume normalization, ...
+ *
+ * The way the Web Audio standard was designed has a few consequences.
+ *
+ * Once the player has created an AudioNode within a given AudioContext,
+ * you must connect it to an output node in the graph, directly or indirectly,
+ * or the output will be silent. The flow of audio from the created node has to
+ * reach an output node, one way or another. Of course, the player's output can
+ * pass through an arbitrary number of intermediary nodes before it reaches an output node.
+ *
+ * Once the player's is rerouted, there is no way back: the audio cannot be released
+ * from its AudioContext, as Web Audio specifies no way to release audio resources which are piped through.
+ * This means that you cannot change the AudioContext of the output node, nor can you stop piping
+ * the player audio to Web Audio. In a well-designed Web Audio setup, this should not matter,
+ * as there should be exactly one AudioContext per page, and there should be no need to stop piping to Web Audio.
+ *
+ * For advertisements, due to technical limitations, not all the audio can be rerouted using Web Audio.
+ * Notably, Google IMA ads do not allow their audio to be rerouted, and therefore will not pass through the Web
+ * Audio graph as specified by the developer.
+ *
+ * Available since v2.19.4.
+ *
+ * @category Player
+ * @public
+ */
+interface WebAudio {
+    /**
+     * Create an AudioNode in the given AudioContext.
+     *
+     * @remarks
+     * <br/> - Audio playback from the player will be re-routed into the processing graph of the AudioContext.
+     */
+    createAudioSourceNode(audioCtx: AudioContext): AudioNode;
+}
+
+/**
+ * Util for encoding binary data as base64 string and vice versa.
+ *
+ * @public
+ */
+interface Base64Util {
+    encode(value: Uint8Array): string;
+    decode(value: string): Uint8Array;
+}
+/**
+ * Utils that serve common use cases. For example encoding and decoding a base64 string to Uint8Array and vice versa.
+ *
+ * @public
+ */
+interface CommonUtils {
+    readonly base64: Base64Util;
+}
+
+/**
+ * List of players.
+ *
+ * @category Player
+ * @public
+ */
+interface PlayerList extends Array<ChromelessPlayer> {
+    /**
+     * Length of the list.
+     */
+    length: number;
+    [index: number]: ChromelessPlayer;
+    /**
+     * Return the player with corresponding UID, if any.
+     *
+     * @param UID - The UID of the requested player.
+     * @returns The player with the given `UID`, if any.
+     */
+    getPlayerByUID(UID: number): ChromelessPlayer | undefined;
+}
+
+/**
+ * The preload type of the player, represented by a value from the following list:
+ * <br/> - `'none'`: The player will not load anything on source change.
+ * <br/> - `'metadata'`: The player will immediately load metadata on source change.
+ * <br/> - `'auto'`: The player will immediately load metadata and media on source change.
+ *
+ * @remarks
+ * <br/> - `'metadata'` loads enough resources to be able to determine the {@link ChromelessPlayer.duration}.
+ * <br/> - `'auto'` loads media up to {@link ABRConfiguration.targetBuffer}.
+ *
+ * @category Player
+ * @public
+ */
+type PreloadType = 'none' | 'metadata' | 'auto' | '';
+
+/**
+ * The events fired by the Chromecast API.
+ *
+ * @category Casting
+ * @public
+ */
+interface ChromecastEventMap extends VendorCastEventMap {
+    /**
+     * Fired when an error occurs while casting or trying to cast.
+     */
+    error: ChromecastErrorEvent;
+}
+/**
+ * The Chromecast API.
+ *
+ * @category Casting
+ * @public
+ */
+interface Chromecast extends VendorCast, EventDispatcher<ChromecastEventMap> {
+    /**
+     * The last error that occurred during casting, if any.
+     */
+    error: ChromecastError | undefined;
+    /**
+     * The name of the Chromecast device that the player is casting to, if any.
+     */
+    receiverName: string | undefined;
+    /**
+     * The source of the active casting session, if any.
+     *
+     * @deprecated Superseded by {@link Chromecast.connectionCallback}.
+     */
+    source: SourceDescription | undefined;
+    /**
+     * The callback for the Chromecast connection changes.
+     */
+    connectionCallback: ChromecastConnectionCallback | undefined;
+    /**
+     * Join an active casting session.
+     */
+    join(): void;
+    /**
+     * Leave the active casting session.
+     *
+     * @remarks
+     * <br/> - Does not stop the session when other devices are connected.
+     * <br/> - Use {@link VendorCast.stop} to fully stop the session.
+     */
+    leave(): void;
+    /**
+     * {@inheritDoc EventDispatcher.addEventListener}
+     */
+    addEventListener<TType extends StringKeyOf<ChromecastEventMap>>(type: TType | readonly TType[], listener: EventListener<ChromecastEventMap[TType]>): void;
+    /**
+     * {@inheritDoc EventDispatcher.removeEventListener}
+     */
+    removeEventListener<TType extends StringKeyOf<ChromecastEventMap>>(type: TType | readonly TType[], listener: EventListener<ChromecastEventMap[TType]>): void;
+}
+/**
+ * The ChromecastConnectionCallback.
+ *
+ * @category Casting
+ * @public
+ */
+interface ChromecastConnectionCallback {
+    /**
+     * Called after the player has started the connection to the receiver.
+     *
+     * @remarks
+     * <br/> - At this point we are trying to load the media from the sender to the receiver.
+     * <br/> - Returning null will behave same as returning the provided SourceDescription.
+     *
+     * @param sourceDescription - The current SourceDescription on the sender device.
+     * @returns The SourceDescription to be loaded on the receiver device.
+     */
+    onStart(sourceDescription: SourceDescription | undefined): MaybeAsync<SourceDescription | undefined>;
+    /**
+     * Called after the player has stopped the connection to the receiver.
+     *
+     * @remarks
+     * <br/> - At this point we are trying to load the media from the receiver to the sender.
+     * <br/> - Returning null will behave same as returning the provided SourceDescription.
+     *
+     * @param sourceDescription - The current SourceDescription on the receiver device.
+     * @returns The SourceDescription to be loaded on the sender device.
+     */
+    onStop(sourceDescription: SourceDescription | undefined): MaybeAsync<SourceDescription | undefined>;
+    /**
+     * Called after the player has joined an already existing connection to the receiver.
+     *
+     * @remarks
+     * <br/> - At this point it's possible to load a new media from the sender to the receiver.
+     * <br/> - Returning null will not change the source on the receiver.
+     *
+     * @param sourceDescription - The current SourceDescription on the current sender device.
+     * @returns The SourceDescription to be loaded on the receiver device.
+     */
+    onJoin(sourceDescription: SourceDescription | undefined): MaybeAsync<SourceDescription | undefined>;
+    /**
+     * Called after the player has left the connection to the receiver.
+     *
+     * @remarks
+     * <br/> - At this point we are trying to load the media from the receiver to the sender.
+     * <br/> - Returning null will behave same as returning the provided SourceDescription.
+     *
+     * @param sourceDescription - The current SourceDescription on the receiver device.
+     * @returns The SourceDescription to be loaded on the sender device.
+     */
+    onLeave(sourceDescription: SourceDescription | undefined): MaybeAsync<SourceDescription | undefined>;
+}
+/**
+ * The global Chromecast API.
+ *
+ * @category Casting
+ * @public
+ */
+interface GlobalChromecast {
+    /**
+     * Initialize the Chromecast framework.
+     *
+     * @remarks
+     * <br/> - If this method is not called, then the first created THEOplayer instance will automatically initialize the Chromecast framework.
+     *
+     * @param configuration - Describes Chromecast specific options.
+     */
+    initialize(configuration?: ChromecastConfiguration): PromiseLike<void>;
+    /**
+     * Start a casting session without a source.
+     *
+     * @remarks
+     * <br/> - The Chromecast framework must be {@link GlobalChromecast.initialize | initialized} before starting a session.
+     */
+    startSession(): PromiseLike<void>;
+    /**
+     * Stop the active casting session.
+     */
+    endSession(): void;
+}
+/**
+ * An error that occurred while casting or attempting to cast to Chromecast.
+ *
+ * @category Casting
+ * @category Errors
+ * @public
+ */
+interface ChromecastError {
+    /**
+     * The error code of the error.
+     */
+    errorCode: ChromecastErrorCode;
+    /**
+     * The human-readable description of the error.
+     */
+    description: string;
+}
+/**
+ * The chromecast error code, represented by a value from the following list:
+ * <br/> - `'CANCEL'`: The operation was canceled by the user.
+ * <br/> - `'TIMEOUT'`: The operation timed out.
+ * <br/> - `'API_NOT_INITIALIZED'`: The API is not initialized.
+ * <br/> - `'INVALID_PARAMETER'`: The parameters to the operation were not valid.
+ * <br/> - `'EXTENSION_NOT_COMPATIBLE'`: The API script is not compatible with the installed Cast extension.
+ * <br/> - `'EXTENSION_MISSING'`: The Cast extension is not available.
+ * <br/> - `'RECEIVER_UNAVAILABLE'`: No receiver was compatible with the session request.
+ * <br/> - `'SESSION_ERROR'`: A session could not be created, or a session was invalid.
+ * <br/> - `'CHANNEL_ERROR'`: A channel to the receiver is not available.
+ * <br/> - `'LOAD_MEDIA_FAILED'`: Load media failed.
+ *
+ * @remarks
+ * <br/> - The error codes correspond to the error codes documented in the {@link https://developers.google.com/cast/docs/reference/chrome/chrome.cast.html#.ErrorCode | Chromecast API reference}.
+ *
+ * @category Casting
+ * @public
+ */
+type ChromecastErrorCode = 'CANCEL' | 'TIMEOUT' | 'API_NOT_INITIALIZED' | 'INVALID_PARAMETER' | 'EXTENSION_NOT_COMPATIBLE' | 'EXTENSION_MISSING' | 'RECEIVER_UNAVAILABLE' | 'SESSION_ERROR' | 'CHANNEL_ERROR' | 'LOAD_MEDIA_FAILED';
+/**
+ * Fired when an error occurs while casting or trying to cast.
+ *
+ * @category Casting
+ * @public
+ */
+interface ChromecastErrorEvent extends Event<'error'> {
+    /**
+     * The error that occurred.
+     */
+    readonly error: ChromecastError;
+}
+
+/**
+ * The events fired by the {@link Cast | cast API}.
+ *
+ * @category Casting
+ * @public
+ */
+interface CastEventMap {
+    /**
+     * Fired when {@link Cast.casting} changes.
+     */
+    castingchange: Event<'castingchange'>;
+}
+/**
+ * The cast API.
+ *
+ * @category Casting
+ * @public
+ */
+interface Cast extends EventDispatcher<CastEventMap> {
+    /**
+     * Whether the player is connected with a casting device.
+     */
+    casting: boolean;
+    /**
+     * The Airplay integration API.
+     *
+     * @remarks
+     * <br/> - Only available with the feature `'airplay'`.
+     */
+    airplay?: AirPlay;
+    /**
+     * The Chromecast integration API.
+     *
+     * @remarks
+     * <br/> - Only available with the feature `'chromecast'`.
+     */
+    chromecast?: Chromecast;
+}
+/**
+ * The global cast API.
+ *
+ * @category Casting
+ * @public
+ */
+interface GlobalCast {
+    /**
+     * The global Chromecast integration API.
+     *
+     * @remarks
+     * <br/> - Only available with the feature `'chromecast'`.
+     */
+    chromecast?: GlobalChromecast;
+}
+
+/**
+ * The events fired by the {@link ChromelessPlayer}.
+ *
+ * @category Player
+ * @public
+ */
+interface PlayerEventMap {
+    /**
+     * Fired when {@link ChromelessPlayer.source} changes.
+     */
+    sourcechange: SourceChangeEvent;
+    /**
+     * Fired when the current source, which is chosen from {@link SourceDescription.sources | ChromelessPlayer.source.sources}, changes.
+     */
+    currentsourcechange: CurrentSourceChangeEvent;
+    /**
+     * Fired when {@link ChromelessPlayer.paused} changes to `false`.
+     *
+     * @remarks
+     * <br/> - Either fired after the play() method has returned, or when the {@link ChromelessPlayer.autoplay} attribute has caused playback to begin.
+     */
+    play: PlayEvent;
+    /**
+     * Fired when {@link ChromelessPlayer.paused} changes to `true`.
+     *
+     * @remarks
+     * <br/> - Fired after the `pause()` method has returned.
+     */
+    pause: PauseEvent;
+    /**
+     * Fired when {@link ChromelessPlayer.seeking} changes to `true`, and the player has started seeking to a new position.
+     */
+    seeking: SeekingEvent;
+    /**
+     * Fired when {@link ChromelessPlayer.seeking} changes to `false` after the current playback position was changed.
+     */
+    seeked: SeekedEvent;
+    /**
+     * Fired when the current playback position changed as part of normal playback or in an especially interesting way, for example discontinuously.
+     */
+    timeupdate: TimeUpdateEvent;
+    /**
+     * Fired when playback has stopped because the end of the media resource was reached.
+     */
+    ended: EndedEvent;
+    /**
+     * Fired when playback is ready to start after having been paused or delayed due to lack of media data.
+     */
+    playing: PlayingEvent;
+    /**
+     * Fired when playback has stopped because the next frame is not available, but the player expects that frame to become available in due course.
+     */
+    waiting: WaitingEvent;
+    /**
+     * Fired when {@link ChromelessPlayer.readyState} changes.
+     */
+    readystatechange: ReadyStateChangeEvent;
+    /**
+     * Fired when the player determines the duration and dimensions of the media resource.
+     *
+     * @remarks
+     * <br/> - See {@link https://html.spec.whatwg.org/multipage/media.html#mediaevents:dom-media-readystate | HTML media - network state events}.
+     * <br/> - The {@link ChromelessPlayer.seekable | seekable range} should be available as soon as the {@link ChromelessPlayer.duration | duration} is known. However, certain browsers (e.g. Safari) do not make it available until the `loadeddata` event is fired.
+     */
+    loadedmetadata: LoadedMetadataEvent;
+    /**
+     * Fired when the player can render the media data at the current playback position for the first time.
+     *
+     * @remarks
+     * <br/> - See {@link https://html.spec.whatwg.org/multipage/media.html#mediaevents:dom-media-readystate | HTML media - network state events}.
+     */
+    loadeddata: LoadedDataEvent;
+    /**
+     * Fired when the player can resume playback of the media data.
+     *
+     * @remarks
+     * <br/> - In comparison to `canplaythrough`, the player estimates that if playback were to be started now, the media resource could not be rendered at the current playback rate up to its end without having to stop for further buffering of content.
+     * <br/> - See {@link https://html.spec.whatwg.org/multipage/media.html#mediaevents:dom-media-readystate | HTML media - network state events}.
+     */
+    canplay: CanPlayEvent;
+    /**
+     * Fired when the player can resume playback of the media data and buffering is unlikely.
+     *
+     * @remarks
+     * <br/> - In comparison to `canplay`, the player estimates that if playback were to be started now, the media resource could be rendered at the current playback rate all the way to its end without having to stop for further buffering.
+     * <br/> - See {@link https://html.spec.whatwg.org/multipage/media.html#mediaevents:dom-media-readystate | HTML media - network state events}.
+     */
+    canplaythrough: CanPlayThroughEvent;
+    /**
+     * Fired when the player starts loading the manifest.
+     *
+     * @remarks
+     * <br/> - See {@link https://html.spec.whatwg.org/multipage/media.html#mediaevents:dom-media-networkstate | HTML media - network state events}.
+     */
+    loadstart: Event<'loadstart'>;
+    /**
+     * Fired when the player loaded media data.
+     *
+     * @remarks
+     * <br/> - For DASH streams, the event is fired every 350ms or for every byte received whichever is least frequent.
+     * <br/> - See {@link https://html.spec.whatwg.org/multipage/media.html#mediaevents:dom-media-networkstate | HTML media - network state events}.
+     */
+    progress: ProgressEvent;
+    /**
+     * Fired when the player's source is cleared.
+     *
+     * @remarks
+     * <br/> - See {@link https://html.spec.whatwg.org/multipage/media.html#mediaevents:dom-media-networkstate | HTML media - network state events}.
+     */
+    emptied: EmptiedEvent;
+    /**
+     * Fired when {@link ChromelessPlayer.duration} changes.
+     *
+     * @remarks
+     * <br/> - Fired after {@link ChromelessPlayer.readyState} has loaded metadata, or when the last segment is appended and there is a mismatch with the original duration.
+     */
+    durationchange: DurationChangeEvent;
+    /**
+     * Fired when {@link ChromelessPlayer.volume} changes.
+     */
+    volumechange: VolumeChangeEvent;
+    /**
+     * Fired when the current representation changes.
+     */
+    representationchange: RepresentationChangeEvent;
+    /**
+     * Fired when {@link ChromelessPlayer.playbackRate} changes.
+     */
+    ratechange: RateChangeEvent;
+    /**
+     * Fired when the dimensions of the HTML element changes.
+     *
+     * @remarks
+     * <br/> - See {@link https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect | Element.getBoundingClientRect()}.
+     */
+    dimensionchange: DimensionChangeEvent;
+    /**
+     * Fired when either {@link ChromelessPlayer.videoWidth} or {@link ChromelessPlayer.videoHeight} changes.
+     */
+    resize: Event<'resize'>;
+    /**
+     * Fired when the manifest is updated.
+     */
+    manifestupdate: Event<'manifestupdate'>;
+    /**
+     * Fired when the manifest cannot be loaded or parsed.
+     */
+    manifesterror: Event<'manifesterror'>;
+    /**
+     * Fired when a segment cannot be found.
+     *
+     * @remarks
+     * <br/> - Only fired on DASH streams.
+     * @deprecated use {@link PlayerEventMap.segmenterror} instead
+     */
+    segmentnotfound: Event<'segmentnotfound'>;
+    /**
+     * Fired when a segment cannot be found.
+     */
+    segmenterror: Event<'segmenterror'>;
+    /**
+     * Fired when the player encounters key system initialization data in the media data.
+     *
+     * @remarks
+     * <br/> - See {@link https://www.w3.org/TR/encrypted-media/#dom-evt-encrypted | Encrypted Media Extensions}.
+     */
+    encrypted: EncryptedEvent;
+    /**
+     * Fired when the key is usable for decryption.
+     *
+     * @remarks
+     * <br/> - A key is `usable` if the CDM is certain the key can decrypt one or more blocks of media data.
+     * <br/> - See {@link https://www.w3.org/TR/encrypted-media/#usable-for-decryption | Encrypted Media Extension - usable for decryption}.
+     */
+    contentprotectionsuccess: Event<'contentprotectionsuccess'>;
+    /**
+     * Fired when an error related to content protection occurs.
+     */
+    contentprotectionerror: ContentProtectionErrorEvent;
+    /**
+     * Fired when an {@link ChromelessPlayer.error | error} occurs.
+     */
+    error: ErrorEvent;
+    /**
+     * Fired when the player is destroyed.
+     *
+     * @remarks
+     * <br/> - Available since v2.33.3.
+     */
+    destroy: Event<'destroy'>;
+    /** @internal */
+    airplaychanged_: Event<'airplaychanged_'>;
+    /** @internal */
+    fullscreenVideoElementChange_: Event<'fullscreenVideoElementChange_'>;
+    /** @internal */
+    imagesourcechange_: Event<'imagesourcechange_'>;
+    /** @internal */
+    nosupportedrepresentationfound: Event<'nosupportedrepresentationfound'>;
+    /** @internal */
+    metricschange: Event<'metricschange'>;
+    /** @internal */
+    offline: Event<'offline'>;
+    /** @internal */
+    online: Event<'online'>;
+    /** @internal */
+    presentationmodechange: Event<'presentationmodechange'>;
+    /** @internal */
+    segmentrequest_: Event<'segmentrequest_'>;
+    /** @internal */
+    segmentresponse_: Event<'segmentresponse_'>;
+    /** @internal */
+    manifestnotfound_: Event<'manifestnotfound_'>;
+}
+/**
+ * The player API.
+ *
+ * @category API
+ * @category Player
+ * @public
+ */
+declare class ChromelessPlayer implements EventDispatcher<PlayerEventMap> {
+    constructor(element: HTMLElement, configuration?: PlayerConfiguration);
+    /**
+     * The adaptive bitrate configuration.
+     */
+    readonly abr: ABRConfiguration;
+    /**
+     * List of audio tracks of the current source.
+     */
+    audioTracks: MediaTrackList;
+    /**
+     * Whether the player should immediately start playback after source change.
+     *
+     * @remarks
+     * <br/> - To autoplay with sound on certain platforms, {@link ChromelessPlayer.prepareWithUserAction} must be called at least once.
+     * <br/> - To autoplay without sound, {@link PlayerConfiguration.mutedAutoplay} must be configured.
+     */
+    autoplay: boolean;
+    /**
+     * Returns a TimeRanges object that represents the ranges of the media resource that the player has buffered.
+     */
+    readonly buffered: TimeRanges;
+    /**
+     * The clip API.
+     */
+    readonly clip: Clip;
+    /**
+     * The current playback position of the media, as a timestamp.
+     *
+     * @remarks
+     * <br/> - The relation between {@link ChromelessPlayer.currentProgramDateTime} and {@link ChromelessPlayer.currentTime} is determined by the manifest.
+     */
+    currentProgramDateTime: Date | null;
+    /**
+     * The current playback position of the media, in seconds.
+     */
+    currentTime: number;
+    /**
+     * The duration of the media, in seconds.
+     *
+     * @remarks
+     * <br/> - On source change, duration becomes available after {@link ChromelessPlayer.readyState} is at least `1` (HAVE_METADATA).
+     */
+    duration: number;
+    /**
+     * The HTML element containing the player.
+     */
+    element: HTMLElement;
+    /**
+     * Whether playback of the media is ended.
+     *
+     * @remarks
+     * <br/> - Playback is ended when the current playback position is at the end of the media, and the player does not {@link ChromelessPlayer.loop}.
+     */
+    ended: boolean;
+    /**
+     * The last error that occurred for the current source, if any.
+     *
+     * @deprecated use {@link ChromelessPlayer.errorObject} instead
+     */
+    error: MediaError | undefined;
+    /**
+     * The last error that occurred for the current source, if any.
+     *
+     * @remarks
+     * <br/> - This will equal the {@link ErrorEvent.errorObject} property from the last {@link ErrorEvent}.
+     */
+    errorObject: THEOplayerError | undefined;
+    /**
+     * Whether playback of the media is looped.
+     *
+     * @remarks
+     * <br/> - When playback is looped, upon reaching the end of the media, playback immediately continues at the start of the media.
+     * <br/> - Looped media is never {@link ChromelessPlayer.ended}.
+     */
+    loop: boolean;
+    /**
+     * The current source which describes desired playback of a media resource.
+     *
+     * @remarks
+     * <br/> - Changing source might {@link ChromelessPlayer.preload} and {@link ChromelessPlayer.autoplay}.
+     * <br/> - Changing source will {@link ChromelessPlayer.stop} the previous source.
+     */
+    source: SourceDescription | undefined;
+    /**
+     * The current URL of the media resource.
+     *
+     * @remarks
+     * <br/> - Prefer {@link ChromelessPlayer.source} instead.
+     */
+    src: string | undefined;
+    /**
+     * Whether audio is muted.
+     *
+     * @remarks
+     * <br/> - This affects capabilities of {@link ChromelessPlayer.autoplay}.
+     */
+    muted: boolean;
+    /**
+     * The metrics API.
+     */
+    readonly metrics: Metrics;
+    /**
+     * Whether the player is paused.
+     */
+    paused: boolean;
+    /**
+     * The playback rate of the media.
+     *
+     * @example
+     * <br/> - `playbackRate = 0.70` will slow down the playback rate of the media by 30%.
+     * <br/> - `playbackRate = 1.25` will speed up the playback rate of the media by 25%.
+     *
+     * @remarks
+     * <br/> - Playback rate is represented by a number where `1` is default playback speed.
+     * <br/> - Playback rate must be a positive number.
+     * <br/> - It is recommended that you limit the range to between 0.5 and 4.
+     */
+    playbackRate: number;
+    /**
+     * Returns a TimeRanges object that represents the ranges of the media resource that the player has played.
+     */
+    played: TimeRanges;
+    /**
+     * The poster of the current source.
+     *
+     * @remarks
+     * <br/> - An empty string (`''`) clears the current poster.
+     * <br/> - The {@link SourceConfiguration.poster} has priority over this poster.
+     */
+    poster: string;
+    /**
+     * The preload setting of the player.
+     */
+    preload: PreloadType;
+    /**
+     * The ready state of the player, represented by a value from the following list:
+     * <br/> - `0` (HAVE_NOTHING): The player has no information about the duration of its source.
+     * <br/> - `1` (HAVE_METADATA): The player has information about the duration of its source.
+     * <br/> - `2` (HAVE_CURRENT_DATA): The player has its current frame in its buffer.
+     * <br/> - `3` (HAVE_FUTURE_DATA): The player has enough data for immediate playback.
+     * <br/> - `4` (HAVE_ENOUGH_DATA): The player has enough data for continuous playback.
+     *
+     * @remarks
+     * <br/> - See the {@link https://html.spec.whatwg.org/multipage/media.html#ready-states | HTML Media Specification}
+     */
+    readyState: number;
+    /**
+     * Returns a TimeRanges object that represents the ranges of the media resource that are seekable by the player.
+     *
+     * @remarks
+     * <br/> - On source change, seekable becomes available after {@link ChromelessPlayer.readyState} is at least `1`.
+     */
+    seekable: TimeRanges;
+    /**
+     * Whether the player is seeking.
+     */
+    seeking: boolean;
+    /**
+     * List of text tracks of the current source.
+     */
+    textTracks: TextTracksList;
+    /**
+     * The text track style API.
+     *
+     */
+    readonly textTrackStyle: TextTrackStyle;
+    readonly theoLive?: TheoLiveApi;
+    /**
+     * Unique ID of the player.
+     */
+    uid: number;
+    /**
+     * The height of the active video rendition, in pixels.
+     */
+    videoHeight: number;
+    /**
+     * List of video tracks of the current source.
+     */
+    videoTracks: MediaTrackList;
+    /**
+     * The width of the active video rendition, in pixels.
+     */
+    videoWidth: number;
+    /**
+     * The volume of the audio.
+     *
+     * @example
+     * <br/> - `volume = 0.7` will reduce the audio volume of the media by 30%.
+     *
+     * @remarks
+     * <br/> - Volume is represented by a floating point number between `0.0` and `1.0`.
+     */
+    volume: number;
+    /**
+     * The latency manager for low latency live playback.
+     */
+    latency: LatencyManager;
+    /**
+     * The canvas of the player.
+     */
+    readonly canvas: Canvas;
+    /**
+     * The network API.
+     */
+    readonly network: Network;
+    /**
+     * The presentation API.
+     */
+    readonly presentation: Presentation;
+    /**
+     * Destroy the player.
+     *
+     * @remarks
+     * <br/> - Available since v2.26.
+     * <br/> - All resources associated with the current source are released.
+     * <br/> - All resources associated with the player are released.
+     * <br/> - The player can no longer be used.
+     */
+    destroy(): void;
+    /**
+     * Start or resume playback.
+     */
+    play(): void;
+    /**
+     * Pause playback.
+     */
+    pause(): void;
+    /**
+     * Stop playback.
+     *
+     * @remarks
+     * <br/> - All resources associated with the current source are released.
+     * <br/> - The player can be reused by setting a new {@link ChromelessPlayer.source}.
+     */
+    stop(): void;
+    /**
+     * Prepare the player to {@link ChromelessPlayer.autoplay} on platforms where autoplay is restricted without user action.
+     *
+     * @remarks
+     * <br/> - Any invocation must happen on user action.
+     * <br/> - Affected platforms include all mobile platforms and Safari 11+.
+     */
+    prepareWithUserAction(): void;
+    /**
+     * Set current source which describes desired playback of a media resource.
+     *
+     * @deprecated Superseded by {@link ChromelessPlayer.source}.
+     */
+    setSource(sourceDescription: SourceDescription | undefined): void;
+    /**
+     * {@inheritDoc EventDispatcher.addEventListener}
+     */
+    addEventListener<TType extends StringKeyOf<PlayerEventMap>>(type: TType | readonly TType[], listener: EventListener<PlayerEventMap[TType]>): void;
+    /**
+     * {@inheritDoc EventDispatcher.removeEventListener}
+     */
+    removeEventListener<TType extends StringKeyOf<PlayerEventMap>>(type: TType | readonly TType[], listener: EventListener<PlayerEventMap[TType]>): void;
+    /**
+     * Adds a new custom text track to the player where cues can be added externally.
+     *
+     * @param options The options for creating the track.
+     *
+     * @remarks
+     * <br/> - This needs to be called after the player dispatches a `loadedmetadata` event.
+     * <br/> - All text tracks added using this method will be cleared when the source of the player changes.
+     */
+    addTextTrack<TOptions extends CustomTextTrackOptions>(options: TOptions): CustomTextTrackMap[TOptions['type']];
+    /**
+     * The web audio API.
+     *
+     * @remarks
+     * <br/> - Only available with the feature `'webaudio'`.
+     */
+    readonly audio?: WebAudio;
+    /**
+     * The ads API.
+     *
+     * @remarks
+     * <br/> - Only available with the feature `'ads'`.
+     */
+    readonly ads?: Ads;
+    /**
+     * The cast API.
+     *
+     * @remarks
+     * <br/> - Only available with the feature `'airplay'` or `'chromecast'`.
+     */
+    readonly cast?: Cast;
+    /**
+     * The related content API.
+     *
+     * @remarks
+     * <br/> - Only available with the feature `'relatedcontent'`.
+     */
+    readonly related?: RelatedContent;
+    /**
+     * The VR API.
+     *
+     * @remarks
+     * <br/> - Only available with the feature `'vr'`.
+     */
+    readonly vr?: VR;
+    /**
+     * The visibility API.
+     */
+    readonly visibility: Visibility;
+    /**
+     * The Uplynk API.
+     *
+     * @remarks
+     * <br/> - Only available with the feature `'uplynk'`.
+     */
+    readonly uplynk?: Uplynk;
+    /**
+     * The HESP API.
+     * @remarks
+     * <br/> - Note: This API is in an experimental stage and may be subject to breaking changes.
+     * <br/> - Only available with the feature `'hesp'`.
+     */
+    readonly hesp?: HespApi;
+    /**
+     * The THEOads API.
+     *
+     * @remarks
+     * <br/> - Only available with the feature `'theoads''`.
+     */
+    readonly theoads?: TheoAds;
+    /**
+     * The Millicast API.
+     */
+    readonly millicast: Millicast;
 }
 
 /**
