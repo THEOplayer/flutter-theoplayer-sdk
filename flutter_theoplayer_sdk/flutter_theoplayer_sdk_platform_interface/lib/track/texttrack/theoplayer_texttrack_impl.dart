@@ -78,20 +78,79 @@ class TextTrackImplMobile extends TextTrackImpl {
 class CueImpl extends Cue {
   final EventManager _eventManager = EventManager();
   double _endTime;
-  String _content;
+  dynamic _content;
 
   CueImpl(super.id, super.uid, super.startTime, this._endTime, this._content);
 
   @override
-  String get content => _content;
+  dynamic get content => _content;
 
   @override
   double get endTime => _endTime;
 
-  void update(double endTime, String content) {
+  void update(double endTime, dynamic content) {
     _endTime = endTime;
     _content = content;
   }
+
+  @override
+  void addEventListener(String eventType, EventListener<Event> listener) {
+    _eventManager.addEventListener(eventType, listener);
+  }
+
+  @override
+  void removeEventListener(String eventType, EventListener<Event> listener) {
+    _eventManager.removeEventListener(eventType, listener);
+  }
+
+  void dispatchEvent(Event event) {
+    _eventManager.dispatchEvent(event);
+  }
+
+  void dispose() {
+    _eventManager.clear();
+  }
+}
+
+class DateRangeCueImpl extends DateRangeCue {
+  final EventManager _eventManager = EventManager();
+  double _endTime;
+  final DateTime _startDate;
+  final DateTime? _endDate;
+  final double? _duration;
+  final double? _plannedDuration;
+  final String? _cueClass;
+  final bool _endOnNext;
+  final Map<String, dynamic>? _customAttributes;
+
+  DateRangeCueImpl(super.id, super.uid, super.startTime, this._endTime, this._startDate, this._endDate, this._duration, this._plannedDuration, this._cueClass, this._endOnNext, this._customAttributes);
+
+  @override
+  double get endTime => _endTime;
+
+  @override
+  dynamic get content => _customAttributes;
+
+  @override
+  DateTime get startDate => _startDate;
+
+  @override
+  DateTime? get endDate => _endDate;
+
+  @override
+  double? get duration => _duration;
+
+  @override
+  double? get plannedDuration => _plannedDuration;
+
+  @override
+  String? get cueClass => _cueClass;
+
+  @override
+  bool get endOnNext => _endOnNext;
+
+  @override
+  Map<String, dynamic>? get customAttributes => _customAttributes;
 
   @override
   void addEventListener(String eventType, EventListener<Event> listener) {

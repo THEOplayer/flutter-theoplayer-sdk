@@ -44,6 +44,7 @@ class TextTrackBridge: THEOplayerNativeTextTracksAPI {
                     source: textTrack.src,
                     isForced: false,
                     mode: TrackTransformer.toFlutterTextTrackMode(mode: textTrack.mode),
+                    unlocalizedLabel: textTrack.unlocalizedLabel,
                     completion: self.emptyCompletion)
                 self.attachTrackListeners(track: textTrack)
             }

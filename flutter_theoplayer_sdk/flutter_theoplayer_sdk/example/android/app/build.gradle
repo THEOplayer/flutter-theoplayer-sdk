@@ -34,7 +34,7 @@ android {
     //     aapt2 E 10-08 09:20:39  4067  4067 ApkAssets.cpp:149] Failed to load resources table in APK '/usr/local/lib/android/sdk/platforms/android-35/android.jar'.
     //     error: failed to load include path /usr/local/lib/android/sdk/platforms/android-35/android.jar.
     compileSdkVersion 36
-    ndkVersion = "27.0.12077973"
+    ndkVersion = "29.0.14033849"
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -54,7 +54,7 @@ android {
         applicationId "com.theoplayer.theoplayer_example"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
-        minSdkVersion 23
+        minSdkVersion flutter.minSdkVersion
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

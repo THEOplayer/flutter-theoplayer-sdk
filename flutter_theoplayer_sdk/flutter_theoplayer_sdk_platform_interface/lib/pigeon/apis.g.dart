@@ -433,13 +433,15 @@ class THEOplayerNativeTextTracksAPI {
 abstract class THEOplayerFlutterTextTracksAPI {
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
 
-  void onAddTextTrack(String? id, int uid, String? label, String? language, String? kind, String? inBandMetadataTrackDispatchType, TextTrackReadyState readyState, TextTrackType type, String? source, bool isForced, TextTrackMode mode);
+  void onAddTextTrack(String? id, int uid, String? label, String? language, String? kind, String? inBandMetadataTrackDispatchType, TextTrackReadyState readyState, TextTrackType type, String? source, bool isForced, TextTrackMode mode, String? unlocalizedLabel);
 
   void onRemoveTextTrack(int uid);
 
   void onTextTrackListChange(int uid);
 
   void onTextTrackAddCue(int textTrackUid, String id, int uid, double startTime, double endTime, String content);
+
+  void onTextTrackAddDateRangeCue(int textTrackUid, String id, int uid, double startTime, double endTime, String? cueClass, double startDateMillis, double? endDateMillis, double? duration, double? plannedDuration, bool endOnNext, String? customAttributesJson);
 
   void onTextTrackRemoveCue(int textTrackUid, int cueUid);
 
@@ -491,8 +493,9 @@ abstract class THEOplayerFlutterTextTracksAPI {
           final TextTrackMode? arg_mode = (args[10] as TextTrackMode?);
           assert(arg_mode != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null, expected non-null TextTrackMode.');
+          final String? arg_unlocalizedLabel = (args[11] as String?);
           try {
-            api.onAddTextTrack(arg_id, arg_uid!, arg_label, arg_language, arg_kind, arg_inBandMetadataTrackDispatchType, arg_readyState!, arg_type!, arg_source, arg_isForced!, arg_mode!);
+            api.onAddTextTrack(arg_id, arg_uid!, arg_label, arg_language, arg_kind, arg_inBandMetadataTrackDispatchType, arg_readyState!, arg_type!, arg_source, arg_isForced!, arg_mode!, arg_unlocalizedLabel);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -583,6 +586,54 @@ abstract class THEOplayerFlutterTextTracksAPI {
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null String.');
           try {
             api.onTextTrackAddCue(arg_textTrackUid!, arg_id!, arg_uid!, arg_startTime!, arg_endTime!, arg_content!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue$messageChannelSuffix', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        pigeonVar_channel.setMessageHandler(null);
+      } else {
+        pigeonVar_channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_textTrackUid = (args[0] as int?);
+          assert(arg_textTrackUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null int.');
+          final String? arg_id = (args[1] as String?);
+          assert(arg_id != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null String.');
+          final int? arg_uid = (args[2] as int?);
+          assert(arg_uid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null int.');
+          final double? arg_startTime = (args[3] as double?);
+          assert(arg_startTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null double.');
+          final double? arg_endTime = (args[4] as double?);
+          assert(arg_endTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null double.');
+          final String? arg_cueClass = (args[5] as String?);
+          final double? arg_startDateMillis = (args[6] as double?);
+          assert(arg_startDateMillis != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null double.');
+          final double? arg_endDateMillis = (args[7] as double?);
+          final double? arg_duration = (args[8] as double?);
+          final double? arg_plannedDuration = (args[9] as double?);
+          final bool? arg_endOnNext = (args[10] as bool?);
+          assert(arg_endOnNext != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null bool.');
+          final String? arg_customAttributesJson = (args[11] as String?);
+          try {
+            api.onTextTrackAddDateRangeCue(arg_textTrackUid!, arg_id!, arg_uid!, arg_startTime!, arg_endTime!, arg_cueClass, arg_startDateMillis!, arg_endDateMillis, arg_duration, arg_plannedDuration, arg_endOnNext!, arg_customAttributesJson);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -2668,9 +2719,9 @@ class THEOplayerNativeVideoTracksAPI {
 abstract class THEOplayerFlutterVideoTracksAPI {
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
 
-  void onAddVideoTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled);
+  void onAddVideoTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled, String? unlocalizedLabel);
 
-  void onVideoTrackAddQuality(int videoTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame);
+  void onVideoTrackAddQuality(int videoTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame, int? averageBandwidth, bool available);
 
   void onRemoveVideoTrack(int uid);
 
@@ -2680,7 +2731,7 @@ abstract class THEOplayerFlutterVideoTracksAPI {
 
   void onActiveQualityChange(int videoTrackUid, int qualityUid);
 
-  void onQualityUpdate(int videoTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame);
+  void onQualityUpdate(int videoTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame, int? averageBandwidth, bool available);
 
   static void setUp(THEOplayerFlutterVideoTracksAPI? api, {BinaryMessenger? binaryMessenger, String messageChannelSuffix = '',}) {
     messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
@@ -2705,8 +2756,9 @@ abstract class THEOplayerFlutterVideoTracksAPI {
           final bool? arg_isEnabled = (args[5] as bool?);
           assert(arg_isEnabled != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onAddVideoTrack was null, expected non-null bool.');
+          final String? arg_unlocalizedLabel = (args[6] as String?);
           try {
-            api.onAddVideoTrack(arg_id, arg_uid!, arg_label, arg_language, arg_kind, arg_isEnabled!);
+            api.onAddVideoTrack(arg_id, arg_uid!, arg_label, arg_language, arg_kind, arg_isEnabled!, arg_unlocalizedLabel);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -2753,8 +2805,12 @@ abstract class THEOplayerFlutterVideoTracksAPI {
           final double? arg_firstFrame = (args[9] as double?);
           assert(arg_firstFrame != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null double.');
+          final int? arg_averageBandwidth = (args[10] as int?);
+          final bool? arg_available = (args[11] as bool?);
+          assert(arg_available != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null bool.');
           try {
-            api.onVideoTrackAddQuality(arg_videoTrackUid!, arg_qualityId!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_width!, arg_height!, arg_frameRate!, arg_firstFrame!);
+            api.onVideoTrackAddQuality(arg_videoTrackUid!, arg_qualityId!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_width!, arg_height!, arg_frameRate!, arg_firstFrame!, arg_averageBandwidth, arg_available!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -2905,8 +2961,12 @@ abstract class THEOplayerFlutterVideoTracksAPI {
           final double? arg_firstFrame = (args[8] as double?);
           assert(arg_firstFrame != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null double.');
+          final int? arg_averageBandwidth = (args[9] as int?);
+          final bool? arg_available = (args[10] as bool?);
+          assert(arg_available != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null bool.');
           try {
-            api.onQualityUpdate(arg_videoTrackUid!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_width!, arg_height!, arg_frameRate!, arg_firstFrame!);
+            api.onQualityUpdate(arg_videoTrackUid!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_width!, arg_height!, arg_frameRate!, arg_firstFrame!, arg_averageBandwidth, arg_available!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -3002,9 +3062,9 @@ class THEOplayerNativeAudioTracksAPI {
 abstract class THEOplayerFlutterAudioTracksAPI {
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
 
-  void onAddAudioTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled);
+  void onAddAudioTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled, String? unlocalizedLabel);
 
-  void onAudioTrackAddQuality(int audioTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate);
+  void onAudioTrackAddQuality(int audioTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate, int? averageBandwidth, bool available);
 
   void onRemoveAudioTrack(int uid);
 
@@ -3014,7 +3074,7 @@ abstract class THEOplayerFlutterAudioTracksAPI {
 
   void onActiveQualityChange(int audioTrackUid, int qualityUid);
 
-  void onQualityUpdate(int audioTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate);
+  void onQualityUpdate(int audioTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate, int? averageBandwidth, bool available);
 
   static void setUp(THEOplayerFlutterAudioTracksAPI? api, {BinaryMessenger? binaryMessenger, String messageChannelSuffix = '',}) {
     messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
@@ -3039,8 +3099,9 @@ abstract class THEOplayerFlutterAudioTracksAPI {
           final bool? arg_isEnabled = (args[5] as bool?);
           assert(arg_isEnabled != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAddAudioTrack was null, expected non-null bool.');
+          final String? arg_unlocalizedLabel = (args[6] as String?);
           try {
-            api.onAddAudioTrack(arg_id, arg_uid!, arg_label, arg_language, arg_kind, arg_isEnabled!);
+            api.onAddAudioTrack(arg_id, arg_uid!, arg_label, arg_language, arg_kind, arg_isEnabled!, arg_unlocalizedLabel);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -3078,8 +3139,12 @@ abstract class THEOplayerFlutterAudioTracksAPI {
           final int? arg_audioSamplingRate = (args[6] as int?);
           assert(arg_audioSamplingRate != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null int.');
+          final int? arg_averageBandwidth = (args[7] as int?);
+          final bool? arg_available = (args[8] as bool?);
+          assert(arg_available != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null bool.');
           try {
-            api.onAudioTrackAddQuality(arg_audioTrackUid!, arg_qualityId!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_audioSamplingRate!);
+            api.onAudioTrackAddQuality(arg_audioTrackUid!, arg_qualityId!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_audioSamplingRate!, arg_averageBandwidth, arg_available!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -3221,8 +3286,12 @@ abstract class THEOplayerFlutterAudioTracksAPI {
           final int? arg_audioSamplingRate = (args[5] as int?);
           assert(arg_audioSamplingRate != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null, expected non-null int.');
+          final int? arg_averageBandwidth = (args[6] as int?);
+          final bool? arg_available = (args[7] as bool?);
+          assert(arg_available != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null, expected non-null bool.');
           try {
-            api.onQualityUpdate(arg_audioTrackUid!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_audioSamplingRate!);
+            api.onQualityUpdate(arg_audioTrackUid!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_audioSamplingRate!, arg_averageBandwidth, arg_available!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);

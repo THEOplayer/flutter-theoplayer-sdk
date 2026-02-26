@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/services.dart';
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
 import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack.dart';
@@ -29,7 +31,8 @@ class THEOplayerFlutterTextTracksAPIImpl implements THEOplayerFlutterTextTracksA
       TextTrackType type,
       String? source,
       bool isForced,
-      TextTrackMode mode) {
+      TextTrackMode mode,
+      String? unlocalizedLabel) {
     TextTrack textTrack = TextTrackImplMobile(
         id,
         uid,
@@ -78,6 +81,34 @@ class THEOplayerFlutterTextTracksAPIImpl implements THEOplayerFlutterTextTracksA
     }
 
     Cue cue = CueImpl(id, uid, startTime, endTime, content);
+    textTrack.cues.add(cue);
+    (textTrack as TextTrackImpl).dispatchEvent(TextTrackAddCueEvent(track: textTrack, cue: cue));
+  }
+
+  @override
+  void onTextTrackAddDateRangeCue(int textTrackUid, String id, int uid, double startTime, double endTime, String? cueClass, double startDateMillis, double? endDateMillis, double? duration, double? plannedDuration, bool endOnNext, String? customAttributesJson) {
+    TextTrack? textTrack = _textTracks.firstWhereOrNull((item) => item.uid == textTrackUid);
+    if (textTrack == null) {
+      return;
+    }
+
+    Map<String, dynamic>? customAttributes;
+    if (customAttributesJson != null) {
+      customAttributes = json.decode(customAttributesJson) as Map<String, dynamic>;
+    }
+
+    Cue cue = DateRangeCueImpl(
+        id,
+        uid,
+        startTime,
+        endTime,
+        DateTime.fromMillisecondsSinceEpoch(startDateMillis.toInt()),
+        endDateMillis != null ? DateTime.fromMillisecondsSinceEpoch(endDateMillis.toInt()) : null,
+        duration,
+        plannedDuration,
+        cueClass,
+        endOnNext,
+        customAttributes);
     textTrack.cues.add(cue);
     (textTrack as TextTrackImpl).dispatchEvent(TextTrackAddCueEvent(track: textTrack, cue: cue));
   }

@@ -21,7 +21,8 @@ abstract class THEOplayerFlutterTextTracksAPI {
       TextTrackType type,
       String? source,
       bool isForced,
-      TextTrackMode mode);
+      TextTrackMode mode,
+      String? unlocalizedLabel);
 
   void onRemoveTextTrack(int uid);
 
@@ -29,6 +30,20 @@ abstract class THEOplayerFlutterTextTracksAPI {
 
   // TextTrack events
   void onTextTrackAddCue(int textTrackUid, String id, int uid, double startTime, double endTime, String content);
+
+  void onTextTrackAddDateRangeCue(
+      int textTrackUid,
+      String id,
+      int uid,
+      double startTime,
+      double endTime,
+      String? cueClass,
+      double startDateMillis,
+      double? endDateMillis,
+      double? duration,
+      double? plannedDuration,
+      bool endOnNext,
+      String? customAttributesJson);
 
   void onTextTrackRemoveCue(int textTrackUid, int cueUid);
 

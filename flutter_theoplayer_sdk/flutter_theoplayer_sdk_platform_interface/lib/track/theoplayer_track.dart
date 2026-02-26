@@ -48,8 +48,9 @@ abstract class Track implements EventDispatcher {
   final String? _label;
   final String? _language;
   final String? _kind;
+  final String? _unlocalizedLabel;
 
-  Track(this._id, this._uid, this._label, this._language, this._kind);
+  Track(this._id, this._uid, this._label, this._language, this._kind, [this._unlocalizedLabel]);
 
   /// The identifier of the media track.
   ///
@@ -73,4 +74,11 @@ abstract class Track implements EventDispatcher {
   /// * 'main': The track is the default track for playback
   /// * 'alternative': The track is not the default track for playback
   String? get kind => _kind;
+
+  /// The unlocalized label of the media track.
+  ///
+  /// Remarks:
+  /// * This is the raw label from the manifest, without any localization applied.
+  /// * Only available on iOS.
+  String? get unlocalizedLabel => _unlocalizedLabel;
 }

@@ -12,10 +12,10 @@ abstract class THEOplayerNativeVideoTracksAPI {
 @FlutterApi()
 abstract class THEOplayerFlutterVideoTracksAPI {
   // VideoTrackList events
-  void onAddVideoTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled);
+  void onAddVideoTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled, String? unlocalizedLabel);
 
   // helper to populate the qualities in the video track
-  void onVideoTrackAddQuality(int videoTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame);
+  void onVideoTrackAddQuality(int videoTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame, int? averageBandwidth, bool available);
 
   void onRemoveVideoTrack(int uid);
 
@@ -27,5 +27,5 @@ abstract class THEOplayerFlutterVideoTracksAPI {
   void onActiveQualityChange(int videoTrackUid, int qualityUid);
 
   // Quality events
-  void onQualityUpdate(int videoTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame);
+  void onQualityUpdate(int videoTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame, int? averageBandwidth, bool available);
 }
