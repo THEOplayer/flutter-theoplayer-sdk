@@ -22,7 +22,7 @@ class THEOliveAPIHolder extends THEOlive {
       case DistributionLoadStartEvent e: _distributionState = DistributionState.loading;
       case EndpointLoadedEvent e: _distributionState = DistributionState.loaded;
       case DistributionOfflineEvent e: _distributionState = DistributionState.offline;
-      case IntentToFallbackEvent e: _distributionState = DistributionState.intentToFallback;
+      case TheoLiveIntentToFallbackEvent e: _distributionState = DistributionState.intentToFallback;
       default:
         break;
     }

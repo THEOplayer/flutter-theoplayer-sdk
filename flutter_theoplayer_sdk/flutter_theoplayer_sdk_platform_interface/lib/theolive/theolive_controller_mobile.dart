@@ -9,7 +9,6 @@ import 'package:theoplayer_platform_interface/theoplayer_event_manager.dart';
 import 'package:theoplayer_platform_interface/theoplayer_events.dart';
 
 class THEOplayerTHEOliveControllerMobile extends THEOliveInternalInterface implements THEOplayerFlutterTHEOliveAPI {
-
   late final PigeonBinaryMessengerWrapper _pigeonMessenger;
   late final THEOplayerNativeTHEOliveAPI _nativeTHEOliveAPI;
   final EventManager _eventManager = EventManager();
@@ -52,10 +51,11 @@ class THEOplayerTHEOliveControllerMobile extends THEOliveInternalInterface imple
   }
 
   // THEOplayerFlutterTHEOliveAPI methods
-  
+
   @override
-  void onIntentToFallbackEvent() {
-    _eventManager.dispatchEvent(IntentToFallbackEvent());
+  void onIntentToFallbackEvent(String? errorCode, String? errorMessage) {
+    final reason = (errorCode != null || errorMessage != null) ? PlayerError(errorCode: errorCode ?? '', errorMessage: errorMessage ?? '') : null;
+    _eventManager.dispatchEvent(TheoLiveIntentToFallbackEvent(reason: reason));
   }
 
   @override
@@ -68,7 +68,7 @@ class THEOplayerTHEOliveControllerMobile extends THEOliveInternalInterface imple
     _eventManager.dispatchEvent(DistributionLoadStartEvent(distributionId: distributionId));
   }
 
-@override
+  @override
   void onEndpointLoadedEvent(Endpoint endpoint) {
     _eventManager.dispatchEvent(EndpointLoadedEvent(endpoint: endpoint));
   }

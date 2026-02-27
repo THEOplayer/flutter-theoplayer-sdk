@@ -937,7 +937,7 @@ abstract class THEOplayerFlutterTHEOliveAPI {
 
   void onDistributionOfflineEvent(String distributionId);
 
-  void onIntentToFallbackEvent();
+  void onIntentToFallbackEvent(String? errorCode, String? errorMessage);
 
   void onSeeking(double currentTime);
 
@@ -1028,8 +1028,13 @@ abstract class THEOplayerFlutterTHEOliveAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onIntentToFallbackEvent was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final String? arg_errorCode = (args[0] as String?);
+          final String? arg_errorMessage = (args[1] as String?);
           try {
-            api.onIntentToFallbackEvent();
+            api.onIntentToFallbackEvent(arg_errorCode, arg_errorMessage);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);

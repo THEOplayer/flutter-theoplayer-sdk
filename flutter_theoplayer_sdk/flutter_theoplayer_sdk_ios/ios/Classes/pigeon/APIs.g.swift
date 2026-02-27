@@ -779,7 +779,7 @@ protocol THEOplayerFlutterTHEOliveAPIProtocol {
   func onDistributionLoadStartEvent(distributionId distributionIdArg: String, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onEndpointLoadedEvent(endpoint endpointArg: Endpoint, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onDistributionOfflineEvent(distributionId distributionIdArg: String, completion: @escaping (Result<Void, PigeonError>) -> Void)
-  func onIntentToFallbackEvent(completion: @escaping (Result<Void, PigeonError>) -> Void)
+  func onIntentToFallbackEvent(errorCode errorCodeArg: String?, errorMessage errorMessageArg: String?, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onSeeking(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onSeeked(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, PigeonError>) -> Void)
 }
@@ -847,10 +847,10 @@ class THEOplayerFlutterTHEOliveAPI: THEOplayerFlutterTHEOliveAPIProtocol {
       }
     }
   }
-  func onIntentToFallbackEvent(completion: @escaping (Result<Void, PigeonError>) -> Void) {
+  func onIntentToFallbackEvent(errorCode errorCodeArg: String?, errorMessage errorMessageArg: String?, completion: @escaping (Result<Void, PigeonError>) -> Void) {
     let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onIntentToFallbackEvent\(messageChannelSuffix)"
     let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage(nil) { response in
+    channel.sendMessage([errorCodeArg, errorMessageArg] as [Any?]) { response in
       guard let listResponse = response as? [Any?] else {
         completion(.failure(createConnectionError(withChannelName: channelName)))
         return

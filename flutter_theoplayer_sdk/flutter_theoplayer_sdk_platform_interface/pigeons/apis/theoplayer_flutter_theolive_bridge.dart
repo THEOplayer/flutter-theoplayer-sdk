@@ -11,12 +11,11 @@ abstract class THEOplayerFlutterTHEOliveAPI {
   void onDistributionLoadStartEvent(String distributionId);
   void onEndpointLoadedEvent(Endpoint endpoint);
   void onDistributionOfflineEvent(String distributionId);
-  void onIntentToFallbackEvent();
+  void onIntentToFallbackEvent(String? errorCode, String? errorMessage);
   //experimental API for iOS-only
   void onSeeking(double currentTime);
   void onSeeked(double currentTime);
 }
-
 
 class Endpoint {
   final String? hespSrc;

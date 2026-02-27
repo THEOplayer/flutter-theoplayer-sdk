@@ -63,7 +63,8 @@ class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
         
         intentToFallbackListener = theoLive.addEventListener(type: THEOliveEventTypes.INTENT_TO_FALLBACK, listener: { [weak self] event in
             guard let welf = self else { return }
-            welf.flutterTHEOliveAPI.onIntentToFallbackEvent(completion: welf.emptyCompletion)
+            let reasonCode: String? = event.reason.map { String($0.code.rawValue) }
+            welf.flutterTHEOliveAPI.onIntentToFallbackEvent(errorCode: reasonCode, errorMessage: event.reason?.message, completion: welf.emptyCompletion)
         })
         
         seekingEventListener = theoLive.addEventListener(type: PlayerEventTypes.SEEKING, listener: { [weak self] event in
