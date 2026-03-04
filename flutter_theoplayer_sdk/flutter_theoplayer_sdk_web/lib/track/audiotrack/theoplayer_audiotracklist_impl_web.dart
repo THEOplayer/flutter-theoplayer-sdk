@@ -63,6 +63,23 @@ class AudioTrackListImplWeb extends AudioTracksImpl {
     _theoPlayerAudioTracks.addEventListener(AudioTracksEventTypes.ADDTRACK.toLowerCase(), addTrackEventListener);
     _theoPlayerAudioTracks.addEventListener(AudioTracksEventTypes.REMOVETRACK.toLowerCase(), removeTrackEventListener);
     _theoPlayerAudioTracks.addEventListener(AudioTracksEventTypes.CHANGE.toLowerCase(), changeTrackEventListener);
+
+    // Populate any tracks that already exist in the JS player
+    for (var i = 0; i < _theoPlayerAudioTracks.length; i++) {
+      final track = _theoPlayerAudioTracks.item(i) as THEOplayerAudioTrack;
+      AudioQualities qualities = toFlutterAudioQualities(JSHelpers.jsArrayToList<THEOplayerAudioQuality>(track.qualities));
+      var flutterTrack = AudioTrackImplWeb(
+        track.id,
+        track.uid,
+        track.label,
+        track.language,
+        track.kind,
+        qualities,
+        track.enabled,
+        track,
+      );
+      add(flutterTrack);
+    }
   }
 
   void dispose() {

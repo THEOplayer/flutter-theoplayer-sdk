@@ -63,6 +63,23 @@ class VideoTrackListImplWeb extends VideoTracksImpl {
     _theoPlayerVideoTracks.addEventListener(VideoTracksEventTypes.ADDTRACK.toLowerCase(), addTrackEventListener);
     _theoPlayerVideoTracks.addEventListener(VideoTracksEventTypes.REMOVETRACK.toLowerCase(), removeTrackEventListener);
     _theoPlayerVideoTracks.addEventListener(VideoTracksEventTypes.CHANGE.toLowerCase(), changeTrackEventListener);
+
+    // Populate any tracks that already exist in the JS player
+    for (var i = 0; i < _theoPlayerVideoTracks.length; i++) {
+      final track = _theoPlayerVideoTracks.item(i) as THEOplayerVideoTrack;
+      VideoQualities qualities = toFlutterVideoQualities(JSHelpers.jsArrayToList<THEOplayerVideoQuality>(track.qualities));
+      var flutterTrack = VideoTrackImplWeb(
+        track.id,
+        track.uid,
+        track.label,
+        track.language,
+        track.kind,
+        qualities,
+        track.enabled,
+        track,
+      );
+      add(flutterTrack);
+    }
   }
 
   void dispose() {

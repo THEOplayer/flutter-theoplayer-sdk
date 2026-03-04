@@ -298,12 +298,12 @@ abstract class THEOplayerMediaQuality implements THEOplayerEventListener {}
 extension THEOplayerMediaQualityExtension on THEOplayerMediaQuality {
   external String get id;
   external int get uid;
-  external String get name;
+  external String? get name;
   external String label;
   external bool get available;
-  external int get averageBandwidth;
-  external int get bandwidth;
-  external String get codecs;
+  external int? get averageBandwidth;
+  external int? get bandwidth;
+  external String? get codecs;
 }
 
 @JS()
@@ -312,7 +312,7 @@ extension THEOplayerMediaQualityExtension on THEOplayerMediaQuality {
 class THEOplayerAudioQuality implements THEOplayerMediaQuality {}
 
 extension THEOplayerAudioQualityExtension on THEOplayerAudioQuality {
-  external int get audioSamplingRate;
+  external int? get audioSamplingRate;
 }
 
 @JS()
@@ -321,10 +321,10 @@ extension THEOplayerAudioQualityExtension on THEOplayerAudioQuality {
 class THEOplayerVideoQuality implements THEOplayerMediaQuality {}
 
 extension THEOplayerVideoQualityExtension on THEOplayerVideoQuality {
-  external int get height;
-  external int get width;
-  external double get frameRate;
-  external double get firstFrame;
+  external int? get height;
+  external int? get width;
+  external double? get frameRate;
+  external double? get firstFrame;
 }
 
 // API for https://www.theoplayer.com/docs/theoplayer/v8/api-reference/web/interfaces/TheoLiveApi.html
