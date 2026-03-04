@@ -15,7 +15,7 @@ dependencies:
     sdk: flutter
   theoplayer_platform_interface: 10.6.1
   # WASM-compatible JS interop
-  web: '>=1.0.0 <2.0.0'
+  web: '>=1.1.0 <2.0.0'
 
 dev_dependencies:
   flutter_test:
