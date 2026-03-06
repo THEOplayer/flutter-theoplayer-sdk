@@ -59,6 +59,14 @@ void main() {
     await runQualityPropertiesTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
   });
 
+  testWidgets('Test latencies with HYBRID_COMPOSITION', (WidgetTester tester) async {
+    await runLatenciesTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
+  });
+
+  testWidgets('Test latencies with SURFACE_TEXTURE', (WidgetTester tester) async {
+    await runLatenciesTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
+  });
+
   //disabled for now only on WEB, we need to figure out the license
   if (!kIsWeb) {
     testWidgets('Test basic THEOlive playback with HYBRID_COMPOSITION', (WidgetTester tester) async {
@@ -333,6 +341,46 @@ Future<void> runTextTrackEventsTest(WidgetTester tester, AndroidViewComposition 
     print("Text track added: id=${event.track.id}, label=${event.track.label}");
     expect(event.track.id, isNotNull);
   }
+}
+
+Future<void> runLatenciesTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
+  TestApp app = TestApp(androidViewComposition: androidViewComposition);
+  await tester.pumpWidget(app);
+
+  final chromlessPlayerView = find.byKey(const Key('testChromelessPlayer'));
+  await tester.ensureVisible(chromlessPlayerView);
+  final player = (tester.firstElement(chromlessPlayerView).widget as ChromelessPlayerView).player;
+  await tester.pumpAndSettle();
+  await app.waitForPlayerReady();
+  await tester.pumpAndSettle();
+
+  expect(player.isInitialized, isTrue);
+
+  player.setMuted(true);
+  player.setAutoplay(true);
+
+  print("Setting source for latencies test");
+  player.setSource(SourceDescription(sources: [
+    TheoLiveSource(src: "26rg6y91ajl4yc5mv0vas5bu7"),
+  ]));
+
+  await tester.pumpAndSettle(const Duration(seconds: 10));
+
+  // Test latencies
+  expect(player.theoLive, isNotNull);
+
+  final latencies = await player.theoLive!.latencies;
+  print("Latencies: engineLatency=${latencies?.engineLatency}, distributionLatency=${latencies?.distributionLatency}, playerLatency=${latencies?.playerLatency}, theoliveLatency=${latencies?.theoliveLatency}");
+
+  expect(latencies, isNotNull);
+  expect(latencies!.theoliveLatency, isNotNull);
+  expect(latencies.theoliveLatency!, greaterThan(0));
+
+  // Test currentLatency
+  final currentLatency = await player.theoLive!.currentLatency;
+  print("Current latency: $currentLatency");
+  expect(currentLatency, isNotNull);
+  expect(currentLatency!, greaterThan(0));
 }
 
 Future<void> runQualityPropertiesTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
