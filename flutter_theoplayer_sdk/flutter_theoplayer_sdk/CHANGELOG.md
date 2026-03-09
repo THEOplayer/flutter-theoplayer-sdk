@@ -1,3 +1,9 @@
+## 10.6.1
+
+* Updated THEOplayer to 10.6.1.
+  - iOS: minimum required XCode version is 16.2 [from THEOplayer iOS SDK 10.x](https://optiview.dolby.com/docs/theoplayer/changelog/#-breaking-changes-3)
+* Android: Fixed an issue where calling `player.dispose()` did not destroy the native player completely.
+
 ## 10.3.0
 
 * Updated THEOplayer to 10.3.0.
