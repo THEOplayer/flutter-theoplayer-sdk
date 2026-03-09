@@ -84,40 +84,46 @@ class _QualityChangeState extends State<QualityChangeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(children: [
-      Badge(
-        key: audioKey,
-        label: Text("$audioID"),
-        isLabelVisible: audioID != -1,
-        child: 
-          SizedBox(
-            child: 
-              Container(
-                padding: const EdgeInsets.all(6),
-                color: Colors.green,
-                child: const Text("AQ",         
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,),
-                ),
-              )
-          ),
-      ),
-      Container(width: 8,),
-      Badge(
-        key: videoKey,
-        label: Text("$videoID"),
-        isLabelVisible: videoID != -1,
-        child: 
-          SizedBox(
-            child: 
-              Container(
-                padding: const EdgeInsets.all(6),
-                color: Colors.blue,
-                child: const Text("VQ",         
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,),
-                ),
-              )
-          ),
-      ),
-    ],);
+    return Row(
+      children: [
+        Badge(
+          key: audioKey,
+          label: Text("$audioID"),
+          isLabelVisible: audioID != -1,
+          child: SizedBox(
+              child: Container(
+            padding: const EdgeInsets.all(6),
+            color: Colors.green,
+            child: const Text(
+              "AQ",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          )),
+        ),
+        Container(
+          width: 8,
+        ),
+        Badge(
+          key: videoKey,
+          label: Text("$videoID"),
+          isLabelVisible: videoID != -1,
+          child: SizedBox(
+              child: Container(
+            padding: const EdgeInsets.all(6),
+            color: Colors.blue,
+            child: const Text(
+              "VQ",
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                fontSize: 16,
+              ),
+            ),
+          )),
+        ),
+      ],
+    );
   }
 }

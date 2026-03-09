@@ -20,8 +20,8 @@ class TextTrackImplWeb extends TextTrackImpl {
   late final changeEventListener;
   late final cueChangeEventListener;
 
-  TextTrackImplWeb(super.id, super.uid, super.label, super.language, super.kind, super.inBandMetadataTrackDispatchType, super.readyState, super.type,
-      super.cues, super.activeCues, super.source, super.isForced, super.mode, this._nativeTextTrack) {
+  TextTrackImplWeb(super.id, super.uid, super.label, super.language, super.kind, super.inBandMetadataTrackDispatchType, super.readyState, super.type, super.cues, super.activeCues, super.source,
+      super.isForced, super.mode, this._nativeTextTrack) {
     addCueEventListener = ((TextTrackAddCueEventJS event) {
       var cue = event.cue;
       var flutterCue = CueImplWeb(cue.id, cue.uid, cue.startTime, cue.endTime, jsObjectToJsonString(cue.content) ?? "", cue);

@@ -32,19 +32,15 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
     var theoliveConfig = theoPlayerConfig.theoLive;
     if (theoliveConfig != null) {
       webTheoliveConfig = TheoLiveConfig(
-          externalSessionId: theoliveConfig.externalSessionId,
-          fallbackEnabled: theoliveConfig.fallbackEnabled,
-          discoveryUrl: theoliveConfig.discoveryUrl,
+        externalSessionId: theoliveConfig.externalSessionId,
+        fallbackEnabled: theoliveConfig.fallbackEnabled,
+        discoveryUrl: theoliveConfig.discoveryUrl,
       );
     }
     _theoPlayerJS = THEOplayerJS(
         _playerWrapperDiv,
         THEOplayerConfigParams(
-          license: theoPlayerConfig.license,
-          licenseUrl: theoPlayerConfig.licenseUrl,
-          theoLive: webTheoliveConfig,
-          libraryLocation: theoPlayerConfig.webConfig.libraryLocation ?? "/"
-        ));
+            license: theoPlayerConfig.license, licenseUrl: theoPlayerConfig.licenseUrl, theoLive: webTheoliveConfig, libraryLocation: theoPlayerConfig.webConfig.libraryLocation ?? "/"));
     _eventForwarder = PlayerEventForwarderWeb(_theoPlayerJS);
     _tracksController = THEOplayerTrackControllerWeb(_theoPlayerJS);
     if (_theoPlayerJS.theoLive != null) {
@@ -255,7 +251,6 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
     // do nothing
   }
 
-
   @override
   Future<bool> allowAutomaticPictureInPicture() {
     // do nothing
@@ -365,26 +360,25 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
             }
           }
         }
-      case PresentationMode.PIP: {
+      case PresentationMode.PIP:
+        {
+          HTMLVideoElement? videoElement = _getPlayingVideoElement();
 
-        HTMLVideoElement? videoElement = _getPlayingVideoElement();
-
-        jsPiPEnterListener = ((JSAny event) {
-          if (document.pictureInPictureElement != null) {
-            if (kDebugMode) {
-              print(
-                'Element: ${document.pictureInPictureElement} entered PiP mode.',
-              );
+          jsPiPEnterListener = ((JSAny event) {
+            if (document.pictureInPictureElement != null) {
+              if (kDebugMode) {
+                print(
+                  'Element: ${document.pictureInPictureElement} entered PiP mode.',
+                );
+              }
+            } else {
+              if (kDebugMode) {
+                print('ERROR entering PiP mode.');
+              }
             }
-          } else {
-            if (kDebugMode) {
-              print('ERROR entering PiP mode.');
-            }
-          }
-        }).toJS;
+          }).toJS;
 
-        jsPiPLeaveListener =((JSAny event) {
-
+          jsPiPLeaveListener = ((JSAny event) {
             if (kDebugMode) {
               print('Leaving PiP mode.');
             }
@@ -403,27 +397,25 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
             }
 
             automaticFullscreenExitListener?.call();
+          }).toJS;
 
-        }).toJS;
+          videoElement?.addEventListener(
+            WebEventTypes.PICTUREINPICTURE_ENTER,
+            jsPiPEnterListener,
+          );
 
-        videoElement?.addEventListener(
-          WebEventTypes.PICTUREINPICTURE_ENTER,
-          jsPiPEnterListener,
-        );
+          videoElement?.addEventListener(
+            WebEventTypes.PICTUREINPICTURE_EXIT,
+            jsPiPLeaveListener,
+          );
 
-        videoElement?.addEventListener(
-          WebEventTypes.PICTUREINPICTURE_EXIT,
-          jsPiPLeaveListener,
-        );
-
-        //NOTE: videoElement.requestPictureInPicture() doesn't work
-        try {
-          videoElement?.callMethod("requestPictureInPicture".toJS);
-        } catch (e) {
-          print('Error when requestPictureInPicture() , $e');
+          //NOTE: videoElement.requestPictureInPicture() doesn't work
+          try {
+            videoElement?.callMethod("requestPictureInPicture".toJS);
+          } catch (e) {
+            print('Error when requestPictureInPicture() , $e');
+          }
         }
-
-      }
       default:
         print("Unsupported presentationMode $presentationMode");
     }
@@ -434,7 +426,7 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
 
     HTMLVideoElement? videoElement = null;
 
-    for (int i=0; i < _allVideoElements.length; i++) {
+    for (int i = 0; i < _allVideoElements.length; i++) {
       var e = _allVideoElements.item(i);
       if (e?.getAttribute("src") != null) {
         videoElement = e as HTMLVideoElement;
@@ -444,8 +436,7 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   }
 
   @override
-  void configureSurface(int surfaceId, int width, int height) {
-  }
+  void configureSurface(int surfaceId, int width, int height) {}
 
   @override
   THEOliveInternalInterface? getTheoLive() {
@@ -477,5 +468,4 @@ class WebEventTypes {
   static const FULLSCREEN_CHANGE = 'fullscreenchange';
   static const PICTUREINPICTURE_ENTER = 'enterpictureinpicture';
   static const PICTUREINPICTURE_EXIT = 'leavepictureinpicture';
-
 }

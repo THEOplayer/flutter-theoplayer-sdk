@@ -10,12 +10,12 @@ class JSHelpers {
     //TODO: we should make this nicer if possible
     return (lengthProperty as JSNumber).toDartInt;
   }
-  
+
   /// Get an item from JSArray<JSAny?> at a specific index
   static JSAny? getJSArrayItem(JSArray<JSAny?> array, int index) {
     return (array as JSObject)[index.toString()];
   }
-  
+
   /// Convert List<String> to JSArray<JSAny?>
   static JSArray<JSAny?> stringListToJSArray(List<String> list) {
     final jsArray = <JSAny?>[].toJS;
@@ -24,7 +24,7 @@ class JSHelpers {
     }
     return jsArray;
   }
-  
+
   /// Convert List of items to JSArray<JSAny?>
   static JSArray<JSAny?> jsItemsToJSArray(List<dynamic> list) {
     final jsArray = <JSAny?>[].toJS;
@@ -33,7 +33,7 @@ class JSHelpers {
     }
     return jsArray;
   }
-  
+
   /// Convert JSArray<JSAny?> to List<T> where T is a JS interop type
   static List<T> jsArrayToList<T>(JSArray<JSAny?> jsArray) {
     final List<T> list = [];
@@ -53,7 +53,7 @@ extension THEOplayerArrayListHelpers<T> on THEOplayerArrayList<T> {
   T getItem(int index) {
     return this.item(index) as T;
   }
-  
+
   /// Get the length safely from THEOplayerArrayList
   int getLength() {
     return this.length;
@@ -66,7 +66,7 @@ extension JSArrayHelpers on JSArray<JSAny?> {
   int getLength() {
     return JSHelpers.getJSArrayLength(this);
   }
-  
+
   /// Get an item from the JSArray at a specific index
   JSAny? getItem(int index) {
     return JSHelpers.getJSArrayItem(this, index);

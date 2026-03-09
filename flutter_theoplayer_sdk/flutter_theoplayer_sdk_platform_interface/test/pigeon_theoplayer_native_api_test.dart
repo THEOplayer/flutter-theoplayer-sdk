@@ -17,16 +17,14 @@ void main() {
     tearDown(() {
       // Clean up all registered channels
       for (final channel in registeredChannels) {
-        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-            .setMockMessageHandler(channel, null);
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler(channel, null);
       }
       registeredChannels.clear();
     });
 
     void registerMockHandler(String channelName, Future<ByteData?> Function(ByteData?) handler) {
       registeredChannels.add(channelName);
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMessageHandler(channelName, handler);
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler(channelName, handler);
     }
 
     test('setSource - sends source to native platform', () async {
@@ -211,8 +209,7 @@ void main() {
       final codec = THEOplayerFlutterAPI.pigeonChannelCodec;
       final message = codec.encodeMessage(<Object?>[15.5]);
 
-      await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .handlePlatformMessage(
+      await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
         'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPlay',
         message,
         (ByteData? reply) {
@@ -243,8 +240,7 @@ void main() {
       final codec = THEOplayerFlutterAPI.pigeonChannelCodec;
       final message = codec.encodeMessage(<Object?>[25.0]);
 
-      await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .handlePlatformMessage(
+      await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
         'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPause',
         message,
         (ByteData? reply) {
@@ -258,8 +254,7 @@ void main() {
       THEOplayerFlutterAPI.setUp(null);
     });
 
-    test('onSourceChange callback - receives source change from native',
-        () async {
+    test('onSourceChange callback - receives source change from native', () async {
       bool onSourceChangeCalled = false;
       SourceDescription? receivedSource;
 
@@ -282,8 +277,7 @@ void main() {
       final codec = THEOplayerFlutterAPI.pigeonChannelCodec;
       final message = codec.encodeMessage(<Object?>[testSource]);
 
-      await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .handlePlatformMessage(
+      await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
         'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSourceChange',
         message,
         (ByteData? reply) {
@@ -293,8 +287,7 @@ void main() {
 
       expect(onSourceChangeCalled, true);
       expect(receivedSource, isNotNull);
-      expect(receivedSource!.sources[0]!.src,
-          'https://example.com/new-video.m3u8');
+      expect(receivedSource!.sources[0]!.src, 'https://example.com/new-video.m3u8');
 
       THEOplayerFlutterAPI.setUp(null);
     });
@@ -315,8 +308,7 @@ void main() {
       final codec = THEOplayerFlutterAPI.pigeonChannelCodec;
       final message = codec.encodeMessage(<Object?>['Network error occurred']);
 
-      await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .handlePlatformMessage(
+      await TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.handlePlatformMessage(
         'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onError',
         message,
         (ByteData? reply) {
@@ -342,16 +334,14 @@ void main() {
     tearDown() {
       // Clean up all registered channels
       for (final channel in registeredChannels) {
-        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-            .setMockMessageHandler(channel, null);
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler(channel, null);
       }
       registeredChannels.clear();
     }
 
     void registerMockHandler(String channelName, Future<ByteData?> Function(ByteData?) handler) {
       registeredChannels.add(channelName);
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMessageHandler(channelName, handler);
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler(channelName, handler);
     }
 
     test('setSource - handles null source', () async {

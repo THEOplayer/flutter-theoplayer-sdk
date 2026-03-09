@@ -17,21 +17,21 @@ class PlayerUI extends StatelessWidget {
     return Column(
       children: [
         Expanded(child: Container()),
-        Align(
-          alignment: Alignment.center,
-          child: PlayButtonWidget(player: player)
-        ),
-        Expanded( 
+        Align(alignment: Alignment.center, child: PlayButtonWidget(player: player)),
+        Expanded(
           child: Align(
-            alignment: FractionalOffset.bottomCenter,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(child: SeekbarWidget(player: player, seekWhileDragging: false,)),
-                QualityChangeWidget(player: player),
-              ],
-            )
-          ),
+              alignment: FractionalOffset.bottomCenter,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                      child: SeekbarWidget(
+                    player: player,
+                    seekWhileDragging: false,
+                  )),
+                  QualityChangeWidget(player: player),
+                ],
+              )),
         ),
       ],
     );

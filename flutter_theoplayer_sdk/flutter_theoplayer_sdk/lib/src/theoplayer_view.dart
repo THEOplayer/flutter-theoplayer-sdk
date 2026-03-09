@@ -18,14 +18,13 @@ class THEOplayerView extends StatefulWidget {
 }
 
 class _THEOplayerViewState extends State<THEOplayerView> {
-
   bool loaded = false;
   int textureId = -1;
 
   @override
   initState() {
     super.initState();
-    TheoplayerPlatform.instance.initalize(widget.theoPlayerConfig, (playerId){
+    TheoplayerPlatform.instance.initalize(widget.theoPlayerConfig, (playerId) {
       setState(() {
         debugLog("[THEOplayerView] Native initialized callback: $playerId");
         textureId = playerId;

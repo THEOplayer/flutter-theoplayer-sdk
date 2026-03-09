@@ -53,11 +53,10 @@ class _MyAppState extends State<MyApp> {
           );
         },
         theoPlayerConfig: THEOplayerConfig(
-          license: PLAYER_LICENSE,
-          // Extra THEOlive configuration:
-          //theolive: TheoLiveConfiguration(externalSessionId: "mySessionID"),
-          webConfiguration: WebConfig(libraryLocation: "/theoplayer")
-        ),
+            license: PLAYER_LICENSE,
+            // Extra THEOlive configuration:
+            //theolive: TheoLiveConfiguration(externalSessionId: "mySessionID"),
+            webConfiguration: WebConfig(libraryLocation: "/theoplayer")),
         onCreate: () {
           print("main - THEOplayer - onCreate");
           player.autoplay = true;
@@ -85,7 +84,6 @@ class _MyAppState extends State<MyApp> {
             var pmd = pmEvent as PresentationModeChangeEvent;
             print("New presentation mode: ${pmd.presentationMode}");
           });
-
         });
   }
 
@@ -117,7 +115,10 @@ class _MyAppState extends State<MyApp> {
                       // ChromelessPlayerView(player: player),
 
                       //for Texture-based composition:
-                      AspectRatioChromelessPlayerView(player: player, continuouslyFollowAspectRatioChanges: true,),
+                      AspectRatioChromelessPlayerView(
+                        player: player,
+                        continuouslyFollowAspectRatioChanges: true,
+                      ),
                       PlayerUI(player: player),
                     ],
                   ),
@@ -181,10 +182,7 @@ class _MyAppState extends State<MyApp> {
                                 onPressed: () {
                                   _licenseConfigCheckDialog(context);
                                   player.source = SourceDescription(sources: [
-                                    TypedSource(
-                                        src: "https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8",
-                                        type: "application/x-mpegurl"
-                                    ),
+                                    TypedSource(src: "https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8", type: "application/x-mpegurl"),
                                   ]);
                                 },
                                 child: const Text("Basic source"),
@@ -236,8 +234,7 @@ class _MyAppState extends State<MyApp> {
                                         src: "https://storage.googleapis.com/wvmedia/cenc/h264/tears/tears_sd.mpd",
                                         type: "application/dash+xml",
                                         drm: DRMConfiguration(
-                                          widevine: WidevineDRMConfiguration(
-                                              licenseAcquisitionURL: "https://proxy.uat.widevine.com/proxy?provider=widevine_test"),
+                                          widevine: WidevineDRMConfiguration(licenseAcquisitionURL: "https://proxy.uat.widevine.com/proxy?provider=widevine_test"),
                                         )),
                                   ]);
                                 },
@@ -267,8 +264,7 @@ class _MyAppState extends State<MyApp> {
                                   _licenseConfigCheckDialog(context);
                                   player.source = SourceDescription(sources: [
                                     TypedSource(
-                                        src:
-                                            "https://d2jl6e4h8300i8.cloudfront.net/netflix_meridian/4k-18.5!9/keyos-logo/g180-avc_a2.0-vbr-aac-128k/r30/dash-wv-pr/stream.mpd",
+                                        src: "https://d2jl6e4h8300i8.cloudfront.net/netflix_meridian/4k-18.5!9/keyos-logo/g180-avc_a2.0-vbr-aac-128k/r30/dash-wv-pr/stream.mpd",
                                         drm: DRMConfiguration(
                                           customIntegrationId: "KeyOSDRMIntegration",
                                           integrationParameters: {
@@ -346,9 +342,13 @@ class _MyAppState extends State<MyApp> {
             child: ListBody(
               children: <Widget>[
                 Text('Your forgot to configure your license!'),
-                SizedBox(height: 8,),
+                SizedBox(
+                  height: 8,
+                ),
                 Text('Without a license, THEOplayer can only play sources from `theoplayer.com`'),
-                SizedBox(height: 8,),
+                SizedBox(
+                  height: 8,
+                ),
                 Text('Get your license from `https://portal.theoplayer.com!`'),
               ],
             ),

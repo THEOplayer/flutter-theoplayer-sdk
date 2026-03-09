@@ -12,8 +12,8 @@ class MergerBuilder extends Builder {
 
   @override
   Map<String, List<String>> get buildExtensions => const {
-    r'$package$': [ outputFile ],
-  };
+        r'$package$': [outputFile],
+      };
 
   @override
   FutureOr<void> build(BuildStep buildStep) async {
@@ -29,9 +29,7 @@ class MergerBuilder extends Builder {
 
     // run pigeon command to generate platform specific files
     print('MergerBuilder - generating pigeons');
-    await pigeon_cl.runCommandLine([
-      '--input', outputFile
-    ]);
+    await pigeon_cl.runCommandLine(['--input', outputFile]);
 
     print('MergerBuilder - build completed');
   }

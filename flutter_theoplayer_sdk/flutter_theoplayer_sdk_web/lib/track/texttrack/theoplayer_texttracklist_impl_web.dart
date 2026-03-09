@@ -17,22 +17,8 @@ class TextTrackListImplWeb extends TextTracksImpl {
   TextTrackListImplWeb(this._theoPlayerTextTracks) {
     addTrackEventListener = (AddTextTrackEventJS event) {
       var track = event.track;
-      var flutterTrack = TextTrackImplWeb(
-        track.id, 
-        track.uid, 
-        track.label, 
-        track.language, 
-        track.kind, 
-        track.inBandMetadataTrackDispatchType, 
-        toFlutterTextTrackReadyState(track.readyState), 
-        toFlutterTextTrackType(track.type), 
-        new Cues(),
-        new Cues(),
-        track.src, 
-        track.forced, 
-        toFlutterTextTrackMode(track.mode),
-        track
-      );
+      var flutterTrack = TextTrackImplWeb(track.id, track.uid, track.label, track.language, track.kind, track.inBandMetadataTrackDispatchType, toFlutterTextTrackReadyState(track.readyState),
+          toFlutterTextTrackType(track.type), new Cues(), new Cues(), track.src, track.forced, toFlutterTextTrackMode(track.mode), track);
       add(flutterTrack);
       dispatchEvent(AddTextTrackEvent(track: flutterTrack));
     }.toJS;
@@ -64,6 +50,28 @@ class TextTrackListImplWeb extends TextTracksImpl {
     _theoPlayerTextTracks.addEventListener(TextTracksEventTypes.ADDTRACK.toLowerCase(), addTrackEventListener);
     _theoPlayerTextTracks.addEventListener(TextTracksEventTypes.REMOVETRACK.toLowerCase(), removeTrackEventListener);
     _theoPlayerTextTracks.addEventListener(TextTracksEventTypes.CHANGE.toLowerCase(), changeTrackEventListener);
+
+    // Populate any tracks that already exist in the JS player
+    for (var i = 0; i < _theoPlayerTextTracks.length; i++) {
+      final track = _theoPlayerTextTracks.item(i) as THEOplayerTextTrack;
+      var flutterTrack = TextTrackImplWeb(
+        track.id,
+        track.uid,
+        track.label,
+        track.language,
+        track.kind,
+        track.inBandMetadataTrackDispatchType,
+        toFlutterTextTrackReadyState(track.readyState),
+        toFlutterTextTrackType(track.type),
+        new Cues(),
+        new Cues(),
+        track.src,
+        track.forced,
+        toFlutterTextTrackMode(track.mode),
+        track,
+      );
+      add(flutterTrack);
+    }
   }
 
   void dispose() {

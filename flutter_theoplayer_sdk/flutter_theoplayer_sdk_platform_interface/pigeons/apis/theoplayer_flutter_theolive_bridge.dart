@@ -17,7 +17,6 @@ abstract class THEOplayerFlutterTHEOliveAPI {
   void onSeeked(double currentTime);
 }
 
-
 class Endpoint {
   final String? hespSrc;
   final String? hlsSrc;

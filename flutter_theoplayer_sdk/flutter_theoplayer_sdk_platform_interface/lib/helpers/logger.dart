@@ -8,6 +8,6 @@ void debugLog(Object? object) {
 }
 
 /// Wrapper around [print], use it to print user-facing messages (these will be visible in release mode too)
-void printLog(Object? object){
+void printLog(Object? object) {
   print(object);
 }

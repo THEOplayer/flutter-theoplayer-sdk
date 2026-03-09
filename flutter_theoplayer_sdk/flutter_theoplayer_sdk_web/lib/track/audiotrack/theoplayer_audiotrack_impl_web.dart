@@ -25,9 +25,7 @@ class AudioTrackImplWeb extends AudioTrackImpl {
       }
 
       AudioQualities flutterTargetQualities = AudioQualitiesImpl();
-      flutterTargetQualities.addAll(
-          this.qualities.where((element) => targetQualitiesUid.contains(element.uid))
-      );
+      flutterTargetQualities.addAll(this.qualities.where((element) => targetQualitiesUid.contains(element.uid)));
 
       AudioQuality? flutterTargetQuality = eventTargetQuality != null ? this.qualities.firstWhereOrNull((element) => element.uid == eventTargetQuality.uid) : null;
 

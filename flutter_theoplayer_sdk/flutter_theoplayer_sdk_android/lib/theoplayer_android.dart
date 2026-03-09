@@ -23,9 +23,7 @@ class THEOplayerAndroid extends TheoplayerPlatform {
       Map<String, dynamic> creationParams = <String, dynamic>{};
       creationParams["playerConfig"] = theoPlayerConfig.toJson();
 
-      PlatformPlayersService.instance.createPlayer(creationParams).then((value) =>
-          callback(value)
-      );
+      PlatformPlayersService.instance.createPlayer(creationParams).then((value) => callback(value));
     } else {
       // return -1 as default, as the [buildView] method doesn't care about this anymore for PlatformViews
       callback(-1);
@@ -45,7 +43,7 @@ class THEOplayerAndroid extends TheoplayerPlatform {
       // use TextureManager to avoid triggering of the lifecycle callbacks
       // this mimics the behaviour of PlatformViewLink
       // TODO: we should check if we can avoid this re-rendering few levels higher
-      var texture = TextureManager.createTexture(textureId, (texId){
+      var texture = TextureManager.createTexture(textureId, (texId) {
         var controller = THEOplayerViewControllerAndroid(textureId);
         // trigger the surface attachment
         // NOTE: THEOplayer Android performs a seek on setCustomSurface()
@@ -96,7 +94,7 @@ class THEOplayerAndroid extends TheoplayerPlatform {
               createdCallback(THEOplayerViewControllerAndroid(id), context);
             })
             ..create();
-          },
+        },
       );
     }
   }
