@@ -1,5 +1,6 @@
 import 'dart:js_interop';
-import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
+import 'package:theoplayer_platform_interface/pigeon/apis.g.dart' hide HespLatencies;
+import 'package:theoplayer_platform_interface/theolive/theolive_api.dart';
 import 'package:theoplayer_platform_interface/theolive/theolive_events.dart';
 import 'package:theoplayer_platform_interface/theolive/theolive_internal_api.dart';
 import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
@@ -61,6 +62,23 @@ class THEOliveControllerWeb extends THEOliveInternalInterface {
     _theoLiveApi.addEventListener(THEOliveApiEventTypes.INTENTTOFALLBACK.toLowerCase(), intentToFallbackEventListener);
     _theoLiveApi.addEventListener(THEOliveApiEventTypes.ENTERBADNETWORKMODE.toLowerCase(), enterBadNetworkModeEventListener);
     _theoLiveApi.addEventListener(THEOliveApiEventTypes.EXITBADNETWORKMODE.toLowerCase(), exitBadNetworkModeEventListener);
+  }
+
+  @override
+  Future<double?> get currentLatency async {
+    return _theoLiveApi.currentLatency?.toDartDouble;
+  }
+
+  @override
+  Future<HespLatencies?> get latencies async {
+    final jsLatencies = _theoLiveApi.latencies;
+    if (jsLatencies == null) return null;
+    return HespLatencies(
+      engineLatency: jsLatencies.engineLatency?.toDartDouble,
+      distributionLatency: jsLatencies.distributionLatency?.toDartDouble,
+      playerLatency: jsLatencies.playerLatency?.toDartDouble,
+      theoliveLatency: jsLatencies.theoliveLatency?.toDartDouble,
+    );
   }
 
   @override

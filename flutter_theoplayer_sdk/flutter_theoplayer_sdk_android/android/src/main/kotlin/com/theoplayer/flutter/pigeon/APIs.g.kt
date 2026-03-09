@@ -279,6 +279,33 @@ data class FairPlayDRMConfiguration (
 }
 
 /** Generated class from Pigeon that represents data sent in messages. */
+data class HespLatencies (
+  val engineLatency: Double? = null,
+  val distributionLatency: Double? = null,
+  val playerLatency: Double? = null,
+  val theoliveLatency: Double? = null
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): HespLatencies {
+      val engineLatency = pigeonVar_list[0] as Double?
+      val distributionLatency = pigeonVar_list[1] as Double?
+      val playerLatency = pigeonVar_list[2] as Double?
+      val theoliveLatency = pigeonVar_list[3] as Double?
+      return HespLatencies(engineLatency, distributionLatency, playerLatency, theoliveLatency)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      engineLatency,
+      distributionLatency,
+      playerLatency,
+      theoliveLatency,
+    )
+  }
+}
+
+/** Generated class from Pigeon that represents data sent in messages. */
 data class Endpoint (
   val hespSrc: String? = null,
   val hlsSrc: String? = null,
@@ -375,6 +402,11 @@ private open class APIsPigeonCodec : StandardMessageCodec() {
       }
       141.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
+          HespLatencies.fromList(it)
+        }
+      }
+      142.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
           Endpoint.fromList(it)
         }
       }
@@ -431,14 +463,19 @@ private open class APIsPigeonCodec : StandardMessageCodec() {
         stream.write(140)
         writeValue(stream, value.toList())
       }
-      is Endpoint -> {
+      is HespLatencies -> {
         stream.write(141)
+        writeValue(stream, value.toList())
+      }
+      is Endpoint -> {
+        stream.write(142)
         writeValue(stream, value.toList())
       }
       else -> super.writeValue(stream, value)
     }
   }
 }
+
 
 /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
 interface THEOplayerNativeTextTracksAPI {
@@ -709,6 +746,8 @@ class THEOplayerFlutterTextTracksAPI(private val binaryMessenger: BinaryMessenge
 interface THEOplayerNativeTHEOliveAPI {
   fun goLive()
   fun preloadChannels(channelIds: List<String>?)
+  fun currentLatency(callback: (Result<Double?>) -> Unit)
+  fun latencies(callback: (Result<HespLatencies?>) -> Unit)
 
   companion object {
     /** The codec used by THEOplayerNativeTHEOliveAPI. */
@@ -748,6 +787,42 @@ interface THEOplayerNativeTHEOliveAPI {
               wrapError(exception)
             }
             reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeTHEOliveAPI.currentLatency$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            api.currentLatency{ result: Result<Double?> ->
+              val error = result.exceptionOrNull()
+              if (error != null) {
+                reply.reply(wrapError(error))
+              } else {
+                val data = result.getOrNull()
+                reply.reply(wrapResult(data))
+              }
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeTHEOliveAPI.latencies$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            api.latencies{ result: Result<HespLatencies?> ->
+              val error = result.exceptionOrNull()
+              if (error != null) {
+                reply.reply(wrapError(error))
+              } else {
+                val data = result.getOrNull()
+                reply.reply(wrapResult(data))
+              }
+            }
           }
         } else {
           channel.setMessageHandler(null)

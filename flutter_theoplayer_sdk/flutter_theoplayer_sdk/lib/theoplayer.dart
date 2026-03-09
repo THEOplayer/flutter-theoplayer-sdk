@@ -1,5 +1,5 @@
 //TODO: separate pigeon from public API
-export 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
+export 'package:theoplayer_platform_interface/pigeon/apis.g.dart' hide HespLatencies;
 export 'package:theoplayer_platform_interface/theopalyer_config.dart';
 export 'package:theoplayer_platform_interface/theoplayer_events.dart';
 export 'package:theoplayer_platform_interface/theoplayer_view_controller_interface.dart';

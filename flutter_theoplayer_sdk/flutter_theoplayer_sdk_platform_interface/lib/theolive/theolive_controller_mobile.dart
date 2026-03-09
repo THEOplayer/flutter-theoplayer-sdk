@@ -1,8 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:theoplayer_platform_interface/helpers/logger.dart';
-import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
+import 'package:theoplayer_platform_interface/pigeon/apis.g.dart' hide HespLatencies;
+import 'package:theoplayer_platform_interface/pigeon/apis.g.dart' as pigeon show HespLatencies;
 import 'package:theoplayer_platform_interface/pigeon_binary_messenger_wrapper.dart';
 import 'package:theoplayer_platform_interface/theolive/theolive_events.dart';
+import 'package:theoplayer_platform_interface/theolive/theolive_api.dart';
 import 'package:theoplayer_platform_interface/theolive/theolive_internal_api.dart';
 import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
 import 'package:theoplayer_platform_interface/theoplayer_event_manager.dart';
@@ -48,6 +50,23 @@ class THEOplayerTHEOliveControllerMobile extends THEOliveInternalInterface imple
   @override
   void preloadChannels(List<String> channelIDs) {
     _nativeTHEOliveAPI.preloadChannels(channelIDs);
+  }
+
+  @override
+  Future<double?> get currentLatency async {
+    return _nativeTHEOliveAPI.currentLatency();
+  }
+
+  @override
+  Future<HespLatencies?> get latencies async {
+    final pigeonResult = await _nativeTHEOliveAPI.latencies();
+    if (pigeonResult == null) return null;
+    return HespLatencies(
+      engineLatency: pigeonResult.engineLatency,
+      distributionLatency: pigeonResult.distributionLatency,
+      playerLatency: pigeonResult.playerLatency,
+      theoliveLatency: pigeonResult.theoliveLatency,
+    );
   }
 
   // THEOplayerFlutterTHEOliveAPI methods
