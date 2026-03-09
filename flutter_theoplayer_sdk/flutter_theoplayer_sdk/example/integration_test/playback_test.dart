@@ -27,38 +27,6 @@ void main() {
     await runBasicPlaybackTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
   });
 
-  testWidgets('Test video track events with HYBRID_COMPOSITION', (WidgetTester tester) async {
-    await runVideoTrackEventsTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
-  });
-
-  testWidgets('Test video track events with SURFACE_TEXTURE', (WidgetTester tester) async {
-    await runVideoTrackEventsTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
-  });
-
-  testWidgets('Test audio track events with HYBRID_COMPOSITION', (WidgetTester tester) async {
-    await runAudioTrackEventsTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
-  });
-
-  testWidgets('Test audio track events with SURFACE_TEXTURE', (WidgetTester tester) async {
-    await runAudioTrackEventsTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
-  });
-
-  testWidgets('Test text track events with HYBRID_COMPOSITION', (WidgetTester tester) async {
-    await runTextTrackEventsTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
-  });
-
-  testWidgets('Test text track events with SURFACE_TEXTURE', (WidgetTester tester) async {
-    await runTextTrackEventsTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
-  });
-
-  testWidgets('Test quality properties with HYBRID_COMPOSITION', (WidgetTester tester) async {
-    await runQualityPropertiesTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
-  });
-
-  testWidgets('Test quality properties with SURFACE_TEXTURE', (WidgetTester tester) async {
-    await runQualityPropertiesTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
-  });
-
   //disabled for now only on WEB, we need to figure out the license
   if (!kIsWeb) {
     testWidgets('Test basic THEOlive playback with HYBRID_COMPOSITION', (WidgetTester tester) async {
@@ -68,6 +36,38 @@ void main() {
     // the only difference is is on Android
     testWidgets('Test basic THEOlive playback with SURFACE_TEXTURE', (WidgetTester tester) async {
       await runBasicTHEOlivePlaybackTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
+    });
+
+    testWidgets('Test video track events with HYBRID_COMPOSITION', (WidgetTester tester) async {
+      await runVideoTrackEventsTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
+    });
+
+    testWidgets('Test video track events with SURFACE_TEXTURE', (WidgetTester tester) async {
+      await runVideoTrackEventsTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
+    });
+
+    testWidgets('Test audio track events with HYBRID_COMPOSITION', (WidgetTester tester) async {
+      await runAudioTrackEventsTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
+    });
+
+    testWidgets('Test audio track events with SURFACE_TEXTURE', (WidgetTester tester) async {
+      await runAudioTrackEventsTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
+    });
+
+    testWidgets('Test text track events with HYBRID_COMPOSITION', (WidgetTester tester) async {
+      await runTextTrackEventsTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
+    });
+
+    testWidgets('Test text track events with SURFACE_TEXTURE', (WidgetTester tester) async {
+      await runTextTrackEventsTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
+    });
+
+    testWidgets('Test quality properties with HYBRID_COMPOSITION', (WidgetTester tester) async {
+      await runQualityPropertiesTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
+    });
+
+    testWidgets('Test quality properties with SURFACE_TEXTURE', (WidgetTester tester) async {
+      await runQualityPropertiesTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
     });
   }
 }
