@@ -44,7 +44,7 @@ class THEOliveBridge(private val theoLive: TheoLive, private val pigeonMessenger
     }
 
     private val intentToFallbackListener = EventListener<IntentToFallbackEvent> {
-        flutterTHEOliveAPI.onIntentToFallbackEvent(emptyCallback)
+        flutterTHEOliveAPI.onIntentToFallbackEvent(it.reason?.code?.id?.toString(), it.reason?.message, emptyCallback)
     }
 
     override fun goLive() {

@@ -502,6 +502,20 @@ extension DistributionOfflineEventJSExtension on DistributionOfflineEventJS {
 @staticInterop
 class IntentToFallbackEventJS {}
 
+extension IntentToFallbackEventJSExtension on IntentToFallbackEventJS {
+  external IntentToFallbackReasonJS? get reason;
+}
+
+@JS()
+@anonymous
+@staticInterop
+class IntentToFallbackReasonJS {}
+
+extension IntentToFallbackReasonJSExtension on IntentToFallbackReasonJS {
+  external String? get code;
+  external String? get message;
+}
+
 @JS()
 @anonymous
 @staticInterop

@@ -117,7 +117,7 @@ abstract class THEOplayerNativeTextTracksAPI {
 abstract class THEOplayerFlutterTextTracksAPI {
   // TextTrackList events
   void onAddTextTrack(String? id, int uid, String? label, String? language, String? kind, String? inBandMetadataTrackDispatchType, TextTrackReadyState readyState, TextTrackType type, String? source,
-      bool isForced, TextTrackMode mode, String? unlocalizedLabel);
+      bool isForced, TextTrackMode mode);
 
   void onRemoveTextTrack(int uid);
 
@@ -125,9 +125,6 @@ abstract class THEOplayerFlutterTextTracksAPI {
 
   // TextTrack events
   void onTextTrackAddCue(int textTrackUid, String id, int uid, double startTime, double endTime, String content);
-
-  void onTextTrackAddDateRangeCue(int textTrackUid, String id, int uid, double startTime, double endTime, String? cueClass, double startDateMillis, double? endDateMillis, double? duration,
-      double? plannedDuration, bool endOnNext, String? customAttributesJson);
 
   void onTextTrackRemoveCue(int textTrackUid, int cueUid);
 
@@ -158,7 +155,7 @@ abstract class THEOplayerFlutterTHEOliveAPI {
   void onDistributionLoadStartEvent(String distributionId);
   void onEndpointLoadedEvent(Endpoint endpoint);
   void onDistributionOfflineEvent(String distributionId);
-  void onIntentToFallbackEvent();
+  void onIntentToFallbackEvent(String? errorCode, String? errorMessage);
   //experimental API for iOS-only
   void onSeeking(double currentTime);
   void onSeeked(double currentTime);
@@ -316,11 +313,10 @@ abstract class THEOplayerNativeVideoTracksAPI {
 @FlutterApi()
 abstract class THEOplayerFlutterVideoTracksAPI {
   // VideoTrackList events
-  void onAddVideoTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled, String? unlocalizedLabel);
+  void onAddVideoTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled);
 
   // helper to populate the qualities in the video track
-  void onVideoTrackAddQuality(int videoTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame,
-      int? averageBandwidth, bool available);
+  void onVideoTrackAddQuality(int videoTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame);
 
   void onRemoveVideoTrack(int uid);
 
@@ -332,8 +328,7 @@ abstract class THEOplayerFlutterVideoTracksAPI {
   void onActiveQualityChange(int videoTrackUid, int qualityUid);
 
   // Quality events
-  void onQualityUpdate(
-      int videoTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame, int? averageBandwidth, bool available);
+  void onQualityUpdate(int videoTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame);
 }
 
 @HostApi()
@@ -348,10 +343,10 @@ abstract class THEOplayerNativeAudioTracksAPI {
 @FlutterApi()
 abstract class THEOplayerFlutterAudioTracksAPI {
   // AudioTrackList events
-  void onAddAudioTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled, String? unlocalizedLabel);
+  void onAddAudioTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled);
 
   // helper to populate the qualities in the audio track
-  void onAudioTrackAddQuality(int audioTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate, int? averageBandwidth, bool available);
+  void onAudioTrackAddQuality(int audioTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate);
 
   void onRemoveAudioTrack(int uid);
 
@@ -363,5 +358,5 @@ abstract class THEOplayerFlutterAudioTracksAPI {
   void onActiveQualityChange(int audioTrackUid, int qualityUid);
 
   // Quality events
-  void onQualityUpdate(int audioTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate, int? averageBandwidth, bool available);
+  void onQualityUpdate(int audioTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate);
 }
