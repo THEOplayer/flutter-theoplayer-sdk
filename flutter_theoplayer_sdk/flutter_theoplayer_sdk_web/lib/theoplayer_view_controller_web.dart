@@ -181,6 +181,7 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   @override
   void setSource({required PlatformInterface.SourceDescription? source}) {
     if (source == null) {
+      _theoPlayerJS.stop();
       return;
     }
 
