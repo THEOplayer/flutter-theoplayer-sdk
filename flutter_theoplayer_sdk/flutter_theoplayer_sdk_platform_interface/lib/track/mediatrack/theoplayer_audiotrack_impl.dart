@@ -147,8 +147,10 @@ class AudioQualityImpl extends AudioQuality {
   late int _bandwidth;
   late String? _codecs;
   late int _audioSamplingRate;
+  late int? _averageBandwidth;
+  late bool _available;
 
-  AudioQualityImpl(super.id, super.uid, this._name, this._bandwidth, this._codecs, this._audioSamplingRate);
+  AudioQualityImpl(super.id, super.uid, this._name, this._bandwidth, this._codecs, this._audioSamplingRate, this._averageBandwidth, this._available);
 
   @override
   String? get name => _name;
@@ -162,11 +164,19 @@ class AudioQualityImpl extends AudioQuality {
   @override
   int get audioSamplingRate => _audioSamplingRate;
 
-  void update(String? name, int bandwidth, String? codecs, int audioSamplingRate) {
+  @override
+  int? get averageBandwidth => _averageBandwidth;
+
+  @override
+  bool get available => _available;
+
+  void update(String? name, int bandwidth, String? codecs, int audioSamplingRate, int? averageBandwidth, bool available) {
     this._name = name;
     this._bandwidth = bandwidth;
     this._codecs = codecs;
     this._audioSamplingRate = audioSamplingRate;
+    this._averageBandwidth = averageBandwidth;
+    this._available = available;
   }
 
   @override

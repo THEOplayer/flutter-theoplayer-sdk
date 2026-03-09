@@ -48,13 +48,8 @@ PlatformInterface.SourceDescription? toFlutterSourceDescription(SourceDescriptio
       widevineDRMConfiguration = PlatformInterface.WidevineDRMConfiguration(licenseAcquisitionURL: widevine.licenseAcquisitionURL);
     }
 
-    typedSources.add(
-        PlatformInterface.TypedSourcePigeon(
-            src: typedSource.src,
-            type: typedSource.type,
-            drm: PlatformInterface.DRMConfiguration(fairplay: fairPlayDRMConfiguration, widevine: widevineDRMConfiguration)
-        )
-    );
+    typedSources.add(PlatformInterface.TypedSourcePigeon(
+        src: typedSource.src, type: typedSource.type, drm: PlatformInterface.DRMConfiguration(fairplay: fairPlayDRMConfiguration, widevine: widevineDRMConfiguration)));
   }
 
   return PlatformInterface.SourceDescription(sources: typedSources);
@@ -80,7 +75,11 @@ SourceDescription toSourceDescription(PlatformInterface.SourceDescription flutte
       flutterWidevineDrmConfiguration = WidevineContentProtectionConfiguration(licenseAcquisitionURL: widevine.licenseAcquisitionURL);
     }
 
-    flutterTypedSources.add(TypedSource(integration: flutterTypedSource.integration?.name, src: flutterTypedSource.src, type: flutterTypedSource.type, contentProtection: ContentProtection(fairplay: flutterFairplayDrmConfiguration, widevine: flutterWidevineDrmConfiguration)));
+    flutterTypedSources.add(TypedSource(
+        integration: flutterTypedSource.integration?.name,
+        src: flutterTypedSource.src,
+        type: flutterTypedSource.type,
+        contentProtection: ContentProtection(fairplay: flutterFairplayDrmConfiguration, widevine: flutterWidevineDrmConfiguration)));
   }
 
   return SourceDescription(sources: JSHelpers.jsItemsToJSArray(flutterTypedSources));
@@ -148,7 +147,7 @@ String toTextTrackMode(PlatformInterface.TextTrackMode flutterTextTrackmode) {
   }
 }
 
-AudioQuality toFlutterAudioQuality(THEOplayerAudioQuality q) => AudioQualityImpl(q.id, q.uid, q.name, q.bandwidth, q.codecs, q.audioSamplingRate);
+AudioQuality toFlutterAudioQuality(THEOplayerAudioQuality q) => AudioQualityImpl(q.id, q.uid, q.name, q.bandwidth, q.codecs, q.audioSamplingRate, q.averageBandwidth, q.available);
 
 AudioQualities toFlutterAudioQualities(List<THEOplayerAudioQuality> qualities) {
   AudioQualities flutterQualities = AudioQualitiesImpl();
@@ -159,7 +158,8 @@ AudioQualities toFlutterAudioQualities(List<THEOplayerAudioQuality> qualities) {
   return flutterQualities;
 }
 
-VideoQuality toFlutterVideoQuality(THEOplayerVideoQuality q) => VideoQualityImpl(q.id, q.uid, q.name, q.bandwidth, q.codecs, q.width, q.height, q.frameRate, q.firstFrame);
+VideoQuality toFlutterVideoQuality(THEOplayerVideoQuality q) =>
+    VideoQualityImpl(q.id, q.uid, q.name, q.bandwidth, q.codecs, q.width, q.height, q.frameRate, q.firstFrame, q.averageBandwidth, q.available);
 
 VideoQualities toFlutterVideoQualities(List<THEOplayerVideoQuality> qualities) {
   VideoQualities flutterQualities = VideoQualitiesImpl();

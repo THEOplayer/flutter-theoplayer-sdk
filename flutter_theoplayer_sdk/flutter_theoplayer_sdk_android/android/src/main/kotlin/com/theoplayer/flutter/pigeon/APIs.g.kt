@@ -483,12 +483,12 @@ class THEOplayerFlutterTextTracksAPI(private val binaryMessenger: BinaryMessenge
       APIsPigeonCodec()
     }
   }
-  fun onAddTextTrack(idArg: String?, uidArg: Long, labelArg: String?, languageArg: String?, kindArg: String?, inBandMetadataTrackDispatchTypeArg: String?, readyStateArg: TextTrackReadyState, typeArg: TextTrackType, sourceArg: String?, isForcedArg: Boolean, modeArg: TextTrackMode, callback: (Result<Unit>) -> Unit)
+  fun onAddTextTrack(idArg: String?, uidArg: Long, labelArg: String?, languageArg: String?, kindArg: String?, inBandMetadataTrackDispatchTypeArg: String?, readyStateArg: TextTrackReadyState, typeArg: TextTrackType, sourceArg: String?, isForcedArg: Boolean, modeArg: TextTrackMode, unlocalizedLabelArg: String?, callback: (Result<Unit>) -> Unit)
 {
     val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
     val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack$separatedMessageChannelSuffix"
     val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
-    channel.send(listOf(idArg, uidArg, labelArg, languageArg, kindArg, inBandMetadataTrackDispatchTypeArg, readyStateArg, typeArg, sourceArg, isForcedArg, modeArg)) {
+    channel.send(listOf(idArg, uidArg, labelArg, languageArg, kindArg, inBandMetadataTrackDispatchTypeArg, readyStateArg, typeArg, sourceArg, isForcedArg, modeArg, unlocalizedLabelArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
@@ -540,6 +540,23 @@ class THEOplayerFlutterTextTracksAPI(private val binaryMessenger: BinaryMessenge
     val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue$separatedMessageChannelSuffix"
     val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
     channel.send(listOf(textTrackUidArg, idArg, uidArg, startTimeArg, endTimeArg, contentArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
+        } else {
+          callback(Result.success(Unit))
+        }
+      } else {
+        callback(Result.failure(createConnectionError(channelName)))
+      } 
+    }
+  }
+  fun onTextTrackAddDateRangeCue(textTrackUidArg: Long, idArg: String, uidArg: Long, startTimeArg: Double, endTimeArg: Double, cueClassArg: String?, startDateMillisArg: Double, endDateMillisArg: Double?, durationArg: Double?, plannedDurationArg: Double?, endOnNextArg: Boolean, customAttributesJsonArg: String?, callback: (Result<Unit>) -> Unit)
+{
+    val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
+    val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue$separatedMessageChannelSuffix"
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
+    channel.send(listOf(textTrackUidArg, idArg, uidArg, startTimeArg, endTimeArg, cueClassArg, startDateMillisArg, endDateMillisArg, durationArg, plannedDurationArg, endOnNextArg, customAttributesJsonArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
@@ -1980,12 +1997,12 @@ class THEOplayerFlutterVideoTracksAPI(private val binaryMessenger: BinaryMesseng
       APIsPigeonCodec()
     }
   }
-  fun onAddVideoTrack(idArg: String?, uidArg: Long, labelArg: String?, languageArg: String?, kindArg: String?, isEnabledArg: Boolean, callback: (Result<Unit>) -> Unit)
+  fun onAddVideoTrack(idArg: String?, uidArg: Long, labelArg: String?, languageArg: String?, kindArg: String?, isEnabledArg: Boolean, unlocalizedLabelArg: String?, callback: (Result<Unit>) -> Unit)
 {
     val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
     val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onAddVideoTrack$separatedMessageChannelSuffix"
     val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
-    channel.send(listOf(idArg, uidArg, labelArg, languageArg, kindArg, isEnabledArg)) {
+    channel.send(listOf(idArg, uidArg, labelArg, languageArg, kindArg, isEnabledArg, unlocalizedLabelArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
@@ -1997,12 +2014,12 @@ class THEOplayerFlutterVideoTracksAPI(private val binaryMessenger: BinaryMesseng
       } 
     }
   }
-  fun onVideoTrackAddQuality(videoTrackUidArg: Long, qualityIdArg: String, qualityUidArg: Long, nameArg: String?, bandwidthArg: Long, codecsArg: String?, widthArg: Long, heightArg: Long, frameRateArg: Double, firstFrameArg: Double, callback: (Result<Unit>) -> Unit)
+  fun onVideoTrackAddQuality(videoTrackUidArg: Long, qualityIdArg: String, qualityUidArg: Long, nameArg: String?, bandwidthArg: Long, codecsArg: String?, widthArg: Long, heightArg: Long, frameRateArg: Double, firstFrameArg: Double, averageBandwidthArg: Long?, availableArg: Boolean, callback: (Result<Unit>) -> Unit)
 {
     val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
     val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality$separatedMessageChannelSuffix"
     val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
-    channel.send(listOf(videoTrackUidArg, qualityIdArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, widthArg, heightArg, frameRateArg, firstFrameArg)) {
+    channel.send(listOf(videoTrackUidArg, qualityIdArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, widthArg, heightArg, frameRateArg, firstFrameArg, averageBandwidthArg, availableArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
@@ -2082,12 +2099,12 @@ class THEOplayerFlutterVideoTracksAPI(private val binaryMessenger: BinaryMesseng
       } 
     }
   }
-  fun onQualityUpdate(videoTrackUidArg: Long, qualityUidArg: Long, nameArg: String?, bandwidthArg: Long, codecsArg: String?, widthArg: Long, heightArg: Long, frameRateArg: Double, firstFrameArg: Double, callback: (Result<Unit>) -> Unit)
+  fun onQualityUpdate(videoTrackUidArg: Long, qualityUidArg: Long, nameArg: String?, bandwidthArg: Long, codecsArg: String?, widthArg: Long, heightArg: Long, frameRateArg: Double, firstFrameArg: Double, averageBandwidthArg: Long?, availableArg: Boolean, callback: (Result<Unit>) -> Unit)
 {
     val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
     val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate$separatedMessageChannelSuffix"
     val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
-    channel.send(listOf(videoTrackUidArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, widthArg, heightArg, frameRateArg, firstFrameArg)) {
+    channel.send(listOf(videoTrackUidArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, widthArg, heightArg, frameRateArg, firstFrameArg, averageBandwidthArg, availableArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
@@ -2183,12 +2200,12 @@ class THEOplayerFlutterAudioTracksAPI(private val binaryMessenger: BinaryMesseng
       APIsPigeonCodec()
     }
   }
-  fun onAddAudioTrack(idArg: String?, uidArg: Long, labelArg: String?, languageArg: String?, kindArg: String?, isEnabledArg: Boolean, callback: (Result<Unit>) -> Unit)
+  fun onAddAudioTrack(idArg: String?, uidArg: Long, labelArg: String?, languageArg: String?, kindArg: String?, isEnabledArg: Boolean, unlocalizedLabelArg: String?, callback: (Result<Unit>) -> Unit)
 {
     val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
     val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAddAudioTrack$separatedMessageChannelSuffix"
     val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
-    channel.send(listOf(idArg, uidArg, labelArg, languageArg, kindArg, isEnabledArg)) {
+    channel.send(listOf(idArg, uidArg, labelArg, languageArg, kindArg, isEnabledArg, unlocalizedLabelArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
@@ -2200,12 +2217,12 @@ class THEOplayerFlutterAudioTracksAPI(private val binaryMessenger: BinaryMesseng
       } 
     }
   }
-  fun onAudioTrackAddQuality(audioTrackUidArg: Long, qualityIdArg: String, qualityUidArg: Long, nameArg: String?, bandwidthArg: Long, codecsArg: String?, audioSamplingRateArg: Long, callback: (Result<Unit>) -> Unit)
+  fun onAudioTrackAddQuality(audioTrackUidArg: Long, qualityIdArg: String, qualityUidArg: Long, nameArg: String?, bandwidthArg: Long, codecsArg: String?, audioSamplingRateArg: Long, averageBandwidthArg: Long?, availableArg: Boolean, callback: (Result<Unit>) -> Unit)
 {
     val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
     val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality$separatedMessageChannelSuffix"
     val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
-    channel.send(listOf(audioTrackUidArg, qualityIdArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, audioSamplingRateArg)) {
+    channel.send(listOf(audioTrackUidArg, qualityIdArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, audioSamplingRateArg, averageBandwidthArg, availableArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
@@ -2285,12 +2302,12 @@ class THEOplayerFlutterAudioTracksAPI(private val binaryMessenger: BinaryMesseng
       } 
     }
   }
-  fun onQualityUpdate(audioTrackUidArg: Long, qualityUidArg: Long, nameArg: String?, bandwidthArg: Long, codecsArg: String?, audioSamplingRateArg: Long, callback: (Result<Unit>) -> Unit)
+  fun onQualityUpdate(audioTrackUidArg: Long, qualityUidArg: Long, nameArg: String?, bandwidthArg: Long, codecsArg: String?, audioSamplingRateArg: Long, averageBandwidthArg: Long?, availableArg: Boolean, callback: (Result<Unit>) -> Unit)
 {
     val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
     val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate$separatedMessageChannelSuffix"
     val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
-    channel.send(listOf(audioTrackUidArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, audioSamplingRateArg)) {
+    channel.send(listOf(audioTrackUidArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, audioSamplingRateArg, averageBandwidthArg, availableArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))

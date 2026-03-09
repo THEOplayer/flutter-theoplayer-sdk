@@ -7,14 +7,11 @@ import 'package:pigeon/pigeon.dart';
   dartOut: 'lib/pigeon/apis.g.dart',
   dartOptions: DartOptions(),
   kotlinOut: '../flutter_theoplayer_sdk_android/android/src/main/kotlin/com/theoplayer/flutter/pigeon/APIs.g.kt',
-  kotlinOptions: KotlinOptions(
-      package: 'com.theoplayer.flutter.pigeon'
-  ),
+  kotlinOptions: KotlinOptions(package: 'com.theoplayer.flutter.pigeon'),
   swiftOut: '../flutter_theoplayer_sdk_ios/ios/Classes/pigeon/APIs.g.swift',
   swiftOptions: SwiftOptions(),
   dartPackageName: 'theoplayer_platform_interface',
 ))
-
 enum ReadyState {
   have_nothing,
   have_metadata,
@@ -111,9 +108,6 @@ class FairPlayDRMConfiguration {
   FairPlayDRMConfiguration({required this.licenseAcquisitionURL, required this.certificateURL, this.headers});
 }
 
-
-
-
 @HostApi()
 abstract class THEOplayerNativeTextTracksAPI {
   void setMode(int textTrackUid, TextTrackMode mode);
@@ -122,18 +116,8 @@ abstract class THEOplayerNativeTextTracksAPI {
 @FlutterApi()
 abstract class THEOplayerFlutterTextTracksAPI {
   // TextTrackList events
-  void onAddTextTrack(
-      String? id,
-      int uid,
-      String? label,
-      String? language,
-      String? kind,
-      String? inBandMetadataTrackDispatchType,
-      TextTrackReadyState readyState,
-      TextTrackType type,
-      String? source,
-      bool isForced,
-      TextTrackMode mode);
+  void onAddTextTrack(String? id, int uid, String? label, String? language, String? kind, String? inBandMetadataTrackDispatchType, TextTrackReadyState readyState, TextTrackType type, String? source,
+      bool isForced, TextTrackMode mode, String? unlocalizedLabel);
 
   void onRemoveTextTrack(int uid);
 
@@ -141,6 +125,9 @@ abstract class THEOplayerFlutterTextTracksAPI {
 
   // TextTrack events
   void onTextTrackAddCue(int textTrackUid, String id, int uid, double startTime, double endTime, String content);
+
+  void onTextTrackAddDateRangeCue(int textTrackUid, String id, int uid, double startTime, double endTime, String? cueClass, double startDateMillis, double? endDateMillis, double? duration,
+      double? plannedDuration, bool endOnNext, String? customAttributesJson);
 
   void onTextTrackRemoveCue(int textTrackUid, int cueUid);
 
@@ -160,8 +147,6 @@ abstract class THEOplayerFlutterTextTracksAPI {
   void onCueUpdate(int textTrackUid, int cueUid, double endTime, String content);
 }
 
-
-
 @HostApi()
 abstract class THEOplayerNativeTHEOliveAPI {
   void goLive();
@@ -179,7 +164,6 @@ abstract class THEOplayerFlutterTHEOliveAPI {
   void onSeeked(double currentTime);
 }
 
-
 class Endpoint {
   final String? hespSrc;
   final String? hlsSrc;
@@ -190,8 +174,6 @@ class Endpoint {
 
   Endpoint(this.hespSrc, this.hlsSrc, this.cdn, this.adSrc, this.weight, this.priority);
 }
-
-
 
 //Talking to the native
 @HostApi()
@@ -268,15 +250,11 @@ abstract class THEOplayerNativeAPI {
 
   // application lifecycle listeners
   void onLifecycleResume();
-  
+
   void onLifecyclePause();
 
   void configureSurface(int surfaceId, int width, int height);
-
 }
-
-
-
 
 //Talking from Native to Dart
 @FlutterApi()
@@ -326,8 +304,6 @@ abstract class THEOplayerFlutterAPI {
   void onCanPlayThrough(double currentTime);
 }
 
-
-
 @HostApi()
 abstract class THEOplayerNativeVideoTracksAPI {
   void setTargetQuality(int videoTrackUid, int? qualityUid);
@@ -340,10 +316,11 @@ abstract class THEOplayerNativeVideoTracksAPI {
 @FlutterApi()
 abstract class THEOplayerFlutterVideoTracksAPI {
   // VideoTrackList events
-  void onAddVideoTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled);
+  void onAddVideoTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled, String? unlocalizedLabel);
 
   // helper to populate the qualities in the video track
-  void onVideoTrackAddQuality(int videoTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame);
+  void onVideoTrackAddQuality(int videoTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame,
+      int? averageBandwidth, bool available);
 
   void onRemoveVideoTrack(int uid);
 
@@ -355,10 +332,9 @@ abstract class THEOplayerFlutterVideoTracksAPI {
   void onActiveQualityChange(int videoTrackUid, int qualityUid);
 
   // Quality events
-  void onQualityUpdate(int videoTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame);
+  void onQualityUpdate(
+      int videoTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame, int? averageBandwidth, bool available);
 }
-
-
 
 @HostApi()
 abstract class THEOplayerNativeAudioTracksAPI {
@@ -372,10 +348,10 @@ abstract class THEOplayerNativeAudioTracksAPI {
 @FlutterApi()
 abstract class THEOplayerFlutterAudioTracksAPI {
   // AudioTrackList events
-  void onAddAudioTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled);
+  void onAddAudioTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled, String? unlocalizedLabel);
 
   // helper to populate the qualities in the audio track
-  void onAudioTrackAddQuality(int audioTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate);
+  void onAudioTrackAddQuality(int audioTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate, int? averageBandwidth, bool available);
 
   void onRemoveAudioTrack(int uid);
 
@@ -387,6 +363,5 @@ abstract class THEOplayerFlutterAudioTracksAPI {
   void onActiveQualityChange(int audioTrackUid, int qualityUid);
 
   // Quality events
-  void onQualityUpdate(int audioTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate);
+  void onQualityUpdate(int audioTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate, int? averageBandwidth, bool available);
 }
-
