@@ -55,7 +55,7 @@ class THEOplayerTHEOliveControllerMobile extends THEOliveInternalInterface imple
   @override
   void onIntentToFallbackEvent(String? errorCode, String? errorMessage) {
     final reason = (errorCode != null || errorMessage != null) ? PlayerError(errorCode: errorCode ?? '', errorMessage: errorMessage ?? '') : null;
-    _eventManager.dispatchEvent(TheoLiveIntentToFallbackEvent(reason: reason));
+    _eventManager.dispatchEvent(IntentToFallbackEvent(reason: reason));
   }
 
   @override

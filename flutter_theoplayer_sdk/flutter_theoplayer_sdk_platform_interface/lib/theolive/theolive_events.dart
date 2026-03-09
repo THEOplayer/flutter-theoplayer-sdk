@@ -35,11 +35,11 @@ class PlayerError {
   PlayerError({required this.errorCode, required this.errorMessage});
 }
 
-class TheoLiveIntentToFallbackEvent extends Event {
+class IntentToFallbackEvent extends Event {
   final PlayerError? reason;
   final String subType = THEOliveApiEventTypes.INTENTTOFALLBACK;
 
-  TheoLiveIntentToFallbackEvent({this.reason}) : super(type: THEOliveApiEventTypes.INTENTTOFALLBACK);
+  IntentToFallbackEvent({this.reason}) : super(type: THEOliveApiEventTypes.INTENTTOFALLBACK);
 }
 
 class EnterBadNetworkModeEvent extends Event {
