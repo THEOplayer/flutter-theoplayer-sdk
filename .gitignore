@@ -29,3 +29,9 @@ migrate_working_dir/
 .dart_tool/
 .packages
 build/
+
+# Claude Code
+**/.claude/
+
+# Flutter generated
+**/.flutter-plugins-dependencies
