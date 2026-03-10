@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:theoplayer/src/abr/abr_api.dart';
 import 'package:theoplayer/src/debug/debug_flags_api.dart';
 import 'package:theoplayer/src/debug/debug_flags_panel.dart';
 import 'package:theoplayer/src/theolive/theolive_wrapper.dart';
@@ -56,6 +57,7 @@ class THEOplayer implements EventDispatcher {
   final VideoTracksHolder _videoTrackListHolder = VideoTracksHolder();
   final THEOliveAPIHolder _theoLiveAPIHolder = THEOliveAPIHolder();
   final DebugFlagsAPI _debugFlagsAPI = DebugFlagsAPI();
+  final AbrAPI _abrAPI = AbrAPI();
 
   // internal helpers
   PresentationMode _presentationModeBeforePip = PresentationMode.INLINE;
@@ -82,6 +84,8 @@ class THEOplayer implements EventDispatcher {
           _videoTrackListHolder.setup(viewController.getVideoTracks());
           _theoLiveAPIHolder.setup(viewController.getTheoLive());
           _debugFlagsAPI.setup(THEOplayerNativeDebugFlagsAPI(
+              binaryMessenger: PigeonBinaryMessengerWrapper(suffix: viewController.channelSuffix)));
+          _abrAPI.setup(THEOplayerNativeAbrAPI(
               binaryMessenger: PigeonBinaryMessengerWrapper(suffix: viewController.channelSuffix)));
           _setupLifeCycleListeners();
           onCreate?.call();
@@ -167,6 +171,9 @@ class THEOplayer implements EventDispatcher {
 
   /// Debug flags API for programmatic control of native debug logging.
   DebugFlagsAPI get debugFlags => _debugFlagsAPI;
+
+  /// ABR (Adaptive Bitrate) configuration API.
+  AbrAPI get abr => _abrAPI;
 
   /// Push the debug flags panel as a full-screen route.
   ///
@@ -882,6 +889,7 @@ class THEOplayer implements EventDispatcher {
     _audioTrackListHolder.dispose();
     _theoLiveAPIHolder.dispose();
     _debugFlagsAPI.dispose();
+    _abrAPI.dispose();
   }
 
   /// Add the given listener for the given [PlayerEventTypes] type(s).
