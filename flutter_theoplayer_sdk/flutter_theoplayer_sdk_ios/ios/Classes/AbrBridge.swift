@@ -28,8 +28,8 @@ class AbrBridge: THEOplayerNativeAbrAPI {
     func getAbrStrategy() throws -> AbrStrategyConfigurationPigeon {
         let native = theoplayer.abr.strategy
         return AbrStrategyConfigurationPigeon(
-            type: toPigeonType(native?.type ?? .bandwidth),
-            metadata: native?.metadata.map { meta in
+            type: toPigeonType(native.type),
+            metadata: native.metadata.map { meta in
                 AbrStrategyMetadataPigeon(bitrate: meta.bitrate.map { Int64($0) })
             }
         )
@@ -38,8 +38,8 @@ class AbrBridge: THEOplayerNativeAbrAPI {
     func setAbrStrategy(config: AbrStrategyConfigurationPigeon) throws {
         let nativeType = toNativeType(config.type)
         var nativeMetadata: ABRMetadata? = nil
-        if let metadata = config.metadata {
-            nativeMetadata = ABRMetadata(bitrate: metadata.bitrate.map { Int($0) })
+        if let bitrate = config.metadata?.bitrate {
+            nativeMetadata = ABRMetadata(bitrate: Double(bitrate))
         }
         theoplayer.abr.strategy = ABRStrategyConfiguration(type: nativeType, metadata: nativeMetadata)
     }
