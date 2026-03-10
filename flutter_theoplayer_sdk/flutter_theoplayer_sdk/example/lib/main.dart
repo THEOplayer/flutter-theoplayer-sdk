@@ -152,6 +152,10 @@ class _MyAppState extends State<MyApp> {
                             child: const Text("API LOGGER"),
                           ),
                           FilledButton(
+                            onPressed: () => player.showDebugPanel(context),
+                            child: const Text("DEBUG FLAGS"),
+                          ),
+                          FilledButton(
                               onPressed: () {
                                 player.setPresentationMode(PresentationMode.FULLSCREEN);
                               },
