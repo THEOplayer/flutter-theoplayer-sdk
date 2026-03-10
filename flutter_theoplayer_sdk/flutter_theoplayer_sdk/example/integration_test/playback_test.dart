@@ -426,7 +426,7 @@ Future<void> runLatenciesTest(WidgetTester tester, AndroidViewComposition androi
 
   print("Setting source for latencies test");
   player.setSource(SourceDescription(sources: [
-    TheoLiveSource(src: "26rg6y91ajl4yc5mv0vas5bu7"),
+    TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
   ]));
 
   await tester.pumpAndSettle(const Duration(seconds: 10));
