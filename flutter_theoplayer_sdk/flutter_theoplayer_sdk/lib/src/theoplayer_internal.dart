@@ -168,26 +168,15 @@ class THEOplayer implements EventDispatcher {
   /// Debug flags API for programmatic control of native debug logging.
   DebugFlagsAPI get debugFlags => _debugFlagsAPI;
 
-  /// Show the debug flags panel as a draggable overlay on top of any screen.
-  void showDebugPanel() {
-    DebugFlagsOverlay.init(api: _debugFlagsAPI);
-    if (DebugFlagsOverlay.isVisible) {
-      DebugFlagsOverlay.hide();
-    }
-    DebugFlagsOverlay.show();
-  }
-
-  /// Hide the debug flags overlay.
-  void hideDebugPanel() {
-    DebugFlagsOverlay.hide();
-  }
-
-  /// Toggle the debug flags overlay visibility.
-  void toggleDebugPanel() {
-    if (!DebugFlagsOverlay.isVisible) {
-      DebugFlagsOverlay.init(api: _debugFlagsAPI);
-    }
-    DebugFlagsOverlay.toggle();
+  /// Push the debug flags panel as a full-screen route.
+  ///
+  /// Requires a [BuildContext] to access the navigator.
+  void showDebugPanel(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => DebugFlagsPanel(api: _debugFlagsAPI),
+      ),
+    );
   }
 
   /// [StateChangeListener] that's triggered every time the internal player state is changing.
@@ -892,7 +881,6 @@ class THEOplayer implements EventDispatcher {
     _textTrackListHolder.dispose();
     _audioTrackListHolder.dispose();
     _theoLiveAPIHolder.dispose();
-    DebugFlagsOverlay.hide();
     _debugFlagsAPI.dispose();
   }
 

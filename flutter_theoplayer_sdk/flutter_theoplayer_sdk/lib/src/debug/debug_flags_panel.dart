@@ -164,154 +164,18 @@ class _DebugFlagsPanelState extends State<DebugFlagsPanel> {
   }
 }
 
-/// Global API to show the debug flags panel as a draggable overlay on any screen.
-///
-/// No navigator key required — finds the root overlay automatically.
+/// Helper to push the debug flags panel as a full-screen route.
 ///
 /// Usage:
 /// ```dart
-/// // 1. Initialize once (e.g. after player creation)
-/// DebugFlagsOverlay.init(api: player.debugFlags);
-///
-/// // 2. Show from anywhere — no BuildContext needed
-/// DebugFlagsOverlay.show();
-///
-/// // 3. Hide programmatically (or user taps the X)
-/// DebugFlagsOverlay.hide();
-///
-/// // 4. Toggle
-/// DebugFlagsOverlay.toggle();
+/// DebugFlagsPanel.show(context, player.debugFlags);
 /// ```
-class DebugFlagsOverlay {
-  static DebugFlagsAPI? _api;
-  static OverlayEntry? _entry;
-
-  DebugFlagsOverlay._();
-
-  /// Initialize the overlay system. Call once after player creation.
-  static void init({required DebugFlagsAPI api}) {
-    _api = api;
-  }
-
-  /// Whether the overlay is currently visible.
-  static bool get isVisible => _entry != null;
-
-  /// Show the debug flags panel as a draggable overlay.
-  ///
-  /// Finds the root navigator's overlay automatically via [WidgetsBinding].
-  /// No [BuildContext] or [GlobalKey] needed.
-  static void show() {
-    if (_entry != null) return;
-    if (_api == null) {
-      debugPrint('[DebugFlagsOverlay] Not initialized. Call DebugFlagsOverlay.init() first.');
-      return;
-    }
-
-    final overlay = _findRootOverlay();
-    if (overlay == null) {
-      debugPrint('[DebugFlagsOverlay] Could not find root Overlay. Is the app running?');
-      return;
-    }
-
-    _entry = OverlayEntry(builder: (context) {
-      return _DraggablePanel(
-        api: _api!,
-        onClose: hide,
-      );
-    });
-    overlay.insert(_entry!);
-  }
-
-  /// Hide the overlay.
-  static void hide() {
-    _entry?.remove();
-    _entry = null;
-  }
-
-  /// Toggle visibility.
-  static void toggle() => isVisible ? hide() : show();
-
-  /// Walk the element tree from the root to find the topmost [OverlayState].
-  static OverlayState? _findRootOverlay() {
-    final rootElement = WidgetsBinding.instance.rootElement;
-    if (rootElement == null) return null;
-
-    OverlayState? overlay;
-    void visitor(Element element) {
-      if (element is StatefulElement && element.state is OverlayState) {
-        overlay = element.state as OverlayState;
-        return;
-      }
-      element.visitChildren(visitor);
-    }
-
-    rootElement.visitChildren(visitor);
-    return overlay;
-  }
-}
-
-class _DraggablePanel extends StatefulWidget {
-  final DebugFlagsAPI api;
-  final VoidCallback onClose;
-
-  const _DraggablePanel({required this.api, required this.onClose});
-
-  @override
-  State<_DraggablePanel> createState() => _DraggablePanelState();
-}
-
-class _DraggablePanelState extends State<_DraggablePanel> {
-  double _top = 80;
-  static const double _minHeight = 250;
-  final double _height = 500;
-
-  @override
-  Widget build(BuildContext context) {
-    final screenHeight = MediaQuery.of(context).size.height;
-    final clampedHeight = _height.clamp(_minHeight, screenHeight - _top - 20);
-
-    return Positioned(
-      top: _top,
-      left: 12,
-      right: 12,
-      height: clampedHeight,
-      child: Material(
-        elevation: 12,
-        borderRadius: BorderRadius.circular(12),
-        clipBehavior: Clip.antiAlias,
-        child: Column(
-          children: [
-            GestureDetector(
-              onVerticalDragUpdate: (d) {
-                setState(() { _top = (_top + d.delta.dy).clamp(20, screenHeight - _minHeight); });
-              },
-              child: Container(
-                color: Theme.of(context).colorScheme.primaryContainer,
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                child: Row(
-                  children: [
-                    const Icon(Icons.drag_handle, size: 20),
-                    const SizedBox(width: 8),
-                    Text(
-                      'Debug Flags',
-                      style: Theme.of(context).textTheme.titleSmall,
-                    ),
-                    const Spacer(),
-                    IconButton(
-                      icon: const Icon(Icons.close, size: 18),
-                      onPressed: widget.onClose,
-                      padding: EdgeInsets.zero,
-                      constraints: const BoxConstraints(),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Expanded(
-              child: DebugFlagsPanel(api: widget.api),
-            ),
-          ],
-        ),
+extension DebugFlagsPanelNavigation on DebugFlagsPanel {
+  /// Push the debug flags panel as a full-screen Material route.
+  static void show(BuildContext context, DebugFlagsAPI api) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => DebugFlagsPanel(api: api),
       ),
     );
   }
