@@ -255,6 +255,42 @@ class FairPlayDRMConfiguration {
   }
 }
 
+class HespLatencies {
+  HespLatencies({
+    this.engineLatency,
+    this.distributionLatency,
+    this.playerLatency,
+    this.theoliveLatency,
+  });
+
+  double? engineLatency;
+
+  double? distributionLatency;
+
+  double? playerLatency;
+
+  double? theoliveLatency;
+
+  Object encode() {
+    return <Object?>[
+      engineLatency,
+      distributionLatency,
+      playerLatency,
+      theoliveLatency,
+    ];
+  }
+
+  static HespLatencies decode(Object result) {
+    result as List<Object?>;
+    return HespLatencies(
+      engineLatency: result[0] as double?,
+      distributionLatency: result[1] as double?,
+      playerLatency: result[2] as double?,
+      theoliveLatency: result[3] as double?,
+    );
+  }
+}
+
 class Endpoint {
   Endpoint({
     this.hespSrc,
@@ -345,8 +381,11 @@ class _PigeonCodec extends StandardMessageCodec {
     }    else if (value is FairPlayDRMConfiguration) {
       buffer.putUint8(140);
       writeValue(buffer, value.encode());
-    }    else if (value is Endpoint) {
+    }    else if (value is HespLatencies) {
       buffer.putUint8(141);
+      writeValue(buffer, value.encode());
+    }    else if (value is Endpoint) {
+      buffer.putUint8(142);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -387,6 +426,8 @@ class _PigeonCodec extends StandardMessageCodec {
       case 140: 
         return FairPlayDRMConfiguration.decode(readValue(buffer)!);
       case 141: 
+        return HespLatencies.decode(readValue(buffer)!);
+      case 142: 
         return Endpoint.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -924,6 +965,50 @@ class THEOplayerNativeTHEOliveAPI {
       );
     } else {
       return;
+    }
+  }
+
+  Future<double?> currentLatency() async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeTHEOliveAPI.currentLatency$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return (pigeonVar_replyList[0] as double?);
+    }
+  }
+
+  Future<HespLatencies?> latencies() async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeTHEOliveAPI.latencies$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return (pigeonVar_replyList[0] as HespLatencies?);
     }
   }
 }

@@ -283,6 +283,38 @@ struct FairPlayDRMConfiguration {
 }
 
 /// Generated class from Pigeon that represents data sent in messages.
+struct HespLatencies {
+  var engineLatency: Double? = nil
+  var distributionLatency: Double? = nil
+  var playerLatency: Double? = nil
+  var theoliveLatency: Double? = nil
+
+
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  static func fromList(_ pigeonVar_list: [Any?]) -> HespLatencies? {
+    let engineLatency: Double? = nilOrValue(pigeonVar_list[0])
+    let distributionLatency: Double? = nilOrValue(pigeonVar_list[1])
+    let playerLatency: Double? = nilOrValue(pigeonVar_list[2])
+    let theoliveLatency: Double? = nilOrValue(pigeonVar_list[3])
+
+    return HespLatencies(
+      engineLatency: engineLatency,
+      distributionLatency: distributionLatency,
+      playerLatency: playerLatency,
+      theoliveLatency: theoliveLatency
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      engineLatency,
+      distributionLatency,
+      playerLatency,
+      theoliveLatency,
+    ]
+  }
+}
+
+/// Generated class from Pigeon that represents data sent in messages.
 struct Endpoint {
   var hespSrc: String? = nil
   var hlsSrc: String? = nil
@@ -374,6 +406,8 @@ private class APIsPigeonCodecReader: FlutterStandardReader {
     case 140:
       return FairPlayDRMConfiguration.fromList(self.readValue() as! [Any?])
     case 141:
+      return HespLatencies.fromList(self.readValue() as! [Any?])
+    case 142:
       return Endpoint.fromList(self.readValue() as! [Any?])
     default:
       return super.readValue(ofType: type)
@@ -419,8 +453,11 @@ private class APIsPigeonCodecWriter: FlutterStandardWriter {
     } else if let value = value as? FairPlayDRMConfiguration {
       super.writeByte(140)
       super.writeValue(value.toList())
-    } else if let value = value as? Endpoint {
+    } else if let value = value as? HespLatencies {
       super.writeByte(141)
+      super.writeValue(value.toList())
+    } else if let value = value as? Endpoint {
+      super.writeByte(142)
       super.writeValue(value.toList())
     } else {
       super.writeValue(value)
@@ -441,6 +478,7 @@ private class APIsPigeonCodecReaderWriter: FlutterStandardReaderWriter {
 class APIsPigeonCodec: FlutterStandardMessageCodec, @unchecked Sendable {
   static let shared = APIsPigeonCodec(readerWriter: APIsPigeonCodecReaderWriter())
 }
+
 
 /// Generated protocol from Pigeon that represents a handler of messages from Flutter.
 protocol THEOplayerNativeTextTracksAPI {
@@ -736,6 +774,8 @@ class THEOplayerFlutterTextTracksAPI: THEOplayerFlutterTextTracksAPIProtocol {
 protocol THEOplayerNativeTHEOliveAPI {
   func goLive() throws
   func preloadChannels(channelIds: [String]?) throws
+  func currentLatency(completion: @escaping (Result<Double?, Error>) -> Void)
+  func latencies(completion: @escaping (Result<HespLatencies?, Error>) -> Void)
 }
 
 /// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
@@ -771,6 +811,36 @@ class THEOplayerNativeTHEOliveAPISetup {
       }
     } else {
       preloadChannelsChannel.setMessageHandler(nil)
+    }
+    let currentLatencyChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeTHEOliveAPI.currentLatency\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      currentLatencyChannel.setMessageHandler { _, reply in
+        api.currentLatency { result in
+          switch result {
+          case .success(let res):
+            reply(wrapResult(res))
+          case .failure(let error):
+            reply(wrapError(error))
+          }
+        }
+      }
+    } else {
+      currentLatencyChannel.setMessageHandler(nil)
+    }
+    let latenciesChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeTHEOliveAPI.latencies\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      latenciesChannel.setMessageHandler { _, reply in
+        api.latencies { result in
+          switch result {
+          case .success(let res):
+            reply(wrapResult(res))
+          case .failure(let error):
+            reply(wrapError(error))
+          }
+        }
+      }
+    } else {
+      latenciesChannel.setMessageHandler(nil)
     }
   }
 }

@@ -97,4 +97,14 @@ class THEOliveAPIHolder extends THEOlive {
   void setStateListener(THEOliveStateChangeListener listener) {
     _stateChangeListener = listener;
   }
+
+  @override
+  Future<double?> get currentLatency async {
+    return _internalTHEOliveAPI?.currentLatency;
+  }
+
+  @override
+  Future<HespLatencies?> get latencies async {
+    return _internalTHEOliveAPI?.latencies;
+  }
 }

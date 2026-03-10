@@ -106,4 +106,24 @@ class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
             theoLive.preloadPublications(publicationIds: channelIds)
         }
     }
+
+    func currentLatency(completion: @escaping (Result<Double?, Error>) -> Void) {
+        let latency = theoLive.currentLatency
+        completion(.success(latency))
+    }
+
+    func latencies(completion: @escaping (Result<HespLatencies?, Error>) -> Void) {
+        let nativeLatencies = theoLive.latencies
+        if let nativeLatencies = nativeLatencies {
+            let result = HespLatencies(
+                engineLatency: nativeLatencies.engineLatency,
+                distributionLatency: nativeLatencies.distributionLatency,
+                playerLatency: nativeLatencies.playerLatency,
+                theoliveLatency: nativeLatencies.theoliveLatency
+            )
+            completion(.success(result))
+        } else {
+            completion(.success(nil))
+        }
+    }
 }
