@@ -4,7 +4,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:theoplayer/src/debug/debug_flags_api.dart';
+import 'package:theoplayer/src/debug/debug_flags_panel.dart';
 import 'package:theoplayer/src/theolive/theolive_wrapper.dart';
+import 'package:theoplayer_platform_interface/pigeon_binary_messenger_wrapper.dart';
 import 'package:theoplayer/src/widget/fullscreen_widget.dart';
 import 'package:theoplayer/src/widget/presentationmode_aware_widget.dart';
 import 'package:theoplayer_platform_interface/helpers/logger.dart';
@@ -52,6 +55,7 @@ class THEOplayer implements EventDispatcher {
   final AudioTracksHolder _audioTrackListHolder = AudioTracksHolder();
   final VideoTracksHolder _videoTrackListHolder = VideoTracksHolder();
   final THEOliveAPIHolder _theoLiveAPIHolder = THEOliveAPIHolder();
+  final DebugFlagsAPI _debugFlagsAPI = DebugFlagsAPI();
 
   // internal helpers
   PresentationMode _presentationModeBeforePip = PresentationMode.INLINE;
@@ -77,6 +81,8 @@ class THEOplayer implements EventDispatcher {
           _audioTrackListHolder.setup(viewController.getAudioTracks());
           _videoTrackListHolder.setup(viewController.getVideoTracks());
           _theoLiveAPIHolder.setup(viewController.getTheoLive());
+          _debugFlagsAPI.setup(THEOplayerNativeDebugFlagsAPI(
+              binaryMessenger: PigeonBinaryMessengerWrapper(suffix: viewController.channelSuffix)));
           _setupLifeCycleListeners();
           onCreate?.call();
           _playerState.initialized();
@@ -157,6 +163,31 @@ class THEOplayer implements EventDispatcher {
   /// THEOlive API
   THEOlive? get theoLive {
     return _theoLiveAPIHolder;
+  }
+
+  /// Debug flags API for programmatic control of native debug logging.
+  DebugFlagsAPI get debugFlags => _debugFlagsAPI;
+
+  /// Show the debug flags panel as a draggable overlay on top of any screen.
+  void showDebugPanel() {
+    DebugFlagsOverlay.init(api: _debugFlagsAPI);
+    if (DebugFlagsOverlay.isVisible) {
+      DebugFlagsOverlay.hide();
+    }
+    DebugFlagsOverlay.show();
+  }
+
+  /// Hide the debug flags overlay.
+  void hideDebugPanel() {
+    DebugFlagsOverlay.hide();
+  }
+
+  /// Toggle the debug flags overlay visibility.
+  void toggleDebugPanel() {
+    if (!DebugFlagsOverlay.isVisible) {
+      DebugFlagsOverlay.init(api: _debugFlagsAPI);
+    }
+    DebugFlagsOverlay.toggle();
   }
 
   /// [StateChangeListener] that's triggered every time the internal player state is changing.
@@ -861,6 +892,8 @@ class THEOplayer implements EventDispatcher {
     _textTrackListHolder.dispose();
     _audioTrackListHolder.dispose();
     _theoLiveAPIHolder.dispose();
+    DebugFlagsOverlay.hide();
+    _debugFlagsAPI.dispose();
   }
 
   /// Add the given listener for the given [PlayerEventTypes] type(s).
