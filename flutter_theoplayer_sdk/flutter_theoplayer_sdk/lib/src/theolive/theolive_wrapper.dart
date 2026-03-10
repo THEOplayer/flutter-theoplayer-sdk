@@ -19,10 +19,14 @@ class THEOliveAPIHolder extends THEOlive {
   void _forwardingEventListener(event) {
     var oldDistributionState = distributionState;
     switch (event) {
-      case DistributionLoadStartEvent e: _distributionState = DistributionState.loading;
-      case EndpointLoadedEvent e: _distributionState = DistributionState.loaded;
-      case DistributionOfflineEvent e: _distributionState = DistributionState.offline;
-      case IntentToFallbackEvent e: _distributionState = DistributionState.intentToFallback;
+      case DistributionLoadStartEvent e:
+        _distributionState = DistributionState.loading;
+      case EndpointLoadedEvent e:
+        _distributionState = DistributionState.loaded;
+      case DistributionOfflineEvent e:
+        _distributionState = DistributionState.offline;
+      case IntentToFallbackEvent e:
+        _distributionState = DistributionState.intentToFallback;
       default:
         break;
     }
@@ -49,7 +53,6 @@ class THEOliveAPIHolder extends THEOlive {
     // experimental - only used on iOS, but kept it here for consistency - Android will not dispatch these
     _internalTHEOliveAPI?.addEventListener(PlayerEventTypes.SEEKING, _forwardingEventListener);
     _internalTHEOliveAPI?.addEventListener(PlayerEventTypes.SEEKED, _forwardingEventListener);
-
   }
 
   @override
@@ -94,5 +97,4 @@ class THEOliveAPIHolder extends THEOlive {
   void setStateListener(THEOliveStateChangeListener listener) {
     _stateChangeListener = listener;
   }
-
 }

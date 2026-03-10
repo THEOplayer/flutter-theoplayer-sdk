@@ -24,5 +24,4 @@ class PlatformPlayersService {
     debugLog("[PlatformPlayersService] createPlayer - created: $id");
     return Future.value(id);
   }
-
 }

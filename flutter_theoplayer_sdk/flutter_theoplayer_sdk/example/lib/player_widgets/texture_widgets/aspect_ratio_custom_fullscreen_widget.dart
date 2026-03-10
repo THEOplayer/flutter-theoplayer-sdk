@@ -9,7 +9,7 @@ import 'package:theoplayer/theoplayer.dart';
 /// Note: not listening to changes and assumes that the player is already playing a video when displaying this widget
 /// TODO: extract common logic from AspectRatioCustomFullscreenWidget and AspectRatioChromelessPlayerView
 /// TODO: make this a player feature
-/// 
+///
 class AspectRatioCustomFullscreenWidget extends StatefulWidget {
   final THEOplayer theoplayer;
 
@@ -24,11 +24,10 @@ class AspectRatioCustomFullscreenWidget extends StatefulWidget {
 class _FullscreenStatefulWidgetState extends State<AspectRatioCustomFullscreenWidget> {
   bool willPop = false;
 
-  double currentAspectRatio = 16/9;
+  double currentAspectRatio = 16 / 9;
 
   @override
   void initState() {
-
     super.initState();
     var initialVideoWidth = widget.theoplayer.getVideoWidth();
     var initialVideoHeight = widget.theoplayer.getVideoHeight();
@@ -36,10 +35,8 @@ class _FullscreenStatefulWidgetState extends State<AspectRatioCustomFullscreenWi
       currentAspectRatio = initialVideoWidth / initialVideoHeight;
     }
 
-    SystemChrome.setPreferredOrientations(widget.fullscreenConfig.preferredFullscreenOrientations).then((value) => {
-      SystemChrome.setEnabledSystemUIMode(widget.fullscreenConfig.fullscreenSystemUiMode)
-    });
-
+    SystemChrome.setPreferredOrientations(widget.fullscreenConfig.preferredFullscreenOrientations)
+        .then((value) => {SystemChrome.setEnabledSystemUIMode(widget.fullscreenConfig.fullscreenSystemUiMode)});
   }
 
   @override
@@ -62,17 +59,17 @@ class _FullscreenStatefulWidgetState extends State<AspectRatioCustomFullscreenWi
             // in the middle of the parent.
             child: !willPop
                 ? Container(
-                color: Colors.black,
-                child: Align(
-                  alignment: Alignment.center,
-                  child: AspectRatio(
-                    aspectRatio: currentAspectRatio,
-                    child: PresentationModeAwareWidget(
-                      player: widget.theoplayer,
-                      presentationModeToCheck: const [PresentationMode.FULLSCREEN],
-                    ),
-                  ),
-                ))
+                    color: Colors.black,
+                    child: Align(
+                      alignment: Alignment.center,
+                      child: AspectRatio(
+                        aspectRatio: currentAspectRatio,
+                        child: PresentationModeAwareWidget(
+                          player: widget.theoplayer,
+                          presentationModeToCheck: const [PresentationMode.FULLSCREEN],
+                        ),
+                      ),
+                    ))
                 : Container(),
           );
         },

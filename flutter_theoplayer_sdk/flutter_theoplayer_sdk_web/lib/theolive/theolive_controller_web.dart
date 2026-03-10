@@ -10,7 +10,6 @@ import 'package:theoplayer_web/theoplayer_api_web.dart';
 import 'package:theoplayer_web/theoplayer_js_helpers_web.dart';
 
 class THEOliveControllerWeb extends THEOliveInternalInterface {
-
   final THEOplayerTheoLiveApi _theoLiveApi;
   final EventManager _eventManager = EventManager();
 
@@ -23,16 +22,15 @@ class THEOliveControllerWeb extends THEOliveInternalInterface {
 
   THEOliveControllerWeb(this._theoLiveApi) {
     endpointLoadedEventListener = (EndpointLoadedEventJS event) {
-      _eventManager.dispatchEvent(EndpointLoadedEvent(endpoint:
-          Endpoint(
-            hespSrc: event.endpoint.hespSrc,
-            hlsSrc: event.endpoint.hlsSrc,
-            adSrc: event.endpoint.adSrc,
-            cdn: event.endpoint.adSrc,
-            weight: event.endpoint.weight.toDouble(),
-            priority: event.endpoint.priority,
-          )
-      ));
+      _eventManager.dispatchEvent(EndpointLoadedEvent(
+          endpoint: Endpoint(
+        hespSrc: event.endpoint.hespSrc,
+        hlsSrc: event.endpoint.hlsSrc,
+        adSrc: event.endpoint.adSrc,
+        cdn: event.endpoint.adSrc,
+        weight: event.endpoint.weight.toDouble(),
+        priority: event.endpoint.priority,
+      )));
     }.toJS;
 
     distributionLoadStartEventListener = (DistributionLoadStartEventJS event) {
@@ -98,5 +96,4 @@ class THEOliveControllerWeb extends THEOliveInternalInterface {
     _theoLiveApi.removeEventListener(THEOliveApiEventTypes.ENTERBADNETWORKMODE.toLowerCase(), enterBadNetworkModeEventListener);
     _theoLiveApi.removeEventListener(THEOliveApiEventTypes.EXITBADNETWORKMODE.toLowerCase(), exitBadNetworkModeEventListener);
   }
-
 }

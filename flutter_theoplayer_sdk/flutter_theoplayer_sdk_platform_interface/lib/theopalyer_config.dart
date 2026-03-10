@@ -8,7 +8,8 @@ class THEOplayerConfig {
   TheoLiveConfiguration? _theoLive = null;
   WebConfig _webConfig = WebConfig();
 
-  THEOplayerConfig({String? license, String? licenseUrl, AndroidConfig? androidConfiguration, FullscreenConfig? fullscreenConfiguration, TheoLiveConfiguration? theolive, WebConfig? webConfiguration}) {
+  THEOplayerConfig(
+      {String? license, String? licenseUrl, AndroidConfig? androidConfiguration, FullscreenConfig? fullscreenConfiguration, TheoLiveConfiguration? theolive, WebConfig? webConfiguration}) {
     _license = license;
     _licenseUrl = licenseUrl;
     if (androidConfiguration != null) {
@@ -51,14 +52,7 @@ class THEOplayerConfig {
   }
 
   //TODO: fix this, don't generate JSON manually.
-  Map<String, dynamic> toJson() => {
-        'license': _license,
-        'licenseUrl': _licenseUrl,
-        'androidConfig': _androidConfig._toJson(),
-        'theoLive': _theoLive?._toJson(),
-        'webConfig': _webConfig._toJson()
-      };
-
+  Map<String, dynamic> toJson() => {'license': _license, 'licenseUrl': _licenseUrl, 'androidConfig': _androidConfig._toJson(), 'theoLive': _theoLive?._toJson(), 'webConfig': _webConfig._toJson()};
 }
 
 class AndroidConfig {
@@ -78,15 +72,16 @@ class AndroidConfig {
   }
 
   Map<String, dynamic> _toJson() => {
-    'viewComposition': viewComposition.name.toUpperCase(),
-  };
+        'viewComposition': viewComposition.name.toUpperCase(),
+      };
 }
+
 /// https://github.com/flutter/flutter/wiki/Android-Platform-Views
 /// TODO: move to pigeons
 enum AndroidViewComposition {
-
   /// initExpensiveAndroidView - using PlatformView to render the video
   HYBRID_COMPOSITION(true),
+
   /// initAndroidView - PlatformView - using PlatformView to render the video
   TEXTURE_LAYER(true),
 
@@ -99,7 +94,6 @@ enum AndroidViewComposition {
 
   final bool isPlatformView;
   const AndroidViewComposition(bool this.isPlatformView);
-
 }
 
 class FullscreenConfig {
@@ -107,11 +101,10 @@ class FullscreenConfig {
   final List<DeviceOrientation> preferredRestoredOrientations;
   final SystemUiMode fullscreenSystemUiMode;
 
-  FullscreenConfig({
-    this.preferredFullscreenOrientations = const [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight],
-    this.preferredRestoredOrientations = const [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
-    this.fullscreenSystemUiMode = SystemUiMode.immersive
-  });
+  FullscreenConfig(
+      {this.preferredFullscreenOrientations = const [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight],
+      this.preferredRestoredOrientations = const [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
+      this.fullscreenSystemUiMode = SystemUiMode.immersive});
 }
 
 class TheoLiveConfiguration {
@@ -124,10 +117,10 @@ class TheoLiveConfiguration {
   TheoLiveConfiguration({this.externalSessionId = null, this.fallbackEnabled = null, this.discoveryUrl = null});
 
   Map<String, dynamic> _toJson() => {
-    'externalSessionId': externalSessionId,
-    'fallbackEnabled': fallbackEnabled,
-    'discoveryUrl': discoveryUrl,
-  };
+        'externalSessionId': externalSessionId,
+        'fallbackEnabled': fallbackEnabled,
+        'discoveryUrl': discoveryUrl,
+      };
 }
 
 class WebConfig {
@@ -140,7 +133,6 @@ class WebConfig {
   WebConfig({this.libraryLocation = null});
 
   Map<String, dynamic> _toJson() => {
-    'libraryLocation': libraryLocation,
-  };
-
+        'libraryLocation': libraryLocation,
+      };
 }

@@ -6,11 +6,7 @@ class SeekbarWidget extends StatefulWidget {
   //this triggers underlying seek on the player ---> can show the new frame where you drag
   final bool seekWhileDragging;
 
-  const SeekbarWidget({
-    super.key,
-    required this.player,
-    this.seekWhileDragging = false
-  });
+  const SeekbarWidget({super.key, required this.player, this.seekWhileDragging = false});
 
   final THEOplayer player;
 

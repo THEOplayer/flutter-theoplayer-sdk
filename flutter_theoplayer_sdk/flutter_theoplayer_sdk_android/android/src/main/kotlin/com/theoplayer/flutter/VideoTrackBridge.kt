@@ -38,6 +38,7 @@ class VideoTrackBridge(
             it.track.language,
             it.track.kind,
             it.track.isEnabled,
+            null,
             emptyCallback
         )
 
@@ -53,6 +54,8 @@ class VideoTrackBridge(
                 quality.height.toLong(),
                 quality.frameRate,
                 quality.firstFrame,
+                null,
+                true,
                 emptyCallback
             )
         }
@@ -93,6 +96,8 @@ class VideoTrackBridge(
             quality.height.toLong(),
             quality.frameRate,
             quality.firstFrame,
+            null,
+            true,
             emptyCallback
         )
     }

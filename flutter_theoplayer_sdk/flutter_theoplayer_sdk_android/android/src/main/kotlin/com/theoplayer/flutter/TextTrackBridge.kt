@@ -51,6 +51,7 @@ class TextTrackBridge(
             it.track.source,
             it.track.isForced,
             TrackTransformer.toFlutterTextTrackMode(it.track.mode),
+            null,
             emptyCallback
         )
         attachTrackListeners(it.track)

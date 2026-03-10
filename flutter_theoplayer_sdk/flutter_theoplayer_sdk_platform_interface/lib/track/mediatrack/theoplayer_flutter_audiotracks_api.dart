@@ -19,7 +19,7 @@ class THEOplayerFlutterAudioTracksAPIImpl implements THEOplayerFlutterAudioTrack
   }
 
   @override
-  void onAddAudioTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled) {
+  void onAddAudioTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled, String? unlocalizedLabel) {
     AudioTrack audioTrack = AudioTrackImplMobile(
         id,
         uid,
@@ -35,13 +35,13 @@ class THEOplayerFlutterAudioTracksAPIImpl implements THEOplayerFlutterAudioTrack
   }
 
   @override
-  void onAudioTrackAddQuality(int audioTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate) {
+  void onAudioTrackAddQuality(int audioTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate, int? averageBandwidth, bool available) {
     AudioTrack? audioTrack = _audioTracks.firstWhereOrNull((item) => item.uid == audioTrackUid);
     if (audioTrack == null) {
       return;
     }
 
-    AudioQualityImpl audioQuality = AudioQualityImpl(qualityId, qualityUid, name, bandwidth, codecs, audioSamplingRate);
+    AudioQualityImpl audioQuality = AudioQualityImpl(qualityId, qualityUid, name, bandwidth, codecs, audioSamplingRate, averageBandwidth, available);
     audioTrack.qualities.add(audioQuality);
   }
 
@@ -74,9 +74,7 @@ class THEOplayerFlutterAudioTracksAPIImpl implements THEOplayerFlutterAudioTrack
     }
 
     AudioQualitiesImpl targetQualities = AudioQualitiesImpl();
-    targetQualities.addAll(
-        audioTrack.qualities.where((element) => qualitiesUid.contains(element.uid))
-    );
+    targetQualities.addAll(audioTrack.qualities.where((element) => qualitiesUid.contains(element.uid)));
     AudioQuality? targetQuality = audioTrack.qualities.firstWhereOrNull((element) => element.uid == qualityUid);
 
     audioTrack.targetQualities = targetQualities;
@@ -97,14 +95,14 @@ class THEOplayerFlutterAudioTracksAPIImpl implements THEOplayerFlutterAudioTrack
   }
 
   @override
-  void onQualityUpdate(int audioTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate) {
+  void onQualityUpdate(int audioTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate, int? averageBandwidth, bool available) {
     AudioTrack? audioTrack = _audioTracks.firstWhereOrNull((item) => item.uid == audioTrackUid);
     AudioQualityImpl? audioQuality = audioTrack?.qualities.firstWhereOrNull((item) => item.uid == qualityUid) as AudioQualityImpl?;
     if (audioQuality == null) {
       return;
     }
 
-    audioQuality.update(name, bandwidth, codecs, audioSamplingRate);
+    audioQuality.update(name, bandwidth, codecs, audioSamplingRate, averageBandwidth, available);
     audioQuality.dispatchEvent(AudioQualityUpdateEvent());
   }
 

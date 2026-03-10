@@ -27,10 +27,8 @@ class _FullscreenStatefulWidgetState extends State<FullscreenStatefulWidget> {
   void initState() {
     super.initState();
 
-    SystemChrome.setPreferredOrientations(widget.fullscreenConfig.preferredFullscreenOrientations).then((value) => {
-      SystemChrome.setEnabledSystemUIMode(widget.fullscreenConfig.fullscreenSystemUiMode)
-    });
-
+    SystemChrome.setPreferredOrientations(widget.fullscreenConfig.preferredFullscreenOrientations)
+        .then((value) => {SystemChrome.setEnabledSystemUIMode(widget.fullscreenConfig.fullscreenSystemUiMode)});
   }
 
   @override

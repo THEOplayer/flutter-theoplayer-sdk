@@ -473,10 +473,11 @@ class THEOplayerNativeTextTracksAPISetup {
 }
 /// Generated protocol from Pigeon that represents Flutter messages that can be called from Swift.
 protocol THEOplayerFlutterTextTracksAPIProtocol {
-  func onAddTextTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, inBandMetadataTrackDispatchType inBandMetadataTrackDispatchTypeArg: String?, readyState readyStateArg: TextTrackReadyState, type typeArg: TextTrackType, source sourceArg: String?, isForced isForcedArg: Bool, mode modeArg: TextTrackMode, completion: @escaping (Result<Void, PigeonError>) -> Void)
+  func onAddTextTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, inBandMetadataTrackDispatchType inBandMetadataTrackDispatchTypeArg: String?, readyState readyStateArg: TextTrackReadyState, type typeArg: TextTrackType, source sourceArg: String?, isForced isForcedArg: Bool, mode modeArg: TextTrackMode, unlocalizedLabel unlocalizedLabelArg: String?, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onRemoveTextTrack(uid uidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onTextTrackListChange(uid uidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onTextTrackAddCue(textTrackUid textTrackUidArg: Int64, id idArg: String, uid uidArg: Int64, startTime startTimeArg: Double, endTime endTimeArg: Double, content contentArg: String, completion: @escaping (Result<Void, PigeonError>) -> Void)
+  func onTextTrackAddDateRangeCue(textTrackUid textTrackUidArg: Int64, id idArg: String, uid uidArg: Int64, startTime startTimeArg: Double, endTime endTimeArg: Double, cueClass cueClassArg: String?, startDateMillis startDateMillisArg: Double, endDateMillis endDateMillisArg: Double?, duration durationArg: Double?, plannedDuration plannedDurationArg: Double?, endOnNext endOnNextArg: Bool, customAttributesJson customAttributesJsonArg: String?, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onTextTrackRemoveCue(textTrackUid textTrackUidArg: Int64, cueUid cueUidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onTextTrackEnterCue(textTrackUid textTrackUidArg: Int64, cueUid cueUidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onTextTrackExitCue(textTrackUid textTrackUidArg: Int64, cueUid cueUidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
@@ -496,10 +497,10 @@ class THEOplayerFlutterTextTracksAPI: THEOplayerFlutterTextTracksAPIProtocol {
   var codec: APIsPigeonCodec {
     return APIsPigeonCodec.shared
   }
-  func onAddTextTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, inBandMetadataTrackDispatchType inBandMetadataTrackDispatchTypeArg: String?, readyState readyStateArg: TextTrackReadyState, type typeArg: TextTrackType, source sourceArg: String?, isForced isForcedArg: Bool, mode modeArg: TextTrackMode, completion: @escaping (Result<Void, PigeonError>) -> Void) {
+  func onAddTextTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, inBandMetadataTrackDispatchType inBandMetadataTrackDispatchTypeArg: String?, readyState readyStateArg: TextTrackReadyState, type typeArg: TextTrackType, source sourceArg: String?, isForced isForcedArg: Bool, mode modeArg: TextTrackMode, unlocalizedLabel unlocalizedLabelArg: String?, completion: @escaping (Result<Void, PigeonError>) -> Void) {
     let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack\(messageChannelSuffix)"
     let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([idArg, uidArg, labelArg, languageArg, kindArg, inBandMetadataTrackDispatchTypeArg, readyStateArg, typeArg, sourceArg, isForcedArg, modeArg] as [Any?]) { response in
+    channel.sendMessage([idArg, uidArg, labelArg, languageArg, kindArg, inBandMetadataTrackDispatchTypeArg, readyStateArg, typeArg, sourceArg, isForcedArg, modeArg, unlocalizedLabelArg] as [Any?]) { response in
       guard let listResponse = response as? [Any?] else {
         completion(.failure(createConnectionError(withChannelName: channelName)))
         return
@@ -554,6 +555,24 @@ class THEOplayerFlutterTextTracksAPI: THEOplayerFlutterTextTracksAPIProtocol {
     let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue\(messageChannelSuffix)"
     let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([textTrackUidArg, idArg, uidArg, startTimeArg, endTimeArg, contentArg] as [Any?]) { response in
+      guard let listResponse = response as? [Any?] else {
+        completion(.failure(createConnectionError(withChannelName: channelName)))
+        return
+      }
+      if listResponse.count > 1 {
+        let code: String = listResponse[0] as! String
+        let message: String? = nilOrValue(listResponse[1])
+        let details: String? = nilOrValue(listResponse[2])
+        completion(.failure(PigeonError(code: code, message: message, details: details)))
+      } else {
+        completion(.success(Void()))
+      }
+    }
+  }
+  func onTextTrackAddDateRangeCue(textTrackUid textTrackUidArg: Int64, id idArg: String, uid uidArg: Int64, startTime startTimeArg: Double, endTime endTimeArg: Double, cueClass cueClassArg: String?, startDateMillis startDateMillisArg: Double, endDateMillis endDateMillisArg: Double?, duration durationArg: Double?, plannedDuration plannedDurationArg: Double?, endOnNext endOnNextArg: Bool, customAttributesJson customAttributesJsonArg: String?, completion: @escaping (Result<Void, PigeonError>) -> Void) {
+    let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue\(messageChannelSuffix)"
+    let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([textTrackUidArg, idArg, uidArg, startTimeArg, endTimeArg, cueClassArg, startDateMillisArg, endDateMillisArg, durationArg, plannedDurationArg, endOnNextArg, customAttributesJsonArg] as [Any?]) { response in
       guard let listResponse = response as? [Any?] else {
         completion(.failure(createConnectionError(withChannelName: channelName)))
         return
@@ -1948,13 +1967,13 @@ class THEOplayerNativeVideoTracksAPISetup {
 }
 /// Generated protocol from Pigeon that represents Flutter messages that can be called from Swift.
 protocol THEOplayerFlutterVideoTracksAPIProtocol {
-  func onAddVideoTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, isEnabled isEnabledArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void)
-  func onVideoTrackAddQuality(videoTrackUid videoTrackUidArg: Int64, qualityId qualityIdArg: String, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, width widthArg: Int64, height heightArg: Int64, frameRate frameRateArg: Double, firstFrame firstFrameArg: Double, completion: @escaping (Result<Void, PigeonError>) -> Void)
+  func onAddVideoTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, isEnabled isEnabledArg: Bool, unlocalizedLabel unlocalizedLabelArg: String?, completion: @escaping (Result<Void, PigeonError>) -> Void)
+  func onVideoTrackAddQuality(videoTrackUid videoTrackUidArg: Int64, qualityId qualityIdArg: String, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, width widthArg: Int64, height heightArg: Int64, frameRate frameRateArg: Double, firstFrame firstFrameArg: Double, averageBandwidth averageBandwidthArg: Int64?, available availableArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onRemoveVideoTrack(uid uidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onVideoTrackListChange(uid uidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onTargetQualityChange(videoTrackUid videoTrackUidArg: Int64, qualitiesUid qualitiesUidArg: [Int64], qualityUid qualityUidArg: Int64?, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onActiveQualityChange(videoTrackUid videoTrackUidArg: Int64, qualityUid qualityUidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
-  func onQualityUpdate(videoTrackUid videoTrackUidArg: Int64, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, width widthArg: Int64, height heightArg: Int64, frameRate frameRateArg: Double, firstFrame firstFrameArg: Double, completion: @escaping (Result<Void, PigeonError>) -> Void)
+  func onQualityUpdate(videoTrackUid videoTrackUidArg: Int64, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, width widthArg: Int64, height heightArg: Int64, frameRate frameRateArg: Double, firstFrame firstFrameArg: Double, averageBandwidth averageBandwidthArg: Int64?, available availableArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void)
 }
 class THEOplayerFlutterVideoTracksAPI: THEOplayerFlutterVideoTracksAPIProtocol {
   private let binaryMessenger: FlutterBinaryMessenger
@@ -1966,10 +1985,10 @@ class THEOplayerFlutterVideoTracksAPI: THEOplayerFlutterVideoTracksAPIProtocol {
   var codec: APIsPigeonCodec {
     return APIsPigeonCodec.shared
   }
-  func onAddVideoTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, isEnabled isEnabledArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void) {
+  func onAddVideoTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, isEnabled isEnabledArg: Bool, unlocalizedLabel unlocalizedLabelArg: String?, completion: @escaping (Result<Void, PigeonError>) -> Void) {
     let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onAddVideoTrack\(messageChannelSuffix)"
     let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([idArg, uidArg, labelArg, languageArg, kindArg, isEnabledArg] as [Any?]) { response in
+    channel.sendMessage([idArg, uidArg, labelArg, languageArg, kindArg, isEnabledArg, unlocalizedLabelArg] as [Any?]) { response in
       guard let listResponse = response as? [Any?] else {
         completion(.failure(createConnectionError(withChannelName: channelName)))
         return
@@ -1984,10 +2003,10 @@ class THEOplayerFlutterVideoTracksAPI: THEOplayerFlutterVideoTracksAPIProtocol {
       }
     }
   }
-  func onVideoTrackAddQuality(videoTrackUid videoTrackUidArg: Int64, qualityId qualityIdArg: String, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, width widthArg: Int64, height heightArg: Int64, frameRate frameRateArg: Double, firstFrame firstFrameArg: Double, completion: @escaping (Result<Void, PigeonError>) -> Void) {
+  func onVideoTrackAddQuality(videoTrackUid videoTrackUidArg: Int64, qualityId qualityIdArg: String, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, width widthArg: Int64, height heightArg: Int64, frameRate frameRateArg: Double, firstFrame firstFrameArg: Double, averageBandwidth averageBandwidthArg: Int64?, available availableArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void) {
     let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality\(messageChannelSuffix)"
     let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([videoTrackUidArg, qualityIdArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, widthArg, heightArg, frameRateArg, firstFrameArg] as [Any?]) { response in
+    channel.sendMessage([videoTrackUidArg, qualityIdArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, widthArg, heightArg, frameRateArg, firstFrameArg, averageBandwidthArg, availableArg] as [Any?]) { response in
       guard let listResponse = response as? [Any?] else {
         completion(.failure(createConnectionError(withChannelName: channelName)))
         return
@@ -2074,10 +2093,10 @@ class THEOplayerFlutterVideoTracksAPI: THEOplayerFlutterVideoTracksAPIProtocol {
       }
     }
   }
-  func onQualityUpdate(videoTrackUid videoTrackUidArg: Int64, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, width widthArg: Int64, height heightArg: Int64, frameRate frameRateArg: Double, firstFrame firstFrameArg: Double, completion: @escaping (Result<Void, PigeonError>) -> Void) {
+  func onQualityUpdate(videoTrackUid videoTrackUidArg: Int64, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, width widthArg: Int64, height heightArg: Int64, frameRate frameRateArg: Double, firstFrame firstFrameArg: Double, averageBandwidth averageBandwidthArg: Int64?, available availableArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void) {
     let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate\(messageChannelSuffix)"
     let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([videoTrackUidArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, widthArg, heightArg, frameRateArg, firstFrameArg] as [Any?]) { response in
+    channel.sendMessage([videoTrackUidArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, widthArg, heightArg, frameRateArg, firstFrameArg, averageBandwidthArg, availableArg] as [Any?]) { response in
       guard let listResponse = response as? [Any?] else {
         completion(.failure(createConnectionError(withChannelName: channelName)))
         return
@@ -2158,13 +2177,13 @@ class THEOplayerNativeAudioTracksAPISetup {
 }
 /// Generated protocol from Pigeon that represents Flutter messages that can be called from Swift.
 protocol THEOplayerFlutterAudioTracksAPIProtocol {
-  func onAddAudioTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, isEnabled isEnabledArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void)
-  func onAudioTrackAddQuality(audioTrackUid audioTrackUidArg: Int64, qualityId qualityIdArg: String, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, audioSamplingRate audioSamplingRateArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
+  func onAddAudioTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, isEnabled isEnabledArg: Bool, unlocalizedLabel unlocalizedLabelArg: String?, completion: @escaping (Result<Void, PigeonError>) -> Void)
+  func onAudioTrackAddQuality(audioTrackUid audioTrackUidArg: Int64, qualityId qualityIdArg: String, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, audioSamplingRate audioSamplingRateArg: Int64, averageBandwidth averageBandwidthArg: Int64?, available availableArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onRemoveAudioTrack(uid uidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onAudioTrackListChange(uid uidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onTargetQualityChange(audioTrackUid audioTrackUidArg: Int64, qualitiesUid qualitiesUidArg: [Int64], qualityUid qualityUidArg: Int64?, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onActiveQualityChange(audioTrackUid audioTrackUidArg: Int64, qualityUid qualityUidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
-  func onQualityUpdate(audioTrackUid audioTrackUidArg: Int64, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, audioSamplingRate audioSamplingRateArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
+  func onQualityUpdate(audioTrackUid audioTrackUidArg: Int64, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, audioSamplingRate audioSamplingRateArg: Int64, averageBandwidth averageBandwidthArg: Int64?, available availableArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void)
 }
 class THEOplayerFlutterAudioTracksAPI: THEOplayerFlutterAudioTracksAPIProtocol {
   private let binaryMessenger: FlutterBinaryMessenger
@@ -2176,10 +2195,10 @@ class THEOplayerFlutterAudioTracksAPI: THEOplayerFlutterAudioTracksAPIProtocol {
   var codec: APIsPigeonCodec {
     return APIsPigeonCodec.shared
   }
-  func onAddAudioTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, isEnabled isEnabledArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void) {
+  func onAddAudioTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, isEnabled isEnabledArg: Bool, unlocalizedLabel unlocalizedLabelArg: String?, completion: @escaping (Result<Void, PigeonError>) -> Void) {
     let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAddAudioTrack\(messageChannelSuffix)"
     let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([idArg, uidArg, labelArg, languageArg, kindArg, isEnabledArg] as [Any?]) { response in
+    channel.sendMessage([idArg, uidArg, labelArg, languageArg, kindArg, isEnabledArg, unlocalizedLabelArg] as [Any?]) { response in
       guard let listResponse = response as? [Any?] else {
         completion(.failure(createConnectionError(withChannelName: channelName)))
         return
@@ -2194,10 +2213,10 @@ class THEOplayerFlutterAudioTracksAPI: THEOplayerFlutterAudioTracksAPIProtocol {
       }
     }
   }
-  func onAudioTrackAddQuality(audioTrackUid audioTrackUidArg: Int64, qualityId qualityIdArg: String, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, audioSamplingRate audioSamplingRateArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void) {
+  func onAudioTrackAddQuality(audioTrackUid audioTrackUidArg: Int64, qualityId qualityIdArg: String, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, audioSamplingRate audioSamplingRateArg: Int64, averageBandwidth averageBandwidthArg: Int64?, available availableArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void) {
     let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality\(messageChannelSuffix)"
     let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([audioTrackUidArg, qualityIdArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, audioSamplingRateArg] as [Any?]) { response in
+    channel.sendMessage([audioTrackUidArg, qualityIdArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, audioSamplingRateArg, averageBandwidthArg, availableArg] as [Any?]) { response in
       guard let listResponse = response as? [Any?] else {
         completion(.failure(createConnectionError(withChannelName: channelName)))
         return
@@ -2284,10 +2303,10 @@ class THEOplayerFlutterAudioTracksAPI: THEOplayerFlutterAudioTracksAPIProtocol {
       }
     }
   }
-  func onQualityUpdate(audioTrackUid audioTrackUidArg: Int64, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, audioSamplingRate audioSamplingRateArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void) {
+  func onQualityUpdate(audioTrackUid audioTrackUidArg: Int64, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, audioSamplingRate audioSamplingRateArg: Int64, averageBandwidth averageBandwidthArg: Int64?, available availableArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void) {
     let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate\(messageChannelSuffix)"
     let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([audioTrackUidArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, audioSamplingRateArg] as [Any?]) { response in
+    channel.sendMessage([audioTrackUidArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, audioSamplingRateArg, averageBandwidthArg, availableArg] as [Any?]) { response in
       guard let listResponse = response as? [Any?] else {
         completion(.failure(createConnectionError(withChannelName: channelName)))
         return

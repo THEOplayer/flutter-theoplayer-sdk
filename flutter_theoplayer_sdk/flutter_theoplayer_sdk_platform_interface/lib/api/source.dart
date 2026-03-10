@@ -30,29 +30,13 @@ class TypedSource extends TypedSourcePigeon {
 
   String? type;
 
-  TypedSource({
-    required String src,
-    this.type,
-    DRMConfiguration? drm,
-    SourceIntegrationId? integration,
-    this.androidSourceConfiguration,
-    this.headers
-  }) : super(src: src, type: type, drm: drm, integration: integration, headers: headers);
+  TypedSource({required String src, this.type, DRMConfiguration? drm, SourceIntegrationId? integration, this.androidSourceConfiguration, this.headers})
+      : super(src: src, type: type, drm: drm, integration: integration, headers: headers);
 }
 
 /// THEOlive TypedSource
 class TheoLiveSource extends TypedSource {
-  TheoLiveSource({
-    required String src,
-    String? type,
-    DRMConfiguration? drm,
-    SourceIntegrationId? integration = SourceIntegrationId.theolive,
-    AndroidTypedSourceConfiguration? androidSourceConfiguration
-  }) : super(
-    src: src,
-    type: type,
-    drm: drm,
-    integration: integration,
-    androidSourceConfiguration: androidSourceConfiguration
-  );
+  TheoLiveSource(
+      {required String src, String? type, DRMConfiguration? drm, SourceIntegrationId? integration = SourceIntegrationId.theolive, AndroidTypedSourceConfiguration? androidSourceConfiguration})
+      : super(src: src, type: type, drm: drm, integration: integration, androidSourceConfiguration: androidSourceConfiguration);
 }

@@ -19,7 +19,7 @@ class THEOplayerFlutterVideoTracksAPIImpl implements THEOplayerFlutterVideoTrack
   }
 
   @override
-  void onAddVideoTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled) {
+  void onAddVideoTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled, String? unlocalizedLabel) {
     VideoTrack videoTrack = VideoTrackImplMobile(
         id,
         uid,
@@ -35,13 +35,14 @@ class THEOplayerFlutterVideoTracksAPIImpl implements THEOplayerFlutterVideoTrack
   }
 
   @override
-  void onVideoTrackAddQuality(int videoTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame) {
+  void onVideoTrackAddQuality(int videoTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame,
+      int? averageBandwidth, bool available) {
     VideoTrack? videoTrack = _videoTracks.firstWhereOrNull((item) => item.uid == videoTrackUid);
     if (videoTrack == null) {
       return;
     }
 
-    VideoQualityImpl videoQuality = VideoQualityImpl(qualityId, qualityUid, name, bandwidth, codecs, width, height, frameRate, firstFrame);
+    VideoQualityImpl videoQuality = VideoQualityImpl(qualityId, qualityUid, name, bandwidth, codecs, width, height, frameRate, firstFrame, averageBandwidth, available);
     videoTrack.qualities.add(videoQuality);
   }
 
@@ -74,9 +75,7 @@ class THEOplayerFlutterVideoTracksAPIImpl implements THEOplayerFlutterVideoTrack
     }
 
     VideoQualitiesImpl targetQualities = VideoQualitiesImpl();
-    targetQualities.addAll(
-        videoTrack.qualities.where((element) => qualitiesUid.contains(element.uid))
-    );
+    targetQualities.addAll(videoTrack.qualities.where((element) => qualitiesUid.contains(element.uid)));
     VideoQuality? targetQuality = videoTrack.qualities.firstWhereOrNull((element) => element.uid == qualityUid);
 
     videoTrack.targetQualities = targetQualities;
@@ -97,14 +96,15 @@ class THEOplayerFlutterVideoTracksAPIImpl implements THEOplayerFlutterVideoTrack
   }
 
   @override
-  void onQualityUpdate(int videoTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame) {
+  void onQualityUpdate(
+      int videoTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame, int? averageBandwidth, bool available) {
     VideoTrack? videoTrack = _videoTracks.firstWhereOrNull((item) => item.uid == videoTrackUid);
     VideoQualityImpl? videoQuality = videoTrack?.qualities.firstWhereOrNull((item) => item.uid == qualityUid) as VideoQualityImpl?;
     if (videoQuality == null) {
       return;
     }
 
-    videoQuality.update(name, bandwidth, codecs, width, height, frameRate, firstFrame);
+    videoQuality.update(name, bandwidth, codecs, width, height, frameRate, firstFrame, averageBandwidth, available);
     videoQuality.dispatchEvent(VideoQualityUpdateEvent());
   }
 

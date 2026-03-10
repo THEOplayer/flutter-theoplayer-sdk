@@ -36,10 +36,7 @@ class _TestAppState extends State<TestApp> {
 
     player = THEOplayer(
         theoPlayerConfig: THEOplayerConfig(
-          license: TEST_LICENSE,
-          androidConfiguration: AndroidConfig.create(viewComposition: widget.androidViewComposition),
-          webConfiguration: WebConfig(libraryLocation: "/theoplayer")
-        ),
+            license: TEST_LICENSE, androidConfiguration: AndroidConfig.create(viewComposition: widget.androidViewComposition), webConfiguration: WebConfig(libraryLocation: "/theoplayer")),
         onCreate: () {
           print("TestApp - THEOplayer - onCreate");
           player.addEventListener(PlayerEventTypes.SOURCECHANGE, (event) {
@@ -93,27 +90,24 @@ class _TestAppState extends State<TestApp> {
         appBar: AppBar(
           title: const Text('THEOplayer Test App'),
         ),
-        body: Builder(
-          builder: (context) {
-            return Center(
-              child: Column(
-                children: [
-                  SizedBox(
-                    width: 400,
-                    height: 300,
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        ChromelessPlayerView(key: const Key("testChromelessPlayer"), player: player),
-                      ],
-
-                    ),
+        body: Builder(builder: (context) {
+          return Center(
+            child: Column(
+              children: [
+                SizedBox(
+                  width: 400,
+                  height: 300,
+                  child: Stack(
+                    alignment: Alignment.center,
+                    children: [
+                      ChromelessPlayerView(key: const Key("testChromelessPlayer"), player: player),
+                    ],
                   ),
-                ],
-              ),
-            );
-          }
-        ),
+                ),
+              ],
+            ),
+          );
+        }),
       ),
     );
   }

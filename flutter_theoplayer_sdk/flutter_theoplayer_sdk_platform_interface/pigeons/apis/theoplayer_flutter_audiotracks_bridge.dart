@@ -12,10 +12,10 @@ abstract class THEOplayerNativeAudioTracksAPI {
 @FlutterApi()
 abstract class THEOplayerFlutterAudioTracksAPI {
   // AudioTrackList events
-  void onAddAudioTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled);
+  void onAddAudioTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled, String? unlocalizedLabel);
 
   // helper to populate the qualities in the audio track
-  void onAudioTrackAddQuality(int audioTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate);
+  void onAudioTrackAddQuality(int audioTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate, int? averageBandwidth, bool available);
 
   void onRemoveAudioTrack(int uid);
 
@@ -27,5 +27,5 @@ abstract class THEOplayerFlutterAudioTracksAPI {
   void onActiveQualityChange(int audioTrackUid, int qualityUid);
 
   // Quality events
-  void onQualityUpdate(int audioTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate);
+  void onQualityUpdate(int audioTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate, int? averageBandwidth, bool available);
 }
