@@ -1,3 +1,5 @@
+import 'package:theoplayer_platform_interface/abr/abr_controller_mobile.dart';
+import 'package:theoplayer_platform_interface/abr/abr_internal_api.dart';
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
 import 'package:theoplayer_platform_interface/pigeon_binary_messenger_wrapper.dart';
 import 'package:theoplayer_platform_interface/theolive/theolive_controller_mobile.dart';
@@ -20,6 +22,7 @@ class THEOplayerViewControllerMobile extends THEOplayerViewController {
   late final THEOplayerFlutterAPIImpl _flutterAPI;
   late final THEOplayerTrackControllerMobile _trackController;
   late final THEOplayerTHEOliveControllerMobile _theoliveController;
+  late final AbrControllerMobile _abrController;
 
   THEOplayerViewControllerMobile(int id) : super(id) {
     _channelSuffix = 'id_$id';
@@ -28,6 +31,7 @@ class THEOplayerViewControllerMobile extends THEOplayerViewController {
     _flutterAPI = THEOplayerFlutterAPIImpl(binaryMessenger: _pigeonMessenger);
     _trackController = THEOplayerTrackControllerMobile(_channelSuffix);
     _theoliveController = THEOplayerTHEOliveControllerMobile(_channelSuffix);
+    _abrController = AbrControllerMobile(_channelSuffix);
   }
 
   String get channelSuffix => _channelSuffix;
@@ -225,5 +229,10 @@ class THEOplayerViewControllerMobile extends THEOplayerViewController {
   @override
   THEOliveInternalInterface? getTheoLive() {
     return _theoliveController;
+  }
+
+  @override
+  AbrInternalInterface? getAbr() {
+    return _abrController;
   }
 }

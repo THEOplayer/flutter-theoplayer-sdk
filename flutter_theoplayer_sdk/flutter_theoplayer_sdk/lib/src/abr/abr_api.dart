@@ -1,4 +1,4 @@
-import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
+import 'package:theoplayer_platform_interface/abr/abr_internal_api.dart';
 
 /// The adaptive bitrate strategy type.
 enum AbrStrategyType {
@@ -22,72 +22,72 @@ class AbrStrategyConfiguration {
   AbrStrategyConfiguration({required this.type, this.metadata});
 }
 
-/// Dart-side wrapper around the Pigeon-generated [THEOplayerNativeAbrAPI].
+/// Dart-side ABR API.
 ///
-/// Provides a clean API to get/set ABR strategy, target buffer, and
-/// preferred peak bitrate. Works on iOS, Android, and web.
+/// Delegates to an [AbrInternalInterface] provided by the platform-specific
+/// view controller (Pigeon on native, JS interop on web).
 class AbrAPI {
-  THEOplayerNativeAbrAPI? _nativeAPI;
+  AbrInternalInterface? _controller;
 
-  /// Bind to the Pigeon API. Called internally during player setup.
-  void setup(THEOplayerNativeAbrAPI? nativeAPI) {
-    _nativeAPI = nativeAPI;
+  /// Bind to the platform controller. Called internally during player setup.
+  void setup(AbrInternalInterface? controller) {
+    _controller = controller;
   }
 
   /// Get the current ABR strategy.
   Future<AbrStrategyConfiguration> get strategy async {
-    final pigeon = await _nativeAPI?.getAbrStrategy();
-    if (pigeon == null) {
+    final result = await _controller?.getAbrStrategy();
+    if (result == null) {
       return AbrStrategyConfiguration(type: AbrStrategyType.bandwidth);
     }
-    return _fromPigeon(pigeon);
+    return _fromInternal(result);
   }
 
   /// Set the ABR strategy.
   Future<void> setStrategy(AbrStrategyConfiguration config) async {
-    await _nativeAPI?.setAbrStrategy(_toPigeon(config));
+    await _controller?.setAbrStrategy(_toInternal(config));
   }
 
   /// Get the target buffer in seconds.
   Future<double> get targetBuffer async {
-    return await _nativeAPI?.getTargetBuffer() ?? 20.0;
+    return await _controller?.getTargetBuffer() ?? 20.0;
   }
 
   /// Set the target buffer in seconds.
   Future<void> setTargetBuffer(double value) async {
-    await _nativeAPI?.setTargetBuffer(value);
+    await _controller?.setTargetBuffer(value);
   }
 
   /// Get the preferred peak bitrate in bps (iOS only, returns 0 on other platforms).
   Future<double> get preferredPeakBitRate async {
-    return await _nativeAPI?.getPreferredPeakBitRate() ?? 0.0;
+    return await _controller?.getPreferredPeakBitRate() ?? 0.0;
   }
 
   /// Set the preferred peak bitrate in bps (iOS only, no-op on other platforms).
   Future<void> setPreferredPeakBitRate(double value) async {
-    await _nativeAPI?.setPreferredPeakBitRate(value);
+    await _controller?.setPreferredPeakBitRate(value);
   }
 
   void dispose() {
-    _nativeAPI = null;
+    _controller = null;
   }
 
   // MARK: - Mapping helpers
 
-  static AbrStrategyConfiguration _fromPigeon(AbrStrategyConfigurationPigeon p) {
+  static AbrStrategyConfiguration _fromInternal(AbrStrategyConfigurationInternal i) {
     return AbrStrategyConfiguration(
-      type: AbrStrategyType.values[p.type.index],
-      metadata: p.metadata != null
-          ? AbrStrategyMetadata(bitrate: p.metadata!.bitrate?.toInt())
+      type: AbrStrategyType.values[i.type.index],
+      metadata: i.metadata != null
+          ? AbrStrategyMetadata(bitrate: i.metadata!.bitrate)
           : null,
     );
   }
 
-  static AbrStrategyConfigurationPigeon _toPigeon(AbrStrategyConfiguration c) {
-    return AbrStrategyConfigurationPigeon(
-      type: AbrStrategyTypePigeon.values[c.type.index],
+  static AbrStrategyConfigurationInternal _toInternal(AbrStrategyConfiguration c) {
+    return AbrStrategyConfigurationInternal(
+      type: AbrStrategyTypeInternal.values[c.type.index],
       metadata: c.metadata != null
-          ? AbrStrategyMetadataPigeon(bitrate: c.metadata!.bitrate)
+          ? AbrStrategyMetadataInternal(bitrate: c.metadata!.bitrate)
           : null,
     );
   }
