@@ -1,8 +1,6 @@
 package com.theoplayer.flutter
 
-import com.theoplayer.android.api.THEOplayerGlobal
 import com.theoplayer.android.api.util.Logger
-import com.theoplayer.android.internal.util.LoggerImpl
 import com.theoplayer.flutter.pigeon.DebugFlagPigeon
 import com.theoplayer.flutter.pigeon.THEOplayerNativeDebugFlagsAPI
 
@@ -27,7 +25,7 @@ class DebugFlagsBridge(
                 key = tag,
                 description = tag,
                 defaultValue = false,
-                isEnabled = LoggerImpl.isTagEnabled(tag)
+                isEnabled = logger.isTagEnabled(tag)
             )
         }
     }
