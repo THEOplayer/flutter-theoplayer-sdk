@@ -19,6 +19,7 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
     private let _videoTrackBridge: VideoTrackBridge
     private let _theoLiveBridge: THEOliveBridge
     private let _debugFlagsBridge: DebugFlagsBridge
+    private let _abrBridge: AbrBridge
     private var _allowBackgroundPlayback = false
     private var _allowAutomaticPictureInPicture = true
 
@@ -85,6 +86,8 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
         _theoLiveBridge.attachListeners()
 
         _debugFlagsBridge = DebugFlagsBridge(pigeonMessenger: _pigeonMessenger)
+
+        _abrBridge = AbrBridge(theoplayer: _theoplayer, pigeonMessenger: _pigeonMessenger)
 
         super.init()
         
@@ -251,6 +254,7 @@ extension THEOplayerViewNative: THEOplayerNativeAPI {
         _videoTrackBridge.dispose()
         _theoLiveBridge.dispose()
         _debugFlagsBridge.dispose()
+        _abrBridge.dispose()
 
         // Break retain cycles
         _theoplayer.backgroundPlaybackDelegate = nil
