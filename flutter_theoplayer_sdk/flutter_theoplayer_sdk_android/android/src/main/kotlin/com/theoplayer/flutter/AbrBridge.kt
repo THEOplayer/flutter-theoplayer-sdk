@@ -35,16 +35,13 @@ class AbrBridge(
     }
 
     override fun setAbrStrategy(config: AbrStrategyConfigurationPigeon) {
-        val builder = AbrStrategyConfiguration.Builder()
-        builder.type(toNativeType(config.type))
-        config.metadata?.bitrate?.let { bitrate ->
-            builder.metadata(
-                AbrStrategyMetadata.Builder()
-                    .bitrate(bitrate.toInt())
-                    .build()
-            )
+        val metadata = config.metadata?.bitrate?.let { bitrate ->
+            AbrStrategyMetadata(bitrate = bitrate.toInt())
         }
-        player.abr.abrStrategy = builder.build()
+        player.abr.abrStrategy = AbrStrategyConfiguration(
+            type = toNativeType(config.type),
+            metadata = metadata
+        )
     }
 
     override fun getTargetBuffer(): Double {
