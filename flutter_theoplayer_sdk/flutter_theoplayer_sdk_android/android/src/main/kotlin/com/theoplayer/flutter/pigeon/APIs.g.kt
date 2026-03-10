@@ -129,6 +129,19 @@ enum class SourceIntegrationId(val raw: Int) {
   }
 }
 
+/** The adaptive bitrate strategy type. */
+enum class AbrStrategyTypePigeon(val raw: Int) {
+  PERFORMANCE(0),
+  QUALITY(1),
+  BANDWIDTH(2);
+
+  companion object {
+    fun ofRaw(raw: Int): AbrStrategyTypePigeon? {
+      return values().firstOrNull { it.raw == raw }
+    }
+  }
+}
+
 /** Generated class from Pigeon that represents data sent in messages. */
 data class TimeRange (
   val start: Double,
@@ -339,6 +352,53 @@ data class Endpoint (
 }
 
 /**
+ * Metadata for the ABR strategy (e.g. initial bitrate cap).
+ *
+ * Generated class from Pigeon that represents data sent in messages.
+ */
+data class AbrStrategyMetadataPigeon (
+  val bitrate: Long? = null
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): AbrStrategyMetadataPigeon {
+      val bitrate = pigeonVar_list[0] as Long?
+      return AbrStrategyMetadataPigeon(bitrate)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      bitrate,
+    )
+  }
+}
+
+/**
+ * The ABR strategy configuration: type + optional metadata.
+ *
+ * Generated class from Pigeon that represents data sent in messages.
+ */
+data class AbrStrategyConfigurationPigeon (
+  val type: AbrStrategyTypePigeon,
+  val metadata: AbrStrategyMetadataPigeon? = null
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): AbrStrategyConfigurationPigeon {
+      val type = pigeonVar_list[0] as AbrStrategyTypePigeon
+      val metadata = pigeonVar_list[1] as AbrStrategyMetadataPigeon?
+      return AbrStrategyConfigurationPigeon(type, metadata)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      type,
+      metadata,
+    )
+  }
+}
+
+/**
  * A single debug flag with its metadata and current state.
  *
  * Generated class from Pigeon that represents data sent in messages.
@@ -402,46 +462,61 @@ private open class APIsPigeonCodec : StandardMessageCodec() {
         }
       }
       135.toByte() -> {
-        return (readValue(buffer) as? List<Any?>)?.let {
-          TimeRange.fromList(it)
+        return (readValue(buffer) as Long?)?.let {
+          AbrStrategyTypePigeon.ofRaw(it.toInt())
         }
       }
       136.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          SourceDescription.fromList(it)
+          TimeRange.fromList(it)
         }
       }
       137.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          TypedSourcePigeon.fromList(it)
+          SourceDescription.fromList(it)
         }
       }
       138.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          DRMConfiguration.fromList(it)
+          TypedSourcePigeon.fromList(it)
         }
       }
       139.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          WidevineDRMConfiguration.fromList(it)
+          DRMConfiguration.fromList(it)
         }
       }
       140.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          FairPlayDRMConfiguration.fromList(it)
+          WidevineDRMConfiguration.fromList(it)
         }
       }
       141.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          HespLatencies.fromList(it)
+          FairPlayDRMConfiguration.fromList(it)
         }
       }
       142.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          Endpoint.fromList(it)
+          HespLatencies.fromList(it)
         }
       }
       143.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          Endpoint.fromList(it)
+        }
+      }
+      144.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          AbrStrategyMetadataPigeon.fromList(it)
+        }
+      }
+      145.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          AbrStrategyConfigurationPigeon.fromList(it)
+        }
+      }
+      146.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
           DebugFlagPigeon.fromList(it)
         }
@@ -475,40 +550,52 @@ private open class APIsPigeonCodec : StandardMessageCodec() {
         stream.write(134)
         writeValue(stream, value.raw)
       }
-      is TimeRange -> {
+      is AbrStrategyTypePigeon -> {
         stream.write(135)
-        writeValue(stream, value.toList())
+        writeValue(stream, value.raw)
       }
-      is SourceDescription -> {
+      is TimeRange -> {
         stream.write(136)
         writeValue(stream, value.toList())
       }
-      is TypedSourcePigeon -> {
+      is SourceDescription -> {
         stream.write(137)
         writeValue(stream, value.toList())
       }
-      is DRMConfiguration -> {
+      is TypedSourcePigeon -> {
         stream.write(138)
         writeValue(stream, value.toList())
       }
-      is WidevineDRMConfiguration -> {
+      is DRMConfiguration -> {
         stream.write(139)
         writeValue(stream, value.toList())
       }
-      is FairPlayDRMConfiguration -> {
+      is WidevineDRMConfiguration -> {
         stream.write(140)
         writeValue(stream, value.toList())
       }
-      is HespLatencies -> {
+      is FairPlayDRMConfiguration -> {
         stream.write(141)
         writeValue(stream, value.toList())
       }
-      is Endpoint -> {
+      is HespLatencies -> {
         stream.write(142)
         writeValue(stream, value.toList())
       }
-      is DebugFlagPigeon -> {
+      is Endpoint -> {
         stream.write(143)
+        writeValue(stream, value.toList())
+      }
+      is AbrStrategyMetadataPigeon -> {
+        stream.write(144)
+        writeValue(stream, value.toList())
+      }
+      is AbrStrategyConfigurationPigeon -> {
+        stream.write(145)
+        writeValue(stream, value.toList())
+      }
+      is DebugFlagPigeon -> {
+        stream.write(146)
         writeValue(stream, value.toList())
       }
       else -> super.writeValue(stream, value)
@@ -979,6 +1066,136 @@ class THEOplayerFlutterTHEOliveAPI(private val binaryMessenger: BinaryMessenger,
       } else {
         callback(Result.failure(createConnectionError(channelName)))
       } 
+    }
+  }
+}
+/**
+ * Host API: Dart → Native calls for ABR configuration.
+ *
+ * Generated interface from Pigeon that represents a handler of messages from Flutter.
+ */
+interface THEOplayerNativeAbrAPI {
+  /** Get the current ABR strategy. */
+  fun getAbrStrategy(): AbrStrategyConfigurationPigeon
+  /** Set the ABR strategy. */
+  fun setAbrStrategy(config: AbrStrategyConfigurationPigeon)
+  /** Get the target buffer in seconds. */
+  fun getTargetBuffer(): Double
+  /** Set the target buffer in seconds. */
+  fun setTargetBuffer(value: Double)
+  /** Get the preferred peak bitrate in bps (iOS only, returns 0 on other platforms). */
+  fun getPreferredPeakBitRate(): Double
+  /** Set the preferred peak bitrate in bps (iOS only, no-op on other platforms). */
+  fun setPreferredPeakBitRate(value: Double)
+
+  companion object {
+    /** The codec used by THEOplayerNativeAbrAPI. */
+    val codec: MessageCodec<Any?> by lazy {
+      APIsPigeonCodec()
+    }
+    /** Sets up an instance of `THEOplayerNativeAbrAPI` to handle messages through the `binaryMessenger`. */
+    @JvmOverloads
+    fun setUp(binaryMessenger: BinaryMessenger, api: THEOplayerNativeAbrAPI?, messageChannelSuffix: String = "") {
+      val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.getAbrStrategy$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              listOf(api.getAbrStrategy())
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.setAbrStrategy$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val configArg = args[0] as AbrStrategyConfigurationPigeon
+            val wrapped: List<Any?> = try {
+              api.setAbrStrategy(configArg)
+              listOf(null)
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.getTargetBuffer$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              listOf(api.getTargetBuffer())
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.setTargetBuffer$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val valueArg = args[0] as Double
+            val wrapped: List<Any?> = try {
+              api.setTargetBuffer(valueArg)
+              listOf(null)
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.getPreferredPeakBitRate$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              listOf(api.getPreferredPeakBitRate())
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.setPreferredPeakBitRate$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val valueArg = args[0] as Double
+            val wrapped: List<Any?> = try {
+              api.setPreferredPeakBitRate(valueArg)
+              listOf(null)
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
     }
   }
 }
