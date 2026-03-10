@@ -301,6 +301,7 @@ class Endpoint {
   }
 }
 
+
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
   @override
@@ -308,43 +309,43 @@ class _PigeonCodec extends StandardMessageCodec {
     if (value is int) {
       buffer.putUint8(4);
       buffer.putInt64(value);
-    } else if (value is ReadyState) {
+    }    else if (value is ReadyState) {
       buffer.putUint8(129);
       writeValue(buffer, value.index);
-    } else if (value is TextTrackMode) {
+    }    else if (value is TextTrackMode) {
       buffer.putUint8(130);
       writeValue(buffer, value.index);
-    } else if (value is TextTrackType) {
+    }    else if (value is TextTrackType) {
       buffer.putUint8(131);
       writeValue(buffer, value.index);
-    } else if (value is TextTrackReadyState) {
+    }    else if (value is TextTrackReadyState) {
       buffer.putUint8(132);
       writeValue(buffer, value.index);
-    } else if (value is PreloadType) {
+    }    else if (value is PreloadType) {
       buffer.putUint8(133);
       writeValue(buffer, value.index);
-    } else if (value is SourceIntegrationId) {
+    }    else if (value is SourceIntegrationId) {
       buffer.putUint8(134);
       writeValue(buffer, value.index);
-    } else if (value is TimeRange) {
+    }    else if (value is TimeRange) {
       buffer.putUint8(135);
       writeValue(buffer, value.encode());
-    } else if (value is SourceDescription) {
+    }    else if (value is SourceDescription) {
       buffer.putUint8(136);
       writeValue(buffer, value.encode());
-    } else if (value is TypedSourcePigeon) {
+    }    else if (value is TypedSourcePigeon) {
       buffer.putUint8(137);
       writeValue(buffer, value.encode());
-    } else if (value is DRMConfiguration) {
+    }    else if (value is DRMConfiguration) {
       buffer.putUint8(138);
       writeValue(buffer, value.encode());
-    } else if (value is WidevineDRMConfiguration) {
+    }    else if (value is WidevineDRMConfiguration) {
       buffer.putUint8(139);
       writeValue(buffer, value.encode());
-    } else if (value is FairPlayDRMConfiguration) {
+    }    else if (value is FairPlayDRMConfiguration) {
       buffer.putUint8(140);
       writeValue(buffer, value.encode());
-    } else if (value is Endpoint) {
+    }    else if (value is Endpoint) {
       buffer.putUint8(141);
       writeValue(buffer, value.encode());
     } else {
@@ -355,37 +356,37 @@ class _PigeonCodec extends StandardMessageCodec {
   @override
   Object? readValueOfType(int type, ReadBuffer buffer) {
     switch (type) {
-      case 129:
+      case 129: 
         final int? value = readValue(buffer) as int?;
         return value == null ? null : ReadyState.values[value];
-      case 130:
+      case 130: 
         final int? value = readValue(buffer) as int?;
         return value == null ? null : TextTrackMode.values[value];
-      case 131:
+      case 131: 
         final int? value = readValue(buffer) as int?;
         return value == null ? null : TextTrackType.values[value];
-      case 132:
+      case 132: 
         final int? value = readValue(buffer) as int?;
         return value == null ? null : TextTrackReadyState.values[value];
-      case 133:
+      case 133: 
         final int? value = readValue(buffer) as int?;
         return value == null ? null : PreloadType.values[value];
-      case 134:
+      case 134: 
         final int? value = readValue(buffer) as int?;
         return value == null ? null : SourceIntegrationId.values[value];
-      case 135:
+      case 135: 
         return TimeRange.decode(readValue(buffer)!);
-      case 136:
+      case 136: 
         return SourceDescription.decode(readValue(buffer)!);
-      case 137:
+      case 137: 
         return TypedSourcePigeon.decode(readValue(buffer)!);
-      case 138:
+      case 138: 
         return DRMConfiguration.decode(readValue(buffer)!);
-      case 139:
+      case 139: 
         return WidevineDRMConfiguration.decode(readValue(buffer)!);
-      case 140:
+      case 140: 
         return FairPlayDRMConfiguration.decode(readValue(buffer)!);
-      case 141:
+      case 141: 
         return Endpoint.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
@@ -413,7 +414,8 @@ class THEOplayerNativeTextTracksAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(<Object?>[textTrackUid, mode]) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[textTrackUid, mode]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -431,8 +433,7 @@ class THEOplayerNativeTextTracksAPI {
 abstract class THEOplayerFlutterTextTracksAPI {
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
 
-  void onAddTextTrack(String? id, int uid, String? label, String? language, String? kind, String? inBandMetadataTrackDispatchType, TextTrackReadyState readyState, TextTrackType type, String? source,
-      bool isForced, TextTrackMode mode, String? unlocalizedLabel);
+  void onAddTextTrack(String? id, int uid, String? label, String? language, String? kind, String? inBandMetadataTrackDispatchType, TextTrackReadyState readyState, TextTrackType type, String? source, bool isForced, TextTrackMode mode, String? unlocalizedLabel);
 
   void onRemoveTextTrack(int uid);
 
@@ -440,8 +441,7 @@ abstract class THEOplayerFlutterTextTracksAPI {
 
   void onTextTrackAddCue(int textTrackUid, String id, int uid, double startTime, double endTime, String content);
 
-  void onTextTrackAddDateRangeCue(int textTrackUid, String id, int uid, double startTime, double endTime, String? cueClass, double startDateMillis, double? endDateMillis, double? duration,
-      double? plannedDuration, bool endOnNext, String? customAttributesJson);
+  void onTextTrackAddDateRangeCue(int textTrackUid, String id, int uid, double startTime, double endTime, String? cueClass, double startDateMillis, double? endDateMillis, double? duration, double? plannedDuration, bool endOnNext, String? customAttributesJson);
 
   void onTextTrackRemoveCue(int textTrackUid, int cueUid);
 
@@ -459,11 +459,7 @@ abstract class THEOplayerFlutterTextTracksAPI {
 
   void onCueUpdate(int textTrackUid, int cueUid, double endTime, String content);
 
-  static void setUp(
-    THEOplayerFlutterTextTracksAPI? api, {
-    BinaryMessenger? binaryMessenger,
-    String messageChannelSuffix = '',
-  }) {
+  static void setUp(THEOplayerFlutterTextTracksAPI? api, {BinaryMessenger? binaryMessenger, String messageChannelSuffix = '',}) {
     messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
     {
       final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
@@ -473,33 +469,37 @@ abstract class THEOplayerFlutterTextTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_id = (args[0] as String?);
           final int? arg_uid = (args[1] as int?);
-          assert(arg_uid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null, expected non-null int.');
+          assert(arg_uid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null, expected non-null int.');
           final String? arg_label = (args[2] as String?);
           final String? arg_language = (args[3] as String?);
           final String? arg_kind = (args[4] as String?);
           final String? arg_inBandMetadataTrackDispatchType = (args[5] as String?);
           final TextTrackReadyState? arg_readyState = (args[6] as TextTrackReadyState?);
-          assert(
-              arg_readyState != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null, expected non-null TextTrackReadyState.');
+          assert(arg_readyState != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null, expected non-null TextTrackReadyState.');
           final TextTrackType? arg_type = (args[7] as TextTrackType?);
-          assert(arg_type != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null, expected non-null TextTrackType.');
+          assert(arg_type != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null, expected non-null TextTrackType.');
           final String? arg_source = (args[8] as String?);
           final bool? arg_isForced = (args[9] as bool?);
-          assert(arg_isForced != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null, expected non-null bool.');
+          assert(arg_isForced != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null, expected non-null bool.');
           final TextTrackMode? arg_mode = (args[10] as TextTrackMode?);
-          assert(arg_mode != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null, expected non-null TextTrackMode.');
+          assert(arg_mode != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null, expected non-null TextTrackMode.');
           final String? arg_unlocalizedLabel = (args[11] as String?);
           try {
-            api.onAddTextTrack(
-                arg_id, arg_uid!, arg_label, arg_language, arg_kind, arg_inBandMetadataTrackDispatchType, arg_readyState!, arg_type!, arg_source, arg_isForced!, arg_mode!, arg_unlocalizedLabel);
+            api.onAddTextTrack(arg_id, arg_uid!, arg_label, arg_language, arg_kind, arg_inBandMetadataTrackDispatchType, arg_readyState!, arg_type!, arg_source, arg_isForced!, arg_mode!, arg_unlocalizedLabel);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -513,16 +513,18 @@ abstract class THEOplayerFlutterTextTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onRemoveTextTrack was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onRemoveTextTrack was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_uid = (args[0] as int?);
-          assert(arg_uid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onRemoveTextTrack was null, expected non-null int.');
+          assert(arg_uid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onRemoveTextTrack was null, expected non-null int.');
           try {
             api.onRemoveTextTrack(arg_uid!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -536,16 +538,18 @@ abstract class THEOplayerFlutterTextTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackListChange was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackListChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_uid = (args[0] as int?);
-          assert(arg_uid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackListChange was null, expected non-null int.');
+          assert(arg_uid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackListChange was null, expected non-null int.');
           try {
             api.onTextTrackListChange(arg_uid!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -559,26 +563,33 @@ abstract class THEOplayerFlutterTextTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_textTrackUid = (args[0] as int?);
-          assert(arg_textTrackUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null int.');
+          assert(arg_textTrackUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null int.');
           final String? arg_id = (args[1] as String?);
-          assert(arg_id != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null String.');
+          assert(arg_id != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null String.');
           final int? arg_uid = (args[2] as int?);
-          assert(arg_uid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null int.');
+          assert(arg_uid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null int.');
           final double? arg_startTime = (args[3] as double?);
-          assert(arg_startTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null double.');
+          assert(arg_startTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null double.');
           final double? arg_endTime = (args[4] as double?);
-          assert(arg_endTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null double.');
+          assert(arg_endTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null double.');
           final String? arg_content = (args[5] as String?);
-          assert(arg_content != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null String.');
+          assert(arg_content != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null String.');
           try {
             api.onTextTrackAddCue(arg_textTrackUid!, arg_id!, arg_uid!, arg_startTime!, arg_endTime!, arg_content!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -592,18 +603,24 @@ abstract class THEOplayerFlutterTextTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_textTrackUid = (args[0] as int?);
-          assert(arg_textTrackUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null int.');
+          assert(arg_textTrackUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null int.');
           final String? arg_id = (args[1] as String?);
-          assert(arg_id != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null String.');
+          assert(arg_id != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null String.');
           final int? arg_uid = (args[2] as int?);
-          assert(arg_uid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null int.');
+          assert(arg_uid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null int.');
           final double? arg_startTime = (args[3] as double?);
-          assert(arg_startTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null double.');
+          assert(arg_startTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null double.');
           final double? arg_endTime = (args[4] as double?);
-          assert(arg_endTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null double.');
+          assert(arg_endTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null double.');
           final String? arg_cueClass = (args[5] as String?);
           final double? arg_startDateMillis = (args[6] as double?);
           assert(arg_startDateMillis != null,
@@ -612,15 +629,15 @@ abstract class THEOplayerFlutterTextTracksAPI {
           final double? arg_duration = (args[8] as double?);
           final double? arg_plannedDuration = (args[9] as double?);
           final bool? arg_endOnNext = (args[10] as bool?);
-          assert(arg_endOnNext != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null bool.');
+          assert(arg_endOnNext != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null bool.');
           final String? arg_customAttributesJson = (args[11] as String?);
           try {
-            api.onTextTrackAddDateRangeCue(arg_textTrackUid!, arg_id!, arg_uid!, arg_startTime!, arg_endTime!, arg_cueClass, arg_startDateMillis!, arg_endDateMillis, arg_duration, arg_plannedDuration,
-                arg_endOnNext!, arg_customAttributesJson);
+            api.onTextTrackAddDateRangeCue(arg_textTrackUid!, arg_id!, arg_uid!, arg_startTime!, arg_endTime!, arg_cueClass, arg_startDateMillis!, arg_endDateMillis, arg_duration, arg_plannedDuration, arg_endOnNext!, arg_customAttributesJson);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -634,18 +651,21 @@ abstract class THEOplayerFlutterTextTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackRemoveCue was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackRemoveCue was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_textTrackUid = (args[0] as int?);
-          assert(arg_textTrackUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackRemoveCue was null, expected non-null int.');
+          assert(arg_textTrackUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackRemoveCue was null, expected non-null int.');
           final int? arg_cueUid = (args[1] as int?);
-          assert(arg_cueUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackRemoveCue was null, expected non-null int.');
+          assert(arg_cueUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackRemoveCue was null, expected non-null int.');
           try {
             api.onTextTrackRemoveCue(arg_textTrackUid!, arg_cueUid!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -659,18 +679,21 @@ abstract class THEOplayerFlutterTextTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackEnterCue was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackEnterCue was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_textTrackUid = (args[0] as int?);
-          assert(arg_textTrackUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackEnterCue was null, expected non-null int.');
+          assert(arg_textTrackUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackEnterCue was null, expected non-null int.');
           final int? arg_cueUid = (args[1] as int?);
-          assert(arg_cueUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackEnterCue was null, expected non-null int.');
+          assert(arg_cueUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackEnterCue was null, expected non-null int.');
           try {
             api.onTextTrackEnterCue(arg_textTrackUid!, arg_cueUid!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -684,18 +707,21 @@ abstract class THEOplayerFlutterTextTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackExitCue was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackExitCue was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_textTrackUid = (args[0] as int?);
-          assert(arg_textTrackUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackExitCue was null, expected non-null int.');
+          assert(arg_textTrackUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackExitCue was null, expected non-null int.');
           final int? arg_cueUid = (args[1] as int?);
-          assert(arg_cueUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackExitCue was null, expected non-null int.');
+          assert(arg_cueUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackExitCue was null, expected non-null int.');
           try {
             api.onTextTrackExitCue(arg_textTrackUid!, arg_cueUid!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -709,16 +735,18 @@ abstract class THEOplayerFlutterTextTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackCueChange was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackCueChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_textTrackUid = (args[0] as int?);
-          assert(arg_textTrackUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackCueChange was null, expected non-null int.');
+          assert(arg_textTrackUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackCueChange was null, expected non-null int.');
           try {
             api.onTextTrackCueChange(arg_textTrackUid!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -732,16 +760,18 @@ abstract class THEOplayerFlutterTextTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackChange was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_textTrackUid = (args[0] as int?);
-          assert(arg_textTrackUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackChange was null, expected non-null int.');
+          assert(arg_textTrackUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackChange was null, expected non-null int.');
           try {
             api.onTextTrackChange(arg_textTrackUid!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -755,18 +785,21 @@ abstract class THEOplayerFlutterTextTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueEnter was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueEnter was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_textTrackUid = (args[0] as int?);
-          assert(arg_textTrackUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueEnter was null, expected non-null int.');
+          assert(arg_textTrackUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueEnter was null, expected non-null int.');
           final int? arg_cueUid = (args[1] as int?);
-          assert(arg_cueUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueEnter was null, expected non-null int.');
+          assert(arg_cueUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueEnter was null, expected non-null int.');
           try {
             api.onCueEnter(arg_textTrackUid!, arg_cueUid!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -780,18 +813,21 @@ abstract class THEOplayerFlutterTextTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueExit was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueExit was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_textTrackUid = (args[0] as int?);
-          assert(arg_textTrackUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueExit was null, expected non-null int.');
+          assert(arg_textTrackUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueExit was null, expected non-null int.');
           final int? arg_cueUid = (args[1] as int?);
-          assert(arg_cueUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueExit was null, expected non-null int.');
+          assert(arg_cueUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueExit was null, expected non-null int.');
           try {
             api.onCueExit(arg_textTrackUid!, arg_cueUid!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -805,22 +841,27 @@ abstract class THEOplayerFlutterTextTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_textTrackUid = (args[0] as int?);
-          assert(arg_textTrackUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate was null, expected non-null int.');
+          assert(arg_textTrackUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate was null, expected non-null int.');
           final int? arg_cueUid = (args[1] as int?);
-          assert(arg_cueUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate was null, expected non-null int.');
+          assert(arg_cueUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate was null, expected non-null int.');
           final double? arg_endTime = (args[2] as double?);
-          assert(arg_endTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate was null, expected non-null double.');
+          assert(arg_endTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate was null, expected non-null double.');
           final String? arg_content = (args[3] as String?);
-          assert(arg_content != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate was null, expected non-null String.');
+          assert(arg_content != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onCueUpdate was null, expected non-null String.');
           try {
             api.onCueUpdate(arg_textTrackUid!, arg_cueUid!, arg_endTime!, arg_content!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -849,7 +890,8 @@ class THEOplayerNativeTHEOliveAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -870,7 +912,8 @@ class THEOplayerNativeTHEOliveAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(<Object?>[channelIds]) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[channelIds]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -894,17 +937,13 @@ abstract class THEOplayerFlutterTHEOliveAPI {
 
   void onDistributionOfflineEvent(String distributionId);
 
-  void onIntentToFallbackEvent();
+  void onIntentToFallbackEvent(String? errorCode, String? errorMessage);
 
   void onSeeking(double currentTime);
 
   void onSeeked(double currentTime);
 
-  static void setUp(
-    THEOplayerFlutterTHEOliveAPI? api, {
-    BinaryMessenger? binaryMessenger,
-    String messageChannelSuffix = '',
-  }) {
+  static void setUp(THEOplayerFlutterTHEOliveAPI? api, {BinaryMessenger? binaryMessenger, String messageChannelSuffix = '',}) {
     messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
     {
       final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
@@ -914,7 +953,8 @@ abstract class THEOplayerFlutterTHEOliveAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionLoadStartEvent was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionLoadStartEvent was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_distributionId = (args[0] as String?);
           assert(arg_distributionId != null,
@@ -924,7 +964,7 @@ abstract class THEOplayerFlutterTHEOliveAPI {
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -938,16 +978,18 @@ abstract class THEOplayerFlutterTHEOliveAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onEndpointLoadedEvent was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onEndpointLoadedEvent was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final Endpoint? arg_endpoint = (args[0] as Endpoint?);
-          assert(arg_endpoint != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onEndpointLoadedEvent was null, expected non-null Endpoint.');
+          assert(arg_endpoint != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onEndpointLoadedEvent was null, expected non-null Endpoint.');
           try {
             api.onEndpointLoadedEvent(arg_endpoint!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -961,17 +1003,18 @@ abstract class THEOplayerFlutterTHEOliveAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionOfflineEvent was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionOfflineEvent was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_distributionId = (args[0] as String?);
-          assert(
-              arg_distributionId != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionOfflineEvent was null, expected non-null String.');
+          assert(arg_distributionId != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onDistributionOfflineEvent was null, expected non-null String.');
           try {
             api.onDistributionOfflineEvent(arg_distributionId!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -985,12 +1028,17 @@ abstract class THEOplayerFlutterTHEOliveAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onIntentToFallbackEvent was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final String? arg_errorCode = (args[0] as String?);
+          final String? arg_errorMessage = (args[1] as String?);
           try {
-            api.onIntentToFallbackEvent();
+            api.onIntentToFallbackEvent(arg_errorCode, arg_errorMessage);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -1004,16 +1052,18 @@ abstract class THEOplayerFlutterTHEOliveAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onSeeking was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onSeeking was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
-          assert(arg_currentTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onSeeking was null, expected non-null double.');
+          assert(arg_currentTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onSeeking was null, expected non-null double.');
           try {
             api.onSeeking(arg_currentTime!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -1027,16 +1077,18 @@ abstract class THEOplayerFlutterTHEOliveAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onSeeked was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onSeeked was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
-          assert(arg_currentTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onSeeked was null, expected non-null double.');
+          assert(arg_currentTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onSeeked was null, expected non-null double.');
           try {
             api.onSeeked(arg_currentTime!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -1065,7 +1117,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(<Object?>[source]) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[source]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1086,7 +1139,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1107,7 +1161,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(<Object?>[autoplay]) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[autoplay]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1128,7 +1183,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1154,7 +1210,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1175,7 +1232,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1196,7 +1254,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1222,7 +1281,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(<Object?>[currentTime]) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[currentTime]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1243,7 +1303,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1269,7 +1330,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(<Object?>[currentProgramDateTime]) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[currentProgramDateTime]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1290,7 +1352,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1311,7 +1374,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1337,7 +1401,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(<Object?>[playbackRate]) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[playbackRate]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1358,7 +1423,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1384,7 +1450,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(<Object?>[volume]) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[volume]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1405,7 +1472,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1431,7 +1499,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(<Object?>[muted]) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[muted]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1452,7 +1521,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1478,7 +1548,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(<Object?>[preload]) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[preload]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1499,7 +1570,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1525,7 +1597,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1551,7 +1624,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1577,7 +1651,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1603,7 +1678,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1629,7 +1705,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1655,7 +1732,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1681,7 +1759,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1707,7 +1786,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1733,7 +1813,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(<Object?>[allowBackgroundPlayback]) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[allowBackgroundPlayback]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1754,7 +1835,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1780,7 +1862,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(<Object?>[allowAutomaticPictureInPicture]) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[allowAutomaticPictureInPicture]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1801,7 +1884,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1827,7 +1911,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1848,7 +1933,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1869,7 +1955,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1890,7 +1977,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1911,7 +1999,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(null) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1932,7 +2021,8 @@ class THEOplayerNativeAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(<Object?>[surfaceId, width, height]) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[surfaceId, width, height]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -1994,11 +2084,7 @@ abstract class THEOplayerFlutterAPI {
 
   void onCanPlayThrough(double currentTime);
 
-  static void setUp(
-    THEOplayerFlutterAPI? api, {
-    BinaryMessenger? binaryMessenger,
-    String messageChannelSuffix = '',
-  }) {
+  static void setUp(THEOplayerFlutterAPI? api, {BinaryMessenger? binaryMessenger, String messageChannelSuffix = '',}) {
     messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
     {
       final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
@@ -2008,7 +2094,8 @@ abstract class THEOplayerFlutterAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSourceChange was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSourceChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final SourceDescription? arg_source = (args[0] as SourceDescription?);
           try {
@@ -2016,95 +2103,107 @@ abstract class THEOplayerFlutterAPI {
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
       }
     }
     {
-      final BasicMessageChannel<Object?> pigeonVar_channel =
-          BasicMessageChannel<Object?>('dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPlay$messageChannelSuffix', pigeonChannelCodec, binaryMessenger: binaryMessenger);
+      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPlay$messageChannelSuffix', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
       if (api == null) {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPlay was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPlay was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
-          assert(arg_currentTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPlay was null, expected non-null double.');
+          assert(arg_currentTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPlay was null, expected non-null double.');
           try {
             api.onPlay(arg_currentTime!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
       }
     }
     {
-      final BasicMessageChannel<Object?> pigeonVar_channel =
-          BasicMessageChannel<Object?>('dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPlaying$messageChannelSuffix', pigeonChannelCodec, binaryMessenger: binaryMessenger);
+      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPlaying$messageChannelSuffix', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
       if (api == null) {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPlaying was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPlaying was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
-          assert(arg_currentTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPlaying was null, expected non-null double.');
+          assert(arg_currentTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPlaying was null, expected non-null double.');
           try {
             api.onPlaying(arg_currentTime!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
       }
     }
     {
-      final BasicMessageChannel<Object?> pigeonVar_channel =
-          BasicMessageChannel<Object?>('dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPause$messageChannelSuffix', pigeonChannelCodec, binaryMessenger: binaryMessenger);
+      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPause$messageChannelSuffix', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
       if (api == null) {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPause was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPause was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
-          assert(arg_currentTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPause was null, expected non-null double.');
+          assert(arg_currentTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPause was null, expected non-null double.');
           try {
             api.onPause(arg_currentTime!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
       }
     }
     {
-      final BasicMessageChannel<Object?> pigeonVar_channel =
-          BasicMessageChannel<Object?>('dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onWaiting$messageChannelSuffix', pigeonChannelCodec, binaryMessenger: binaryMessenger);
+      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onWaiting$messageChannelSuffix', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
       if (api == null) {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onWaiting was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onWaiting was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
-          assert(arg_currentTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onWaiting was null, expected non-null double.');
+          assert(arg_currentTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onWaiting was null, expected non-null double.');
           try {
             api.onWaiting(arg_currentTime!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -2118,129 +2217,147 @@ abstract class THEOplayerFlutterAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onDurationChange was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onDurationChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_duration = (args[0] as double?);
-          assert(arg_duration != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onDurationChange was null, expected non-null double.');
+          assert(arg_duration != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onDurationChange was null, expected non-null double.');
           try {
             api.onDurationChange(arg_duration!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
       }
     }
     {
-      final BasicMessageChannel<Object?> pigeonVar_channel =
-          BasicMessageChannel<Object?>('dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onProgress$messageChannelSuffix', pigeonChannelCodec, binaryMessenger: binaryMessenger);
+      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onProgress$messageChannelSuffix', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
       if (api == null) {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onProgress was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onProgress was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
-          assert(arg_currentTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onProgress was null, expected non-null double.');
+          assert(arg_currentTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onProgress was null, expected non-null double.');
           try {
             api.onProgress(arg_currentTime!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
       }
     }
     {
-      final BasicMessageChannel<Object?> pigeonVar_channel =
-          BasicMessageChannel<Object?>('dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onTimeUpdate$messageChannelSuffix', pigeonChannelCodec, binaryMessenger: binaryMessenger);
+      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onTimeUpdate$messageChannelSuffix', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
       if (api == null) {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onTimeUpdate was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onTimeUpdate was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
-          assert(arg_currentTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onTimeUpdate was null, expected non-null double.');
+          assert(arg_currentTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onTimeUpdate was null, expected non-null double.');
           final int? arg_currentProgramDateTime = (args[1] as int?);
           try {
             api.onTimeUpdate(arg_currentTime!, arg_currentProgramDateTime);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
       }
     }
     {
-      final BasicMessageChannel<Object?> pigeonVar_channel =
-          BasicMessageChannel<Object?>('dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onRateChange$messageChannelSuffix', pigeonChannelCodec, binaryMessenger: binaryMessenger);
+      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onRateChange$messageChannelSuffix', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
       if (api == null) {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onRateChange was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onRateChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
-          assert(arg_currentTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onRateChange was null, expected non-null double.');
+          assert(arg_currentTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onRateChange was null, expected non-null double.');
           final double? arg_playbackRate = (args[1] as double?);
-          assert(arg_playbackRate != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onRateChange was null, expected non-null double.');
+          assert(arg_playbackRate != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onRateChange was null, expected non-null double.');
           try {
             api.onRateChange(arg_currentTime!, arg_playbackRate!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
       }
     }
     {
-      final BasicMessageChannel<Object?> pigeonVar_channel =
-          BasicMessageChannel<Object?>('dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSeeking$messageChannelSuffix', pigeonChannelCodec, binaryMessenger: binaryMessenger);
+      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSeeking$messageChannelSuffix', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
       if (api == null) {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSeeking was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSeeking was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
-          assert(arg_currentTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSeeking was null, expected non-null double.');
+          assert(arg_currentTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSeeking was null, expected non-null double.');
           try {
             api.onSeeking(arg_currentTime!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
       }
     }
     {
-      final BasicMessageChannel<Object?> pigeonVar_channel =
-          BasicMessageChannel<Object?>('dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSeeked$messageChannelSuffix', pigeonChannelCodec, binaryMessenger: binaryMessenger);
+      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSeeked$messageChannelSuffix', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
       if (api == null) {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSeeked was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSeeked was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
-          assert(arg_currentTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSeeked was null, expected non-null double.');
+          assert(arg_currentTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSeeked was null, expected non-null double.');
           try {
             api.onSeeked(arg_currentTime!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -2254,96 +2371,111 @@ abstract class THEOplayerFlutterAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onVolumeChange was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onVolumeChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
-          assert(arg_currentTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onVolumeChange was null, expected non-null double.');
+          assert(arg_currentTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onVolumeChange was null, expected non-null double.');
           final double? arg_volume = (args[1] as double?);
-          assert(arg_volume != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onVolumeChange was null, expected non-null double.');
+          assert(arg_volume != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onVolumeChange was null, expected non-null double.');
           try {
             api.onVolumeChange(arg_currentTime!, arg_volume!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
       }
     }
     {
-      final BasicMessageChannel<Object?> pigeonVar_channel =
-          BasicMessageChannel<Object?>('dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onResize$messageChannelSuffix', pigeonChannelCodec, binaryMessenger: binaryMessenger);
+      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onResize$messageChannelSuffix', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
       if (api == null) {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onResize was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onResize was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
-          assert(arg_currentTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onResize was null, expected non-null double.');
+          assert(arg_currentTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onResize was null, expected non-null double.');
           final int? arg_width = (args[1] as int?);
-          assert(arg_width != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onResize was null, expected non-null int.');
+          assert(arg_width != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onResize was null, expected non-null int.');
           final int? arg_height = (args[2] as int?);
-          assert(arg_height != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onResize was null, expected non-null int.');
+          assert(arg_height != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onResize was null, expected non-null int.');
           try {
             api.onResize(arg_currentTime!, arg_width!, arg_height!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
       }
     }
     {
-      final BasicMessageChannel<Object?> pigeonVar_channel =
-          BasicMessageChannel<Object?>('dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onEnded$messageChannelSuffix', pigeonChannelCodec, binaryMessenger: binaryMessenger);
+      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onEnded$messageChannelSuffix', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
       if (api == null) {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onEnded was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onEnded was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
-          assert(arg_currentTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onEnded was null, expected non-null double.');
+          assert(arg_currentTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onEnded was null, expected non-null double.');
           try {
             api.onEnded(arg_currentTime!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
       }
     }
     {
-      final BasicMessageChannel<Object?> pigeonVar_channel =
-          BasicMessageChannel<Object?>('dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onError$messageChannelSuffix', pigeonChannelCodec, binaryMessenger: binaryMessenger);
+      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onError$messageChannelSuffix', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
       if (api == null) {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onError was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onError was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_error = (args[0] as String?);
-          assert(arg_error != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onError was null, expected non-null String.');
+          assert(arg_error != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onError was null, expected non-null String.');
           try {
             api.onError(arg_error!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
       }
     }
     {
-      final BasicMessageChannel<Object?> pigeonVar_channel =
-          BasicMessageChannel<Object?>('dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onDestroy$messageChannelSuffix', pigeonChannelCodec, binaryMessenger: binaryMessenger);
+      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onDestroy$messageChannelSuffix', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
       if (api == null) {
         pigeonVar_channel.setMessageHandler(null);
       } else {
@@ -2353,7 +2485,7 @@ abstract class THEOplayerFlutterAPI {
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -2367,26 +2499,30 @@ abstract class THEOplayerFlutterAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onReadyStateChange was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onReadyStateChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
-          assert(arg_currentTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onReadyStateChange was null, expected non-null double.');
+          assert(arg_currentTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onReadyStateChange was null, expected non-null double.');
           final ReadyState? arg_readyState = (args[1] as ReadyState?);
-          assert(arg_readyState != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onReadyStateChange was null, expected non-null ReadyState.');
+          assert(arg_readyState != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onReadyStateChange was null, expected non-null ReadyState.');
           try {
             api.onReadyStateChange(arg_currentTime!, arg_readyState!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
       }
     }
     {
-      final BasicMessageChannel<Object?> pigeonVar_channel =
-          BasicMessageChannel<Object?>('dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onLoadStart$messageChannelSuffix', pigeonChannelCodec, binaryMessenger: binaryMessenger);
+      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onLoadStart$messageChannelSuffix', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
       if (api == null) {
         pigeonVar_channel.setMessageHandler(null);
       } else {
@@ -2396,7 +2532,7 @@ abstract class THEOplayerFlutterAPI {
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -2410,60 +2546,68 @@ abstract class THEOplayerFlutterAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onLoadedMetadata was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onLoadedMetadata was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
-          assert(arg_currentTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onLoadedMetadata was null, expected non-null double.');
+          assert(arg_currentTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onLoadedMetadata was null, expected non-null double.');
           try {
             api.onLoadedMetadata(arg_currentTime!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
       }
     }
     {
-      final BasicMessageChannel<Object?> pigeonVar_channel =
-          BasicMessageChannel<Object?>('dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onLoadedData$messageChannelSuffix', pigeonChannelCodec, binaryMessenger: binaryMessenger);
+      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onLoadedData$messageChannelSuffix', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
       if (api == null) {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onLoadedData was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onLoadedData was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
-          assert(arg_currentTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onLoadedData was null, expected non-null double.');
+          assert(arg_currentTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onLoadedData was null, expected non-null double.');
           try {
             api.onLoadedData(arg_currentTime!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
       }
     }
     {
-      final BasicMessageChannel<Object?> pigeonVar_channel =
-          BasicMessageChannel<Object?>('dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onCanPlay$messageChannelSuffix', pigeonChannelCodec, binaryMessenger: binaryMessenger);
+      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onCanPlay$messageChannelSuffix', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
       if (api == null) {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onCanPlay was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onCanPlay was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
-          assert(arg_currentTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onCanPlay was null, expected non-null double.');
+          assert(arg_currentTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onCanPlay was null, expected non-null double.');
           try {
             api.onCanPlay(arg_currentTime!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -2477,16 +2621,18 @@ abstract class THEOplayerFlutterAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onCanPlayThrough was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onCanPlayThrough was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final double? arg_currentTime = (args[0] as double?);
-          assert(arg_currentTime != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onCanPlayThrough was null, expected non-null double.');
+          assert(arg_currentTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onCanPlayThrough was null, expected non-null double.');
           try {
             api.onCanPlayThrough(arg_currentTime!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -2515,7 +2661,8 @@ class THEOplayerNativeVideoTracksAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(<Object?>[videoTrackUid, qualityUid]) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[videoTrackUid, qualityUid]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -2536,7 +2683,8 @@ class THEOplayerNativeVideoTracksAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(<Object?>[videoTrackUid, qualitiesUid]) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[videoTrackUid, qualitiesUid]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -2557,7 +2705,8 @@ class THEOplayerNativeVideoTracksAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(<Object?>[videoTrackUid, enabled]) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[videoTrackUid, enabled]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -2577,8 +2726,7 @@ abstract class THEOplayerFlutterVideoTracksAPI {
 
   void onAddVideoTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled, String? unlocalizedLabel);
 
-  void onVideoTrackAddQuality(int videoTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame,
-      int? averageBandwidth, bool available);
+  void onVideoTrackAddQuality(int videoTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame, int? averageBandwidth, bool available);
 
   void onRemoveVideoTrack(int uid);
 
@@ -2588,14 +2736,9 @@ abstract class THEOplayerFlutterVideoTracksAPI {
 
   void onActiveQualityChange(int videoTrackUid, int qualityUid);
 
-  void onQualityUpdate(
-      int videoTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame, int? averageBandwidth, bool available);
+  void onQualityUpdate(int videoTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame, int? averageBandwidth, bool available);
 
-  static void setUp(
-    THEOplayerFlutterVideoTracksAPI? api, {
-    BinaryMessenger? binaryMessenger,
-    String messageChannelSuffix = '',
-  }) {
+  static void setUp(THEOplayerFlutterVideoTracksAPI? api, {BinaryMessenger? binaryMessenger, String messageChannelSuffix = '',}) {
     messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
     {
       final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
@@ -2605,23 +2748,26 @@ abstract class THEOplayerFlutterVideoTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onAddVideoTrack was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onAddVideoTrack was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_id = (args[0] as String?);
           final int? arg_uid = (args[1] as int?);
-          assert(arg_uid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onAddVideoTrack was null, expected non-null int.');
+          assert(arg_uid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onAddVideoTrack was null, expected non-null int.');
           final String? arg_label = (args[2] as String?);
           final String? arg_language = (args[3] as String?);
           final String? arg_kind = (args[4] as String?);
           final bool? arg_isEnabled = (args[5] as bool?);
-          assert(arg_isEnabled != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onAddVideoTrack was null, expected non-null bool.');
+          assert(arg_isEnabled != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onAddVideoTrack was null, expected non-null bool.');
           final String? arg_unlocalizedLabel = (args[6] as String?);
           try {
             api.onAddVideoTrack(arg_id, arg_uid!, arg_label, arg_language, arg_kind, arg_isEnabled!, arg_unlocalizedLabel);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -2635,36 +2781,45 @@ abstract class THEOplayerFlutterVideoTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_videoTrackUid = (args[0] as int?);
-          assert(arg_videoTrackUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null int.');
+          assert(arg_videoTrackUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null int.');
           final String? arg_qualityId = (args[1] as String?);
-          assert(arg_qualityId != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null String.');
+          assert(arg_qualityId != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null String.');
           final int? arg_qualityUid = (args[2] as int?);
-          assert(arg_qualityUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null int.');
+          assert(arg_qualityUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null int.');
           final String? arg_name = (args[3] as String?);
           final int? arg_bandwidth = (args[4] as int?);
-          assert(arg_bandwidth != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null int.');
+          assert(arg_bandwidth != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null int.');
           final String? arg_codecs = (args[5] as String?);
           final int? arg_width = (args[6] as int?);
-          assert(arg_width != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null int.');
+          assert(arg_width != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null int.');
           final int? arg_height = (args[7] as int?);
-          assert(arg_height != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null int.');
+          assert(arg_height != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null int.');
           final double? arg_frameRate = (args[8] as double?);
-          assert(arg_frameRate != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null double.');
+          assert(arg_frameRate != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null double.');
           final double? arg_firstFrame = (args[9] as double?);
-          assert(arg_firstFrame != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null double.');
+          assert(arg_firstFrame != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null double.');
           final int? arg_averageBandwidth = (args[10] as int?);
           final bool? arg_available = (args[11] as bool?);
-          assert(arg_available != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null bool.');
+          assert(arg_available != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null bool.');
           try {
-            api.onVideoTrackAddQuality(arg_videoTrackUid!, arg_qualityId!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_width!, arg_height!, arg_frameRate!, arg_firstFrame!,
-                arg_averageBandwidth, arg_available!);
+            api.onVideoTrackAddQuality(arg_videoTrackUid!, arg_qualityId!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_width!, arg_height!, arg_frameRate!, arg_firstFrame!, arg_averageBandwidth, arg_available!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -2678,16 +2833,18 @@ abstract class THEOplayerFlutterVideoTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onRemoveVideoTrack was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onRemoveVideoTrack was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_uid = (args[0] as int?);
-          assert(arg_uid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onRemoveVideoTrack was null, expected non-null int.');
+          assert(arg_uid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onRemoveVideoTrack was null, expected non-null int.');
           try {
             api.onRemoveVideoTrack(arg_uid!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -2701,16 +2858,18 @@ abstract class THEOplayerFlutterVideoTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackListChange was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackListChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_uid = (args[0] as int?);
-          assert(arg_uid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackListChange was null, expected non-null int.');
+          assert(arg_uid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackListChange was null, expected non-null int.');
           try {
             api.onVideoTrackListChange(arg_uid!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -2724,20 +2883,22 @@ abstract class THEOplayerFlutterVideoTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onTargetQualityChange was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onTargetQualityChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_videoTrackUid = (args[0] as int?);
-          assert(arg_videoTrackUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onTargetQualityChange was null, expected non-null int.');
+          assert(arg_videoTrackUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onTargetQualityChange was null, expected non-null int.');
           final List<int>? arg_qualitiesUid = (args[1] as List<Object?>?)?.cast<int>();
-          assert(
-              arg_qualitiesUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onTargetQualityChange was null, expected non-null List<int>.');
+          assert(arg_qualitiesUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onTargetQualityChange was null, expected non-null List<int>.');
           final int? arg_qualityUid = (args[2] as int?);
           try {
             api.onTargetQualityChange(arg_videoTrackUid!, arg_qualitiesUid!, arg_qualityUid);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -2751,18 +2912,21 @@ abstract class THEOplayerFlutterVideoTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onActiveQualityChange was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onActiveQualityChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_videoTrackUid = (args[0] as int?);
-          assert(arg_videoTrackUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onActiveQualityChange was null, expected non-null int.');
+          assert(arg_videoTrackUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onActiveQualityChange was null, expected non-null int.');
           final int? arg_qualityUid = (args[1] as int?);
-          assert(arg_qualityUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onActiveQualityChange was null, expected non-null int.');
+          assert(arg_qualityUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onActiveQualityChange was null, expected non-null int.');
           try {
             api.onActiveQualityChange(arg_videoTrackUid!, arg_qualityUid!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -2776,34 +2940,42 @@ abstract class THEOplayerFlutterVideoTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_videoTrackUid = (args[0] as int?);
-          assert(arg_videoTrackUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null int.');
+          assert(arg_videoTrackUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null int.');
           final int? arg_qualityUid = (args[1] as int?);
-          assert(arg_qualityUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null int.');
+          assert(arg_qualityUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null int.');
           final String? arg_name = (args[2] as String?);
           final int? arg_bandwidth = (args[3] as int?);
-          assert(arg_bandwidth != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null int.');
+          assert(arg_bandwidth != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null int.');
           final String? arg_codecs = (args[4] as String?);
           final int? arg_width = (args[5] as int?);
-          assert(arg_width != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null int.');
+          assert(arg_width != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null int.');
           final int? arg_height = (args[6] as int?);
-          assert(arg_height != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null int.');
+          assert(arg_height != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null int.');
           final double? arg_frameRate = (args[7] as double?);
-          assert(arg_frameRate != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null double.');
+          assert(arg_frameRate != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null double.');
           final double? arg_firstFrame = (args[8] as double?);
-          assert(arg_firstFrame != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null double.');
+          assert(arg_firstFrame != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null double.');
           final int? arg_averageBandwidth = (args[9] as int?);
           final bool? arg_available = (args[10] as bool?);
-          assert(arg_available != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null bool.');
+          assert(arg_available != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null bool.');
           try {
-            api.onQualityUpdate(
-                arg_videoTrackUid!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_width!, arg_height!, arg_frameRate!, arg_firstFrame!, arg_averageBandwidth, arg_available!);
+            api.onQualityUpdate(arg_videoTrackUid!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_width!, arg_height!, arg_frameRate!, arg_firstFrame!, arg_averageBandwidth, arg_available!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -2832,7 +3004,8 @@ class THEOplayerNativeAudioTracksAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(<Object?>[audioTrackUid, qualityUid]) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[audioTrackUid, qualityUid]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -2853,7 +3026,8 @@ class THEOplayerNativeAudioTracksAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(<Object?>[audioTrackUid, qualitiesUid]) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[audioTrackUid, qualitiesUid]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -2874,7 +3048,8 @@ class THEOplayerNativeAudioTracksAPI {
       pigeonChannelCodec,
       binaryMessenger: pigeonVar_binaryMessenger,
     );
-    final List<Object?>? pigeonVar_replyList = await pigeonVar_channel.send(<Object?>[audioTrackUid, enabled]) as List<Object?>?;
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[audioTrackUid, enabled]) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {
@@ -2906,11 +3081,7 @@ abstract class THEOplayerFlutterAudioTracksAPI {
 
   void onQualityUpdate(int audioTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate, int? averageBandwidth, bool available);
 
-  static void setUp(
-    THEOplayerFlutterAudioTracksAPI? api, {
-    BinaryMessenger? binaryMessenger,
-    String messageChannelSuffix = '',
-  }) {
+  static void setUp(THEOplayerFlutterAudioTracksAPI? api, {BinaryMessenger? binaryMessenger, String messageChannelSuffix = '',}) {
     messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
     {
       final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
@@ -2920,23 +3091,26 @@ abstract class THEOplayerFlutterAudioTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAddAudioTrack was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAddAudioTrack was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final String? arg_id = (args[0] as String?);
           final int? arg_uid = (args[1] as int?);
-          assert(arg_uid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAddAudioTrack was null, expected non-null int.');
+          assert(arg_uid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAddAudioTrack was null, expected non-null int.');
           final String? arg_label = (args[2] as String?);
           final String? arg_language = (args[3] as String?);
           final String? arg_kind = (args[4] as String?);
           final bool? arg_isEnabled = (args[5] as bool?);
-          assert(arg_isEnabled != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAddAudioTrack was null, expected non-null bool.');
+          assert(arg_isEnabled != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAddAudioTrack was null, expected non-null bool.');
           final String? arg_unlocalizedLabel = (args[6] as String?);
           try {
             api.onAddAudioTrack(arg_id, arg_uid!, arg_label, arg_language, arg_kind, arg_isEnabled!, arg_unlocalizedLabel);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -2950,30 +3124,36 @@ abstract class THEOplayerFlutterAudioTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_audioTrackUid = (args[0] as int?);
-          assert(arg_audioTrackUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null int.');
+          assert(arg_audioTrackUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null int.');
           final String? arg_qualityId = (args[1] as String?);
-          assert(arg_qualityId != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null String.');
+          assert(arg_qualityId != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null String.');
           final int? arg_qualityUid = (args[2] as int?);
-          assert(arg_qualityUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null int.');
+          assert(arg_qualityUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null int.');
           final String? arg_name = (args[3] as String?);
           final int? arg_bandwidth = (args[4] as int?);
-          assert(arg_bandwidth != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null int.');
+          assert(arg_bandwidth != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null int.');
           final String? arg_codecs = (args[5] as String?);
           final int? arg_audioSamplingRate = (args[6] as int?);
-          assert(
-              arg_audioSamplingRate != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null int.');
+          assert(arg_audioSamplingRate != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null int.');
           final int? arg_averageBandwidth = (args[7] as int?);
           final bool? arg_available = (args[8] as bool?);
-          assert(arg_available != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null bool.');
+          assert(arg_available != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null bool.');
           try {
             api.onAudioTrackAddQuality(arg_audioTrackUid!, arg_qualityId!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_audioSamplingRate!, arg_averageBandwidth, arg_available!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -2987,16 +3167,18 @@ abstract class THEOplayerFlutterAudioTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onRemoveAudioTrack was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onRemoveAudioTrack was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_uid = (args[0] as int?);
-          assert(arg_uid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onRemoveAudioTrack was null, expected non-null int.');
+          assert(arg_uid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onRemoveAudioTrack was null, expected non-null int.');
           try {
             api.onRemoveAudioTrack(arg_uid!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -3010,16 +3192,18 @@ abstract class THEOplayerFlutterAudioTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackListChange was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackListChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_uid = (args[0] as int?);
-          assert(arg_uid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackListChange was null, expected non-null int.');
+          assert(arg_uid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackListChange was null, expected non-null int.');
           try {
             api.onAudioTrackListChange(arg_uid!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -3033,20 +3217,22 @@ abstract class THEOplayerFlutterAudioTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onTargetQualityChange was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onTargetQualityChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_audioTrackUid = (args[0] as int?);
-          assert(arg_audioTrackUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onTargetQualityChange was null, expected non-null int.');
+          assert(arg_audioTrackUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onTargetQualityChange was null, expected non-null int.');
           final List<int>? arg_qualitiesUid = (args[1] as List<Object?>?)?.cast<int>();
-          assert(
-              arg_qualitiesUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onTargetQualityChange was null, expected non-null List<int>.');
+          assert(arg_qualitiesUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onTargetQualityChange was null, expected non-null List<int>.');
           final int? arg_qualityUid = (args[2] as int?);
           try {
             api.onTargetQualityChange(arg_audioTrackUid!, arg_qualitiesUid!, arg_qualityUid);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -3060,18 +3246,21 @@ abstract class THEOplayerFlutterAudioTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onActiveQualityChange was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onActiveQualityChange was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_audioTrackUid = (args[0] as int?);
-          assert(arg_audioTrackUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onActiveQualityChange was null, expected non-null int.');
+          assert(arg_audioTrackUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onActiveQualityChange was null, expected non-null int.');
           final int? arg_qualityUid = (args[1] as int?);
-          assert(arg_qualityUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onActiveQualityChange was null, expected non-null int.');
+          assert(arg_qualityUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onActiveQualityChange was null, expected non-null int.');
           try {
             api.onActiveQualityChange(arg_audioTrackUid!, arg_qualityUid!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });
@@ -3085,27 +3274,33 @@ abstract class THEOplayerFlutterAudioTracksAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
-          assert(message != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null.');
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null.');
           final List<Object?> args = (message as List<Object?>?)!;
           final int? arg_audioTrackUid = (args[0] as int?);
-          assert(arg_audioTrackUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null, expected non-null int.');
+          assert(arg_audioTrackUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null, expected non-null int.');
           final int? arg_qualityUid = (args[1] as int?);
-          assert(arg_qualityUid != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null, expected non-null int.');
+          assert(arg_qualityUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null, expected non-null int.');
           final String? arg_name = (args[2] as String?);
           final int? arg_bandwidth = (args[3] as int?);
-          assert(arg_bandwidth != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null, expected non-null int.');
+          assert(arg_bandwidth != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null, expected non-null int.');
           final String? arg_codecs = (args[4] as String?);
           final int? arg_audioSamplingRate = (args[5] as int?);
-          assert(arg_audioSamplingRate != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null, expected non-null int.');
+          assert(arg_audioSamplingRate != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null, expected non-null int.');
           final int? arg_averageBandwidth = (args[6] as int?);
           final bool? arg_available = (args[7] as bool?);
-          assert(arg_available != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null, expected non-null bool.');
+          assert(arg_available != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null, expected non-null bool.');
           try {
             api.onQualityUpdate(arg_audioTrackUid!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_audioSamplingRate!, arg_averageBandwidth, arg_available!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
-          } catch (e) {
+          }          catch (e) {
             return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
           }
         });

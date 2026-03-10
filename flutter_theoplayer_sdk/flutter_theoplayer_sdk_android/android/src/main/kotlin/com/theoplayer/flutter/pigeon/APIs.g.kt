@@ -815,12 +815,12 @@ class THEOplayerFlutterTHEOliveAPI(private val binaryMessenger: BinaryMessenger,
       } 
     }
   }
-  fun onIntentToFallbackEvent(callback: (Result<Unit>) -> Unit)
+  fun onIntentToFallbackEvent(errorCodeArg: String?, errorMessageArg: String?, callback: (Result<Unit>) -> Unit)
 {
     val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
     val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onIntentToFallbackEvent$separatedMessageChannelSuffix"
     val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
-    channel.send(null) {
+    channel.send(listOf(errorCodeArg, errorMessageArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))

@@ -28,8 +28,18 @@ class DistributionOfflineEvent extends Event {
   DistributionOfflineEvent({required this.distributionId}) : super(type: THEOliveApiEventTypes.DISTRIBUTIONOFFLINE);
 }
 
+class PlayerError {
+  final String errorCode;
+  final String errorMessage;
+
+  PlayerError({required this.errorCode, required this.errorMessage});
+}
+
 class IntentToFallbackEvent extends Event {
-  IntentToFallbackEvent() : super(type: THEOliveApiEventTypes.INTENTTOFALLBACK);
+  final PlayerError? reason;
+  final String subType = THEOliveApiEventTypes.INTENTTOFALLBACK;
+
+  IntentToFallbackEvent({this.reason}) : super(type: THEOliveApiEventTypes.INTENTTOFALLBACK);
 }
 
 class EnterBadNetworkModeEvent extends Event {

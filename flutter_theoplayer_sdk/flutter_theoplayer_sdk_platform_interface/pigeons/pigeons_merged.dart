@@ -7,11 +7,14 @@ import 'package:pigeon/pigeon.dart';
   dartOut: 'lib/pigeon/apis.g.dart',
   dartOptions: DartOptions(),
   kotlinOut: '../flutter_theoplayer_sdk_android/android/src/main/kotlin/com/theoplayer/flutter/pigeon/APIs.g.kt',
-  kotlinOptions: KotlinOptions(package: 'com.theoplayer.flutter.pigeon'),
+  kotlinOptions: KotlinOptions(
+      package: 'com.theoplayer.flutter.pigeon'
+  ),
   swiftOut: '../flutter_theoplayer_sdk_ios/ios/Classes/pigeon/APIs.g.swift',
   swiftOptions: SwiftOptions(),
   dartPackageName: 'theoplayer_platform_interface',
 ))
+
 enum ReadyState {
   have_nothing,
   have_metadata,
@@ -108,6 +111,9 @@ class FairPlayDRMConfiguration {
   FairPlayDRMConfiguration({required this.licenseAcquisitionURL, required this.certificateURL, this.headers});
 }
 
+
+
+
 @HostApi()
 abstract class THEOplayerNativeTextTracksAPI {
   void setMode(int textTrackUid, TextTrackMode mode);
@@ -147,6 +153,8 @@ abstract class THEOplayerFlutterTextTracksAPI {
   void onCueUpdate(int textTrackUid, int cueUid, double endTime, String content);
 }
 
+
+
 @HostApi()
 abstract class THEOplayerNativeTHEOliveAPI {
   void goLive();
@@ -158,7 +166,7 @@ abstract class THEOplayerFlutterTHEOliveAPI {
   void onDistributionLoadStartEvent(String distributionId);
   void onEndpointLoadedEvent(Endpoint endpoint);
   void onDistributionOfflineEvent(String distributionId);
-  void onIntentToFallbackEvent();
+  void onIntentToFallbackEvent(String? errorCode, String? errorMessage);
   //experimental API for iOS-only
   void onSeeking(double currentTime);
   void onSeeked(double currentTime);
@@ -174,6 +182,9 @@ class Endpoint {
 
   Endpoint(this.hespSrc, this.hlsSrc, this.cdn, this.adSrc, this.weight, this.priority);
 }
+
+
+
 
 //Talking to the native
 @HostApi()
@@ -256,6 +267,9 @@ abstract class THEOplayerNativeAPI {
   void configureSurface(int surfaceId, int width, int height);
 }
 
+
+
+
 //Talking from Native to Dart
 @FlutterApi()
 abstract class THEOplayerFlutterAPI {
@@ -304,6 +318,8 @@ abstract class THEOplayerFlutterAPI {
   void onCanPlayThrough(double currentTime);
 }
 
+
+
 @HostApi()
 abstract class THEOplayerNativeVideoTracksAPI {
   void setTargetQuality(int videoTrackUid, int? qualityUid);
@@ -336,6 +352,8 @@ abstract class THEOplayerFlutterVideoTracksAPI {
       int videoTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame, int? averageBandwidth, bool available);
 }
 
+
+
 @HostApi()
 abstract class THEOplayerNativeAudioTracksAPI {
   void setTargetQuality(int audioTrackUid, int? qualityUid);
@@ -365,3 +383,4 @@ abstract class THEOplayerFlutterAudioTracksAPI {
   // Quality events
   void onQualityUpdate(int audioTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate, int? averageBandwidth, bool available);
 }
+
