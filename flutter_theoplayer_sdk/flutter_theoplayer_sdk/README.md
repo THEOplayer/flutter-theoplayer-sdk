@@ -140,6 +140,7 @@ and discussed in the next section. Finally, an overview of features, limitations
   - [Limitations and known issues](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/limitations.md)
   - [Picture-in-picture](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/picture-in-picture.md)
   - [Adaptive Bitrate (ABR)](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/abr.md)
+  - [Debug Flags](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/debug-flags.md)
   - [Custom branches](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/custom-branches.md): custom forks to expose native functionality 
 
 ## Contributing
