@@ -116,6 +116,10 @@ Note: If you use Texture-based rendering (SURFACE_TEXTURE and SURFACE_PRODUCER) 
 <td><strong><a href="https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/theolive.md">THEOlive</a></strong></td>
 <td colspan="3">Supported through <code>THEOliveSource</code> and <code>player.theolive</code> API</td>
 </tr>
+<tr>
+<td><strong><a href="https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/abr.md">Adaptive Bitrate (ABR)</a></strong></td>
+<td colspan="3">Supported through <code>player.abr</code> API</td>
+</tr>
 </tbody>
 </table>
 
@@ -135,6 +139,7 @@ and discussed in the next section. Finally, an overview of features, limitations
   - [Using custom DRM connectors](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/custom_drm.md)
   - [Limitations and known issues](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/limitations.md)
   - [Picture-in-picture](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/picture-in-picture.md)
+  - [Adaptive Bitrate (ABR)](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/abr.md)
   - [Custom branches](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/custom-branches.md): custom forks to expose native functionality 
 
 ## Contributing
