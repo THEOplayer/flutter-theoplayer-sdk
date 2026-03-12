@@ -19,13 +19,18 @@ rootProject.allprojects {
         google()
         mavenCentral()
         maven { url "https://maven.theoplayer.com/releases" }
+        maven { url "https://maven.theoplayer.com/snapshots" }
     }
 }
 
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
-def theoplayerVersion ='10.12.0'
+def safeExtGet(prop, fallback) {
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
+}
+
+def theoplayerVersion = safeExtGet('THEOplayer_sdk', '10.12.0')
 
 android {
     if (project.android.hasProperty("namespace")) {
