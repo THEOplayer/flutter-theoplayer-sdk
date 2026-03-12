@@ -28,7 +28,7 @@ class PlatformActivityService {
       case 'onUserLeaveHint':
         //final int id = call.arguments as int;
         _listeners.forEach((listener) => listener.onUserLeaveHint());
-      case 'onExitPictureInPicture'  :
+      case 'onExitPictureInPicture':
         //NOTE: instead of passing the player IDs around, we let each player (that implements the listener) to enter or exit
         //TODO: maybe this needs to change on the long term if the architecture requires it
 
@@ -49,7 +49,6 @@ class PlatformActivityService {
     //TODO: do we need to check callback?
     return PlatformHelperChannels.activity.invokeMethod("enterPictureInPicture");
   }
-
 }
 
 abstract class PlatformActivityServiceListener {

@@ -4,7 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:theoplayer/src/abr/abr_api.dart';
+import 'package:theoplayer/src/debug/debug_flags_api.dart';
+import 'package:theoplayer/src/debug/debug_flags_panel.dart';
 import 'package:theoplayer/src/theolive/theolive_wrapper.dart';
+import 'package:theoplayer_platform_interface/pigeon_binary_messenger_wrapper.dart';
 import 'package:theoplayer/src/widget/fullscreen_widget.dart';
 import 'package:theoplayer/src/widget/presentationmode_aware_widget.dart';
 import 'package:theoplayer_platform_interface/helpers/logger.dart';
@@ -52,6 +56,8 @@ class THEOplayer implements EventDispatcher {
   final AudioTracksHolder _audioTrackListHolder = AudioTracksHolder();
   final VideoTracksHolder _videoTrackListHolder = VideoTracksHolder();
   final THEOliveAPIHolder _theoLiveAPIHolder = THEOliveAPIHolder();
+  final DebugFlagsAPI _debugFlagsAPI = DebugFlagsAPI();
+  final AbrAPI _abrAPI = AbrAPI();
 
   // internal helpers
   PresentationMode _presentationModeBeforePip = PresentationMode.INLINE;
@@ -77,6 +83,9 @@ class THEOplayer implements EventDispatcher {
           _audioTrackListHolder.setup(viewController.getAudioTracks());
           _videoTrackListHolder.setup(viewController.getVideoTracks());
           _theoLiveAPIHolder.setup(viewController.getTheoLive());
+          _debugFlagsAPI.setup(THEOplayerNativeDebugFlagsAPI(
+              binaryMessenger: PigeonBinaryMessengerWrapper(suffix: viewController.channelSuffix)));
+          _abrAPI.setup(viewController.getAbr());
           _setupLifeCycleListeners();
           onCreate?.call();
           _playerState.initialized();
@@ -88,8 +97,6 @@ class THEOplayer implements EventDispatcher {
             fullscreenConfig: theoPlayerConfig.fullscreenConfiguration,
           );
         };
-
-
   }
 
   int get id => _theoPlayerViewController?.id ?? -1;
@@ -156,9 +163,26 @@ class THEOplayer implements EventDispatcher {
     return _videoTrackListHolder;
   }
 
-    /// THEOlive API
+  /// THEOlive API
   THEOlive? get theoLive {
     return _theoLiveAPIHolder;
+  }
+
+  /// Debug flags API for programmatic control of native debug logging.
+  DebugFlagsAPI get debugFlags => _debugFlagsAPI;
+
+  /// ABR (Adaptive Bitrate) configuration API.
+  AbrAPI get abr => _abrAPI;
+
+  /// Push the debug flags panel as a full-screen route.
+  ///
+  /// Requires a [BuildContext] to access the navigator.
+  void showDebugPanel(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => DebugFlagsPanel(api: _debugFlagsAPI),
+      ),
+    );
   }
 
   /// [StateChangeListener] that's triggered every time the internal player state is changing.
@@ -173,6 +197,7 @@ class THEOplayer implements EventDispatcher {
   void setSource(SourceDescription source) {
     this.source = source;
   }
+
   /// Set current source which describes desired playback of a media resource.
   set source(SourceDescription? source) {
     _playerState.resetState();
@@ -520,7 +545,6 @@ class THEOplayer implements EventDispatcher {
     return _playerState.buffered;
   }
 
-
   /// Returns a [TimeRange] list object that represents the ranges of the media resource that are seekable by the player.
   ///
   /// Remarks:
@@ -552,7 +576,6 @@ class THEOplayer implements EventDispatcher {
   List<TimeRange?> get played {
     return _playerState.played;
   }
-
 
   /// Set whether playback continues when the app goes to background.
   /// Useful if audio-only playback is required in the background.
@@ -670,7 +693,7 @@ class THEOplayer implements EventDispatcher {
       print("Programmatically setting Picture-in-Picture mode it not possible on ${defaultTargetPlatform.name}! Please check the `setAllowAutomaticPictureInPicture()` API.");
       return;
     }
-    
+
     _setPresentationMode(presentationMode);
   }
 
@@ -778,42 +801,39 @@ class THEOplayer implements EventDispatcher {
           }
         }
 
-
       case PresentationMode.PIP:
+        _manualInterventionForPipRestoration = false;
+        _presentationModeBeforePip = previousPresentationMode;
 
-          _manualInterventionForPipRestoration = false;
-          _presentationModeBeforePip = previousPresentationMode;
+        if (kIsWeb) {
+          if (previousPresentationMode == PresentationMode.FULLSCREEN) {
+            // we need this to avoid the callback on the previous setPresentationMode()  override the presentation mode we need for pip.
+            // TODO: try to kill it
+            _manualInterventionForFullscreenRestoration = true;
+            // first exit fullscreen before going into PiP
+            // we are faking a transition without real presentationMode change
+            // TODO: make this cleaner
+            _presentationModeBeforePip = PresentationMode.INLINE;
+            _theoPlayerViewController?.setPresentationMode(PresentationMode.INLINE, null);
+            Navigator.of(_currentContext, rootNavigator: true).pop();
+          }
 
-          if (kIsWeb) {
-            if (previousPresentationMode == PresentationMode.FULLSCREEN) {
-              // we need this to avoid the callback on the previous setPresentationMode()  override the presentation mode we need for pip.
-              // TODO: try to kill it
-              _manualInterventionForFullscreenRestoration = true;
-              // first exit fullscreen before going into PiP
-              // we are faking a transition without real presentationMode change
-              // TODO: make this cleaner
-              _presentationModeBeforePip = PresentationMode.INLINE;
-              _theoPlayerViewController?.setPresentationMode(PresentationMode.INLINE, null);
-              Navigator.of(_currentContext, rootNavigator: true).pop();
-
+          _theoPlayerViewController?.setPresentationMode(PresentationMode.PIP, () {
+            debugLog("THEOplayer_$id: reset presentationMode after PIP: $_presentationModeBeforePip}");
+            if (!_manualInterventionForPipRestoration) {
+              _playerState.presentationMode = _presentationModeBeforePip;
             }
+          });
+        } else {
+          // manually transition to PIP
+          // right now it is disabled, we don't support this due to inconsistency between iOS and Android
 
-            _theoPlayerViewController?.setPresentationMode(PresentationMode.PIP, (){
-              debugLog("THEOplayer_$id: reset presentationMode after PIP: $_presentationModeBeforePip}");
-              if (!_manualInterventionForPipRestoration) {
-                _playerState.presentationMode = _presentationModeBeforePip;
-              }
-            });
-          } else {
-            // manually transition to PIP
-            // right now it is disabled, we don't support this due to inconsistency between iOS and Android
-
-            /*
+          /*
             if (userTriggered) {
               PlatformActivityService.instance.triggerEnterPictureInPicture();
             }
             */
-          }
+        }
 
       default:
         print("THEOplayer_$id: Unsupported presentationMode $presentationMode");
@@ -828,9 +848,9 @@ class THEOplayer implements EventDispatcher {
           return _fullscreenBuilder(context, this);
         },
         settings: null));
-    
+
     fullscreenPresentingFuture.then((value) => _restorePlayerStateAfterLeavingFullscreen());
-    
+
     //only used on web for now:
     _theoPlayerViewController?.setPresentationMode(PresentationMode.FULLSCREEN, () {
       if (fullscreenPresentingFuture != null) {
@@ -846,9 +866,7 @@ class THEOplayer implements EventDispatcher {
       _playerState.presentationMode = PresentationMode.INLINE;
     }
 
-    SystemChrome.setPreferredOrientations(theoPlayerConfig.fullscreenConfiguration.preferredRestoredOrientations).then((value) => {
-      SystemChrome.restoreSystemUIOverlays()
-    });
+    SystemChrome.setPreferredOrientations(theoPlayerConfig.fullscreenConfiguration.preferredRestoredOrientations).then((value) => {SystemChrome.restoreSystemUIOverlays()});
 
     //only used on web for now:
     if (!_manualInterventionForFullscreenRestoration) {
@@ -869,6 +887,8 @@ class THEOplayer implements EventDispatcher {
     _textTrackListHolder.dispose();
     _audioTrackListHolder.dispose();
     _theoLiveAPIHolder.dispose();
+    _debugFlagsAPI.dispose();
+    _abrAPI.dispose();
   }
 
   /// Add the given listener for the given [PlayerEventTypes] type(s).
@@ -895,13 +915,11 @@ class THEOplayer implements EventDispatcher {
   void removeAllEventListener(EventListener<Event> listener) {
     _playerState.eventManager.removeAllEventListener(listener);
   }
-
 }
 
 /// Platform listener that receives PiP-related events from native.
 /// Only used on Android and iOS
 class _PlayerPlatformActivityServiceListener implements PlatformActivityServiceListener {
-
   THEOplayer player;
 
   _PlayerPlatformActivityServiceListener({required this.player});
@@ -916,14 +934,11 @@ class _PlayerPlatformActivityServiceListener implements PlatformActivityServiceL
     }
 
     player._setPresentationMode(player._presentationModeBeforePip);
-
   }
-
 
   @override
   void onUserLeaveHint() {
     debugLog("THEOplayer_$playerID:: PlayerPlatformActivityServiceListener onUserLeaveHint");
-
 
     if (!player.allowAutomaticPictureInPicture) {
       debugLog("THEOplayer_$playerID: PlayerPlatformActivityServiceListener onUserLeaveHint not for me");
@@ -951,20 +966,17 @@ class _PlayerPlatformActivityServiceListener implements PlatformActivityServiceL
   void onPlayActionReceived() {
     debugLog("THEOplayer_$playerID:: PlayerPlatformActivityServiceListener onPlayActionReceived");
 
-
     if (!player.allowAutomaticPictureInPicture) {
       debugLog("THEOplayer_$playerID: PlayerPlatformActivityServiceListener onPlayActionReceived not for me");
       return;
     }
 
     player.play();
-
   }
 
   @override
   void onPauseActionReceived() {
     debugLog("THEOplayer_$playerID:: PlayerPlatformActivityServiceListener onPauseActionReceived");
-
 
     if (!player.allowAutomaticPictureInPicture) {
       debugLog("THEOplayer_$playerID: PlayerPlatformActivityServiceListener onPauseActionReceived not for me");
@@ -972,13 +984,12 @@ class _PlayerPlatformActivityServiceListener implements PlatformActivityServiceL
     }
 
     player.pause();
-
   }
 
   @override
   int get playerID => player.id;
-
 }
+
 /// We use this widget to present the player in "fullscreen" to make it fully visible in PiP without any UI elements
 class _FakePiPFullscreenWindow extends StatelessWidget {
   const _FakePiPFullscreenWindow({
@@ -994,8 +1005,7 @@ class _FakePiPFullscreenWindow extends StatelessWidget {
         color: Colors.black,
         child: Align(
             alignment: Alignment.center,
-            child: AspectRatio(
-                aspectRatio: player.getVideoWidth() / player.getVideoHeight(),
-                child: PresentationModeAwareWidget(player: player, presentationModeToCheck: const [PresentationMode.PIP]))));
+            child:
+                AspectRatio(aspectRatio: player.getVideoWidth() / player.getVideoHeight(), child: PresentationModeAwareWidget(player: player, presentationModeToCheck: const [PresentationMode.PIP]))));
   }
 }

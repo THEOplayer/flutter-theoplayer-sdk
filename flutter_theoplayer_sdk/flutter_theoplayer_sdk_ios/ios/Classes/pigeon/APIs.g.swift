@@ -112,6 +112,13 @@ enum SourceIntegrationId: Int {
   case theolive = 0
 }
 
+/// The adaptive bitrate strategy type.
+enum AbrStrategyTypePigeon: Int {
+  case performance = 0
+  case quality = 1
+  case bandwidth = 2
+}
+
 /// Generated class from Pigeon that represents data sent in messages.
 struct TimeRange {
   var start: Double
@@ -283,6 +290,38 @@ struct FairPlayDRMConfiguration {
 }
 
 /// Generated class from Pigeon that represents data sent in messages.
+struct HespLatencies {
+  var engineLatency: Double? = nil
+  var distributionLatency: Double? = nil
+  var playerLatency: Double? = nil
+  var theoliveLatency: Double? = nil
+
+
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  static func fromList(_ pigeonVar_list: [Any?]) -> HespLatencies? {
+    let engineLatency: Double? = nilOrValue(pigeonVar_list[0])
+    let distributionLatency: Double? = nilOrValue(pigeonVar_list[1])
+    let playerLatency: Double? = nilOrValue(pigeonVar_list[2])
+    let theoliveLatency: Double? = nilOrValue(pigeonVar_list[3])
+
+    return HespLatencies(
+      engineLatency: engineLatency,
+      distributionLatency: distributionLatency,
+      playerLatency: playerLatency,
+      theoliveLatency: theoliveLatency
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      engineLatency,
+      distributionLatency,
+      playerLatency,
+      theoliveLatency,
+    ]
+  }
+}
+
+/// Generated class from Pigeon that represents data sent in messages.
 struct Endpoint {
   var hespSrc: String? = nil
   var hlsSrc: String? = nil
@@ -318,6 +357,88 @@ struct Endpoint {
       adSrc,
       weight,
       priority,
+    ]
+  }
+}
+
+/// Metadata for the ABR strategy (e.g. initial bitrate cap).
+///
+/// Generated class from Pigeon that represents data sent in messages.
+struct AbrStrategyMetadataPigeon {
+  var bitrate: Int64? = nil
+
+
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  static func fromList(_ pigeonVar_list: [Any?]) -> AbrStrategyMetadataPigeon? {
+    let bitrate: Int64? = nilOrValue(pigeonVar_list[0])
+
+    return AbrStrategyMetadataPigeon(
+      bitrate: bitrate
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      bitrate
+    ]
+  }
+}
+
+/// The ABR strategy configuration: type + optional metadata.
+///
+/// Generated class from Pigeon that represents data sent in messages.
+struct AbrStrategyConfigurationPigeon {
+  var type: AbrStrategyTypePigeon
+  var metadata: AbrStrategyMetadataPigeon? = nil
+
+
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  static func fromList(_ pigeonVar_list: [Any?]) -> AbrStrategyConfigurationPigeon? {
+    let type = pigeonVar_list[0] as! AbrStrategyTypePigeon
+    let metadata: AbrStrategyMetadataPigeon? = nilOrValue(pigeonVar_list[1])
+
+    return AbrStrategyConfigurationPigeon(
+      type: type,
+      metadata: metadata
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      type,
+      metadata,
+    ]
+  }
+}
+
+/// A single debug flag with its metadata and current state.
+///
+/// Generated class from Pigeon that represents data sent in messages.
+struct DebugFlagPigeon {
+  var key: String
+  var description: String
+  var defaultValue: Bool
+  var isEnabled: Bool
+
+
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  static func fromList(_ pigeonVar_list: [Any?]) -> DebugFlagPigeon? {
+    let key = pigeonVar_list[0] as! String
+    let description = pigeonVar_list[1] as! String
+    let defaultValue = pigeonVar_list[2] as! Bool
+    let isEnabled = pigeonVar_list[3] as! Bool
+
+    return DebugFlagPigeon(
+      key: key,
+      description: description,
+      defaultValue: defaultValue,
+      isEnabled: isEnabled
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      key,
+      description,
+      defaultValue,
+      isEnabled,
     ]
   }
 }
@@ -362,19 +483,33 @@ private class APIsPigeonCodecReader: FlutterStandardReader {
       }
       return nil
     case 135:
-      return TimeRange.fromList(self.readValue() as! [Any?])
+      let enumResultAsInt: Int? = nilOrValue(self.readValue() as! Int?)
+      if let enumResultAsInt = enumResultAsInt {
+        return AbrStrategyTypePigeon(rawValue: enumResultAsInt)
+      }
+      return nil
     case 136:
-      return SourceDescription.fromList(self.readValue() as! [Any?])
+      return TimeRange.fromList(self.readValue() as! [Any?])
     case 137:
-      return TypedSourcePigeon.fromList(self.readValue() as! [Any?])
+      return SourceDescription.fromList(self.readValue() as! [Any?])
     case 138:
-      return DRMConfiguration.fromList(self.readValue() as! [Any?])
+      return TypedSourcePigeon.fromList(self.readValue() as! [Any?])
     case 139:
-      return WidevineDRMConfiguration.fromList(self.readValue() as! [Any?])
+      return DRMConfiguration.fromList(self.readValue() as! [Any?])
     case 140:
-      return FairPlayDRMConfiguration.fromList(self.readValue() as! [Any?])
+      return WidevineDRMConfiguration.fromList(self.readValue() as! [Any?])
     case 141:
+      return FairPlayDRMConfiguration.fromList(self.readValue() as! [Any?])
+    case 142:
+      return HespLatencies.fromList(self.readValue() as! [Any?])
+    case 143:
       return Endpoint.fromList(self.readValue() as! [Any?])
+    case 144:
+      return AbrStrategyMetadataPigeon.fromList(self.readValue() as! [Any?])
+    case 145:
+      return AbrStrategyConfigurationPigeon.fromList(self.readValue() as! [Any?])
+    case 146:
+      return DebugFlagPigeon.fromList(self.readValue() as! [Any?])
     default:
       return super.readValue(ofType: type)
     }
@@ -401,26 +536,41 @@ private class APIsPigeonCodecWriter: FlutterStandardWriter {
     } else if let value = value as? SourceIntegrationId {
       super.writeByte(134)
       super.writeValue(value.rawValue)
-    } else if let value = value as? TimeRange {
+    } else if let value = value as? AbrStrategyTypePigeon {
       super.writeByte(135)
-      super.writeValue(value.toList())
-    } else if let value = value as? SourceDescription {
+      super.writeValue(value.rawValue)
+    } else if let value = value as? TimeRange {
       super.writeByte(136)
       super.writeValue(value.toList())
-    } else if let value = value as? TypedSourcePigeon {
+    } else if let value = value as? SourceDescription {
       super.writeByte(137)
       super.writeValue(value.toList())
-    } else if let value = value as? DRMConfiguration {
+    } else if let value = value as? TypedSourcePigeon {
       super.writeByte(138)
       super.writeValue(value.toList())
-    } else if let value = value as? WidevineDRMConfiguration {
+    } else if let value = value as? DRMConfiguration {
       super.writeByte(139)
       super.writeValue(value.toList())
-    } else if let value = value as? FairPlayDRMConfiguration {
+    } else if let value = value as? WidevineDRMConfiguration {
       super.writeByte(140)
       super.writeValue(value.toList())
-    } else if let value = value as? Endpoint {
+    } else if let value = value as? FairPlayDRMConfiguration {
       super.writeByte(141)
+      super.writeValue(value.toList())
+    } else if let value = value as? HespLatencies {
+      super.writeByte(142)
+      super.writeValue(value.toList())
+    } else if let value = value as? Endpoint {
+      super.writeByte(143)
+      super.writeValue(value.toList())
+    } else if let value = value as? AbrStrategyMetadataPigeon {
+      super.writeByte(144)
+      super.writeValue(value.toList())
+    } else if let value = value as? AbrStrategyConfigurationPigeon {
+      super.writeByte(145)
+      super.writeValue(value.toList())
+    } else if let value = value as? DebugFlagPigeon {
+      super.writeByte(146)
       super.writeValue(value.toList())
     } else {
       super.writeValue(value)
@@ -441,6 +591,7 @@ private class APIsPigeonCodecReaderWriter: FlutterStandardReaderWriter {
 class APIsPigeonCodec: FlutterStandardMessageCodec, @unchecked Sendable {
   static let shared = APIsPigeonCodec(readerWriter: APIsPigeonCodecReaderWriter())
 }
+
 
 /// Generated protocol from Pigeon that represents a handler of messages from Flutter.
 protocol THEOplayerNativeTextTracksAPI {
@@ -473,10 +624,11 @@ class THEOplayerNativeTextTracksAPISetup {
 }
 /// Generated protocol from Pigeon that represents Flutter messages that can be called from Swift.
 protocol THEOplayerFlutterTextTracksAPIProtocol {
-  func onAddTextTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, inBandMetadataTrackDispatchType inBandMetadataTrackDispatchTypeArg: String?, readyState readyStateArg: TextTrackReadyState, type typeArg: TextTrackType, source sourceArg: String?, isForced isForcedArg: Bool, mode modeArg: TextTrackMode, completion: @escaping (Result<Void, PigeonError>) -> Void)
+  func onAddTextTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, inBandMetadataTrackDispatchType inBandMetadataTrackDispatchTypeArg: String?, readyState readyStateArg: TextTrackReadyState, type typeArg: TextTrackType, source sourceArg: String?, isForced isForcedArg: Bool, mode modeArg: TextTrackMode, unlocalizedLabel unlocalizedLabelArg: String?, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onRemoveTextTrack(uid uidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onTextTrackListChange(uid uidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onTextTrackAddCue(textTrackUid textTrackUidArg: Int64, id idArg: String, uid uidArg: Int64, startTime startTimeArg: Double, endTime endTimeArg: Double, content contentArg: String, completion: @escaping (Result<Void, PigeonError>) -> Void)
+  func onTextTrackAddDateRangeCue(textTrackUid textTrackUidArg: Int64, id idArg: String, uid uidArg: Int64, startTime startTimeArg: Double, endTime endTimeArg: Double, cueClass cueClassArg: String?, startDateMillis startDateMillisArg: Double, endDateMillis endDateMillisArg: Double?, duration durationArg: Double?, plannedDuration plannedDurationArg: Double?, endOnNext endOnNextArg: Bool, customAttributesJson customAttributesJsonArg: String?, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onTextTrackRemoveCue(textTrackUid textTrackUidArg: Int64, cueUid cueUidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onTextTrackEnterCue(textTrackUid textTrackUidArg: Int64, cueUid cueUidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onTextTrackExitCue(textTrackUid textTrackUidArg: Int64, cueUid cueUidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
@@ -496,10 +648,10 @@ class THEOplayerFlutterTextTracksAPI: THEOplayerFlutterTextTracksAPIProtocol {
   var codec: APIsPigeonCodec {
     return APIsPigeonCodec.shared
   }
-  func onAddTextTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, inBandMetadataTrackDispatchType inBandMetadataTrackDispatchTypeArg: String?, readyState readyStateArg: TextTrackReadyState, type typeArg: TextTrackType, source sourceArg: String?, isForced isForcedArg: Bool, mode modeArg: TextTrackMode, completion: @escaping (Result<Void, PigeonError>) -> Void) {
+  func onAddTextTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, inBandMetadataTrackDispatchType inBandMetadataTrackDispatchTypeArg: String?, readyState readyStateArg: TextTrackReadyState, type typeArg: TextTrackType, source sourceArg: String?, isForced isForcedArg: Bool, mode modeArg: TextTrackMode, unlocalizedLabel unlocalizedLabelArg: String?, completion: @escaping (Result<Void, PigeonError>) -> Void) {
     let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack\(messageChannelSuffix)"
     let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([idArg, uidArg, labelArg, languageArg, kindArg, inBandMetadataTrackDispatchTypeArg, readyStateArg, typeArg, sourceArg, isForcedArg, modeArg] as [Any?]) { response in
+    channel.sendMessage([idArg, uidArg, labelArg, languageArg, kindArg, inBandMetadataTrackDispatchTypeArg, readyStateArg, typeArg, sourceArg, isForcedArg, modeArg, unlocalizedLabelArg] as [Any?]) { response in
       guard let listResponse = response as? [Any?] else {
         completion(.failure(createConnectionError(withChannelName: channelName)))
         return
@@ -554,6 +706,24 @@ class THEOplayerFlutterTextTracksAPI: THEOplayerFlutterTextTracksAPIProtocol {
     let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue\(messageChannelSuffix)"
     let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([textTrackUidArg, idArg, uidArg, startTimeArg, endTimeArg, contentArg] as [Any?]) { response in
+      guard let listResponse = response as? [Any?] else {
+        completion(.failure(createConnectionError(withChannelName: channelName)))
+        return
+      }
+      if listResponse.count > 1 {
+        let code: String = listResponse[0] as! String
+        let message: String? = nilOrValue(listResponse[1])
+        let details: String? = nilOrValue(listResponse[2])
+        completion(.failure(PigeonError(code: code, message: message, details: details)))
+      } else {
+        completion(.success(Void()))
+      }
+    }
+  }
+  func onTextTrackAddDateRangeCue(textTrackUid textTrackUidArg: Int64, id idArg: String, uid uidArg: Int64, startTime startTimeArg: Double, endTime endTimeArg: Double, cueClass cueClassArg: String?, startDateMillis startDateMillisArg: Double, endDateMillis endDateMillisArg: Double?, duration durationArg: Double?, plannedDuration plannedDurationArg: Double?, endOnNext endOnNextArg: Bool, customAttributesJson customAttributesJsonArg: String?, completion: @escaping (Result<Void, PigeonError>) -> Void) {
+    let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue\(messageChannelSuffix)"
+    let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([textTrackUidArg, idArg, uidArg, startTimeArg, endTimeArg, cueClassArg, startDateMillisArg, endDateMillisArg, durationArg, plannedDurationArg, endOnNextArg, customAttributesJsonArg] as [Any?]) { response in
       guard let listResponse = response as? [Any?] else {
         completion(.failure(createConnectionError(withChannelName: channelName)))
         return
@@ -717,6 +887,8 @@ class THEOplayerFlutterTextTracksAPI: THEOplayerFlutterTextTracksAPIProtocol {
 protocol THEOplayerNativeTHEOliveAPI {
   func goLive() throws
   func preloadChannels(channelIds: [String]?) throws
+  func currentLatency(completion: @escaping (Result<Double?, Error>) -> Void)
+  func latencies(completion: @escaping (Result<HespLatencies?, Error>) -> Void)
 }
 
 /// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
@@ -753,6 +925,36 @@ class THEOplayerNativeTHEOliveAPISetup {
     } else {
       preloadChannelsChannel.setMessageHandler(nil)
     }
+    let currentLatencyChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeTHEOliveAPI.currentLatency\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      currentLatencyChannel.setMessageHandler { _, reply in
+        api.currentLatency { result in
+          switch result {
+          case .success(let res):
+            reply(wrapResult(res))
+          case .failure(let error):
+            reply(wrapError(error))
+          }
+        }
+      }
+    } else {
+      currentLatencyChannel.setMessageHandler(nil)
+    }
+    let latenciesChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeTHEOliveAPI.latencies\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      latenciesChannel.setMessageHandler { _, reply in
+        api.latencies { result in
+          switch result {
+          case .success(let res):
+            reply(wrapResult(res))
+          case .failure(let error):
+            reply(wrapError(error))
+          }
+        }
+      }
+    } else {
+      latenciesChannel.setMessageHandler(nil)
+    }
   }
 }
 /// Generated protocol from Pigeon that represents Flutter messages that can be called from Swift.
@@ -760,7 +962,7 @@ protocol THEOplayerFlutterTHEOliveAPIProtocol {
   func onDistributionLoadStartEvent(distributionId distributionIdArg: String, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onEndpointLoadedEvent(endpoint endpointArg: Endpoint, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onDistributionOfflineEvent(distributionId distributionIdArg: String, completion: @escaping (Result<Void, PigeonError>) -> Void)
-  func onIntentToFallbackEvent(completion: @escaping (Result<Void, PigeonError>) -> Void)
+  func onIntentToFallbackEvent(errorCode errorCodeArg: String?, errorMessage errorMessageArg: String?, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onSeeking(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onSeeked(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, PigeonError>) -> Void)
 }
@@ -828,10 +1030,10 @@ class THEOplayerFlutterTHEOliveAPI: THEOplayerFlutterTHEOliveAPIProtocol {
       }
     }
   }
-  func onIntentToFallbackEvent(completion: @escaping (Result<Void, PigeonError>) -> Void) {
+  func onIntentToFallbackEvent(errorCode errorCodeArg: String?, errorMessage errorMessageArg: String?, completion: @escaping (Result<Void, PigeonError>) -> Void) {
     let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onIntentToFallbackEvent\(messageChannelSuffix)"
     let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage(nil) { response in
+    channel.sendMessage([errorCodeArg, errorMessageArg] as [Any?]) { response in
       guard let listResponse = response as? [Any?] else {
         completion(.failure(createConnectionError(withChannelName: channelName)))
         return
@@ -880,6 +1082,122 @@ class THEOplayerFlutterTHEOliveAPI: THEOplayerFlutterTHEOliveAPIProtocol {
       } else {
         completion(.success(Void()))
       }
+    }
+  }
+}
+/// Host API: Dart → Native calls for ABR configuration.
+///
+/// Generated protocol from Pigeon that represents a handler of messages from Flutter.
+protocol THEOplayerNativeAbrAPI {
+  /// Get the current ABR strategy.
+  func getAbrStrategy() throws -> AbrStrategyConfigurationPigeon
+  /// Set the ABR strategy.
+  func setAbrStrategy(config: AbrStrategyConfigurationPigeon) throws
+  /// Get the target buffer in seconds.
+  func getTargetBuffer() throws -> Double
+  /// Set the target buffer in seconds.
+  func setTargetBuffer(value: Double) throws
+  /// Get the preferred peak bitrate in bps (iOS only, returns 0 on other platforms).
+  func getPreferredPeakBitRate() throws -> Double
+  /// Set the preferred peak bitrate in bps (iOS only, no-op on other platforms).
+  func setPreferredPeakBitRate(value: Double) throws
+}
+
+/// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
+class THEOplayerNativeAbrAPISetup {
+  static var codec: FlutterStandardMessageCodec { APIsPigeonCodec.shared }
+  /// Sets up an instance of `THEOplayerNativeAbrAPI` to handle messages through the `binaryMessenger`.
+  static func setUp(binaryMessenger: FlutterBinaryMessenger, api: THEOplayerNativeAbrAPI?, messageChannelSuffix: String = "") {
+    let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
+    /// Get the current ABR strategy.
+    let getAbrStrategyChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.getAbrStrategy\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      getAbrStrategyChannel.setMessageHandler { _, reply in
+        do {
+          let result = try api.getAbrStrategy()
+          reply(wrapResult(result))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      getAbrStrategyChannel.setMessageHandler(nil)
+    }
+    /// Set the ABR strategy.
+    let setAbrStrategyChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.setAbrStrategy\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      setAbrStrategyChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let configArg = args[0] as! AbrStrategyConfigurationPigeon
+        do {
+          try api.setAbrStrategy(config: configArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      setAbrStrategyChannel.setMessageHandler(nil)
+    }
+    /// Get the target buffer in seconds.
+    let getTargetBufferChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.getTargetBuffer\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      getTargetBufferChannel.setMessageHandler { _, reply in
+        do {
+          let result = try api.getTargetBuffer()
+          reply(wrapResult(result))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      getTargetBufferChannel.setMessageHandler(nil)
+    }
+    /// Set the target buffer in seconds.
+    let setTargetBufferChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.setTargetBuffer\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      setTargetBufferChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let valueArg = args[0] as! Double
+        do {
+          try api.setTargetBuffer(value: valueArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      setTargetBufferChannel.setMessageHandler(nil)
+    }
+    /// Get the preferred peak bitrate in bps (iOS only, returns 0 on other platforms).
+    let getPreferredPeakBitRateChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.getPreferredPeakBitRate\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      getPreferredPeakBitRateChannel.setMessageHandler { _, reply in
+        do {
+          let result = try api.getPreferredPeakBitRate()
+          reply(wrapResult(result))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      getPreferredPeakBitRateChannel.setMessageHandler(nil)
+    }
+    /// Set the preferred peak bitrate in bps (iOS only, no-op on other platforms).
+    let setPreferredPeakBitRateChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.setPreferredPeakBitRate\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      setPreferredPeakBitRateChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let valueArg = args[0] as! Double
+        do {
+          try api.setPreferredPeakBitRate(value: valueArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      setPreferredPeakBitRateChannel.setMessageHandler(nil)
     }
   }
 }
@@ -1451,6 +1769,136 @@ class THEOplayerNativeAPISetup {
     }
   }
 }
+/// Host API: Dart → Native calls for debug flag management.
+///
+/// Generated protocol from Pigeon that represents a handler of messages from Flutter.
+protocol THEOplayerNativeDebugFlagsAPI {
+  /// Returns all available debug flags with their current state.
+  func getAvailableFlags() throws -> [DebugFlagPigeon]
+  /// Enable a flag by key.
+  func enableFlag(key: String) throws
+  /// Disable a flag by key.
+  func disableFlag(key: String) throws
+  /// Enable all flags.
+  func enableAll() throws
+  /// Disable all flags.
+  func disableAll() throws
+  /// Reset all flags to their compile-time defaults.
+  func resetAll() throws
+  /// Enable OS log + file logging at runtime (iOS only, no-op on Android).
+  func enableFileLogging() throws
+}
+
+/// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
+class THEOplayerNativeDebugFlagsAPISetup {
+  static var codec: FlutterStandardMessageCodec { APIsPigeonCodec.shared }
+  /// Sets up an instance of `THEOplayerNativeDebugFlagsAPI` to handle messages through the `binaryMessenger`.
+  static func setUp(binaryMessenger: FlutterBinaryMessenger, api: THEOplayerNativeDebugFlagsAPI?, messageChannelSuffix: String = "") {
+    let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
+    /// Returns all available debug flags with their current state.
+    let getAvailableFlagsChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.getAvailableFlags\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      getAvailableFlagsChannel.setMessageHandler { _, reply in
+        do {
+          let result = try api.getAvailableFlags()
+          reply(wrapResult(result))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      getAvailableFlagsChannel.setMessageHandler(nil)
+    }
+    /// Enable a flag by key.
+    let enableFlagChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.enableFlag\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      enableFlagChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let keyArg = args[0] as! String
+        do {
+          try api.enableFlag(key: keyArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      enableFlagChannel.setMessageHandler(nil)
+    }
+    /// Disable a flag by key.
+    let disableFlagChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.disableFlag\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      disableFlagChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let keyArg = args[0] as! String
+        do {
+          try api.disableFlag(key: keyArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      disableFlagChannel.setMessageHandler(nil)
+    }
+    /// Enable all flags.
+    let enableAllChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.enableAll\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      enableAllChannel.setMessageHandler { _, reply in
+        do {
+          try api.enableAll()
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      enableAllChannel.setMessageHandler(nil)
+    }
+    /// Disable all flags.
+    let disableAllChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.disableAll\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      disableAllChannel.setMessageHandler { _, reply in
+        do {
+          try api.disableAll()
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      disableAllChannel.setMessageHandler(nil)
+    }
+    /// Reset all flags to their compile-time defaults.
+    let resetAllChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.resetAll\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      resetAllChannel.setMessageHandler { _, reply in
+        do {
+          try api.resetAll()
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      resetAllChannel.setMessageHandler(nil)
+    }
+    /// Enable OS log + file logging at runtime (iOS only, no-op on Android).
+    let enableFileLoggingChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.enableFileLogging\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      enableFileLoggingChannel.setMessageHandler { _, reply in
+        do {
+          try api.enableFileLogging()
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      enableFileLoggingChannel.setMessageHandler(nil)
+    }
+  }
+}
 /// Generated protocol from Pigeon that represents Flutter messages that can be called from Swift.
 protocol THEOplayerFlutterAPIProtocol {
   func onSourceChange(source sourceArg: SourceDescription?, completion: @escaping (Result<Void, PigeonError>) -> Void)
@@ -1948,13 +2396,13 @@ class THEOplayerNativeVideoTracksAPISetup {
 }
 /// Generated protocol from Pigeon that represents Flutter messages that can be called from Swift.
 protocol THEOplayerFlutterVideoTracksAPIProtocol {
-  func onAddVideoTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, isEnabled isEnabledArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void)
-  func onVideoTrackAddQuality(videoTrackUid videoTrackUidArg: Int64, qualityId qualityIdArg: String, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, width widthArg: Int64, height heightArg: Int64, frameRate frameRateArg: Double, firstFrame firstFrameArg: Double, completion: @escaping (Result<Void, PigeonError>) -> Void)
+  func onAddVideoTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, isEnabled isEnabledArg: Bool, unlocalizedLabel unlocalizedLabelArg: String?, completion: @escaping (Result<Void, PigeonError>) -> Void)
+  func onVideoTrackAddQuality(videoTrackUid videoTrackUidArg: Int64, qualityId qualityIdArg: String, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, width widthArg: Int64, height heightArg: Int64, frameRate frameRateArg: Double, firstFrame firstFrameArg: Double, averageBandwidth averageBandwidthArg: Int64?, available availableArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onRemoveVideoTrack(uid uidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onVideoTrackListChange(uid uidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onTargetQualityChange(videoTrackUid videoTrackUidArg: Int64, qualitiesUid qualitiesUidArg: [Int64], qualityUid qualityUidArg: Int64?, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onActiveQualityChange(videoTrackUid videoTrackUidArg: Int64, qualityUid qualityUidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
-  func onQualityUpdate(videoTrackUid videoTrackUidArg: Int64, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, width widthArg: Int64, height heightArg: Int64, frameRate frameRateArg: Double, firstFrame firstFrameArg: Double, completion: @escaping (Result<Void, PigeonError>) -> Void)
+  func onQualityUpdate(videoTrackUid videoTrackUidArg: Int64, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, width widthArg: Int64, height heightArg: Int64, frameRate frameRateArg: Double, firstFrame firstFrameArg: Double, averageBandwidth averageBandwidthArg: Int64?, available availableArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void)
 }
 class THEOplayerFlutterVideoTracksAPI: THEOplayerFlutterVideoTracksAPIProtocol {
   private let binaryMessenger: FlutterBinaryMessenger
@@ -1966,10 +2414,10 @@ class THEOplayerFlutterVideoTracksAPI: THEOplayerFlutterVideoTracksAPIProtocol {
   var codec: APIsPigeonCodec {
     return APIsPigeonCodec.shared
   }
-  func onAddVideoTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, isEnabled isEnabledArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void) {
+  func onAddVideoTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, isEnabled isEnabledArg: Bool, unlocalizedLabel unlocalizedLabelArg: String?, completion: @escaping (Result<Void, PigeonError>) -> Void) {
     let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onAddVideoTrack\(messageChannelSuffix)"
     let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([idArg, uidArg, labelArg, languageArg, kindArg, isEnabledArg] as [Any?]) { response in
+    channel.sendMessage([idArg, uidArg, labelArg, languageArg, kindArg, isEnabledArg, unlocalizedLabelArg] as [Any?]) { response in
       guard let listResponse = response as? [Any?] else {
         completion(.failure(createConnectionError(withChannelName: channelName)))
         return
@@ -1984,10 +2432,10 @@ class THEOplayerFlutterVideoTracksAPI: THEOplayerFlutterVideoTracksAPIProtocol {
       }
     }
   }
-  func onVideoTrackAddQuality(videoTrackUid videoTrackUidArg: Int64, qualityId qualityIdArg: String, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, width widthArg: Int64, height heightArg: Int64, frameRate frameRateArg: Double, firstFrame firstFrameArg: Double, completion: @escaping (Result<Void, PigeonError>) -> Void) {
+  func onVideoTrackAddQuality(videoTrackUid videoTrackUidArg: Int64, qualityId qualityIdArg: String, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, width widthArg: Int64, height heightArg: Int64, frameRate frameRateArg: Double, firstFrame firstFrameArg: Double, averageBandwidth averageBandwidthArg: Int64?, available availableArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void) {
     let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality\(messageChannelSuffix)"
     let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([videoTrackUidArg, qualityIdArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, widthArg, heightArg, frameRateArg, firstFrameArg] as [Any?]) { response in
+    channel.sendMessage([videoTrackUidArg, qualityIdArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, widthArg, heightArg, frameRateArg, firstFrameArg, averageBandwidthArg, availableArg] as [Any?]) { response in
       guard let listResponse = response as? [Any?] else {
         completion(.failure(createConnectionError(withChannelName: channelName)))
         return
@@ -2074,10 +2522,10 @@ class THEOplayerFlutterVideoTracksAPI: THEOplayerFlutterVideoTracksAPIProtocol {
       }
     }
   }
-  func onQualityUpdate(videoTrackUid videoTrackUidArg: Int64, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, width widthArg: Int64, height heightArg: Int64, frameRate frameRateArg: Double, firstFrame firstFrameArg: Double, completion: @escaping (Result<Void, PigeonError>) -> Void) {
+  func onQualityUpdate(videoTrackUid videoTrackUidArg: Int64, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, width widthArg: Int64, height heightArg: Int64, frameRate frameRateArg: Double, firstFrame firstFrameArg: Double, averageBandwidth averageBandwidthArg: Int64?, available availableArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void) {
     let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate\(messageChannelSuffix)"
     let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([videoTrackUidArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, widthArg, heightArg, frameRateArg, firstFrameArg] as [Any?]) { response in
+    channel.sendMessage([videoTrackUidArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, widthArg, heightArg, frameRateArg, firstFrameArg, averageBandwidthArg, availableArg] as [Any?]) { response in
       guard let listResponse = response as? [Any?] else {
         completion(.failure(createConnectionError(withChannelName: channelName)))
         return
@@ -2158,13 +2606,13 @@ class THEOplayerNativeAudioTracksAPISetup {
 }
 /// Generated protocol from Pigeon that represents Flutter messages that can be called from Swift.
 protocol THEOplayerFlutterAudioTracksAPIProtocol {
-  func onAddAudioTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, isEnabled isEnabledArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void)
-  func onAudioTrackAddQuality(audioTrackUid audioTrackUidArg: Int64, qualityId qualityIdArg: String, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, audioSamplingRate audioSamplingRateArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
+  func onAddAudioTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, isEnabled isEnabledArg: Bool, unlocalizedLabel unlocalizedLabelArg: String?, completion: @escaping (Result<Void, PigeonError>) -> Void)
+  func onAudioTrackAddQuality(audioTrackUid audioTrackUidArg: Int64, qualityId qualityIdArg: String, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, audioSamplingRate audioSamplingRateArg: Int64, averageBandwidth averageBandwidthArg: Int64?, available availableArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onRemoveAudioTrack(uid uidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onAudioTrackListChange(uid uidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onTargetQualityChange(audioTrackUid audioTrackUidArg: Int64, qualitiesUid qualitiesUidArg: [Int64], qualityUid qualityUidArg: Int64?, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onActiveQualityChange(audioTrackUid audioTrackUidArg: Int64, qualityUid qualityUidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
-  func onQualityUpdate(audioTrackUid audioTrackUidArg: Int64, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, audioSamplingRate audioSamplingRateArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
+  func onQualityUpdate(audioTrackUid audioTrackUidArg: Int64, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, audioSamplingRate audioSamplingRateArg: Int64, averageBandwidth averageBandwidthArg: Int64?, available availableArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void)
 }
 class THEOplayerFlutterAudioTracksAPI: THEOplayerFlutterAudioTracksAPIProtocol {
   private let binaryMessenger: FlutterBinaryMessenger
@@ -2176,10 +2624,10 @@ class THEOplayerFlutterAudioTracksAPI: THEOplayerFlutterAudioTracksAPIProtocol {
   var codec: APIsPigeonCodec {
     return APIsPigeonCodec.shared
   }
-  func onAddAudioTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, isEnabled isEnabledArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void) {
+  func onAddAudioTrack(id idArg: String?, uid uidArg: Int64, label labelArg: String?, language languageArg: String?, kind kindArg: String?, isEnabled isEnabledArg: Bool, unlocalizedLabel unlocalizedLabelArg: String?, completion: @escaping (Result<Void, PigeonError>) -> Void) {
     let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAddAudioTrack\(messageChannelSuffix)"
     let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([idArg, uidArg, labelArg, languageArg, kindArg, isEnabledArg] as [Any?]) { response in
+    channel.sendMessage([idArg, uidArg, labelArg, languageArg, kindArg, isEnabledArg, unlocalizedLabelArg] as [Any?]) { response in
       guard let listResponse = response as? [Any?] else {
         completion(.failure(createConnectionError(withChannelName: channelName)))
         return
@@ -2194,10 +2642,10 @@ class THEOplayerFlutterAudioTracksAPI: THEOplayerFlutterAudioTracksAPIProtocol {
       }
     }
   }
-  func onAudioTrackAddQuality(audioTrackUid audioTrackUidArg: Int64, qualityId qualityIdArg: String, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, audioSamplingRate audioSamplingRateArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void) {
+  func onAudioTrackAddQuality(audioTrackUid audioTrackUidArg: Int64, qualityId qualityIdArg: String, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, audioSamplingRate audioSamplingRateArg: Int64, averageBandwidth averageBandwidthArg: Int64?, available availableArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void) {
     let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality\(messageChannelSuffix)"
     let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([audioTrackUidArg, qualityIdArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, audioSamplingRateArg] as [Any?]) { response in
+    channel.sendMessage([audioTrackUidArg, qualityIdArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, audioSamplingRateArg, averageBandwidthArg, availableArg] as [Any?]) { response in
       guard let listResponse = response as? [Any?] else {
         completion(.failure(createConnectionError(withChannelName: channelName)))
         return
@@ -2284,10 +2732,10 @@ class THEOplayerFlutterAudioTracksAPI: THEOplayerFlutterAudioTracksAPIProtocol {
       }
     }
   }
-  func onQualityUpdate(audioTrackUid audioTrackUidArg: Int64, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, audioSamplingRate audioSamplingRateArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void) {
+  func onQualityUpdate(audioTrackUid audioTrackUidArg: Int64, qualityUid qualityUidArg: Int64, name nameArg: String?, bandwidth bandwidthArg: Int64, codecs codecsArg: String?, audioSamplingRate audioSamplingRateArg: Int64, averageBandwidth averageBandwidthArg: Int64?, available availableArg: Bool, completion: @escaping (Result<Void, PigeonError>) -> Void) {
     let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate\(messageChannelSuffix)"
     let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
-    channel.sendMessage([audioTrackUidArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, audioSamplingRateArg] as [Any?]) { response in
+    channel.sendMessage([audioTrackUidArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, audioSamplingRateArg, averageBandwidthArg, availableArg] as [Any?]) { response in
       guard let listResponse = response as? [Any?] else {
         completion(.failure(createConnectionError(withChannelName: channelName)))
         return

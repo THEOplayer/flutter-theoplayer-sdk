@@ -150,8 +150,10 @@ class VideoQualityImpl extends VideoQuality {
   late int _height;
   late double _frameRate;
   late double _firstFrame;
+  late int? _averageBandwidth;
+  late bool _available;
 
-  VideoQualityImpl(super.id, super.uid, this._name, this._bandwidth, this._codecs, this._width, this._height, this._frameRate, this._firstFrame);
+  VideoQualityImpl(super.id, super.uid, this._name, this._bandwidth, this._codecs, this._width, this._height, this._frameRate, this._firstFrame, this._averageBandwidth, this._available);
 
   @override
   String? get name => _name;
@@ -174,7 +176,13 @@ class VideoQualityImpl extends VideoQuality {
   @override
   double get firstFrame => _firstFrame;
 
-  void update(String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame) {
+  @override
+  int? get averageBandwidth => _averageBandwidth;
+
+  @override
+  bool get available => _available;
+
+  void update(String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame, int? averageBandwidth, bool available) {
     this._name = name;
     this._bandwidth = bandwidth;
     this._codecs = codecs;
@@ -182,6 +190,8 @@ class VideoQualityImpl extends VideoQuality {
     this._height = height;
     this._frameRate = frameRate;
     this._firstFrame = firstFrame;
+    this._averageBandwidth = averageBandwidth;
+    this._available = available;
   }
 
   @override

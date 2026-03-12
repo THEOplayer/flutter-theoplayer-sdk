@@ -22,7 +22,6 @@ class TheoplayerWeb extends TheoplayerPlatform {
   TheoplayerWeb() {
     // ignore: undefined_prefixed_name
 
-
     // Log renderer info
     if (kDebugMode) {
       const isRunningWithWasm = bool.fromEnvironment('dart.tool.dart2wasm');

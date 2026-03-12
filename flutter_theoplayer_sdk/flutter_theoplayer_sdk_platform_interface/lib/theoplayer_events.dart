@@ -172,5 +172,8 @@ class PresentationModeChangeEvent extends Event {
   final double currentTime;
   final PresentationMode presentationMode;
 
-  PresentationModeChangeEvent({required this.currentTime, required this.presentationMode,}) : super(type: PlayerEventTypes.PRESENTATIONMODECHANGE);
+  PresentationModeChangeEvent({
+    required this.currentTime,
+    required this.presentationMode,
+  }) : super(type: PlayerEventTypes.PRESENTATIONMODECHANGE);
 }

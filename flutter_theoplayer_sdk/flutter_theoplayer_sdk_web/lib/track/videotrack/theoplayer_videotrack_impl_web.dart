@@ -25,9 +25,7 @@ class VideoTrackImplWeb extends VideoTrackImpl {
       }
 
       VideoQualities flutterTargetQualities = VideoQualitiesImpl();
-      flutterTargetQualities.addAll(
-          this.qualities.where((element) => targetQualitiesUid.contains(element.uid))
-      );
+      flutterTargetQualities.addAll(this.qualities.where((element) => targetQualitiesUid.contains(element.uid)));
 
       VideoQuality? flutterTargetQuality = eventTargetQuality != null ? this.qualities.firstWhereOrNull((element) => element.uid == eventTargetQuality.uid) : null;
 

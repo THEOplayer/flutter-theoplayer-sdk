@@ -25,7 +25,8 @@ abstract class TextTrack extends Track {
   final String? _source;
   final bool _isForced;
 
-  TextTrack(super._id, super._uid, super._label, super._language, super._kind, this._inBandMetadataTrackDispatchType, this._readyState, this._type, this._cues, this._activeCues, this._source, this._isForced);
+  TextTrack(super._id, super._uid, super._label, super._language, super._kind, this._inBandMetadataTrackDispatchType, this._readyState, this._type, this._cues, this._activeCues, this._source,
+      this._isForced);
 
   /// The in-band metadata track dispatch type of the text track.
   String? get inBandMetadataTrackDispatchType => _inBandMetadataTrackDispatchType;
@@ -131,5 +132,34 @@ abstract class Cue implements EventDispatcher {
   double get endTime;
 
   /// The content of the cue.
-  String get content;
+  ///
+  /// The type depends on the track type: typically a [String] for subtitle/caption tracks,
+  /// but may be other types for metadata tracks.
+  dynamic get content;
+}
+
+/// A cue representing an HLS EXT-X-DATERANGE tag.
+abstract class DateRangeCue extends Cue {
+  DateRangeCue(super.id, super.uid, super.startTime);
+
+  /// The start date of the date range.
+  DateTime get startDate;
+
+  /// The end date of the date range, if available.
+  DateTime? get endDate;
+
+  /// The duration of the date range in seconds, if available.
+  double? get duration;
+
+  /// The planned duration of the date range in seconds, if available.
+  double? get plannedDuration;
+
+  /// The class of the date range.
+  String? get cueClass;
+
+  /// Whether the date range ends on the next date range of the same class.
+  bool get endOnNext;
+
+  /// Custom attributes from the EXT-X-DATERANGE tag.
+  Map<String, dynamic>? get customAttributes;
 }

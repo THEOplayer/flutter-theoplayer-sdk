@@ -23,7 +23,6 @@ class AspectRatioChromelessPlayerView extends StatefulWidget {
 }
 
 class _AspectRatioChromelessPlayerViewState extends State<AspectRatioChromelessPlayerView> {
-
   double? currentAspectRatio;
 
   @override
@@ -38,7 +37,6 @@ class _AspectRatioChromelessPlayerViewState extends State<AspectRatioChromelessP
 
     _attachResizeEventListener();
     widget.player.addEventListener(PlayerEventTypes.SOURCECHANGE, _sourceChangeEventListener);
-
   }
 
   @override
@@ -59,7 +57,6 @@ class _AspectRatioChromelessPlayerViewState extends State<AspectRatioChromelessP
     setState(() {
       currentAspectRatio = resizeEvent.width / resizeEvent.height;
     });
-
   }
 
   void _sourceChangeEventListener(event) {
@@ -84,6 +81,5 @@ class _AspectRatioChromelessPlayerViewState extends State<AspectRatioChromelessP
     } else {
       return ChromelessPlayerView(player: widget.player);
     }
-
   }
 }

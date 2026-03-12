@@ -66,6 +66,8 @@ extension THEOplayerJSExtension on THEOplayerJS {
   external THEOplayerArrayList<THEOplayerVideoTrack> get videoTracks;
 
   external THEOplayerTheoLiveApi? get theoLive;
+
+  external THEOplayerAbrConfig get abr;
 }
 
 @JS("Date")
@@ -127,9 +129,9 @@ class THEOplayerConfigParams {
 @staticInterop
 class TheoLiveConfig {
   external factory TheoLiveConfig({
-      String? externalSessionId,
-      bool? fallbackEnabled,
-      String? discoveryUrl,
+    String? externalSessionId,
+    bool? fallbackEnabled,
+    String? discoveryUrl,
   });
 }
 
@@ -148,11 +150,7 @@ extension SourceDescriptionExtension on SourceDescription {
 @anonymous
 @staticInterop
 class TypedSource {
-  external factory TypedSource({ required String src, 
-    String? type,
-    ContentProtection? contentProtection,
-    String? integration
-  });
+  external factory TypedSource({required String src, String? type, ContentProtection? contentProtection, String? integration});
 }
 
 extension TypedSourceExtension on TypedSource {
@@ -166,11 +164,7 @@ extension TypedSourceExtension on TypedSource {
 @anonymous
 @staticInterop
 class ContentProtection {
-  external factory ContentProtection({
-    WidevineContentProtectionConfiguration? widevine,
-    FairplayContentProtectionConfiguration? fairplay
-
-  });
+  external factory ContentProtection({WidevineContentProtectionConfiguration? widevine, FairplayContentProtectionConfiguration? fairplay});
 }
 
 extension ContentProtectionExtension on ContentProtection {
@@ -182,9 +176,7 @@ extension ContentProtectionExtension on ContentProtection {
 @anonymous
 @staticInterop
 class WidevineContentProtectionConfiguration {
-  external factory WidevineContentProtectionConfiguration({
-    String licenseAcquisitionURL
-  });
+  external factory WidevineContentProtectionConfiguration({String licenseAcquisitionURL});
 }
 
 extension WidevineContentProtectionConfigurationExtension on WidevineContentProtectionConfiguration {
@@ -195,10 +187,7 @@ extension WidevineContentProtectionConfigurationExtension on WidevineContentProt
 @anonymous
 @staticInterop
 class FairplayContentProtectionConfiguration {
-  external factory FairplayContentProtectionConfiguration({
-    String licenseAcquisitionURL,
-    String certificateURL
-  });
+  external factory FairplayContentProtectionConfiguration({String licenseAcquisitionURL, String certificateURL});
 }
 
 extension FairplayContentProtectionConfigurationExtension on FairplayContentProtectionConfiguration {
@@ -298,12 +287,12 @@ abstract class THEOplayerMediaQuality implements THEOplayerEventListener {}
 extension THEOplayerMediaQualityExtension on THEOplayerMediaQuality {
   external String get id;
   external int get uid;
-  external String get name;
+  external String? get name;
   external String label;
   external bool get available;
-  external int get averageBandwidth;
-  external int get bandwidth;
-  external String get codecs;
+  external int? get averageBandwidth;
+  external int? get bandwidth;
+  external String? get codecs;
 }
 
 @JS()
@@ -312,7 +301,7 @@ extension THEOplayerMediaQualityExtension on THEOplayerMediaQuality {
 class THEOplayerAudioQuality implements THEOplayerMediaQuality {}
 
 extension THEOplayerAudioQualityExtension on THEOplayerAudioQuality {
-  external int get audioSamplingRate;
+  external int? get audioSamplingRate;
 }
 
 @JS()
@@ -321,10 +310,10 @@ extension THEOplayerAudioQualityExtension on THEOplayerAudioQuality {
 class THEOplayerVideoQuality implements THEOplayerMediaQuality {}
 
 extension THEOplayerVideoQualityExtension on THEOplayerVideoQuality {
-  external int get height;
-  external int get width;
-  external double get frameRate;
-  external double get firstFrame;
+  external int? get height;
+  external int? get width;
+  external double? get frameRate;
+  external double? get firstFrame;
 }
 
 // API for https://www.theoplayer.com/docs/theoplayer/v8/api-reference/web/interfaces/TheoLiveApi.html
@@ -336,5 +325,55 @@ class THEOplayerTheoLiveApi implements THEOplayerEventListener {}
 
 extension THEOplayerTheoLiveApiExtension on THEOplayerTheoLiveApi {
   external bool badNetworkMode;
+  external JSNumber? get currentLatency;
+  external HespLatenciesJS? get latencies;
   external JSAny? preloadPublications(JSArray<JSAny?> publicationIds);
+}
+
+
+@JS()
+@anonymous
+@staticInterop
+class HespLatenciesJS {}
+
+extension HespLatenciesJSExtension on HespLatenciesJS {
+  external JSNumber? get engineLatency;
+  external JSNumber? get distributionLatency;
+  external JSNumber? get playerLatency;
+  external JSNumber? get theoliveLatency;
+}
+
+@JS()
+@anonymous
+@staticInterop
+class THEOplayerAbrConfig {}
+
+extension THEOplayerAbrConfigExtension on THEOplayerAbrConfig {
+  external JSAny? get strategy;
+  external set strategy(JSAny? value);
+  external JSNumber? get targetBuffer;
+  external set targetBuffer(JSNumber? value);
+}
+
+@JS()
+@anonymous
+@staticInterop
+class THEOplayerAbrStrategy {
+  external factory THEOplayerAbrStrategy({required String type, THEOplayerAbrMetadata? metadata});
+}
+
+extension THEOplayerAbrStrategyExtension on THEOplayerAbrStrategy {
+  external String get type;
+  external THEOplayerAbrMetadata? get metadata;
+}
+
+@JS()
+@anonymous
+@staticInterop
+class THEOplayerAbrMetadata {
+  external factory THEOplayerAbrMetadata({int? bitrate});
+}
+
+extension THEOplayerAbrMetadataExtension on THEOplayerAbrMetadata {
+  external int? get bitrate;
 }

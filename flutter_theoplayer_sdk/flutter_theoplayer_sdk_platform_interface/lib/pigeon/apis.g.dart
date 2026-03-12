@@ -69,6 +69,13 @@ enum SourceIntegrationId {
   theolive,
 }
 
+/// The adaptive bitrate strategy type.
+enum AbrStrategyTypePigeon {
+  performance,
+  quality,
+  bandwidth,
+}
+
 class TimeRange {
   TimeRange({
     required this.start,
@@ -255,6 +262,42 @@ class FairPlayDRMConfiguration {
   }
 }
 
+class HespLatencies {
+  HespLatencies({
+    this.engineLatency,
+    this.distributionLatency,
+    this.playerLatency,
+    this.theoliveLatency,
+  });
+
+  double? engineLatency;
+
+  double? distributionLatency;
+
+  double? playerLatency;
+
+  double? theoliveLatency;
+
+  Object encode() {
+    return <Object?>[
+      engineLatency,
+      distributionLatency,
+      playerLatency,
+      theoliveLatency,
+    ];
+  }
+
+  static HespLatencies decode(Object result) {
+    result as List<Object?>;
+    return HespLatencies(
+      engineLatency: result[0] as double?,
+      distributionLatency: result[1] as double?,
+      playerLatency: result[2] as double?,
+      theoliveLatency: result[3] as double?,
+    );
+  }
+}
+
 class Endpoint {
   Endpoint({
     this.hespSrc,
@@ -301,6 +344,92 @@ class Endpoint {
   }
 }
 
+/// Metadata for the ABR strategy (e.g. initial bitrate cap).
+class AbrStrategyMetadataPigeon {
+  AbrStrategyMetadataPigeon({
+    this.bitrate,
+  });
+
+  int? bitrate;
+
+  Object encode() {
+    return <Object?>[
+      bitrate,
+    ];
+  }
+
+  static AbrStrategyMetadataPigeon decode(Object result) {
+    result as List<Object?>;
+    return AbrStrategyMetadataPigeon(
+      bitrate: result[0] as int?,
+    );
+  }
+}
+
+/// The ABR strategy configuration: type + optional metadata.
+class AbrStrategyConfigurationPigeon {
+  AbrStrategyConfigurationPigeon({
+    required this.type,
+    this.metadata,
+  });
+
+  AbrStrategyTypePigeon type;
+
+  AbrStrategyMetadataPigeon? metadata;
+
+  Object encode() {
+    return <Object?>[
+      type,
+      metadata,
+    ];
+  }
+
+  static AbrStrategyConfigurationPigeon decode(Object result) {
+    result as List<Object?>;
+    return AbrStrategyConfigurationPigeon(
+      type: result[0]! as AbrStrategyTypePigeon,
+      metadata: result[1] as AbrStrategyMetadataPigeon?,
+    );
+  }
+}
+
+/// A single debug flag with its metadata and current state.
+class DebugFlagPigeon {
+  DebugFlagPigeon({
+    required this.key,
+    required this.description,
+    required this.defaultValue,
+    required this.isEnabled,
+  });
+
+  String key;
+
+  String description;
+
+  bool defaultValue;
+
+  bool isEnabled;
+
+  Object encode() {
+    return <Object?>[
+      key,
+      description,
+      defaultValue,
+      isEnabled,
+    ];
+  }
+
+  static DebugFlagPigeon decode(Object result) {
+    result as List<Object?>;
+    return DebugFlagPigeon(
+      key: result[0]! as String,
+      description: result[1]! as String,
+      defaultValue: result[2]! as bool,
+      isEnabled: result[3]! as bool,
+    );
+  }
+}
+
 
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
@@ -327,26 +456,41 @@ class _PigeonCodec extends StandardMessageCodec {
     }    else if (value is SourceIntegrationId) {
       buffer.putUint8(134);
       writeValue(buffer, value.index);
-    }    else if (value is TimeRange) {
+    }    else if (value is AbrStrategyTypePigeon) {
       buffer.putUint8(135);
-      writeValue(buffer, value.encode());
-    }    else if (value is SourceDescription) {
+      writeValue(buffer, value.index);
+    }    else if (value is TimeRange) {
       buffer.putUint8(136);
       writeValue(buffer, value.encode());
-    }    else if (value is TypedSourcePigeon) {
+    }    else if (value is SourceDescription) {
       buffer.putUint8(137);
       writeValue(buffer, value.encode());
-    }    else if (value is DRMConfiguration) {
+    }    else if (value is TypedSourcePigeon) {
       buffer.putUint8(138);
       writeValue(buffer, value.encode());
-    }    else if (value is WidevineDRMConfiguration) {
+    }    else if (value is DRMConfiguration) {
       buffer.putUint8(139);
       writeValue(buffer, value.encode());
-    }    else if (value is FairPlayDRMConfiguration) {
+    }    else if (value is WidevineDRMConfiguration) {
       buffer.putUint8(140);
       writeValue(buffer, value.encode());
-    }    else if (value is Endpoint) {
+    }    else if (value is FairPlayDRMConfiguration) {
       buffer.putUint8(141);
+      writeValue(buffer, value.encode());
+    }    else if (value is HespLatencies) {
+      buffer.putUint8(142);
+      writeValue(buffer, value.encode());
+    }    else if (value is Endpoint) {
+      buffer.putUint8(143);
+      writeValue(buffer, value.encode());
+    }    else if (value is AbrStrategyMetadataPigeon) {
+      buffer.putUint8(144);
+      writeValue(buffer, value.encode());
+    }    else if (value is AbrStrategyConfigurationPigeon) {
+      buffer.putUint8(145);
+      writeValue(buffer, value.encode());
+    }    else if (value is DebugFlagPigeon) {
+      buffer.putUint8(146);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -375,19 +519,30 @@ class _PigeonCodec extends StandardMessageCodec {
         final int? value = readValue(buffer) as int?;
         return value == null ? null : SourceIntegrationId.values[value];
       case 135: 
-        return TimeRange.decode(readValue(buffer)!);
+        final int? value = readValue(buffer) as int?;
+        return value == null ? null : AbrStrategyTypePigeon.values[value];
       case 136: 
-        return SourceDescription.decode(readValue(buffer)!);
+        return TimeRange.decode(readValue(buffer)!);
       case 137: 
-        return TypedSourcePigeon.decode(readValue(buffer)!);
+        return SourceDescription.decode(readValue(buffer)!);
       case 138: 
-        return DRMConfiguration.decode(readValue(buffer)!);
+        return TypedSourcePigeon.decode(readValue(buffer)!);
       case 139: 
-        return WidevineDRMConfiguration.decode(readValue(buffer)!);
+        return DRMConfiguration.decode(readValue(buffer)!);
       case 140: 
-        return FairPlayDRMConfiguration.decode(readValue(buffer)!);
+        return WidevineDRMConfiguration.decode(readValue(buffer)!);
       case 141: 
+        return FairPlayDRMConfiguration.decode(readValue(buffer)!);
+      case 142: 
+        return HespLatencies.decode(readValue(buffer)!);
+      case 143: 
         return Endpoint.decode(readValue(buffer)!);
+      case 144: 
+        return AbrStrategyMetadataPigeon.decode(readValue(buffer)!);
+      case 145: 
+        return AbrStrategyConfigurationPigeon.decode(readValue(buffer)!);
+      case 146: 
+        return DebugFlagPigeon.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
     }
@@ -433,13 +588,15 @@ class THEOplayerNativeTextTracksAPI {
 abstract class THEOplayerFlutterTextTracksAPI {
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
 
-  void onAddTextTrack(String? id, int uid, String? label, String? language, String? kind, String? inBandMetadataTrackDispatchType, TextTrackReadyState readyState, TextTrackType type, String? source, bool isForced, TextTrackMode mode);
+  void onAddTextTrack(String? id, int uid, String? label, String? language, String? kind, String? inBandMetadataTrackDispatchType, TextTrackReadyState readyState, TextTrackType type, String? source, bool isForced, TextTrackMode mode, String? unlocalizedLabel);
 
   void onRemoveTextTrack(int uid);
 
   void onTextTrackListChange(int uid);
 
   void onTextTrackAddCue(int textTrackUid, String id, int uid, double startTime, double endTime, String content);
+
+  void onTextTrackAddDateRangeCue(int textTrackUid, String id, int uid, double startTime, double endTime, String? cueClass, double startDateMillis, double? endDateMillis, double? duration, double? plannedDuration, bool endOnNext, String? customAttributesJson);
 
   void onTextTrackRemoveCue(int textTrackUid, int cueUid);
 
@@ -491,8 +648,9 @@ abstract class THEOplayerFlutterTextTracksAPI {
           final TextTrackMode? arg_mode = (args[10] as TextTrackMode?);
           assert(arg_mode != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack was null, expected non-null TextTrackMode.');
+          final String? arg_unlocalizedLabel = (args[11] as String?);
           try {
-            api.onAddTextTrack(arg_id, arg_uid!, arg_label, arg_language, arg_kind, arg_inBandMetadataTrackDispatchType, arg_readyState!, arg_type!, arg_source, arg_isForced!, arg_mode!);
+            api.onAddTextTrack(arg_id, arg_uid!, arg_label, arg_language, arg_kind, arg_inBandMetadataTrackDispatchType, arg_readyState!, arg_type!, arg_source, arg_isForced!, arg_mode!, arg_unlocalizedLabel);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -583,6 +741,54 @@ abstract class THEOplayerFlutterTextTracksAPI {
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue was null, expected non-null String.');
           try {
             api.onTextTrackAddCue(arg_textTrackUid!, arg_id!, arg_uid!, arg_startTime!, arg_endTime!, arg_content!);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue$messageChannelSuffix', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        pigeonVar_channel.setMessageHandler(null);
+      } else {
+        pigeonVar_channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final int? arg_textTrackUid = (args[0] as int?);
+          assert(arg_textTrackUid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null int.');
+          final String? arg_id = (args[1] as String?);
+          assert(arg_id != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null String.');
+          final int? arg_uid = (args[2] as int?);
+          assert(arg_uid != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null int.');
+          final double? arg_startTime = (args[3] as double?);
+          assert(arg_startTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null double.');
+          final double? arg_endTime = (args[4] as double?);
+          assert(arg_endTime != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null double.');
+          final String? arg_cueClass = (args[5] as String?);
+          final double? arg_startDateMillis = (args[6] as double?);
+          assert(arg_startDateMillis != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null double.');
+          final double? arg_endDateMillis = (args[7] as double?);
+          final double? arg_duration = (args[8] as double?);
+          final double? arg_plannedDuration = (args[9] as double?);
+          final bool? arg_endOnNext = (args[10] as bool?);
+          assert(arg_endOnNext != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null bool.');
+          final String? arg_customAttributesJson = (args[11] as String?);
+          try {
+            api.onTextTrackAddDateRangeCue(arg_textTrackUid!, arg_id!, arg_uid!, arg_startTime!, arg_endTime!, arg_cueClass, arg_startDateMillis!, arg_endDateMillis, arg_duration, arg_plannedDuration, arg_endOnNext!, arg_customAttributesJson);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -875,6 +1081,50 @@ class THEOplayerNativeTHEOliveAPI {
       return;
     }
   }
+
+  Future<double?> currentLatency() async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeTHEOliveAPI.currentLatency$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return (pigeonVar_replyList[0] as double?);
+    }
+  }
+
+  Future<HespLatencies?> latencies() async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeTHEOliveAPI.latencies$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return (pigeonVar_replyList[0] as HespLatencies?);
+    }
+  }
 }
 
 abstract class THEOplayerFlutterTHEOliveAPI {
@@ -886,7 +1136,7 @@ abstract class THEOplayerFlutterTHEOliveAPI {
 
   void onDistributionOfflineEvent(String distributionId);
 
-  void onIntentToFallbackEvent();
+  void onIntentToFallbackEvent(String? errorCode, String? errorMessage);
 
   void onSeeking(double currentTime);
 
@@ -977,8 +1227,13 @@ abstract class THEOplayerFlutterTHEOliveAPI {
         pigeonVar_channel.setMessageHandler(null);
       } else {
         pigeonVar_channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onIntentToFallbackEvent was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final String? arg_errorCode = (args[0] as String?);
+          final String? arg_errorMessage = (args[1] as String?);
           try {
-            api.onIntentToFallbackEvent();
+            api.onIntentToFallbackEvent(arg_errorCode, arg_errorMessage);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -1037,6 +1292,174 @@ abstract class THEOplayerFlutterTHEOliveAPI {
           }
         });
       }
+    }
+  }
+}
+
+/// Host API: Dart → Native calls for ABR configuration.
+class THEOplayerNativeAbrAPI {
+  /// Constructor for [THEOplayerNativeAbrAPI].  The [binaryMessenger] named argument is
+  /// available for dependency injection.  If it is left null, the default
+  /// BinaryMessenger will be used which routes to the host platform.
+  THEOplayerNativeAbrAPI({BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
+      : pigeonVar_binaryMessenger = binaryMessenger,
+        pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+  final BinaryMessenger? pigeonVar_binaryMessenger;
+
+  static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
+
+  final String pigeonVar_messageChannelSuffix;
+
+  /// Get the current ABR strategy.
+  Future<AbrStrategyConfigurationPigeon> getAbrStrategy() async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.getAbrStrategy$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else if (pigeonVar_replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (pigeonVar_replyList[0] as AbrStrategyConfigurationPigeon?)!;
+    }
+  }
+
+  /// Set the ABR strategy.
+  Future<void> setAbrStrategy(AbrStrategyConfigurationPigeon config) async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.setAbrStrategy$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[config]) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
+  /// Get the target buffer in seconds.
+  Future<double> getTargetBuffer() async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.getTargetBuffer$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else if (pigeonVar_replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (pigeonVar_replyList[0] as double?)!;
+    }
+  }
+
+  /// Set the target buffer in seconds.
+  Future<void> setTargetBuffer(double value) async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.setTargetBuffer$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[value]) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
+  /// Get the preferred peak bitrate in bps (iOS only, returns 0 on other platforms).
+  Future<double> getPreferredPeakBitRate() async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.getPreferredPeakBitRate$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else if (pigeonVar_replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (pigeonVar_replyList[0] as double?)!;
+    }
+  }
+
+  /// Set the preferred peak bitrate in bps (iOS only, no-op on other platforms).
+  Future<void> setPreferredPeakBitRate(double value) async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.setPreferredPeakBitRate$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[value]) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return;
     }
   }
 }
@@ -1981,6 +2404,187 @@ class THEOplayerNativeAPI {
   }
 }
 
+/// Host API: Dart → Native calls for debug flag management.
+class THEOplayerNativeDebugFlagsAPI {
+  /// Constructor for [THEOplayerNativeDebugFlagsAPI].  The [binaryMessenger] named argument is
+  /// available for dependency injection.  If it is left null, the default
+  /// BinaryMessenger will be used which routes to the host platform.
+  THEOplayerNativeDebugFlagsAPI({BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
+      : pigeonVar_binaryMessenger = binaryMessenger,
+        pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+  final BinaryMessenger? pigeonVar_binaryMessenger;
+
+  static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
+
+  final String pigeonVar_messageChannelSuffix;
+
+  /// Returns all available debug flags with their current state.
+  Future<List<DebugFlagPigeon>> getAvailableFlags() async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.getAvailableFlags$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else if (pigeonVar_replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (pigeonVar_replyList[0] as List<Object?>?)!.cast<DebugFlagPigeon>();
+    }
+  }
+
+  /// Enable a flag by key.
+  Future<void> enableFlag(String key) async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.enableFlag$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[key]) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
+  /// Disable a flag by key.
+  Future<void> disableFlag(String key) async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.disableFlag$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[key]) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
+  /// Enable all flags.
+  Future<void> enableAll() async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.enableAll$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
+  /// Disable all flags.
+  Future<void> disableAll() async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.disableAll$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
+  /// Reset all flags to their compile-time defaults.
+  Future<void> resetAll() async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.resetAll$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
+  /// Enable OS log + file logging at runtime (iOS only, no-op on Android).
+  Future<void> enableFileLogging() async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.enableFileLogging$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+}
+
 abstract class THEOplayerFlutterAPI {
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
 
@@ -2668,9 +3272,9 @@ class THEOplayerNativeVideoTracksAPI {
 abstract class THEOplayerFlutterVideoTracksAPI {
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
 
-  void onAddVideoTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled);
+  void onAddVideoTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled, String? unlocalizedLabel);
 
-  void onVideoTrackAddQuality(int videoTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame);
+  void onVideoTrackAddQuality(int videoTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame, int? averageBandwidth, bool available);
 
   void onRemoveVideoTrack(int uid);
 
@@ -2680,7 +3284,7 @@ abstract class THEOplayerFlutterVideoTracksAPI {
 
   void onActiveQualityChange(int videoTrackUid, int qualityUid);
 
-  void onQualityUpdate(int videoTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame);
+  void onQualityUpdate(int videoTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame, int? averageBandwidth, bool available);
 
   static void setUp(THEOplayerFlutterVideoTracksAPI? api, {BinaryMessenger? binaryMessenger, String messageChannelSuffix = '',}) {
     messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
@@ -2705,8 +3309,9 @@ abstract class THEOplayerFlutterVideoTracksAPI {
           final bool? arg_isEnabled = (args[5] as bool?);
           assert(arg_isEnabled != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onAddVideoTrack was null, expected non-null bool.');
+          final String? arg_unlocalizedLabel = (args[6] as String?);
           try {
-            api.onAddVideoTrack(arg_id, arg_uid!, arg_label, arg_language, arg_kind, arg_isEnabled!);
+            api.onAddVideoTrack(arg_id, arg_uid!, arg_label, arg_language, arg_kind, arg_isEnabled!, arg_unlocalizedLabel);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -2753,8 +3358,12 @@ abstract class THEOplayerFlutterVideoTracksAPI {
           final double? arg_firstFrame = (args[9] as double?);
           assert(arg_firstFrame != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null double.');
+          final int? arg_averageBandwidth = (args[10] as int?);
+          final bool? arg_available = (args[11] as bool?);
+          assert(arg_available != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality was null, expected non-null bool.');
           try {
-            api.onVideoTrackAddQuality(arg_videoTrackUid!, arg_qualityId!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_width!, arg_height!, arg_frameRate!, arg_firstFrame!);
+            api.onVideoTrackAddQuality(arg_videoTrackUid!, arg_qualityId!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_width!, arg_height!, arg_frameRate!, arg_firstFrame!, arg_averageBandwidth, arg_available!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -2905,8 +3514,12 @@ abstract class THEOplayerFlutterVideoTracksAPI {
           final double? arg_firstFrame = (args[8] as double?);
           assert(arg_firstFrame != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null double.');
+          final int? arg_averageBandwidth = (args[9] as int?);
+          final bool? arg_available = (args[10] as bool?);
+          assert(arg_available != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate was null, expected non-null bool.');
           try {
-            api.onQualityUpdate(arg_videoTrackUid!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_width!, arg_height!, arg_frameRate!, arg_firstFrame!);
+            api.onQualityUpdate(arg_videoTrackUid!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_width!, arg_height!, arg_frameRate!, arg_firstFrame!, arg_averageBandwidth, arg_available!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -3002,9 +3615,9 @@ class THEOplayerNativeAudioTracksAPI {
 abstract class THEOplayerFlutterAudioTracksAPI {
   static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
 
-  void onAddAudioTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled);
+  void onAddAudioTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled, String? unlocalizedLabel);
 
-  void onAudioTrackAddQuality(int audioTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate);
+  void onAudioTrackAddQuality(int audioTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate, int? averageBandwidth, bool available);
 
   void onRemoveAudioTrack(int uid);
 
@@ -3014,7 +3627,7 @@ abstract class THEOplayerFlutterAudioTracksAPI {
 
   void onActiveQualityChange(int audioTrackUid, int qualityUid);
 
-  void onQualityUpdate(int audioTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate);
+  void onQualityUpdate(int audioTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate, int? averageBandwidth, bool available);
 
   static void setUp(THEOplayerFlutterAudioTracksAPI? api, {BinaryMessenger? binaryMessenger, String messageChannelSuffix = '',}) {
     messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
@@ -3039,8 +3652,9 @@ abstract class THEOplayerFlutterAudioTracksAPI {
           final bool? arg_isEnabled = (args[5] as bool?);
           assert(arg_isEnabled != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAddAudioTrack was null, expected non-null bool.');
+          final String? arg_unlocalizedLabel = (args[6] as String?);
           try {
-            api.onAddAudioTrack(arg_id, arg_uid!, arg_label, arg_language, arg_kind, arg_isEnabled!);
+            api.onAddAudioTrack(arg_id, arg_uid!, arg_label, arg_language, arg_kind, arg_isEnabled!, arg_unlocalizedLabel);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -3078,8 +3692,12 @@ abstract class THEOplayerFlutterAudioTracksAPI {
           final int? arg_audioSamplingRate = (args[6] as int?);
           assert(arg_audioSamplingRate != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null int.');
+          final int? arg_averageBandwidth = (args[7] as int?);
+          final bool? arg_available = (args[8] as bool?);
+          assert(arg_available != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality was null, expected non-null bool.');
           try {
-            api.onAudioTrackAddQuality(arg_audioTrackUid!, arg_qualityId!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_audioSamplingRate!);
+            api.onAudioTrackAddQuality(arg_audioTrackUid!, arg_qualityId!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_audioSamplingRate!, arg_averageBandwidth, arg_available!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
@@ -3221,8 +3839,12 @@ abstract class THEOplayerFlutterAudioTracksAPI {
           final int? arg_audioSamplingRate = (args[5] as int?);
           assert(arg_audioSamplingRate != null,
               'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null, expected non-null int.');
+          final int? arg_averageBandwidth = (args[6] as int?);
+          final bool? arg_available = (args[7] as bool?);
+          assert(arg_available != null,
+              'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate was null, expected non-null bool.');
           try {
-            api.onQualityUpdate(arg_audioTrackUid!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_audioSamplingRate!);
+            api.onQualityUpdate(arg_audioTrackUid!, arg_qualityUid!, arg_name, arg_bandwidth!, arg_codecs, arg_audioSamplingRate!, arg_averageBandwidth, arg_available!);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);

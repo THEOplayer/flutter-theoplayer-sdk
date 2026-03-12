@@ -16,19 +16,17 @@ class QualityChangeWidget extends StatefulWidget {
 }
 
 class _QualityChangeState extends State<QualityChangeWidget> {
-  int? audioID = -1;
-  int? videoID = -1;
+  AudioQuality? _activeAudioQuality;
+  VideoQuality? _activeVideoQuality;
 
   UniqueKey audioKey = UniqueKey();
   UniqueKey videoKey = UniqueKey();
-
-  bool dragging = false;
 
   void addAudioTrackListener(Event event) {
     var addEvent = event as AddAudioTrackEvent;
     print("addAudioTrack ${addEvent.track.uid}");
     for (var quality in addEvent.track.qualities) {
-      print("addAudioTrack quality ${quality.uid}");
+      print("addAudioTrack quality uid=${quality.uid} bw=${quality.bandwidth} name=${quality.name}");
     }
     addEvent.track.addEventListener(AudioTrackEventTypes.ACTIVEQUALITYCHANGED, activeAudioQualityListener);
   }
@@ -37,24 +35,25 @@ class _QualityChangeState extends State<QualityChangeWidget> {
     var addEvent = event as AddVideoTrackEvent;
     print("addVideoTrack ${addEvent.track.uid}");
     for (var quality in addEvent.track.qualities) {
-      print("addVideoTrack quality ${quality.uid}");
+      var vq = quality as VideoQuality;
+      print("addVideoTrack quality uid=${vq.uid} bw=${vq.bandwidth} ${vq.width}x${vq.height} name=${vq.name}");
     }
     addEvent.track.addEventListener(VideoTrackEventTypes.ACTIVEQUALITYCHANGED, activeVideoQualityListener);
   }
 
   void activeAudioQualityListener(Event event) {
-    var audioQualityChangeEvent = event as AudioActiveQualityChangedEvent;
-
+    var e = event as AudioActiveQualityChangedEvent;
+    print("activeAudioQuality changed: uid=${e.quality.uid} bw=${e.quality.bandwidth} name=${e.quality.name}");
     setState(() {
-      audioID = audioQualityChangeEvent.quality.uid;
+      _activeAudioQuality = e.quality;
     });
   }
 
   void activeVideoQualityListener(Event event) {
-    var videoQualityChangeEvent = event as VideoActiveQualityChangedEvent;
-
+    var e = event as VideoActiveQualityChangedEvent;
+    print("activeVideoQuality changed: uid=${e.quality.uid} bw=${e.quality.bandwidth} ${e.quality.width}x${e.quality.height} name=${e.quality.name}");
     setState(() {
-      videoID = videoQualityChangeEvent.quality.uid;
+      _activeVideoQuality = e.quality;
     });
   }
 
@@ -62,8 +61,8 @@ class _QualityChangeState extends State<QualityChangeWidget> {
   void initState() {
     super.initState();
 
-    audioID = widget.player.getAudioTracks().firstWhereOrNull((track) => track.isEnabled)?.activeQuality?.uid ?? -1;
-    videoID = widget.player.getVideoTracks().firstWhereOrNull((track) => track.isEnabled)?.activeQuality?.uid ?? -1;
+    _activeAudioQuality = widget.player.getAudioTracks().firstWhereOrNull((track) => track.isEnabled)?.activeQuality;
+    _activeVideoQuality = widget.player.getVideoTracks().firstWhereOrNull((track) => track.isEnabled)?.activeQuality;
 
     widget.player.getAudioTracks().addEventListener(AudioTracksEventTypes.ADDTRACK, addAudioTrackListener);
     widget.player.getVideoTracks().addEventListener(VideoTracksEventTypes.ADDTRACK, addVideoTrackListener);
@@ -82,42 +81,48 @@ class _QualityChangeState extends State<QualityChangeWidget> {
     super.dispose();
   }
 
+  String _formatBandwidth(int bw) {
+    if (bw >= 1000000) {
+      return '${(bw / 1000000).toStringAsFixed(1)} Mbps';
+    } else {
+      return '${(bw / 1000).toStringAsFixed(0)} kbps';
+    }
+  }
+
+  String _audioLabel() {
+    final q = _activeAudioQuality;
+    if (q == null) return 'AQ: –';
+    return 'AQ: ${_formatBandwidth(q.bandwidth)}';
+  }
+
+  String _videoLabel() {
+    final q = _activeVideoQuality;
+    if (q == null) return 'VQ: –';
+    return 'VQ: ${_formatBandwidth(q.bandwidth)}';
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Row(children: [
-      Badge(
-        key: audioKey,
-        label: Text("$audioID"),
-        isLabelVisible: audioID != -1,
-        child: 
-          SizedBox(
-            child: 
-              Container(
-                padding: const EdgeInsets.all(6),
-                color: Colors.green,
-                child: const Text("AQ",         
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,),
-                ),
-              )
-          ),
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.black54,
+        borderRadius: BorderRadius.circular(4),
       ),
-      Container(width: 8,),
-      Badge(
-        key: videoKey,
-        label: Text("$videoID"),
-        isLabelVisible: videoID != -1,
-        child: 
-          SizedBox(
-            child: 
-              Container(
-                padding: const EdgeInsets.all(6),
-                color: Colors.blue,
-                child: const Text("VQ",         
-                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16,),
-                ),
-              )
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Text(
+            _videoLabel(),
+            style: const TextStyle(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold),
           ),
+          Text(
+            _audioLabel(),
+            style: const TextStyle(color: Colors.white70, fontSize: 10),
+          ),
+        ],
       ),
-    ],);
+    );
   }
 }

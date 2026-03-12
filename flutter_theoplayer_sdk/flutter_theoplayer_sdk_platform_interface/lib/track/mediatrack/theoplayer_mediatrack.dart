@@ -21,8 +21,6 @@ abstract class MediaTrack<Q extends Quality, L extends Qualities> extends Track 
   /// * If desired qualities are present, the Adaptive Bitrate mechanism of the player will limit itself to these qualities.
   /// * If one desired quality is present, the Adaptive Bitrate mechanism of the player will be disabled and the desired quality will be played back.
   ///
-  /// Limitations:
-  /// * Not available on iOS
   List<Q>? get targetQualities;
 
   set targetQuality(Q? targetQuality);
@@ -33,8 +31,6 @@ abstract class MediaTrack<Q extends Quality, L extends Qualities> extends Track 
   /// * If desired qualities are present, the Adaptive Bitrate mechanism of the player will limit itself to these qualities.
   /// * If one desired quality is present, the Adaptive Bitrate mechanism of the player will be disabled and the desired quality will be played back.
   ///
-  /// Limitations:
-  /// * Not available on iOS
   Q? get targetQuality;
 
   /// The active quality of the media track, i.e. the quality that is currently being played.
@@ -105,4 +101,13 @@ abstract class Quality implements EventDispatcher {
   int get bandwidth;
 
   String? get codecs;
+
+  /// The average bandwidth of the quality, in bits per second.
+  int? get averageBandwidth;
+
+  /// Whether the quality is available for playback.
+  ///
+  /// Remarks:
+  /// * A quality may be unavailable due to DRM restrictions.
+  bool get available;
 }

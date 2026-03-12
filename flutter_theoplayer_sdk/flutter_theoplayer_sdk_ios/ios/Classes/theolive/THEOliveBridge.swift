@@ -63,7 +63,8 @@ class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
         
         intentToFallbackListener = theoLive.addEventListener(type: THEOliveEventTypes.INTENT_TO_FALLBACK, listener: { [weak self] event in
             guard let welf = self else { return }
-            welf.flutterTHEOliveAPI.onIntentToFallbackEvent(completion: welf.emptyCompletion)
+            let reasonCode: String? = event.reason.map { String($0.code.rawValue) }
+            welf.flutterTHEOliveAPI.onIntentToFallbackEvent(errorCode: reasonCode, errorMessage: event.reason?.message, completion: welf.emptyCompletion)
         })
         
         seekingEventListener = theoLive.addEventListener(type: PlayerEventTypes.SEEKING, listener: { [weak self] event in
@@ -103,6 +104,26 @@ class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
     func preloadChannels(channelIds: [String]?) throws {
         if let channelIds = channelIds {
             theoLive.preloadPublications(publicationIds: channelIds)
+        }
+    }
+
+    func currentLatency(completion: @escaping (Result<Double?, Error>) -> Void) {
+        let latency = theoLive.currentLatency
+        completion(.success(latency))
+    }
+
+    func latencies(completion: @escaping (Result<HespLatencies?, Error>) -> Void) {
+        let nativeLatencies = theoLive.latencies
+        if let nativeLatencies = nativeLatencies {
+            let result = HespLatencies(
+                engineLatency: nativeLatencies.engineLatency,
+                distributionLatency: nativeLatencies.distributionLatency,
+                playerLatency: nativeLatencies.playerLatency,
+                theoliveLatency: nativeLatencies.theoliveLatency
+            )
+            completion(.success(result))
+        } else {
+            completion(.success(nil))
         }
     }
 }

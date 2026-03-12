@@ -1,5 +1,6 @@
 import 'dart:js_interop';
-import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
+import 'package:theoplayer_platform_interface/pigeon/apis.g.dart' hide HespLatencies;
+import 'package:theoplayer_platform_interface/theolive/theolive_api.dart';
 import 'package:theoplayer_platform_interface/theolive/theolive_events.dart';
 import 'package:theoplayer_platform_interface/theolive/theolive_internal_api.dart';
 import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
@@ -10,7 +11,6 @@ import 'package:theoplayer_web/theoplayer_api_web.dart';
 import 'package:theoplayer_web/theoplayer_js_helpers_web.dart';
 
 class THEOliveControllerWeb extends THEOliveInternalInterface {
-
   final THEOplayerTheoLiveApi _theoLiveApi;
   final EventManager _eventManager = EventManager();
 
@@ -23,16 +23,15 @@ class THEOliveControllerWeb extends THEOliveInternalInterface {
 
   THEOliveControllerWeb(this._theoLiveApi) {
     endpointLoadedEventListener = (EndpointLoadedEventJS event) {
-      _eventManager.dispatchEvent(EndpointLoadedEvent(endpoint:
-          Endpoint(
-            hespSrc: event.endpoint.hespSrc,
-            hlsSrc: event.endpoint.hlsSrc,
-            adSrc: event.endpoint.adSrc,
-            cdn: event.endpoint.adSrc,
-            weight: event.endpoint.weight.toDouble(),
-            priority: event.endpoint.priority,
-          )
-      ));
+      _eventManager.dispatchEvent(EndpointLoadedEvent(
+          endpoint: Endpoint(
+        hespSrc: event.endpoint.hespSrc,
+        hlsSrc: event.endpoint.hlsSrc,
+        adSrc: event.endpoint.adSrc,
+        cdn: event.endpoint.adSrc,
+        weight: event.endpoint.weight.toDouble(),
+        priority: event.endpoint.priority,
+      )));
     }.toJS;
 
     distributionLoadStartEventListener = (DistributionLoadStartEventJS event) {
@@ -44,7 +43,9 @@ class THEOliveControllerWeb extends THEOliveInternalInterface {
     }.toJS;
 
     intentToFallbackEventListener = (IntentToFallbackEventJS event) {
-      _eventManager.dispatchEvent(IntentToFallbackEvent());
+      final jsReason = event.reason;
+      final reason = jsReason != null ? PlayerError(errorCode: jsReason.code ?? '', errorMessage: jsReason.message ?? '') : null;
+      _eventManager.dispatchEvent(IntentToFallbackEvent(reason: reason));
     }.toJS;
 
     enterBadNetworkModeEventListener = (EnterBadNetworkModeEventJS event) {
@@ -61,6 +62,23 @@ class THEOliveControllerWeb extends THEOliveInternalInterface {
     _theoLiveApi.addEventListener(THEOliveApiEventTypes.INTENTTOFALLBACK.toLowerCase(), intentToFallbackEventListener);
     _theoLiveApi.addEventListener(THEOliveApiEventTypes.ENTERBADNETWORKMODE.toLowerCase(), enterBadNetworkModeEventListener);
     _theoLiveApi.addEventListener(THEOliveApiEventTypes.EXITBADNETWORKMODE.toLowerCase(), exitBadNetworkModeEventListener);
+  }
+
+  @override
+  Future<double?> get currentLatency async {
+    return _theoLiveApi.currentLatency?.toDartDouble;
+  }
+
+  @override
+  Future<HespLatencies?> get latencies async {
+    final jsLatencies = _theoLiveApi.latencies;
+    if (jsLatencies == null) return null;
+    return HespLatencies(
+      engineLatency: jsLatencies.engineLatency?.toDartDouble,
+      distributionLatency: jsLatencies.distributionLatency?.toDartDouble,
+      playerLatency: jsLatencies.playerLatency?.toDartDouble,
+      theoliveLatency: jsLatencies.theoliveLatency?.toDartDouble,
+    );
   }
 
   @override
@@ -98,5 +116,4 @@ class THEOliveControllerWeb extends THEOliveInternalInterface {
     _theoLiveApi.removeEventListener(THEOliveApiEventTypes.ENTERBADNETWORKMODE.toLowerCase(), enterBadNetworkModeEventListener);
     _theoLiveApi.removeEventListener(THEOliveApiEventTypes.EXITBADNETWORKMODE.toLowerCase(), exitBadNetworkModeEventListener);
   }
-
 }

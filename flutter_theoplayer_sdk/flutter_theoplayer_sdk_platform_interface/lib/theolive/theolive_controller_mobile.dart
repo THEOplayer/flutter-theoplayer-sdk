@@ -1,15 +1,16 @@
 import 'package:flutter/foundation.dart';
 import 'package:theoplayer_platform_interface/helpers/logger.dart';
-import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
+import 'package:theoplayer_platform_interface/pigeon/apis.g.dart' hide HespLatencies;
+import 'package:theoplayer_platform_interface/pigeon/apis.g.dart' as pigeon show HespLatencies;
 import 'package:theoplayer_platform_interface/pigeon_binary_messenger_wrapper.dart';
 import 'package:theoplayer_platform_interface/theolive/theolive_events.dart';
+import 'package:theoplayer_platform_interface/theolive/theolive_api.dart';
 import 'package:theoplayer_platform_interface/theolive/theolive_internal_api.dart';
 import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
 import 'package:theoplayer_platform_interface/theoplayer_event_manager.dart';
 import 'package:theoplayer_platform_interface/theoplayer_events.dart';
 
 class THEOplayerTHEOliveControllerMobile extends THEOliveInternalInterface implements THEOplayerFlutterTHEOliveAPI {
-
   late final PigeonBinaryMessengerWrapper _pigeonMessenger;
   late final THEOplayerNativeTHEOliveAPI _nativeTHEOliveAPI;
   final EventManager _eventManager = EventManager();
@@ -51,11 +52,29 @@ class THEOplayerTHEOliveControllerMobile extends THEOliveInternalInterface imple
     _nativeTHEOliveAPI.preloadChannels(channelIDs);
   }
 
-  // THEOplayerFlutterTHEOliveAPI methods
-  
   @override
-  void onIntentToFallbackEvent() {
-    _eventManager.dispatchEvent(IntentToFallbackEvent());
+  Future<double?> get currentLatency async {
+    return _nativeTHEOliveAPI.currentLatency();
+  }
+
+  @override
+  Future<HespLatencies?> get latencies async {
+    final pigeonResult = await _nativeTHEOliveAPI.latencies();
+    if (pigeonResult == null) return null;
+    return HespLatencies(
+      engineLatency: pigeonResult.engineLatency,
+      distributionLatency: pigeonResult.distributionLatency,
+      playerLatency: pigeonResult.playerLatency,
+      theoliveLatency: pigeonResult.theoliveLatency,
+    );
+  }
+
+  // THEOplayerFlutterTHEOliveAPI methods
+
+  @override
+  void onIntentToFallbackEvent(String? errorCode, String? errorMessage) {
+    final reason = (errorCode != null || errorMessage != null) ? PlayerError(errorCode: errorCode ?? '', errorMessage: errorMessage ?? '') : null;
+    _eventManager.dispatchEvent(IntentToFallbackEvent(reason: reason));
   }
 
   @override
@@ -68,7 +87,7 @@ class THEOplayerTHEOliveControllerMobile extends THEOliveInternalInterface imple
     _eventManager.dispatchEvent(DistributionLoadStartEvent(distributionId: distributionId));
   }
 
-@override
+  @override
   void onEndpointLoadedEvent(Endpoint endpoint) {
     _eventManager.dispatchEvent(EndpointLoadedEvent(endpoint: endpoint));
   }

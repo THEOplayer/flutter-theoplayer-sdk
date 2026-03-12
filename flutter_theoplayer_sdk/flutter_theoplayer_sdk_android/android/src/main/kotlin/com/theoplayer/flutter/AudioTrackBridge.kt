@@ -38,6 +38,7 @@ class AudioTrackBridge(
             it.track.language,
             it.track.kind,
             it.track.isEnabled,
+            null,
             emptyCallback
         )
 
@@ -50,6 +51,8 @@ class AudioTrackBridge(
                 quality.bandwidth,
                 quality.codecs,
                 quality.audioSamplingRate,
+                null,
+                true,
                 emptyCallback
             )
         }
@@ -87,6 +90,8 @@ class AudioTrackBridge(
             quality.bandwidth,
             quality.codecs,
             quality.audioSamplingRate,
+            null,
+            true,
             emptyCallback
         )
     }

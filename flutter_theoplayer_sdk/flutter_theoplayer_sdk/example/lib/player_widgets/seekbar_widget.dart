@@ -6,11 +6,7 @@ class SeekbarWidget extends StatefulWidget {
   //this triggers underlying seek on the player ---> can show the new frame where you drag
   final bool seekWhileDragging;
 
-  const SeekbarWidget({
-    super.key,
-    required this.player,
-    this.seekWhileDragging = false
-  });
+  const SeekbarWidget({super.key, required this.player, this.seekWhileDragging = false});
 
   final THEOplayer player;
 
@@ -62,9 +58,9 @@ class _SeekbarWidgetWidgetState extends State<SeekbarWidget> {
   @override
   Widget build(BuildContext context) {
     return Slider(
-      value: position,
+      value: position.clamp(0, duration > 0 ? duration : 1),
       min: 0,
-      max: duration,
+      max: duration > 0 ? duration : 1,
       activeColor: theoYellow,
       label: "${position.round()}",
       onChanged: (newPosition) {

@@ -19,5 +19,4 @@ abstract final class PlatformHelperChannels {
   static const MethodChannel players = MethodChannel(
     'com.theoplayer.global/players',
   );
-
 }

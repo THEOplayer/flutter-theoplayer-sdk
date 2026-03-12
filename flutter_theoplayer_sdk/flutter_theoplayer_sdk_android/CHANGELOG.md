@@ -1,3 +1,9 @@
+## 10.12.0
+
+* Updated THEOplayer to 10.12.0.
+* Added `AbrStrategyConfiguration` API to configure initial ABR selection on `player.abr`.
+* Added `DebugFlags` API to help debugging underlying native SDK issues via `player.debugFlags` and `player.showDebugPanel(context)`
+
 ## 10.6.1
 
 * Updated THEOplayer to 10.6.1.

@@ -129,6 +129,19 @@ enum class SourceIntegrationId(val raw: Int) {
   }
 }
 
+/** The adaptive bitrate strategy type. */
+enum class AbrStrategyTypePigeon(val raw: Int) {
+  PERFORMANCE(0),
+  QUALITY(1),
+  BANDWIDTH(2);
+
+  companion object {
+    fun ofRaw(raw: Int): AbrStrategyTypePigeon? {
+      return values().firstOrNull { it.raw == raw }
+    }
+  }
+}
+
 /** Generated class from Pigeon that represents data sent in messages. */
 data class TimeRange (
   val start: Double,
@@ -279,6 +292,33 @@ data class FairPlayDRMConfiguration (
 }
 
 /** Generated class from Pigeon that represents data sent in messages. */
+data class HespLatencies (
+  val engineLatency: Double? = null,
+  val distributionLatency: Double? = null,
+  val playerLatency: Double? = null,
+  val theoliveLatency: Double? = null
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): HespLatencies {
+      val engineLatency = pigeonVar_list[0] as Double?
+      val distributionLatency = pigeonVar_list[1] as Double?
+      val playerLatency = pigeonVar_list[2] as Double?
+      val theoliveLatency = pigeonVar_list[3] as Double?
+      return HespLatencies(engineLatency, distributionLatency, playerLatency, theoliveLatency)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      engineLatency,
+      distributionLatency,
+      playerLatency,
+      theoliveLatency,
+    )
+  }
+}
+
+/** Generated class from Pigeon that represents data sent in messages. */
 data class Endpoint (
   val hespSrc: String? = null,
   val hlsSrc: String? = null,
@@ -307,6 +347,84 @@ data class Endpoint (
       adSrc,
       weight,
       priority,
+    )
+  }
+}
+
+/**
+ * Metadata for the ABR strategy (e.g. initial bitrate cap).
+ *
+ * Generated class from Pigeon that represents data sent in messages.
+ */
+data class AbrStrategyMetadataPigeon (
+  val bitrate: Long? = null
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): AbrStrategyMetadataPigeon {
+      val bitrate = pigeonVar_list[0] as Long?
+      return AbrStrategyMetadataPigeon(bitrate)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      bitrate,
+    )
+  }
+}
+
+/**
+ * The ABR strategy configuration: type + optional metadata.
+ *
+ * Generated class from Pigeon that represents data sent in messages.
+ */
+data class AbrStrategyConfigurationPigeon (
+  val type: AbrStrategyTypePigeon,
+  val metadata: AbrStrategyMetadataPigeon? = null
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): AbrStrategyConfigurationPigeon {
+      val type = pigeonVar_list[0] as AbrStrategyTypePigeon
+      val metadata = pigeonVar_list[1] as AbrStrategyMetadataPigeon?
+      return AbrStrategyConfigurationPigeon(type, metadata)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      type,
+      metadata,
+    )
+  }
+}
+
+/**
+ * A single debug flag with its metadata and current state.
+ *
+ * Generated class from Pigeon that represents data sent in messages.
+ */
+data class DebugFlagPigeon (
+  val key: String,
+  val description: String,
+  val defaultValue: Boolean,
+  val isEnabled: Boolean
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): DebugFlagPigeon {
+      val key = pigeonVar_list[0] as String
+      val description = pigeonVar_list[1] as String
+      val defaultValue = pigeonVar_list[2] as Boolean
+      val isEnabled = pigeonVar_list[3] as Boolean
+      return DebugFlagPigeon(key, description, defaultValue, isEnabled)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      key,
+      description,
+      defaultValue,
+      isEnabled,
     )
   }
 }
@@ -344,38 +462,63 @@ private open class APIsPigeonCodec : StandardMessageCodec() {
         }
       }
       135.toByte() -> {
-        return (readValue(buffer) as? List<Any?>)?.let {
-          TimeRange.fromList(it)
+        return (readValue(buffer) as Long?)?.let {
+          AbrStrategyTypePigeon.ofRaw(it.toInt())
         }
       }
       136.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          SourceDescription.fromList(it)
+          TimeRange.fromList(it)
         }
       }
       137.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          TypedSourcePigeon.fromList(it)
+          SourceDescription.fromList(it)
         }
       }
       138.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          DRMConfiguration.fromList(it)
+          TypedSourcePigeon.fromList(it)
         }
       }
       139.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          WidevineDRMConfiguration.fromList(it)
+          DRMConfiguration.fromList(it)
         }
       }
       140.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          FairPlayDRMConfiguration.fromList(it)
+          WidevineDRMConfiguration.fromList(it)
         }
       }
       141.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
+          FairPlayDRMConfiguration.fromList(it)
+        }
+      }
+      142.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          HespLatencies.fromList(it)
+        }
+      }
+      143.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
           Endpoint.fromList(it)
+        }
+      }
+      144.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          AbrStrategyMetadataPigeon.fromList(it)
+        }
+      }
+      145.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          AbrStrategyConfigurationPigeon.fromList(it)
+        }
+      }
+      146.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          DebugFlagPigeon.fromList(it)
         }
       }
       else -> super.readValueOfType(type, buffer)
@@ -407,38 +550,59 @@ private open class APIsPigeonCodec : StandardMessageCodec() {
         stream.write(134)
         writeValue(stream, value.raw)
       }
-      is TimeRange -> {
+      is AbrStrategyTypePigeon -> {
         stream.write(135)
-        writeValue(stream, value.toList())
+        writeValue(stream, value.raw)
       }
-      is SourceDescription -> {
+      is TimeRange -> {
         stream.write(136)
         writeValue(stream, value.toList())
       }
-      is TypedSourcePigeon -> {
+      is SourceDescription -> {
         stream.write(137)
         writeValue(stream, value.toList())
       }
-      is DRMConfiguration -> {
+      is TypedSourcePigeon -> {
         stream.write(138)
         writeValue(stream, value.toList())
       }
-      is WidevineDRMConfiguration -> {
+      is DRMConfiguration -> {
         stream.write(139)
         writeValue(stream, value.toList())
       }
-      is FairPlayDRMConfiguration -> {
+      is WidevineDRMConfiguration -> {
         stream.write(140)
         writeValue(stream, value.toList())
       }
-      is Endpoint -> {
+      is FairPlayDRMConfiguration -> {
         stream.write(141)
+        writeValue(stream, value.toList())
+      }
+      is HespLatencies -> {
+        stream.write(142)
+        writeValue(stream, value.toList())
+      }
+      is Endpoint -> {
+        stream.write(143)
+        writeValue(stream, value.toList())
+      }
+      is AbrStrategyMetadataPigeon -> {
+        stream.write(144)
+        writeValue(stream, value.toList())
+      }
+      is AbrStrategyConfigurationPigeon -> {
+        stream.write(145)
+        writeValue(stream, value.toList())
+      }
+      is DebugFlagPigeon -> {
+        stream.write(146)
         writeValue(stream, value.toList())
       }
       else -> super.writeValue(stream, value)
     }
   }
 }
+
 
 /** Generated interface from Pigeon that represents a handler of messages from Flutter. */
 interface THEOplayerNativeTextTracksAPI {
@@ -483,12 +647,12 @@ class THEOplayerFlutterTextTracksAPI(private val binaryMessenger: BinaryMessenge
       APIsPigeonCodec()
     }
   }
-  fun onAddTextTrack(idArg: String?, uidArg: Long, labelArg: String?, languageArg: String?, kindArg: String?, inBandMetadataTrackDispatchTypeArg: String?, readyStateArg: TextTrackReadyState, typeArg: TextTrackType, sourceArg: String?, isForcedArg: Boolean, modeArg: TextTrackMode, callback: (Result<Unit>) -> Unit)
+  fun onAddTextTrack(idArg: String?, uidArg: Long, labelArg: String?, languageArg: String?, kindArg: String?, inBandMetadataTrackDispatchTypeArg: String?, readyStateArg: TextTrackReadyState, typeArg: TextTrackType, sourceArg: String?, isForcedArg: Boolean, modeArg: TextTrackMode, unlocalizedLabelArg: String?, callback: (Result<Unit>) -> Unit)
 {
     val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
     val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onAddTextTrack$separatedMessageChannelSuffix"
     val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
-    channel.send(listOf(idArg, uidArg, labelArg, languageArg, kindArg, inBandMetadataTrackDispatchTypeArg, readyStateArg, typeArg, sourceArg, isForcedArg, modeArg)) {
+    channel.send(listOf(idArg, uidArg, labelArg, languageArg, kindArg, inBandMetadataTrackDispatchTypeArg, readyStateArg, typeArg, sourceArg, isForcedArg, modeArg, unlocalizedLabelArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
@@ -540,6 +704,23 @@ class THEOplayerFlutterTextTracksAPI(private val binaryMessenger: BinaryMessenge
     val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddCue$separatedMessageChannelSuffix"
     val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
     channel.send(listOf(textTrackUidArg, idArg, uidArg, startTimeArg, endTimeArg, contentArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
+        } else {
+          callback(Result.success(Unit))
+        }
+      } else {
+        callback(Result.failure(createConnectionError(channelName)))
+      } 
+    }
+  }
+  fun onTextTrackAddDateRangeCue(textTrackUidArg: Long, idArg: String, uidArg: Long, startTimeArg: Double, endTimeArg: Double, cueClassArg: String?, startDateMillisArg: Double, endDateMillisArg: Double?, durationArg: Double?, plannedDurationArg: Double?, endOnNextArg: Boolean, customAttributesJsonArg: String?, callback: (Result<Unit>) -> Unit)
+{
+    val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
+    val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue$separatedMessageChannelSuffix"
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
+    channel.send(listOf(textTrackUidArg, idArg, uidArg, startTimeArg, endTimeArg, cueClassArg, startDateMillisArg, endDateMillisArg, durationArg, plannedDurationArg, endOnNextArg, customAttributesJsonArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
@@ -692,6 +873,8 @@ class THEOplayerFlutterTextTracksAPI(private val binaryMessenger: BinaryMessenge
 interface THEOplayerNativeTHEOliveAPI {
   fun goLive()
   fun preloadChannels(channelIds: List<String>?)
+  fun currentLatency(callback: (Result<Double?>) -> Unit)
+  fun latencies(callback: (Result<HespLatencies?>) -> Unit)
 
   companion object {
     /** The codec used by THEOplayerNativeTHEOliveAPI. */
@@ -731,6 +914,42 @@ interface THEOplayerNativeTHEOliveAPI {
               wrapError(exception)
             }
             reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeTHEOliveAPI.currentLatency$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            api.currentLatency{ result: Result<Double?> ->
+              val error = result.exceptionOrNull()
+              if (error != null) {
+                reply.reply(wrapError(error))
+              } else {
+                val data = result.getOrNull()
+                reply.reply(wrapResult(data))
+              }
+            }
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeTHEOliveAPI.latencies$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            api.latencies{ result: Result<HespLatencies?> ->
+              val error = result.exceptionOrNull()
+              if (error != null) {
+                reply.reply(wrapError(error))
+              } else {
+                val data = result.getOrNull()
+                reply.reply(wrapResult(data))
+              }
+            }
           }
         } else {
           channel.setMessageHandler(null)
@@ -798,12 +1017,12 @@ class THEOplayerFlutterTHEOliveAPI(private val binaryMessenger: BinaryMessenger,
       } 
     }
   }
-  fun onIntentToFallbackEvent(callback: (Result<Unit>) -> Unit)
+  fun onIntentToFallbackEvent(errorCodeArg: String?, errorMessageArg: String?, callback: (Result<Unit>) -> Unit)
 {
     val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
     val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTHEOliveAPI.onIntentToFallbackEvent$separatedMessageChannelSuffix"
     val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
-    channel.send(null) {
+    channel.send(listOf(errorCodeArg, errorMessageArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
@@ -847,6 +1066,136 @@ class THEOplayerFlutterTHEOliveAPI(private val binaryMessenger: BinaryMessenger,
       } else {
         callback(Result.failure(createConnectionError(channelName)))
       } 
+    }
+  }
+}
+/**
+ * Host API: Dart → Native calls for ABR configuration.
+ *
+ * Generated interface from Pigeon that represents a handler of messages from Flutter.
+ */
+interface THEOplayerNativeAbrAPI {
+  /** Get the current ABR strategy. */
+  fun getAbrStrategy(): AbrStrategyConfigurationPigeon
+  /** Set the ABR strategy. */
+  fun setAbrStrategy(config: AbrStrategyConfigurationPigeon)
+  /** Get the target buffer in seconds. */
+  fun getTargetBuffer(): Double
+  /** Set the target buffer in seconds. */
+  fun setTargetBuffer(value: Double)
+  /** Get the preferred peak bitrate in bps (iOS only, returns 0 on other platforms). */
+  fun getPreferredPeakBitRate(): Double
+  /** Set the preferred peak bitrate in bps (iOS only, no-op on other platforms). */
+  fun setPreferredPeakBitRate(value: Double)
+
+  companion object {
+    /** The codec used by THEOplayerNativeAbrAPI. */
+    val codec: MessageCodec<Any?> by lazy {
+      APIsPigeonCodec()
+    }
+    /** Sets up an instance of `THEOplayerNativeAbrAPI` to handle messages through the `binaryMessenger`. */
+    @JvmOverloads
+    fun setUp(binaryMessenger: BinaryMessenger, api: THEOplayerNativeAbrAPI?, messageChannelSuffix: String = "") {
+      val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.getAbrStrategy$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              listOf(api.getAbrStrategy())
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.setAbrStrategy$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val configArg = args[0] as AbrStrategyConfigurationPigeon
+            val wrapped: List<Any?> = try {
+              api.setAbrStrategy(configArg)
+              listOf(null)
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.getTargetBuffer$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              listOf(api.getTargetBuffer())
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.setTargetBuffer$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val valueArg = args[0] as Double
+            val wrapped: List<Any?> = try {
+              api.setTargetBuffer(valueArg)
+              listOf(null)
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.getPreferredPeakBitRate$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              listOf(api.getPreferredPeakBitRate())
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.setPreferredPeakBitRate$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val valueArg = args[0] as Double
+            val wrapped: List<Any?> = try {
+              api.setPreferredPeakBitRate(valueArg)
+              listOf(null)
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
     }
   }
 }
@@ -1514,6 +1863,154 @@ interface THEOplayerNativeAPI {
     }
   }
 }
+/**
+ * Host API: Dart → Native calls for debug flag management.
+ *
+ * Generated interface from Pigeon that represents a handler of messages from Flutter.
+ */
+interface THEOplayerNativeDebugFlagsAPI {
+  /** Returns all available debug flags with their current state. */
+  fun getAvailableFlags(): List<DebugFlagPigeon>
+  /** Enable a flag by key. */
+  fun enableFlag(key: String)
+  /** Disable a flag by key. */
+  fun disableFlag(key: String)
+  /** Enable all flags. */
+  fun enableAll()
+  /** Disable all flags. */
+  fun disableAll()
+  /** Reset all flags to their compile-time defaults. */
+  fun resetAll()
+  /** Enable OS log + file logging at runtime (iOS only, no-op on Android). */
+  fun enableFileLogging()
+
+  companion object {
+    /** The codec used by THEOplayerNativeDebugFlagsAPI. */
+    val codec: MessageCodec<Any?> by lazy {
+      APIsPigeonCodec()
+    }
+    /** Sets up an instance of `THEOplayerNativeDebugFlagsAPI` to handle messages through the `binaryMessenger`. */
+    @JvmOverloads
+    fun setUp(binaryMessenger: BinaryMessenger, api: THEOplayerNativeDebugFlagsAPI?, messageChannelSuffix: String = "") {
+      val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.getAvailableFlags$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              listOf(api.getAvailableFlags())
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.enableFlag$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val keyArg = args[0] as String
+            val wrapped: List<Any?> = try {
+              api.enableFlag(keyArg)
+              listOf(null)
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.disableFlag$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val keyArg = args[0] as String
+            val wrapped: List<Any?> = try {
+              api.disableFlag(keyArg)
+              listOf(null)
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.enableAll$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              api.enableAll()
+              listOf(null)
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.disableAll$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              api.disableAll()
+              listOf(null)
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.resetAll$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              api.resetAll()
+              listOf(null)
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.enableFileLogging$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              api.enableFileLogging()
+              listOf(null)
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+    }
+  }
+}
 /** Generated class from Pigeon that represents Flutter messages that can be called from Kotlin. */
 class THEOplayerFlutterAPI(private val binaryMessenger: BinaryMessenger, private val messageChannelSuffix: String = "") {
   companion object {
@@ -1980,12 +2477,12 @@ class THEOplayerFlutterVideoTracksAPI(private val binaryMessenger: BinaryMesseng
       APIsPigeonCodec()
     }
   }
-  fun onAddVideoTrack(idArg: String?, uidArg: Long, labelArg: String?, languageArg: String?, kindArg: String?, isEnabledArg: Boolean, callback: (Result<Unit>) -> Unit)
+  fun onAddVideoTrack(idArg: String?, uidArg: Long, labelArg: String?, languageArg: String?, kindArg: String?, isEnabledArg: Boolean, unlocalizedLabelArg: String?, callback: (Result<Unit>) -> Unit)
 {
     val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
     val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onAddVideoTrack$separatedMessageChannelSuffix"
     val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
-    channel.send(listOf(idArg, uidArg, labelArg, languageArg, kindArg, isEnabledArg)) {
+    channel.send(listOf(idArg, uidArg, labelArg, languageArg, kindArg, isEnabledArg, unlocalizedLabelArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
@@ -1997,12 +2494,12 @@ class THEOplayerFlutterVideoTracksAPI(private val binaryMessenger: BinaryMesseng
       } 
     }
   }
-  fun onVideoTrackAddQuality(videoTrackUidArg: Long, qualityIdArg: String, qualityUidArg: Long, nameArg: String?, bandwidthArg: Long, codecsArg: String?, widthArg: Long, heightArg: Long, frameRateArg: Double, firstFrameArg: Double, callback: (Result<Unit>) -> Unit)
+  fun onVideoTrackAddQuality(videoTrackUidArg: Long, qualityIdArg: String, qualityUidArg: Long, nameArg: String?, bandwidthArg: Long, codecsArg: String?, widthArg: Long, heightArg: Long, frameRateArg: Double, firstFrameArg: Double, averageBandwidthArg: Long?, availableArg: Boolean, callback: (Result<Unit>) -> Unit)
 {
     val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
     val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onVideoTrackAddQuality$separatedMessageChannelSuffix"
     val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
-    channel.send(listOf(videoTrackUidArg, qualityIdArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, widthArg, heightArg, frameRateArg, firstFrameArg)) {
+    channel.send(listOf(videoTrackUidArg, qualityIdArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, widthArg, heightArg, frameRateArg, firstFrameArg, averageBandwidthArg, availableArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
@@ -2082,12 +2579,12 @@ class THEOplayerFlutterVideoTracksAPI(private val binaryMessenger: BinaryMesseng
       } 
     }
   }
-  fun onQualityUpdate(videoTrackUidArg: Long, qualityUidArg: Long, nameArg: String?, bandwidthArg: Long, codecsArg: String?, widthArg: Long, heightArg: Long, frameRateArg: Double, firstFrameArg: Double, callback: (Result<Unit>) -> Unit)
+  fun onQualityUpdate(videoTrackUidArg: Long, qualityUidArg: Long, nameArg: String?, bandwidthArg: Long, codecsArg: String?, widthArg: Long, heightArg: Long, frameRateArg: Double, firstFrameArg: Double, averageBandwidthArg: Long?, availableArg: Boolean, callback: (Result<Unit>) -> Unit)
 {
     val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
     val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterVideoTracksAPI.onQualityUpdate$separatedMessageChannelSuffix"
     val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
-    channel.send(listOf(videoTrackUidArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, widthArg, heightArg, frameRateArg, firstFrameArg)) {
+    channel.send(listOf(videoTrackUidArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, widthArg, heightArg, frameRateArg, firstFrameArg, averageBandwidthArg, availableArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
@@ -2183,12 +2680,12 @@ class THEOplayerFlutterAudioTracksAPI(private val binaryMessenger: BinaryMesseng
       APIsPigeonCodec()
     }
   }
-  fun onAddAudioTrack(idArg: String?, uidArg: Long, labelArg: String?, languageArg: String?, kindArg: String?, isEnabledArg: Boolean, callback: (Result<Unit>) -> Unit)
+  fun onAddAudioTrack(idArg: String?, uidArg: Long, labelArg: String?, languageArg: String?, kindArg: String?, isEnabledArg: Boolean, unlocalizedLabelArg: String?, callback: (Result<Unit>) -> Unit)
 {
     val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
     val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAddAudioTrack$separatedMessageChannelSuffix"
     val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
-    channel.send(listOf(idArg, uidArg, labelArg, languageArg, kindArg, isEnabledArg)) {
+    channel.send(listOf(idArg, uidArg, labelArg, languageArg, kindArg, isEnabledArg, unlocalizedLabelArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
@@ -2200,12 +2697,12 @@ class THEOplayerFlutterAudioTracksAPI(private val binaryMessenger: BinaryMesseng
       } 
     }
   }
-  fun onAudioTrackAddQuality(audioTrackUidArg: Long, qualityIdArg: String, qualityUidArg: Long, nameArg: String?, bandwidthArg: Long, codecsArg: String?, audioSamplingRateArg: Long, callback: (Result<Unit>) -> Unit)
+  fun onAudioTrackAddQuality(audioTrackUidArg: Long, qualityIdArg: String, qualityUidArg: Long, nameArg: String?, bandwidthArg: Long, codecsArg: String?, audioSamplingRateArg: Long, averageBandwidthArg: Long?, availableArg: Boolean, callback: (Result<Unit>) -> Unit)
 {
     val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
     val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onAudioTrackAddQuality$separatedMessageChannelSuffix"
     val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
-    channel.send(listOf(audioTrackUidArg, qualityIdArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, audioSamplingRateArg)) {
+    channel.send(listOf(audioTrackUidArg, qualityIdArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, audioSamplingRateArg, averageBandwidthArg, availableArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
@@ -2285,12 +2782,12 @@ class THEOplayerFlutterAudioTracksAPI(private val binaryMessenger: BinaryMesseng
       } 
     }
   }
-  fun onQualityUpdate(audioTrackUidArg: Long, qualityUidArg: Long, nameArg: String?, bandwidthArg: Long, codecsArg: String?, audioSamplingRateArg: Long, callback: (Result<Unit>) -> Unit)
+  fun onQualityUpdate(audioTrackUidArg: Long, qualityUidArg: Long, nameArg: String?, bandwidthArg: Long, codecsArg: String?, audioSamplingRateArg: Long, averageBandwidthArg: Long?, availableArg: Boolean, callback: (Result<Unit>) -> Unit)
 {
     val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
     val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAudioTracksAPI.onQualityUpdate$separatedMessageChannelSuffix"
     val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
-    channel.send(listOf(audioTrackUidArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, audioSamplingRateArg)) {
+    channel.send(listOf(audioTrackUidArg, qualityUidArg, nameArg, bandwidthArg, codecsArg, audioSamplingRateArg, averageBandwidthArg, availableArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))

@@ -6,6 +6,8 @@
 // For more information about Flutter integration tests, please see
 // https://docs.flutter.dev/cookbook/testing/integration/introduction
 
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -27,6 +29,18 @@ void main() {
 
   //disabled for now only on WEB, we need to figure out the license
   if (!kIsWeb) {
+    // Latency tests are iOS-only for now: Android native SDK doesn't expose latency properties yet.
+    if (defaultTargetPlatform == TargetPlatform.iOS) {
+      testWidgets('Test latencies with HYBRID_COMPOSITION', (WidgetTester tester) async {
+        await runLatenciesTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
+      });
+
+      testWidgets('Test latencies with SURFACE_TEXTURE', (WidgetTester tester) async {
+        await runLatenciesTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
+      });
+    }
+
+
     testWidgets('Test basic THEOlive playback with HYBRID_COMPOSITION', (WidgetTester tester) async {
       await runBasicTHEOlivePlaybackTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
     });
@@ -35,12 +49,61 @@ void main() {
     testWidgets('Test basic THEOlive playback with SURFACE_TEXTURE', (WidgetTester tester) async {
       await runBasicTHEOlivePlaybackTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
     });
-  }
 
+    testWidgets('Test video track events with HYBRID_COMPOSITION', (WidgetTester tester) async {
+      await runVideoTrackEventsTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
+    });
+
+    testWidgets('Test video track events with SURFACE_TEXTURE', (WidgetTester tester) async {
+      await runVideoTrackEventsTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
+    });
+
+    testWidgets('Test audio track events with HYBRID_COMPOSITION', (WidgetTester tester) async {
+      await runAudioTrackEventsTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
+    });
+
+    testWidgets('Test audio track events with SURFACE_TEXTURE', (WidgetTester tester) async {
+      await runAudioTrackEventsTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
+    });
+
+    testWidgets('Test text track events with HYBRID_COMPOSITION', (WidgetTester tester) async {
+      await runTextTrackEventsTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
+    });
+
+    testWidgets('Test text track events with SURFACE_TEXTURE', (WidgetTester tester) async {
+      await runTextTrackEventsTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
+    });
+
+    testWidgets('Test quality properties with HYBRID_COMPOSITION', (WidgetTester tester) async {
+      await runQualityPropertiesTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
+    });
+
+    testWidgets('Test quality properties with SURFACE_TEXTURE', (WidgetTester tester) async {
+      await runQualityPropertiesTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
+    });
+
+    testWidgets('Test THEOlive ABR strategy performance with HYBRID_COMPOSITION', (WidgetTester tester) async {
+      await runTHEOliveAbrStrategyPerformanceTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
+    });
+
+    testWidgets('Test THEOlive ABR strategy performance with SURFACE_TEXTURE', (WidgetTester tester) async {
+      await runTHEOliveAbrStrategyPerformanceTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
+    });
+
+    testWidgets('Test THEOlive ABR strategy quality with HYBRID_COMPOSITION', (WidgetTester tester) async {
+      await runTHEOliveAbrStrategyQualityTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
+    });
+
+    testWidgets('Test THEOlive ABR strategy quality with SURFACE_TEXTURE', (WidgetTester tester) async {
+      await runTHEOliveAbrStrategyQualityTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
+    });
+  }
 }
 
 Future<void> runBasicPlaybackTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
-  TestApp app = TestApp(androidViewComposition: androidViewComposition,);
+  TestApp app = TestApp(
+    androidViewComposition: androidViewComposition,
+  );
   await tester.pumpWidget(app);
 
   final chromlessPlayerView = find.byKey(const Key('testChromelessPlayer'));
@@ -75,7 +138,9 @@ Future<void> runBasicPlaybackTest(WidgetTester tester, AndroidViewComposition an
 }
 
 Future<void> runBasicTHEOlivePlaybackTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
-  TestApp app = TestApp(androidViewComposition: androidViewComposition,);
+  TestApp app = TestApp(
+    androidViewComposition: androidViewComposition,
+  );
   await tester.pumpWidget(app);
 
   final chromlessPlayerView = find.byKey(const Key('testChromelessPlayer'));
@@ -110,4 +175,431 @@ Future<void> runBasicTHEOlivePlaybackTest(WidgetTester tester, AndroidViewCompos
 
   print("Testing playback currentTime():  ${player.getCurrentTime()}");
   expect(player.getCurrentTime() >= 0, isTrue);
+}
+
+Future<void> runVideoTrackEventsTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
+  TestApp app = TestApp(androidViewComposition: androidViewComposition);
+  await tester.pumpWidget(app);
+
+  final chromlessPlayerView = find.byKey(const Key('testChromelessPlayer'));
+  await tester.ensureVisible(chromlessPlayerView);
+  final player = (tester.firstElement(chromlessPlayerView).widget as ChromelessPlayerView).player;
+  await tester.pumpAndSettle();
+  await app.waitForPlayerReady();
+  await tester.pumpAndSettle();
+
+  expect(player.isInitialized, isTrue);
+
+  player.setMuted(true);
+  player.setAutoplay(true);
+
+  // Track events we expect to receive
+  final addTrackCompleter = Completer<AddVideoTrackEvent>();
+  final activeQualityChangedCompleter = Completer<VideoActiveQualityChangedEvent>();
+
+  player.videoTracks.addEventListener(VideoTracksEventTypes.ADDTRACK, (event) {
+    print("Received ADDTRACK event");
+    if (!addTrackCompleter.isCompleted) {
+      addTrackCompleter.complete(event as AddVideoTrackEvent);
+    }
+  });
+
+  print("Setting source for video track events test");
+  player.setSource(SourceDescription(sources: [
+    TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
+  ]));
+
+  await tester.pumpAndSettle(const Duration(seconds: 10));
+
+  // Verify ADDTRACK event was received
+  print("Testing ADDTRACK event received");
+  expect(addTrackCompleter.isCompleted, isTrue);
+  final addTrackEvent = addTrackCompleter.isCompleted ? addTrackCompleter.future : null;
+  if (addTrackEvent != null) {
+    final track = (await addTrackEvent).track;
+    print("Added track: id=${track.id}, label=${track.label}, kind=${track.kind}");
+    expect(track.id, isNotNull);
+
+    // Listen for active quality change on the track
+    track.addEventListener(VideoTrackEventTypes.ACTIVEQUALITYCHANGED, (event) {
+      print("Received ACTIVEQUALITYCHANGED event");
+      if (!activeQualityChangedCompleter.isCompleted) {
+        activeQualityChangedCompleter.complete(event as VideoActiveQualityChangedEvent);
+      }
+    });
+  }
+
+  // Verify video tracks are available
+  print("Testing videoTracks count: ${player.videoTracks.length}");
+  expect(player.videoTracks.length, greaterThan(0));
+
+  final firstTrack = player.videoTracks[0]; // Video has only one track right now
+  print("Testing first video track properties");
+  expect(firstTrack.id, isNotNull);
+  print("  id: ${firstTrack.id}, label: ${firstTrack.label}, kind: ${firstTrack.kind}, isEnabled: ${firstTrack.isEnabled}");
+
+  // Verify qualities are available
+  print("Testing video qualities count: ${firstTrack.qualities.length}");
+  expect(firstTrack.qualities.length, greaterThan(0));
+
+  final firstQuality = firstTrack.qualities[0];
+  print("  quality: ${firstQuality.width}x${firstQuality.height}, bandwidth: ${firstQuality.bandwidth}, codecs: ${firstQuality.codecs}");
+  expect(firstQuality.width, greaterThan(0));
+  expect(firstQuality.height, greaterThan(0));
+
+  // Wait a bit more for active quality to be reported
+  await tester.pumpAndSettle(const Duration(seconds: 5));
+
+  print("Testing activeQuality");
+  final activeQuality = firstTrack.activeQuality;
+  expect(activeQuality, isNotNull, reason: "activeQuality should be available after playback starts");
+  print("  activeQuality: ${activeQuality!.width}x${activeQuality.height}");
+  expect(activeQuality.width, greaterThan(0));
+  expect(activeQuality.height, greaterThan(0));
+}
+
+Future<void> runAudioTrackEventsTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
+  TestApp app = TestApp(androidViewComposition: androidViewComposition);
+  await tester.pumpWidget(app);
+
+  final chromlessPlayerView = find.byKey(const Key('testChromelessPlayer'));
+  await tester.ensureVisible(chromlessPlayerView);
+  final player = (tester.firstElement(chromlessPlayerView).widget as ChromelessPlayerView).player;
+  await tester.pumpAndSettle();
+  await app.waitForPlayerReady();
+  await tester.pumpAndSettle();
+
+  expect(player.isInitialized, isTrue);
+
+  player.setMuted(true);
+  player.setAutoplay(true);
+
+  final addTrackCompleter = Completer<AddAudioTrackEvent>();
+
+  player.audioTracks.addEventListener(AudioTracksEventTypes.ADDTRACK, (event) {
+    print("Received audio ADDTRACK event");
+    if (!addTrackCompleter.isCompleted) {
+      addTrackCompleter.complete(event as AddAudioTrackEvent);
+    }
+  });
+
+  print("Setting source for audio track events test");
+  player.setSource(SourceDescription(sources: [
+    TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
+  ]));
+
+  await tester.pumpAndSettle(const Duration(seconds: 10));
+
+  // Verify ADDTRACK event was received
+  print("Testing audio ADDTRACK event received");
+  expect(addTrackCompleter.isCompleted, isTrue);
+
+  // Verify audio tracks are available
+  print("Testing audioTracks count: ${player.audioTracks.length}");
+  expect(player.audioTracks.length, greaterThan(0));
+
+  final firstTrack = player.audioTracks[0];
+  print("Testing first audio track properties");
+  print("  id: ${firstTrack.id}, label: ${firstTrack.label}, kind: ${firstTrack.kind}, isEnabled: ${firstTrack.isEnabled}");
+  expect(firstTrack.id, isNotNull);
+
+  // Verify audio qualities are available (not supported on iOS)
+  final bool isIOS = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+  if (isIOS) {
+    print("Skipping audio qualities check on iOS (not supported)");
+  } else {
+    print("Testing audio qualities count: ${firstTrack.qualities.length}");
+    expect(firstTrack.qualities.length, greaterThan(0), reason: "Audio qualities should be available on ${kIsWeb ? 'Web' : 'Android'}");
+    final firstQuality = firstTrack.qualities[0];
+    print("  quality: bandwidth=${firstQuality.bandwidth}, audioSamplingRate=${firstQuality.audioSamplingRate}");
+    expect(firstQuality.bandwidth, greaterThan(0));
+  }
+}
+
+Future<void> runTextTrackEventsTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
+  TestApp app = TestApp(androidViewComposition: androidViewComposition);
+  await tester.pumpWidget(app);
+
+  final chromlessPlayerView = find.byKey(const Key('testChromelessPlayer'));
+  await tester.ensureVisible(chromlessPlayerView);
+  final player = (tester.firstElement(chromlessPlayerView).widget as ChromelessPlayerView).player;
+  await tester.pumpAndSettle();
+  await app.waitForPlayerReady();
+  await tester.pumpAndSettle();
+
+  expect(player.isInitialized, isTrue);
+
+  player.setMuted(true);
+  player.setAutoplay(true);
+
+  final addTrackCompleter = Completer<AddTextTrackEvent>();
+
+  player.textTracks.addEventListener(TextTracksEventTypes.ADDTRACK, (event) {
+    print("Received text ADDTRACK event");
+    if (!addTrackCompleter.isCompleted) {
+      addTrackCompleter.complete(event as AddTextTrackEvent);
+    }
+  });
+
+  print("Setting source for text track events test");
+  player.setSource(SourceDescription(sources: [
+    TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
+  ]));
+
+  await tester.pumpAndSettle(const Duration(seconds: 10));
+
+  // Text tracks may or may not be present depending on the source
+  print("Testing textTracks count: ${player.textTracks.length}");
+  if (player.textTracks.isNotEmpty) {
+    final firstTrack = player.textTracks[0];
+    print("Testing first text track properties");
+    print("  id: ${firstTrack.id}, label: ${firstTrack.label}, kind: ${firstTrack.kind}, language: ${firstTrack.language}");
+    expect(firstTrack.id, isNotNull);
+  }
+
+  if (addTrackCompleter.isCompleted) {
+    final event = await addTrackCompleter.future;
+    print("Text track added: id=${event.track.id}, label=${event.track.label}");
+    expect(event.track.id, isNotNull);
+  }
+}
+
+Future<void> runQualityPropertiesTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
+  TestApp app = TestApp(androidViewComposition: androidViewComposition);
+  await tester.pumpWidget(app);
+
+  final chromlessPlayerView = find.byKey(const Key('testChromelessPlayer'));
+  await tester.ensureVisible(chromlessPlayerView);
+  final player = (tester.firstElement(chromlessPlayerView).widget as ChromelessPlayerView).player;
+  await tester.pumpAndSettle();
+  await app.waitForPlayerReady();
+  await tester.pumpAndSettle();
+
+  expect(player.isInitialized, isTrue);
+
+  player.setMuted(true);
+  player.setAutoplay(true);
+
+  print("Setting source for quality properties test");
+  player.setSource(SourceDescription(sources: [
+    TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
+  ]));
+
+  await tester.pumpAndSettle(const Duration(seconds: 10));
+
+  // Test video quality properties
+  expect(player.videoTracks.length, greaterThan(0));
+  final videoTrack = player.videoTracks[0];
+  expect(videoTrack.qualities.length, greaterThan(0));
+
+  for (final quality in videoTrack.qualities) {
+    print("Video quality: ${quality.width}x${quality.height}, bandwidth=${quality.bandwidth}, averageBandwidth=${quality.averageBandwidth}, available=${quality.available}");
+    expect(quality.bandwidth, greaterThan(0));
+    expect(quality.available, isNotNull);
+    // width and height should be non-negative
+    expect(quality.width, greaterThanOrEqualTo(0));
+    expect(quality.height, greaterThanOrEqualTo(0));
+  }
+
+  // Test unlocalizedLabel on video track
+  print("Video track unlocalizedLabel: ${videoTrack.unlocalizedLabel}");
+  // unlocalizedLabel may be null, just verify it's accessible
+
+  // Test audio quality properties (not supported on iOS)
+  final bool isIOS = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
+  if (player.audioTracks.isNotEmpty) {
+    final audioTrack = player.audioTracks[0];
+    print("Audio track unlocalizedLabel: ${audioTrack.unlocalizedLabel}");
+
+    if (isIOS) {
+      print("Skipping audio quality properties check on iOS (not supported)");
+    } else {
+      expect(audioTrack.qualities.length, greaterThan(0), reason: "Audio qualities should be available on ${kIsWeb ? 'Web' : 'Android'}");
+      for (final quality in audioTrack.qualities) {
+        print("Audio quality: bandwidth=${quality.bandwidth}, audioSamplingRate=${quality.audioSamplingRate}, averageBandwidth=${quality.averageBandwidth}, available=${quality.available}");
+        expect(quality.bandwidth, greaterThanOrEqualTo(0));
+        expect(quality.available, isNotNull);
+      }
+    }
+  }
+}
+
+Future<void> runLatenciesTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
+  TestApp app = TestApp(androidViewComposition: androidViewComposition);
+  await tester.pumpWidget(app);
+
+  final chromlessPlayerView = find.byKey(const Key('testChromelessPlayer'));
+  await tester.ensureVisible(chromlessPlayerView);
+  final player = (tester.firstElement(chromlessPlayerView).widget as ChromelessPlayerView).player;
+  await tester.pumpAndSettle();
+  await app.waitForPlayerReady();
+  await tester.pumpAndSettle();
+
+  expect(player.isInitialized, isTrue);
+
+  player.setMuted(true);
+  player.setAutoplay(true);
+
+  print("Setting source for latencies test");
+  player.setSource(SourceDescription(sources: [
+    TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
+  ]));
+
+  await tester.pumpAndSettle(const Duration(seconds: 10));
+
+  // Test latencies
+  expect(player.theoLive, isNotNull);
+
+  final latencies = await player.theoLive!.latencies;
+  print("Latencies: engineLatency=${latencies?.engineLatency}, distributionLatency=${latencies?.distributionLatency}, playerLatency=${latencies?.playerLatency}, theoliveLatency=${latencies?.theoliveLatency}");
+
+  expect(latencies, isNotNull);
+  expect(latencies!.theoliveLatency, isNotNull);
+  expect(latencies.theoliveLatency!, greaterThan(0));
+
+  // Test currentLatency
+  final currentLatency = await player.theoLive!.currentLatency;
+  print("Current latency: $currentLatency");
+  expect(currentLatency, isNotNull);
+  expect(currentLatency!, greaterThan(0));
+}
+
+Future<void> runTHEOliveAbrStrategyPerformanceTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
+  TestApp app = TestApp(androidViewComposition: androidViewComposition);
+  await tester.pumpWidget(app);
+
+  final chromlessPlayerView = find.byKey(const Key('testChromelessPlayer'));
+  await tester.ensureVisible(chromlessPlayerView);
+  final player = (tester.firstElement(chromlessPlayerView).widget as ChromelessPlayerView).player;
+  await tester.pumpAndSettle();
+  await app.waitForPlayerReady();
+  await tester.pumpAndSettle();
+
+  expect(player.isInitialized, isTrue);
+
+  player.setMuted(true);
+  player.setAutoplay(true);
+
+  // Set ABR strategy to performance before setting source
+  print("Setting ABR strategy to performance");
+  await player.abr.setStrategy(AbrStrategyConfiguration(type: AbrStrategyType.performance));
+
+  // Verify strategy is set
+  final strategy = await player.abr.strategy;
+  print("Current ABR strategy: ${strategy.type}");
+  expect(strategy.type, equals(AbrStrategyType.performance));
+
+  print("Setting THEOlive source");
+  player.setSource(SourceDescription(sources: [
+    TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
+  ]));
+
+  // Wait just enough for initial track selection - ABR strategy only affects initial selection
+  await tester.pumpAndSettle(const Duration(seconds: 3));
+
+  // Verify video tracks are available
+  expect(player.videoTracks.length, greaterThan(0));
+  final videoTrack = player.videoTracks[0];
+  expect(videoTrack.qualities.length, greaterThan(0));
+
+  // Find the lowest bandwidth quality
+  int lowestBandwidth = videoTrack.qualities.first.bandwidth;
+  for (final quality in videoTrack.qualities) {
+    if (quality.bandwidth < lowestBandwidth) {
+      lowestBandwidth = quality.bandwidth;
+    }
+  }
+
+  print("Available qualities:");
+  for (final quality in videoTrack.qualities) {
+    print("  ${quality.width}x${quality.height}, bandwidth=${quality.bandwidth}");
+  }
+
+  // With performance strategy, the initial active quality should be the lowest bandwidth
+  final activeQuality = videoTrack.activeQuality;
+  expect(activeQuality, isNotNull, reason: "Active quality should be available after playback starts");
+  print("Initial active quality: ${activeQuality!.width}x${activeQuality.height}, bandwidth=${activeQuality.bandwidth}");
+  print("Lowest bandwidth: $lowestBandwidth");
+
+  // Verify the initial active quality is the lowest bandwidth quality
+  expect(activeQuality.bandwidth, equals(lowestBandwidth),
+      reason: "Performance strategy should select the lowest bandwidth video quality for initial track selection");
+}
+
+Future<void> runTHEOliveAbrStrategyQualityTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
+  TestApp app = TestApp(androidViewComposition: androidViewComposition);
+  await tester.pumpWidget(app);
+
+  final chromlessPlayerView = find.byKey(const Key('testChromelessPlayer'));
+  await tester.ensureVisible(chromlessPlayerView);
+  final player = (tester.firstElement(chromlessPlayerView).widget as ChromelessPlayerView).player;
+  await tester.pumpAndSettle();
+  await app.waitForPlayerReady();
+  await tester.pumpAndSettle();
+
+  expect(player.isInitialized, isTrue);
+
+  player.setMuted(true);
+  player.setAutoplay(true);
+
+  // Set ABR strategy to quality before setting source
+  print("Setting ABR strategy to quality");
+  await player.abr.setStrategy(AbrStrategyConfiguration(type: AbrStrategyType.quality));
+
+  // Verify strategy is set
+  final strategy = await player.abr.strategy;
+  print("Current ABR strategy: ${strategy.type}");
+  expect(strategy.type, equals(AbrStrategyType.quality));
+
+  print("Setting THEOlive source");
+  player.setSource(SourceDescription(sources: [
+    TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
+  ]));
+
+  // Wait just enough for initial track selection - ABR strategy only affects initial selection
+  await tester.pumpAndSettle(const Duration(seconds: 3));
+
+  // Verify video tracks are available
+  expect(player.videoTracks.length, greaterThan(0));
+  final videoTrack = player.videoTracks[0];
+  expect(videoTrack.qualities.length, greaterThan(0));
+
+  // Get player view size in physical pixels (native SDK uses physical pixels)
+  final viewSize = tester.getSize(chromlessPlayerView);
+  final devicePixelRatio = tester.view.devicePixelRatio;
+  final physicalHeight = (viewSize.height * devicePixelRatio).toInt();
+  print("Player view size: ${viewSize.width}x${viewSize.height} (logical), physical height: $physicalHeight");
+
+  // Find the highest quality that fits the physical view height
+  int expectedBandwidth = 0;
+  for (final quality in videoTrack.qualities) {
+    if (quality.height <= physicalHeight && quality.bandwidth > expectedBandwidth) {
+      expectedBandwidth = quality.bandwidth;
+    }
+  }
+
+  // If no quality fits, native SDK picks the lowest (smallest) quality
+  if (expectedBandwidth == 0) {
+    expectedBandwidth = videoTrack.qualities.first.bandwidth;
+    for (final quality in videoTrack.qualities) {
+      if (quality.bandwidth < expectedBandwidth) {
+        expectedBandwidth = quality.bandwidth;
+      }
+    }
+  }
+
+  print("Available qualities:");
+  for (final quality in videoTrack.qualities) {
+    print("  ${quality.width}x${quality.height}, bandwidth=${quality.bandwidth}");
+  }
+
+  // With quality strategy, the initial active quality should be the highest fitting the view
+  final activeQuality = videoTrack.activeQuality;
+  expect(activeQuality, isNotNull, reason: "Active quality should be available after playback starts");
+  print("Initial active quality: ${activeQuality!.width}x${activeQuality.height}, bandwidth=${activeQuality.bandwidth}");
+  print("Expected bandwidth (highest fitting view): $expectedBandwidth");
+
+  // Verify the initial active quality matches the expected quality for view size
+  expect(activeQuality.bandwidth, equals(expectedBandwidth),
+      reason: "Quality strategy should select the highest bandwidth video quality fitting the view size");
 }

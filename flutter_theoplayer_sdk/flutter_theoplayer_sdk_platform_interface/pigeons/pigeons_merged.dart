@@ -122,18 +122,8 @@ abstract class THEOplayerNativeTextTracksAPI {
 @FlutterApi()
 abstract class THEOplayerFlutterTextTracksAPI {
   // TextTrackList events
-  void onAddTextTrack(
-      String? id,
-      int uid,
-      String? label,
-      String? language,
-      String? kind,
-      String? inBandMetadataTrackDispatchType,
-      TextTrackReadyState readyState,
-      TextTrackType type,
-      String? source,
-      bool isForced,
-      TextTrackMode mode);
+  void onAddTextTrack(String? id, int uid, String? label, String? language, String? kind, String? inBandMetadataTrackDispatchType, TextTrackReadyState readyState, TextTrackType type, String? source,
+      bool isForced, TextTrackMode mode, String? unlocalizedLabel);
 
   void onRemoveTextTrack(int uid);
 
@@ -141,6 +131,9 @@ abstract class THEOplayerFlutterTextTracksAPI {
 
   // TextTrack events
   void onTextTrackAddCue(int textTrackUid, String id, int uid, double startTime, double endTime, String content);
+
+  void onTextTrackAddDateRangeCue(int textTrackUid, String id, int uid, double startTime, double endTime, String? cueClass, double startDateMillis, double? endDateMillis, double? duration,
+      double? plannedDuration, bool endOnNext, String? customAttributesJson);
 
   void onTextTrackRemoveCue(int textTrackUid, int cueUid);
 
@@ -162,10 +155,23 @@ abstract class THEOplayerFlutterTextTracksAPI {
 
 
 
+class HespLatencies {
+  final double? engineLatency;
+  final double? distributionLatency;
+  final double? playerLatency;
+  final double? theoliveLatency;
+
+  HespLatencies(this.engineLatency, this.distributionLatency, this.playerLatency, this.theoliveLatency);
+}
+
 @HostApi()
 abstract class THEOplayerNativeTHEOliveAPI {
   void goLive();
   void preloadChannels(List<String>? channelIds);
+  @async
+  double? currentLatency();
+  @async
+  HespLatencies? latencies();
 }
 
 @FlutterApi()
@@ -173,12 +179,11 @@ abstract class THEOplayerFlutterTHEOliveAPI {
   void onDistributionLoadStartEvent(String distributionId);
   void onEndpointLoadedEvent(Endpoint endpoint);
   void onDistributionOfflineEvent(String distributionId);
-  void onIntentToFallbackEvent();
+  void onIntentToFallbackEvent(String? errorCode, String? errorMessage);
   //experimental API for iOS-only
   void onSeeking(double currentTime);
   void onSeeked(double currentTime);
 }
-
 
 class Endpoint {
   final String? hespSrc;
@@ -190,6 +195,53 @@ class Endpoint {
 
   Endpoint(this.hespSrc, this.hlsSrc, this.cdn, this.adSrc, this.weight, this.priority);
 }
+
+
+
+/// The adaptive bitrate strategy type.
+enum AbrStrategyTypePigeon {
+  performance,
+  quality,
+  bandwidth,
+}
+
+/// Metadata for the ABR strategy (e.g. initial bitrate cap).
+class AbrStrategyMetadataPigeon {
+  final int? bitrate;
+
+  AbrStrategyMetadataPigeon({this.bitrate});
+}
+
+/// The ABR strategy configuration: type + optional metadata.
+class AbrStrategyConfigurationPigeon {
+  final AbrStrategyTypePigeon type;
+  final AbrStrategyMetadataPigeon? metadata;
+
+  AbrStrategyConfigurationPigeon({required this.type, this.metadata});
+}
+
+/// Host API: Dart → Native calls for ABR configuration.
+@HostApi()
+abstract class THEOplayerNativeAbrAPI {
+  /// Get the current ABR strategy.
+  AbrStrategyConfigurationPigeon getAbrStrategy();
+
+  /// Set the ABR strategy.
+  void setAbrStrategy(AbrStrategyConfigurationPigeon config);
+
+  /// Get the target buffer in seconds.
+  double getTargetBuffer();
+
+  /// Set the target buffer in seconds.
+  void setTargetBuffer(double value);
+
+  /// Get the preferred peak bitrate in bps (iOS only, returns 0 on other platforms).
+  double getPreferredPeakBitRate();
+
+  /// Set the preferred peak bitrate in bps (iOS only, no-op on other platforms).
+  void setPreferredPeakBitRate(double value);
+}
+
 
 
 
@@ -268,11 +320,52 @@ abstract class THEOplayerNativeAPI {
 
   // application lifecycle listeners
   void onLifecycleResume();
-  
+
   void onLifecyclePause();
 
   void configureSurface(int surfaceId, int width, int height);
+}
 
+
+
+/// A single debug flag with its metadata and current state.
+class DebugFlagPigeon {
+  final String key;
+  final String description;
+  final bool defaultValue;
+  final bool isEnabled;
+
+  DebugFlagPigeon({
+    required this.key,
+    required this.description,
+    required this.defaultValue,
+    required this.isEnabled,
+  });
+}
+
+/// Host API: Dart → Native calls for debug flag management.
+@HostApi()
+abstract class THEOplayerNativeDebugFlagsAPI {
+  /// Returns all available debug flags with their current state.
+  List<DebugFlagPigeon> getAvailableFlags();
+
+  /// Enable a flag by key.
+  void enableFlag(String key);
+
+  /// Disable a flag by key.
+  void disableFlag(String key);
+
+  /// Enable all flags.
+  void enableAll();
+
+  /// Disable all flags.
+  void disableAll();
+
+  /// Reset all flags to their compile-time defaults.
+  void resetAll();
+
+  /// Enable OS log + file logging at runtime (iOS only, no-op on Android).
+  void enableFileLogging();
 }
 
 
@@ -340,10 +433,11 @@ abstract class THEOplayerNativeVideoTracksAPI {
 @FlutterApi()
 abstract class THEOplayerFlutterVideoTracksAPI {
   // VideoTrackList events
-  void onAddVideoTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled);
+  void onAddVideoTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled, String? unlocalizedLabel);
 
   // helper to populate the qualities in the video track
-  void onVideoTrackAddQuality(int videoTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame);
+  void onVideoTrackAddQuality(int videoTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame,
+      int? averageBandwidth, bool available);
 
   void onRemoveVideoTrack(int uid);
 
@@ -355,7 +449,8 @@ abstract class THEOplayerFlutterVideoTracksAPI {
   void onActiveQualityChange(int videoTrackUid, int qualityUid);
 
   // Quality events
-  void onQualityUpdate(int videoTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame);
+  void onQualityUpdate(
+      int videoTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int width, int height, double frameRate, double firstFrame, int? averageBandwidth, bool available);
 }
 
 
@@ -372,10 +467,10 @@ abstract class THEOplayerNativeAudioTracksAPI {
 @FlutterApi()
 abstract class THEOplayerFlutterAudioTracksAPI {
   // AudioTrackList events
-  void onAddAudioTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled);
+  void onAddAudioTrack(String? id, int uid, String? label, String? language, String? kind, bool isEnabled, String? unlocalizedLabel);
 
   // helper to populate the qualities in the audio track
-  void onAudioTrackAddQuality(int audioTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate);
+  void onAudioTrackAddQuality(int audioTrackUid, String qualityId, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate, int? averageBandwidth, bool available);
 
   void onRemoveAudioTrack(int uid);
 
@@ -387,6 +482,6 @@ abstract class THEOplayerFlutterAudioTracksAPI {
   void onActiveQualityChange(int audioTrackUid, int qualityUid);
 
   // Quality events
-  void onQualityUpdate(int audioTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate);
+  void onQualityUpdate(int audioTrackUid, int qualityUid, String? name, int bandwidth, String? codecs, int audioSamplingRate, int? averageBandwidth, bool available);
 }
 
