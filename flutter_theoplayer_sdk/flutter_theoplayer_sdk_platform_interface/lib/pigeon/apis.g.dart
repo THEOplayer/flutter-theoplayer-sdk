@@ -337,6 +337,43 @@ class Endpoint {
   }
 }
 
+/// A single debug flag with its metadata and current state.
+class DebugFlagPigeon {
+  DebugFlagPigeon({
+    required this.key,
+    required this.description,
+    required this.defaultValue,
+    required this.isEnabled,
+  });
+
+  String key;
+
+  String description;
+
+  bool defaultValue;
+
+  bool isEnabled;
+
+  Object encode() {
+    return <Object?>[
+      key,
+      description,
+      defaultValue,
+      isEnabled,
+    ];
+  }
+
+  static DebugFlagPigeon decode(Object result) {
+    result as List<Object?>;
+    return DebugFlagPigeon(
+      key: result[0]! as String,
+      description: result[1]! as String,
+      defaultValue: result[2]! as bool,
+      isEnabled: result[3]! as bool,
+    );
+  }
+}
+
 
 class _PigeonCodec extends StandardMessageCodec {
   const _PigeonCodec();
@@ -387,6 +424,9 @@ class _PigeonCodec extends StandardMessageCodec {
     }    else if (value is Endpoint) {
       buffer.putUint8(142);
       writeValue(buffer, value.encode());
+    }    else if (value is DebugFlagPigeon) {
+      buffer.putUint8(143);
+      writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
     }
@@ -429,6 +469,8 @@ class _PigeonCodec extends StandardMessageCodec {
         return HespLatencies.decode(readValue(buffer)!);
       case 142: 
         return Endpoint.decode(readValue(buffer)!);
+      case 143: 
+        return DebugFlagPigeon.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);
     }
@@ -2108,6 +2150,187 @@ class THEOplayerNativeAPI {
     );
     final List<Object?>? pigeonVar_replyList =
         await pigeonVar_channel.send(<Object?>[surfaceId, width, height]) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+}
+
+/// Host API: Dart → Native calls for debug flag management.
+class THEOplayerNativeDebugFlagsAPI {
+  /// Constructor for [THEOplayerNativeDebugFlagsAPI].  The [binaryMessenger] named argument is
+  /// available for dependency injection.  If it is left null, the default
+  /// BinaryMessenger will be used which routes to the host platform.
+  THEOplayerNativeDebugFlagsAPI({BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''})
+      : pigeonVar_binaryMessenger = binaryMessenger,
+        pigeonVar_messageChannelSuffix = messageChannelSuffix.isNotEmpty ? '.$messageChannelSuffix' : '';
+  final BinaryMessenger? pigeonVar_binaryMessenger;
+
+  static const MessageCodec<Object?> pigeonChannelCodec = _PigeonCodec();
+
+  final String pigeonVar_messageChannelSuffix;
+
+  /// Returns all available debug flags with their current state.
+  Future<List<DebugFlagPigeon>> getAvailableFlags() async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.getAvailableFlags$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else if (pigeonVar_replyList[0] == null) {
+      throw PlatformException(
+        code: 'null-error',
+        message: 'Host platform returned null value for non-null return value.',
+      );
+    } else {
+      return (pigeonVar_replyList[0] as List<Object?>?)!.cast<DebugFlagPigeon>();
+    }
+  }
+
+  /// Enable a flag by key.
+  Future<void> enableFlag(String key) async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.enableFlag$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[key]) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
+  /// Disable a flag by key.
+  Future<void> disableFlag(String key) async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.disableFlag$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(<Object?>[key]) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
+  /// Enable all flags.
+  Future<void> enableAll() async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.enableAll$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
+  /// Disable all flags.
+  Future<void> disableAll() async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.disableAll$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
+  /// Reset all flags to their compile-time defaults.
+  Future<void> resetAll() async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.resetAll$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
+    if (pigeonVar_replyList == null) {
+      throw _createConnectionError(pigeonVar_channelName);
+    } else if (pigeonVar_replyList.length > 1) {
+      throw PlatformException(
+        code: pigeonVar_replyList[0]! as String,
+        message: pigeonVar_replyList[1] as String?,
+        details: pigeonVar_replyList[2],
+      );
+    } else {
+      return;
+    }
+  }
+
+  /// Enable OS log + file logging at runtime (iOS only, no-op on Android).
+  Future<void> enableFileLogging() async {
+    final String pigeonVar_channelName = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.enableFileLogging$pigeonVar_messageChannelSuffix';
+    final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final List<Object?>? pigeonVar_replyList =
+        await pigeonVar_channel.send(null) as List<Object?>?;
     if (pigeonVar_replyList == null) {
       throw _createConnectionError(pigeonVar_channelName);
     } else if (pigeonVar_replyList.length > 1) {

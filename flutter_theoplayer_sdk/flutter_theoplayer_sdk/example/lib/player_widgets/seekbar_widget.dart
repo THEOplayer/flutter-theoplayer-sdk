@@ -58,9 +58,9 @@ class _SeekbarWidgetWidgetState extends State<SeekbarWidget> {
   @override
   Widget build(BuildContext context) {
     return Slider(
-      value: position,
+      value: position.clamp(0, duration > 0 ? duration : 1),
       min: 0,
-      max: duration,
+      max: duration > 0 ? duration : 1,
       activeColor: theoYellow,
       label: "${position.round()}",
       onChanged: (newPosition) {

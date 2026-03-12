@@ -337,6 +337,37 @@ data class Endpoint (
     )
   }
 }
+
+/**
+ * A single debug flag with its metadata and current state.
+ *
+ * Generated class from Pigeon that represents data sent in messages.
+ */
+data class DebugFlagPigeon (
+  val key: String,
+  val description: String,
+  val defaultValue: Boolean,
+  val isEnabled: Boolean
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): DebugFlagPigeon {
+      val key = pigeonVar_list[0] as String
+      val description = pigeonVar_list[1] as String
+      val defaultValue = pigeonVar_list[2] as Boolean
+      val isEnabled = pigeonVar_list[3] as Boolean
+      return DebugFlagPigeon(key, description, defaultValue, isEnabled)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      key,
+      description,
+      defaultValue,
+      isEnabled,
+    )
+  }
+}
 private open class APIsPigeonCodec : StandardMessageCodec() {
   override fun readValueOfType(type: Byte, buffer: ByteBuffer): Any? {
     return when (type) {
@@ -410,6 +441,11 @@ private open class APIsPigeonCodec : StandardMessageCodec() {
           Endpoint.fromList(it)
         }
       }
+      143.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          DebugFlagPigeon.fromList(it)
+        }
+      }
       else -> super.readValueOfType(type, buffer)
     }
   }
@@ -469,6 +505,10 @@ private open class APIsPigeonCodec : StandardMessageCodec() {
       }
       is Endpoint -> {
         stream.write(142)
+        writeValue(stream, value.toList())
+      }
+      is DebugFlagPigeon -> {
+        stream.write(143)
         writeValue(stream, value.toList())
       }
       else -> super.writeValue(stream, value)
@@ -1593,6 +1633,154 @@ interface THEOplayerNativeAPI {
             val heightArg = args[2] as Long
             val wrapped: List<Any?> = try {
               api.configureSurface(surfaceIdArg, widthArg, heightArg)
+              listOf(null)
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+    }
+  }
+}
+/**
+ * Host API: Dart → Native calls for debug flag management.
+ *
+ * Generated interface from Pigeon that represents a handler of messages from Flutter.
+ */
+interface THEOplayerNativeDebugFlagsAPI {
+  /** Returns all available debug flags with their current state. */
+  fun getAvailableFlags(): List<DebugFlagPigeon>
+  /** Enable a flag by key. */
+  fun enableFlag(key: String)
+  /** Disable a flag by key. */
+  fun disableFlag(key: String)
+  /** Enable all flags. */
+  fun enableAll()
+  /** Disable all flags. */
+  fun disableAll()
+  /** Reset all flags to their compile-time defaults. */
+  fun resetAll()
+  /** Enable OS log + file logging at runtime (iOS only, no-op on Android). */
+  fun enableFileLogging()
+
+  companion object {
+    /** The codec used by THEOplayerNativeDebugFlagsAPI. */
+    val codec: MessageCodec<Any?> by lazy {
+      APIsPigeonCodec()
+    }
+    /** Sets up an instance of `THEOplayerNativeDebugFlagsAPI` to handle messages through the `binaryMessenger`. */
+    @JvmOverloads
+    fun setUp(binaryMessenger: BinaryMessenger, api: THEOplayerNativeDebugFlagsAPI?, messageChannelSuffix: String = "") {
+      val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.getAvailableFlags$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              listOf(api.getAvailableFlags())
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.enableFlag$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val keyArg = args[0] as String
+            val wrapped: List<Any?> = try {
+              api.enableFlag(keyArg)
+              listOf(null)
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.disableFlag$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val keyArg = args[0] as String
+            val wrapped: List<Any?> = try {
+              api.disableFlag(keyArg)
+              listOf(null)
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.enableAll$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              api.enableAll()
+              listOf(null)
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.disableAll$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              api.disableAll()
+              listOf(null)
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.resetAll$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              api.resetAll()
+              listOf(null)
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.enableFileLogging$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { _, reply ->
+            val wrapped: List<Any?> = try {
+              api.enableFileLogging()
               listOf(null)
             } catch (exception: Throwable) {
               wrapError(exception)

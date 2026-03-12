@@ -354,6 +354,40 @@ struct Endpoint {
   }
 }
 
+/// A single debug flag with its metadata and current state.
+///
+/// Generated class from Pigeon that represents data sent in messages.
+struct DebugFlagPigeon {
+  var key: String
+  var description: String
+  var defaultValue: Bool
+  var isEnabled: Bool
+
+
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  static func fromList(_ pigeonVar_list: [Any?]) -> DebugFlagPigeon? {
+    let key = pigeonVar_list[0] as! String
+    let description = pigeonVar_list[1] as! String
+    let defaultValue = pigeonVar_list[2] as! Bool
+    let isEnabled = pigeonVar_list[3] as! Bool
+
+    return DebugFlagPigeon(
+      key: key,
+      description: description,
+      defaultValue: defaultValue,
+      isEnabled: isEnabled
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      key,
+      description,
+      defaultValue,
+      isEnabled,
+    ]
+  }
+}
+
 private class APIsPigeonCodecReader: FlutterStandardReader {
   override func readValue(ofType type: UInt8) -> Any? {
     switch type {
@@ -409,6 +443,8 @@ private class APIsPigeonCodecReader: FlutterStandardReader {
       return HespLatencies.fromList(self.readValue() as! [Any?])
     case 142:
       return Endpoint.fromList(self.readValue() as! [Any?])
+    case 143:
+      return DebugFlagPigeon.fromList(self.readValue() as! [Any?])
     default:
       return super.readValue(ofType: type)
     }
@@ -458,6 +494,9 @@ private class APIsPigeonCodecWriter: FlutterStandardWriter {
       super.writeValue(value.toList())
     } else if let value = value as? Endpoint {
       super.writeByte(142)
+      super.writeValue(value.toList())
+    } else if let value = value as? DebugFlagPigeon {
+      super.writeByte(143)
       super.writeValue(value.toList())
     } else {
       super.writeValue(value)
@@ -1537,6 +1576,136 @@ class THEOplayerNativeAPISetup {
       }
     } else {
       configureSurfaceChannel.setMessageHandler(nil)
+    }
+  }
+}
+/// Host API: Dart → Native calls for debug flag management.
+///
+/// Generated protocol from Pigeon that represents a handler of messages from Flutter.
+protocol THEOplayerNativeDebugFlagsAPI {
+  /// Returns all available debug flags with their current state.
+  func getAvailableFlags() throws -> [DebugFlagPigeon]
+  /// Enable a flag by key.
+  func enableFlag(key: String) throws
+  /// Disable a flag by key.
+  func disableFlag(key: String) throws
+  /// Enable all flags.
+  func enableAll() throws
+  /// Disable all flags.
+  func disableAll() throws
+  /// Reset all flags to their compile-time defaults.
+  func resetAll() throws
+  /// Enable OS log + file logging at runtime (iOS only, no-op on Android).
+  func enableFileLogging() throws
+}
+
+/// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
+class THEOplayerNativeDebugFlagsAPISetup {
+  static var codec: FlutterStandardMessageCodec { APIsPigeonCodec.shared }
+  /// Sets up an instance of `THEOplayerNativeDebugFlagsAPI` to handle messages through the `binaryMessenger`.
+  static func setUp(binaryMessenger: FlutterBinaryMessenger, api: THEOplayerNativeDebugFlagsAPI?, messageChannelSuffix: String = "") {
+    let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
+    /// Returns all available debug flags with their current state.
+    let getAvailableFlagsChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.getAvailableFlags\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      getAvailableFlagsChannel.setMessageHandler { _, reply in
+        do {
+          let result = try api.getAvailableFlags()
+          reply(wrapResult(result))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      getAvailableFlagsChannel.setMessageHandler(nil)
+    }
+    /// Enable a flag by key.
+    let enableFlagChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.enableFlag\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      enableFlagChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let keyArg = args[0] as! String
+        do {
+          try api.enableFlag(key: keyArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      enableFlagChannel.setMessageHandler(nil)
+    }
+    /// Disable a flag by key.
+    let disableFlagChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.disableFlag\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      disableFlagChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let keyArg = args[0] as! String
+        do {
+          try api.disableFlag(key: keyArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      disableFlagChannel.setMessageHandler(nil)
+    }
+    /// Enable all flags.
+    let enableAllChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.enableAll\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      enableAllChannel.setMessageHandler { _, reply in
+        do {
+          try api.enableAll()
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      enableAllChannel.setMessageHandler(nil)
+    }
+    /// Disable all flags.
+    let disableAllChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.disableAll\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      disableAllChannel.setMessageHandler { _, reply in
+        do {
+          try api.disableAll()
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      disableAllChannel.setMessageHandler(nil)
+    }
+    /// Reset all flags to their compile-time defaults.
+    let resetAllChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.resetAll\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      resetAllChannel.setMessageHandler { _, reply in
+        do {
+          try api.resetAll()
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      resetAllChannel.setMessageHandler(nil)
+    }
+    /// Enable OS log + file logging at runtime (iOS only, no-op on Android).
+    let enableFileLoggingChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeDebugFlagsAPI.enableFileLogging\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      enableFileLoggingChannel.setMessageHandler { _, reply in
+        do {
+          try api.enableFileLogging()
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      enableFileLoggingChannel.setMessageHandler(nil)
     }
   }
 }

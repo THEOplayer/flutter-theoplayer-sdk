@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import com.theoplayer.android.api.THEOplayerConfig
+import com.theoplayer.android.api.THEOplayerGlobal
 import com.theoplayer.android.api.THEOplayerView
 import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.player.PlayerEventTypes
@@ -56,6 +57,7 @@ class THEOplayerViewNative(
     private val audioTrackBridge: AudioTrackBridge
     private val videoTrackBridge: VideoTrackBridge
     private val theoLiveBridge: THEOliveBridge
+    private val debugFlagsBridge: DebugFlagsBridge
 
     private var allowAutomaticPictureInPicture: Boolean = false;
 
@@ -141,6 +143,8 @@ class THEOplayerViewNative(
         theoLiveBridge = THEOliveBridge(tpv.player.theoLive, pigeonMessenger)
         theoLiveBridge.attachListeners()
 
+        debugFlagsBridge = DebugFlagsBridge(pigeonMessenger, THEOplayerGlobal.getSharedInstance(context).logger)
+
     }
 
     override fun getView(): View {
@@ -154,6 +158,7 @@ class THEOplayerViewNative(
         audioTrackBridge.removeListeners()
         videoTrackBridge.removeListeners()
         theoLiveBridge.removeListeners()
+        debugFlagsBridge.dispose()
 
         // Clean up native API
         setUp(pigeonMessenger, null)

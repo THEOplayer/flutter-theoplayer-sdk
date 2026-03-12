@@ -11,6 +11,7 @@ export 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttra
 export 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack.dart';
 export 'package:theoplayer_platform_interface/theolive/theolive_api.dart';
 export 'package:theoplayer_platform_interface/theolive/theolive_events.dart';
+export 'package:theoplayer/src/debug/debug_flags_api.dart';
 export 'package:theoplayer/src/widget/presentationmode_aware_widget.dart';
 export 'package:theoplayer/src/widget/chromeless_widget.dart';
 export 'package:theoplayer/src/widget/fullscreen_widget.dart';
