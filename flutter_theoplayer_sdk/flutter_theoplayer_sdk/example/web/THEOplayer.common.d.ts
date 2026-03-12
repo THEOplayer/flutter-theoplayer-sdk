@@ -677,6 +677,10 @@ interface AdInit extends Omit<Partial<Ad>, 'integration' | 'adBreak'> {
  */
 interface AdBreakInit {
     /**
+     * The identifier of the ad break.
+     */
+    id?: string | undefined;
+    /**
      * The time offset at which content will be paused to play the ad break, in seconds.
      */
     timeOffset: number;
@@ -1280,6 +1284,15 @@ interface UniversalAdId {
  * @public
  */
 interface AdBreak {
+    /**
+     * The identifier of the ad break.
+     *
+     * @remarks
+     * <br/> - For THEOads, this is the interstitial identifier.
+     * <br/> - For Google IMA & DAI, this is the pod index of the ad break.
+     * <br/> - For other integrations, this may be `undefined`.
+     */
+    id: string | undefined;
     /**
      * The integration of the ad break, represented by a value from {@link AdIntegrationKind}
      * or {@link CustomAdIntegrationKind | the identifier of a custom integration} registered with {@link Ads.registerServerSideIntegration}.
@@ -2738,7 +2751,8 @@ interface RetryConfiguration {
     /**
      * The initial delay in milliseconds before a retry request occurs.
      * Exponential backoff will be applied on this value.
-     * Defaults to `200`.
+     * Defaults to `200`, however the default value is `1000` for Millicast sources.
+     * `1000` is the minimum allowed value for Millicast sources.
      */
     minimumBackoff?: number;
     /**
@@ -2956,7 +2970,7 @@ type MutedAutoplayConfiguration = 'none' | 'all' | 'content';
  */
 interface TheoLiveConfiguration {
     /**
-     * An id used to report usage analytics, if not explicitely given a random UUID is used.
+     * An id used to report usage analytics, if not explicitly given a random UUID is used.
      */
     readonly externalSessionId?: string;
     /**
@@ -3464,7 +3478,7 @@ interface DashPlaybackConfiguration {
      * @remarks
      * <br/> - Available since v8.9.0.
      *
-     *  @defaultValue `true`
+     * @defaultValue `true`
      */
     segmentRelativeVttTiming?: boolean;
     /**
@@ -3473,11 +3487,20 @@ interface DashPlaybackConfiguration {
      * @remarks
      * <br/> - Available since v8.14.0.
      *
-     *  @defaultValue `false`
+     * @defaultValue `false`
      *
-     *  @internal
+     * @internal
      */
     forceRecreateMediaSourceOnAudioSwitch?: boolean;
+    /**
+     * A flag to enable or disable content steering for this source.
+     *
+     * @remarks
+     * <br/> - Available since v10.9.0.
+     *
+     * @defaultValue `true`
+     */
+    contentSteering?: boolean;
 }
 
 /**
@@ -4159,6 +4182,10 @@ interface ManifestErrorEvent extends Event<'manifesterror'> {
      * The network status message describing the error that occurred while requesting the manifest.
      */
     statusMessage: string | undefined;
+    /**
+     * The service location from which the manifest was requested, if available.
+     */
+    serviceLocation: string | undefined;
 }
 /**
  * Fired when a segment cannot be loaded.
@@ -4200,6 +4227,10 @@ interface SegmentErrorEvent extends Event<'segmenterror'> {
      * The type of track that this segment belongs to/
      */
     trackType: MediaTrackType;
+    /**
+     * The service location from which the segment was requested, if available.
+     */
+    serviceLocation: string | undefined;
 }
 
 /**
@@ -4542,6 +4573,11 @@ interface TheoLiveSource extends TypedSource {
      * The profile identifier is included as a query parameter in the discovery request to obtain a response specific to that profile.
      */
     profile?: string;
+    /**
+     * Object containing connect options for connecting to a WebRTC live source returned by THEOlive.
+     * See {@link MillicastSource.connectOptions}.
+     */
+    webrtc?: Record<string, any>;
 }
 
 /**
@@ -4606,6 +4642,7 @@ interface MillicastSource extends TypedSource {
  * @remarks
  * <br/> - The player might change the latency configuration based on playback events like stalls.
  * <br/> - The current latency configuration can be monitored at {@link LatencyManager.currentConfiguration}.
+ * <br/> - This feature is not supported on iOS Safari, due to platform limitations.
  *
  * @category Source
  * @public
@@ -5105,6 +5142,14 @@ interface BaseSource {
      * <br/> - Ignored for VOD playback.
      */
     latencyConfiguration?: SourceLatencyConfiguration;
+    /**
+     * Source-specific retry configuration.
+     *
+     * @remarks
+     * <br/> - When specified, this configuration overrides the player-level {@link PlayerConfiguration.retryConfiguration} for this source.
+     * <br/> - If not specified, falls back to the global player retry configuration.
+     */
+    retryConfiguration?: RetryConfiguration;
 }
 /**
  * The strategy for period or discontinuity switches (see {@link BaseSource.seamlessSwitchStrategy}), represented by a value from the following list:
@@ -6044,6 +6089,58 @@ interface EncryptedEvent extends Event<'encrypted'> {
      */
     readonly initData: ArrayBuffer;
 }
+/**
+ * Fired when content steering stops.
+ *
+ * @category Events
+ * @public
+ */
+interface ContentSteeringStopEvent extends Event<'contentsteeringstop'> {
+}
+/**
+ * Fired when content steering starts.
+ *
+ * @category Events
+ * @public
+ */
+interface ContentSteeringStartEvent extends Event<'contentsteeringstart'> {
+}
+/**
+ * Fired when the player receives updated service locations from the content steering server.
+ *
+ * @category Events
+ * @public
+ */
+interface ContentSteeringUpdateEvent extends Event<'contentsteeringupdate'> {
+    /**
+     * The new service locations, as they are received from the content steering server.
+     */
+    readonly serviceLocations: string[];
+}
+/**
+ * Fired when the player chooses a new service location.
+ *
+ * @category Events
+ * @public
+ */
+interface ContentSteeringLocationChangeEvent extends Event<'contentsteeringlocationchange'> {
+    /**
+     * The new service location.
+     */
+    readonly serviceLocation: string | undefined;
+}
+/**
+ * Fired when an error occurs during content steering.
+ *
+ * @category Events
+ * @public
+ */
+interface ContentSteeringErrorEvent extends Event<'contentsteeringerror'> {
+    /**
+     * The reason for the content steering error.
+     */
+    readonly reason: string;
+}
 
 /**
  * Provides estimates on the current network state.
@@ -6173,11 +6270,12 @@ type ResponseBody = ArrayBuffer | object | string | null;
  * <br/> - `'segment'`
  * <br/> - `'preload-hint'`
  * <br/> - `'content-protection'`
+ * <br/> - `'content-steering'`
  *
  * @category Network
  * @public
  */
-type RequestType = '' | 'manifest' | 'segment' | 'preload-hint' | 'content-protection';
+type RequestType = '' | 'manifest' | 'segment' | 'preload-hint' | 'content-protection' | 'content-steering';
 /**
  * The content protection's subtype, represented by a value from the following list:
  * <br/> - `'fairplay-license'`
@@ -10228,7 +10326,9 @@ type HespMediaType = 'audio' | 'video' | 'metadata';
 /**
  * The latency manager, used to control low-latency live playback.
  *
- * @remarks This is only used for live playback.
+ * @remarks
+ * <br/> - This is only used for live playback.
+ * <br/> - This feature is not supported on iOS Safari, due to platform limitations.
  *
  * @category Player
  * @public
@@ -10308,6 +10408,15 @@ interface DistributionLoadStartEvent extends Event<'distributionloadstart'> {
     readonly distributionId: string;
 }
 /**
+ * Fired when a THEOlive distribution has been successfully loaded.
+ *
+ * @category THEOlive
+ * @public
+ */
+interface DistributionLoadedEvent extends Event<'distributionloaded'> {
+    readonly distribution: Distribution;
+}
+/**
  * Fired when the loading of a THEOlive endpoint is complete and playback can start. This event is dispatched on every endpoint load, when an error
  * is encountered and the player recovers by choosing a new one.
  *
@@ -10366,6 +10475,7 @@ interface ExitBadNetworkModeEvent extends Event<'exitbadnetworkmode'> {
  */
 interface TheoLiveApiEventMap {
     readonly distributionloadstart: DistributionLoadStartEvent;
+    readonly distributionloaded: DistributionLoadedEvent;
     readonly endpointloaded: EndpointLoadedEvent;
     readonly distributionoffline: DistributionOfflineEvent;
     readonly intenttofallback: IntentToFallbackEvent;
@@ -10415,12 +10525,49 @@ interface Endpoint {
     weight: number;
     priority: number;
     contentProtection?: ChannelDrmConfigResponse;
+    distribution: Distribution;
 }
+/**
+ * A THEOlive distribution.
+ *
+ * @category THEOlive
+ * @public
+ */
+interface Distribution {
+    id: string;
+    name: string;
+}
+/**
+ * A THEOlive Millicast source.
+ *
+ * @category THEOlive
+ * @public
+ */
 interface ChannelMillicastSource {
     accountId: string;
     name: string;
     subscriberToken?: string;
     directorUrl?: string;
+    webrtc?: WebRTCOptions;
+}
+/**
+ * WebRTC configuration for a THEOlive Millicast source.
+ *
+ * @category THEOlive
+ * @public
+ */
+interface WebRTCOptions {
+    playoutDelayMs: PlayoutDelay;
+}
+/**
+ * The playout delay for the WebRTC configuration for a THEOlive Millicast source.
+ *
+ * @category THEOlive
+ * @public
+ */
+interface PlayoutDelay {
+    minimum: number;
+    maximum: number;
 }
 /**
  * The DRM configuration of a THEOlive endpoint.
@@ -11286,6 +11433,14 @@ type MultiViewPlayerLayout = 'gallery' | 'spotlight' | 'overlay';
  * @public
  */
 interface View {
+    /**
+     * (Experimental) The View's internal player.
+     *
+     * @remarks
+     * <br/> - This should not be used for controlling playback directly. Use the {@link MultiViewPlayer} methods and properties instead.
+     * <br/> - This is an experimental property. Combined with multiview, player features and APIs accessible only through this direct player API may not function as intended and may disrupt proper multiview functionality.
+     */
+    readonly player: ChromelessPlayer;
     /**
      * The label with which the view was created.
      */
@@ -13445,6 +13600,26 @@ interface PlayerEventMap {
      */
     segmenterror: Event<'segmenterror'>;
     /**
+     * Fired when content steering starts.
+     */
+    contentsteeringstart: ContentSteeringStartEvent;
+    /**
+     * Fired when content steering stops.
+     */
+    contentsteeringstop: ContentSteeringStopEvent;
+    /**
+     * Fired when the player receives updated service locations from the content steering server.
+     */
+    contentsteeringupdate: ContentSteeringUpdateEvent;
+    /**
+     * Fired when an error occurs during content steering.
+     */
+    contentsteeringerror: ContentSteeringErrorEvent;
+    /**
+     * Fired during content steering when the service location changes.
+     */
+    contentsteeringlocationchange: ContentSteeringLocationChangeEvent;
+    /**
      * Fired when the player encounters key system initialization data in the media data.
      *
      * @remarks
@@ -13903,4 +14078,4 @@ declare function registerContentProtectionIntegration(integrationId: string, key
  */
 declare const utils: CommonUtils;
 
-export { ABRConfiguration, ABRMetadata, ABRStrategy, ABRStrategyConfiguration, ABRStrategyType, AES128KeySystemConfiguration, AccessibilityRole, Ad, AdBreak, AdBreakEvent, AdBreakInit, AdBreakInterstitial, AdBufferingEvent, AdDescription, AdEvent, AdInit, AdIntegrationKind, AdMetadataEvent, AdPreloadType, AdReadyState, AdSkipEvent, AdSource, AdSourceType, AdType, AddCachingTaskEvent, AddTrackEvent, AddViewEvent, Ads, AdsConfiguration, AdsEventMap, AdsManagerLoadedEvent, AgamaAnalyticsIntegrationID, AgamaConfiguration, AgamaLogLevelType, AgamaPlayerConfiguration, AgamaServiceName, AgamaSourceConfiguration, AgamaStreamType, AirPlay, AnalyticsDescription, AnalyticsIntegrationID, AudioQuality, AxinomDRMConfiguration, AxinomIntegrationID, AzureDRMConfiguration, AzureIntegrationID, Base64Util, BaseSource, Boundary, BoundaryC3, BoundaryC7, BoundaryHalftime, BoundaryInfo, BufferSource, BufferedSegments, Cache, CacheEventMap, CacheStatus, CacheTaskStatus, CachingTask, CachingTaskEventMap, CachingTaskLicense, CachingTaskList, CachingTaskListEventMap, CachingTaskParameters, CanPlayEvent, CanPlayThroughEvent, Canvas, Cast, CastConfiguration, CastEventMap, CastState, CastStateChangeEvent, CertificateRequest, CertificateResponse, ChannelDrmConfigResponse, ChannelMillicastSource, Chromecast, ChromecastConfiguration, ChromecastConnectionCallback, ChromecastError, ChromecastErrorCode, ChromecastErrorEvent, ChromecastEventMap, ChromecastMetadataDescription, ChromecastMetadataImage, ChromecastMetadataType, ChromelessPlayer, ClearkeyDecryptionKey, ClearkeyKeySystemConfiguration, Clip, ClipEventMap, ClosedCaptionFile, ComcastDRMConfiguration, ComcastIntegrationID, CommonUtils, CompanionAd, ConaxDRMConfiguration, ConaxIntegrationID, ContentProtectionError, ContentProtectionErrorCode, ContentProtectionErrorEvent, ContentProtectionIntegration, ContentProtectionIntegrationFactory, ContentProtectionRequest, ContentProtectionRequestSubType, ContentProtectionResponse, CrossOriginSetting, CsaiAdDescription, CurrentSourceChangeEvent, CustomAdIntegrationKind, CustomTextTrackMap, CustomTextTrackOptions, CustomWebVTTTextTrack, DAIAvailabilityType, DRMConfiguration, DRMTodayDRMConfiguration, DRMTodayIntegrationID, DashPlaybackConfiguration, DateRangeCue, DeliveryType, DeviceBasedTitaniumDRMConfiguration, DimensionChangeEvent, DirectionChangeEvent, DistributionLoadStartEvent, DistributionOfflineEvent, DurationChangeEvent, EdgeStyle, EmptiedEvent, EmsgCue, EncryptedEvent, EndedEvent, Endpoint, EndpointLoadedEvent, EnterBadNetworkModeEvent, ErrorCategory, ErrorCode, ErrorEvent, Event, EventDispatcher, EventListener, EventMap, EventStreamCue, EventedList, ExitBadNetworkModeEvent, ExpressPlayDRMConfiguration, ExpressPlayIntegrationID, EzdrmDRMConfiguration, EzdrmIntegrationID, FairPlayKeySystemConfiguration, FreeWheelAdDescription, FreeWheelAdUnitType, FreeWheelCue, FullscreenOptions$1 as FullscreenOptions, Geo, GlobalCast, GlobalChromecast, GoogleDAI, GoogleDAIConfiguration, GoogleDAILiveConfiguration, GoogleDAISSAIIntegrationID, GoogleDAITypedSource, GoogleDAIVodConfiguration, GoogleImaAd, GoogleImaConfiguration, HTTPHeaders, HTTPHeadersInit, HespApi, HespApiEventMap, HespMediaType, HespSourceConfiguration, HespTypedSource, HlsDiscontinuityAlignment, HlsPlaybackConfiguration, ID3AttachedPicture, ID3BaseFrame, ID3Comments, ID3CommercialFrame, ID3Cue, ID3Frame, ID3GenericEncapsulatedObject, ID3InvolvedPeopleList, ID3PositionSynchronisationFrame, ID3PrivateFrame, ID3SynchronizedLyricsText, ID3TermsOfUse, ID3Text, ID3UniqueFileIdentifier, ID3Unknown, ID3UnsynchronisedLyricsTextTranscription, ID3UrlLink, ID3UserDefinedText, ID3UserDefinedUrlLink, ID3Yospace, IMAAdDescription, IntentToFallbackEvent, InterceptableRequest, InterceptableResponse, Interstitial, InterstitialEvent, InterstitialType, IrdetoDRMConfiguration, IrdetoIntegrationID, JoinStrategy, KeyOSDRMConfiguration, KeyOSFairplayKeySystemConfiguration, KeyOSIntegrationID, KeyOSKeySystemConfiguration, KeySystemConfiguration, KeySystemId, Latencies, LatencyConfiguration, LatencyManager, LayoutChangeEvent, LicenseRequest, LicenseResponse, LicenseType, LinearAd, List, LoadedDataEvent, LoadedMetadataEvent, ManifestErrorEvent, MaybeAsync, MeasurableNetworkEstimator, MediaError, MediaErrorCode, MediaFile, MediaMelonConfiguration, MediaTailorSource, MediaTrack, MediaTrackEventMap, MediaTrackList, MediaTrackType, MediaType, MetadataDescription, Metrics, Millicast, MillicastEventMap, MillicastMetadataCue, MillicastSource, MillicastStatsEvent, MoatAnalyticsIntegrationID, MoatConfiguration, MultiViewPlayer, MultiViewPlayerEventMap, MultiViewPlayerLayout, MutedAutoplayConfiguration, Network, NetworkEstimator, NetworkEstimatorController, NetworkEventMap, NetworkInterceptorController, NodeStyleVoidCallback, NonLinearAd, OverlayInterstitial, OverlayPosition, OverlaySize, PauseEvent, PiPConfiguration, PiPPosition, PlayEvent, PlayReadyKeySystemConfiguration, PlayStation5Configuration, PlayStation5PlayMode, PlayerConfiguration, PlayerEventMap, PlayerList, PlayingEvent, PreloadType, Presentation, PresentationEventMap, PresentationMode, PresentationModeChangeEvent, ProgressEvent, Quality, QualityEvent, QualityEventMap, QualityList, RateChangeEvent, ReadyStateChangeEvent, RelatedChangeEvent, RelatedContent, RelatedContentEventMap, RelatedContentSource, RelatedHideEvent, RelatedShowEvent, RemoveCachingTaskEvent, RemoveTrackEvent, RemoveViewEvent, Representation, RepresentationChangeEvent, Request, RequestBody, RequestInit, RequestInterceptor, RequestLike, RequestMeasurer, RequestMethod, RequestSubType, RequestType, ResponseBody, ResponseInit, ResponseInterceptor, ResponseLike, ResponseType, RetryConfiguration, SSAIIntegrationId, SeamlessPeriodSwitchStrategy, SeamlessSwitchStrategy, SeekedEvent, SeekingEvent, SegmentErrorEvent, ServerSideAdInsertionConfiguration, ServerSideAdIntegrationController, ServerSideAdIntegrationFactory, ServerSideAdIntegrationHandler, SkippedAdStrategy, SmartSightConfiguration, SmartSightIntegrationID, Source, SourceAbrConfiguration, SourceChangeEvent, SourceConfiguration, SourceDescription, SourceIntegrationId, SourceLatencyConfiguration, Sources, SpotXAdDescription, SpotxData, SpotxQueryParameter, StateChangeEvent, StereoChangeEvent, StreamOneAnalyticsIntegrationID, StreamOneConfiguration, StreamType, StringKeyOf, StylePropertyRecord, SupportedCustomTextTrackCueTypes, THEOplayerError, TTMLCue, TTMLExtent, TargetQualityChangedEvent, TextTrack, TextTrackAddCueEvent, TextTrackCue, TextTrackCueChangeEvent, TextTrackCueEnterEvent, TextTrackCueEventMap, TextTrackCueExitEvent, TextTrackCueList, TextTrackCueUpdateEvent, TextTrackDescription, TextTrackEnterCueEvent, TextTrackError, TextTrackErrorCode, TextTrackErrorEvent, TextTrackEventMap, TextTrackExitCueEvent, TextTrackReadyState, TextTrackReadyStateChangeEvent, TextTrackRemoveCueEvent, TextTrackStyle, TextTrackStyleEventMap, TextTrackType, TextTrackTypeChangeEvent, TextTrackUpdateCueEvent, TextTracksList, TheoAdDescription, TheoAds, TheoAdsEventsMap, TheoAdsLayout, TheoAdsLayoutOverride, TheoLiveApi, TheoLiveApiEventMap, TheoLiveConfiguration, TheoLivePublication, TheoLiveSource, ThumbnailResolution, TimeRanges, TimeUpdateEvent, TitaniumDRMConfiguration, TitaniumIntegrationID, TokenBasedTitaniumDRMConfiguration, Track, TrackChangeEvent, TrackEventMap, TrackList, TrackListEventMap, TrackUpdateEvent, TypedSource, UIConfiguration, UILanguage, UIPlayerConfiguration, UIRelatedContent, UIRelatedContentEventMap, UniversalAdId, UpdateQualityEvent, Uplynk, UplynkAd, UplynkAdBeginEvent, UplynkAdBreak, UplynkAdBreakBeginEvent, UplynkAdBreakEndEvent, UplynkAdBreakEventMap, UplynkAdBreakList, UplynkAdBreakListEventMap, UplynkAdBreakSkipEvent, UplynkAdCompleteEvent, UplynkAdEndEvent, UplynkAdEventMap, UplynkAdFirstQuartileEvent, UplynkAdList, UplynkAdListEventMap, UplynkAdMidpointEvent, UplynkAdThirdQuartileEvent, UplynkAddAdBreakEvent, UplynkAddAssetEvent, UplynkAds, UplynkAsset, UplynkAssetEventMap, UplynkAssetId, UplynkAssetInfoResponse, UplynkAssetInfoResponseEvent, UplynkAssetList, UplynkAssetMovieRating, UplynkAssetTvRating, UplynkAssetType, UplynkConfiguration, UplynkDRMConfiguration, UplynkEventMap, UplynkExternalId, UplynkIntegrationID, UplynkPingConfiguration, UplynkPingErrorEvent, UplynkPingResponse, UplynkPingResponseEvent, UplynkPreplayBaseResponse, UplynkPreplayLiveResponse, UplynkPreplayResponse, UplynkPreplayResponseEvent, UplynkPreplayResponseType, UplynkPreplayVodResponse, UplynkRemoveAdBreakEvent, UplynkRemoveAdEvent, UplynkRemoveAssetEvent, UplynkResponseDrm, UplynkResponseLiveAd, UplynkResponseLiveAdBreak, UplynkResponseLiveAds, UplynkResponseVodAd, UplynkResponseVodAdBreak, UplynkResponseVodAdBreakOffset, UplynkResponseVodAdPlaceholder, UplynkResponseVodAds, UplynkSource, UplynkUiConfiguration, UplynkUpdateAdBreakEvent, UserActions, VPAIDMode, VR, VRConfiguration, VRDirection, VREventMap, VRPanoramaMode, VRState, VRStereoMode, VTTAlignSetting, VTTDirectionSetting, VTTLine, VTTLineAlignSetting, VTTPosition, VTTPositionAlignSetting, VTTScrollSetting, VastExtension, VendorCast, VendorCastEventMap, VerimatrixDRMConfiguration, VerimatrixIntegrationID, VideoFrameCallbackMetadata, VideoFrameRequestCallback, VideoQuality, View, ViewChangeEvent, ViewPositionChangeEvent, VimondDRMConfiguration, VimondIntegrationID, Visibility, VisibilityObserver, VisibilityObserverCallback, VoidPromiseCallback, VolumeChangeEvent, VudrmDRMConfiguration, VudrmIntegrationID, WaitUntilCallback, WaitingEvent, WebAudio, WebVTTCue, WebVTTRegion, WidevineKeySystemConfiguration, XstreamDRMConfiguration, XstreamIntegrationID, YospaceId, YouboraAnalyticsIntegrationID, YouboraOptions, cache, cast, features, players, registerContentProtectionIntegration, utils, version, videojs };
+export { ABRConfiguration, ABRMetadata, ABRStrategy, ABRStrategyConfiguration, ABRStrategyType, AES128KeySystemConfiguration, AccessibilityRole, Ad, AdBreak, AdBreakEvent, AdBreakInit, AdBreakInterstitial, AdBufferingEvent, AdDescription, AdEvent, AdInit, AdIntegrationKind, AdMetadataEvent, AdPreloadType, AdReadyState, AdSkipEvent, AdSource, AdSourceType, AdType, AddCachingTaskEvent, AddTrackEvent, AddViewEvent, Ads, AdsConfiguration, AdsEventMap, AdsManagerLoadedEvent, AgamaAnalyticsIntegrationID, AgamaConfiguration, AgamaLogLevelType, AgamaPlayerConfiguration, AgamaServiceName, AgamaSourceConfiguration, AgamaStreamType, AirPlay, AnalyticsDescription, AnalyticsIntegrationID, AudioQuality, AxinomDRMConfiguration, AxinomIntegrationID, AzureDRMConfiguration, AzureIntegrationID, Base64Util, BaseSource, Boundary, BoundaryC3, BoundaryC7, BoundaryHalftime, BoundaryInfo, BufferSource, BufferedSegments, Cache, CacheEventMap, CacheStatus, CacheTaskStatus, CachingTask, CachingTaskEventMap, CachingTaskLicense, CachingTaskList, CachingTaskListEventMap, CachingTaskParameters, CanPlayEvent, CanPlayThroughEvent, Canvas, Cast, CastConfiguration, CastEventMap, CastState, CastStateChangeEvent, CertificateRequest, CertificateResponse, ChannelDrmConfigResponse, ChannelMillicastSource, Chromecast, ChromecastConfiguration, ChromecastConnectionCallback, ChromecastError, ChromecastErrorCode, ChromecastErrorEvent, ChromecastEventMap, ChromecastMetadataDescription, ChromecastMetadataImage, ChromecastMetadataType, ChromelessPlayer, ClearkeyDecryptionKey, ClearkeyKeySystemConfiguration, Clip, ClipEventMap, ClosedCaptionFile, ComcastDRMConfiguration, ComcastIntegrationID, CommonUtils, CompanionAd, ConaxDRMConfiguration, ConaxIntegrationID, ContentProtectionError, ContentProtectionErrorCode, ContentProtectionErrorEvent, ContentProtectionIntegration, ContentProtectionIntegrationFactory, ContentProtectionRequest, ContentProtectionRequestSubType, ContentProtectionResponse, ContentSteeringErrorEvent, ContentSteeringLocationChangeEvent, ContentSteeringStartEvent, ContentSteeringStopEvent, ContentSteeringUpdateEvent, CrossOriginSetting, CsaiAdDescription, CurrentSourceChangeEvent, CustomAdIntegrationKind, CustomTextTrackMap, CustomTextTrackOptions, CustomWebVTTTextTrack, DAIAvailabilityType, DRMConfiguration, DRMTodayDRMConfiguration, DRMTodayIntegrationID, DashPlaybackConfiguration, DateRangeCue, DeliveryType, DeviceBasedTitaniumDRMConfiguration, DimensionChangeEvent, DirectionChangeEvent, Distribution, DistributionLoadStartEvent, DistributionLoadedEvent, DistributionOfflineEvent, DurationChangeEvent, EdgeStyle, EmptiedEvent, EmsgCue, EncryptedEvent, EndedEvent, Endpoint, EndpointLoadedEvent, EnterBadNetworkModeEvent, ErrorCategory, ErrorCode, ErrorEvent, Event, EventDispatcher, EventListener, EventMap, EventStreamCue, EventedList, ExitBadNetworkModeEvent, ExpressPlayDRMConfiguration, ExpressPlayIntegrationID, EzdrmDRMConfiguration, EzdrmIntegrationID, FairPlayKeySystemConfiguration, FreeWheelAdDescription, FreeWheelAdUnitType, FreeWheelCue, FullscreenOptions$1 as FullscreenOptions, Geo, GlobalCast, GlobalChromecast, GoogleDAI, GoogleDAIConfiguration, GoogleDAILiveConfiguration, GoogleDAISSAIIntegrationID, GoogleDAITypedSource, GoogleDAIVodConfiguration, GoogleImaAd, GoogleImaConfiguration, HTTPHeaders, HTTPHeadersInit, HespApi, HespApiEventMap, HespMediaType, HespSourceConfiguration, HespTypedSource, HlsDiscontinuityAlignment, HlsPlaybackConfiguration, ID3AttachedPicture, ID3BaseFrame, ID3Comments, ID3CommercialFrame, ID3Cue, ID3Frame, ID3GenericEncapsulatedObject, ID3InvolvedPeopleList, ID3PositionSynchronisationFrame, ID3PrivateFrame, ID3SynchronizedLyricsText, ID3TermsOfUse, ID3Text, ID3UniqueFileIdentifier, ID3Unknown, ID3UnsynchronisedLyricsTextTranscription, ID3UrlLink, ID3UserDefinedText, ID3UserDefinedUrlLink, ID3Yospace, IMAAdDescription, IntentToFallbackEvent, InterceptableRequest, InterceptableResponse, Interstitial, InterstitialEvent, InterstitialType, IrdetoDRMConfiguration, IrdetoIntegrationID, JoinStrategy, KeyOSDRMConfiguration, KeyOSFairplayKeySystemConfiguration, KeyOSIntegrationID, KeyOSKeySystemConfiguration, KeySystemConfiguration, KeySystemId, Latencies, LatencyConfiguration, LatencyManager, LayoutChangeEvent, LicenseRequest, LicenseResponse, LicenseType, LinearAd, List, LoadedDataEvent, LoadedMetadataEvent, ManifestErrorEvent, MaybeAsync, MeasurableNetworkEstimator, MediaError, MediaErrorCode, MediaFile, MediaMelonConfiguration, MediaTailorSource, MediaTrack, MediaTrackEventMap, MediaTrackList, MediaTrackType, MediaType, MetadataDescription, Metrics, Millicast, MillicastEventMap, MillicastMetadataCue, MillicastSource, MillicastStatsEvent, MoatAnalyticsIntegrationID, MoatConfiguration, MultiViewPlayer, MultiViewPlayerEventMap, MultiViewPlayerLayout, MutedAutoplayConfiguration, Network, NetworkEstimator, NetworkEstimatorController, NetworkEventMap, NetworkInterceptorController, NodeStyleVoidCallback, NonLinearAd, OverlayInterstitial, OverlayPosition, OverlaySize, PauseEvent, PiPConfiguration, PiPPosition, PlayEvent, PlayReadyKeySystemConfiguration, PlayStation5Configuration, PlayStation5PlayMode, PlayerConfiguration, PlayerEventMap, PlayerList, PlayingEvent, PlayoutDelay, PreloadType, Presentation, PresentationEventMap, PresentationMode, PresentationModeChangeEvent, ProgressEvent, Quality, QualityEvent, QualityEventMap, QualityList, RateChangeEvent, ReadyStateChangeEvent, RelatedChangeEvent, RelatedContent, RelatedContentEventMap, RelatedContentSource, RelatedHideEvent, RelatedShowEvent, RemoveCachingTaskEvent, RemoveTrackEvent, RemoveViewEvent, Representation, RepresentationChangeEvent, Request, RequestBody, RequestInit, RequestInterceptor, RequestLike, RequestMeasurer, RequestMethod, RequestSubType, RequestType, ResponseBody, ResponseInit, ResponseInterceptor, ResponseLike, ResponseType, RetryConfiguration, SSAIIntegrationId, SeamlessPeriodSwitchStrategy, SeamlessSwitchStrategy, SeekedEvent, SeekingEvent, SegmentErrorEvent, ServerSideAdInsertionConfiguration, ServerSideAdIntegrationController, ServerSideAdIntegrationFactory, ServerSideAdIntegrationHandler, SkippedAdStrategy, SmartSightConfiguration, SmartSightIntegrationID, Source, SourceAbrConfiguration, SourceChangeEvent, SourceConfiguration, SourceDescription, SourceIntegrationId, SourceLatencyConfiguration, Sources, SpotXAdDescription, SpotxData, SpotxQueryParameter, StateChangeEvent, StereoChangeEvent, StreamOneAnalyticsIntegrationID, StreamOneConfiguration, StreamType, StringKeyOf, StylePropertyRecord, SupportedCustomTextTrackCueTypes, THEOplayerError, TTMLCue, TTMLExtent, TargetQualityChangedEvent, TextTrack, TextTrackAddCueEvent, TextTrackCue, TextTrackCueChangeEvent, TextTrackCueEnterEvent, TextTrackCueEventMap, TextTrackCueExitEvent, TextTrackCueList, TextTrackCueUpdateEvent, TextTrackDescription, TextTrackEnterCueEvent, TextTrackError, TextTrackErrorCode, TextTrackErrorEvent, TextTrackEventMap, TextTrackExitCueEvent, TextTrackReadyState, TextTrackReadyStateChangeEvent, TextTrackRemoveCueEvent, TextTrackStyle, TextTrackStyleEventMap, TextTrackType, TextTrackTypeChangeEvent, TextTrackUpdateCueEvent, TextTracksList, TheoAdDescription, TheoAds, TheoAdsEventsMap, TheoAdsLayout, TheoAdsLayoutOverride, TheoLiveApi, TheoLiveApiEventMap, TheoLiveConfiguration, TheoLivePublication, TheoLiveSource, ThumbnailResolution, TimeRanges, TimeUpdateEvent, TitaniumDRMConfiguration, TitaniumIntegrationID, TokenBasedTitaniumDRMConfiguration, Track, TrackChangeEvent, TrackEventMap, TrackList, TrackListEventMap, TrackUpdateEvent, TypedSource, UIConfiguration, UILanguage, UIPlayerConfiguration, UIRelatedContent, UIRelatedContentEventMap, UniversalAdId, UpdateQualityEvent, Uplynk, UplynkAd, UplynkAdBeginEvent, UplynkAdBreak, UplynkAdBreakBeginEvent, UplynkAdBreakEndEvent, UplynkAdBreakEventMap, UplynkAdBreakList, UplynkAdBreakListEventMap, UplynkAdBreakSkipEvent, UplynkAdCompleteEvent, UplynkAdEndEvent, UplynkAdEventMap, UplynkAdFirstQuartileEvent, UplynkAdList, UplynkAdListEventMap, UplynkAdMidpointEvent, UplynkAdThirdQuartileEvent, UplynkAddAdBreakEvent, UplynkAddAssetEvent, UplynkAds, UplynkAsset, UplynkAssetEventMap, UplynkAssetId, UplynkAssetInfoResponse, UplynkAssetInfoResponseEvent, UplynkAssetList, UplynkAssetMovieRating, UplynkAssetTvRating, UplynkAssetType, UplynkConfiguration, UplynkDRMConfiguration, UplynkEventMap, UplynkExternalId, UplynkIntegrationID, UplynkPingConfiguration, UplynkPingErrorEvent, UplynkPingResponse, UplynkPingResponseEvent, UplynkPreplayBaseResponse, UplynkPreplayLiveResponse, UplynkPreplayResponse, UplynkPreplayResponseEvent, UplynkPreplayResponseType, UplynkPreplayVodResponse, UplynkRemoveAdBreakEvent, UplynkRemoveAdEvent, UplynkRemoveAssetEvent, UplynkResponseDrm, UplynkResponseLiveAd, UplynkResponseLiveAdBreak, UplynkResponseLiveAds, UplynkResponseVodAd, UplynkResponseVodAdBreak, UplynkResponseVodAdBreakOffset, UplynkResponseVodAdPlaceholder, UplynkResponseVodAds, UplynkSource, UplynkUiConfiguration, UplynkUpdateAdBreakEvent, UserActions, VPAIDMode, VR, VRConfiguration, VRDirection, VREventMap, VRPanoramaMode, VRState, VRStereoMode, VTTAlignSetting, VTTDirectionSetting, VTTLine, VTTLineAlignSetting, VTTPosition, VTTPositionAlignSetting, VTTScrollSetting, VastExtension, VendorCast, VendorCastEventMap, VerimatrixDRMConfiguration, VerimatrixIntegrationID, VideoFrameCallbackMetadata, VideoFrameRequestCallback, VideoQuality, View, ViewChangeEvent, ViewPositionChangeEvent, VimondDRMConfiguration, VimondIntegrationID, Visibility, VisibilityObserver, VisibilityObserverCallback, VoidPromiseCallback, VolumeChangeEvent, VudrmDRMConfiguration, VudrmIntegrationID, WaitUntilCallback, WaitingEvent, WebAudio, WebRTCOptions, WebVTTCue, WebVTTRegion, WidevineKeySystemConfiguration, XstreamDRMConfiguration, XstreamIntegrationID, YospaceId, YouboraAnalyticsIntegrationID, YouboraOptions, cache, cast, features, players, registerContentProtectionIntegration, utils, version, videojs };
