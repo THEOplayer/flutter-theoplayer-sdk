@@ -58,6 +58,7 @@ class THEOplayerViewNative(
     private val videoTrackBridge: VideoTrackBridge
     private val theoLiveBridge: THEOliveBridge
     private val debugFlagsBridge: DebugFlagsBridge
+    private val abrBridge: AbrBridge
 
     private var allowAutomaticPictureInPicture: Boolean = false;
 
@@ -145,6 +146,8 @@ class THEOplayerViewNative(
 
         debugFlagsBridge = DebugFlagsBridge(pigeonMessenger, THEOplayerGlobal.getSharedInstance(context).logger)
 
+        abrBridge = AbrBridge(pigeonMessenger, tpv.player)
+
     }
 
     override fun getView(): View {
@@ -159,6 +162,7 @@ class THEOplayerViewNative(
         videoTrackBridge.removeListeners()
         theoLiveBridge.removeListeners()
         debugFlagsBridge.dispose()
+        abrBridge.dispose()
 
         // Clean up native API
         setUp(pigeonMessenger, null)

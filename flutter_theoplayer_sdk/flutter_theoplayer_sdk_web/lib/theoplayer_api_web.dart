@@ -66,6 +66,8 @@ extension THEOplayerJSExtension on THEOplayerJS {
   external THEOplayerArrayList<THEOplayerVideoTrack> get videoTracks;
 
   external THEOplayerTheoLiveApi? get theoLive;
+
+  external THEOplayerAbrConfig get abr;
 }
 
 @JS("Date")
@@ -339,4 +341,39 @@ extension HespLatenciesJSExtension on HespLatenciesJS {
   external JSNumber? get distributionLatency;
   external JSNumber? get playerLatency;
   external JSNumber? get theoliveLatency;
+}
+
+@JS()
+@anonymous
+@staticInterop
+class THEOplayerAbrConfig {}
+
+extension THEOplayerAbrConfigExtension on THEOplayerAbrConfig {
+  external JSAny? get strategy;
+  external set strategy(JSAny? value);
+  external JSNumber? get targetBuffer;
+  external set targetBuffer(JSNumber? value);
+}
+
+@JS()
+@anonymous
+@staticInterop
+class THEOplayerAbrStrategy {
+  external factory THEOplayerAbrStrategy({required String type, THEOplayerAbrMetadata? metadata});
+}
+
+extension THEOplayerAbrStrategyExtension on THEOplayerAbrStrategy {
+  external String get type;
+  external THEOplayerAbrMetadata? get metadata;
+}
+
+@JS()
+@anonymous
+@staticInterop
+class THEOplayerAbrMetadata {
+  external factory THEOplayerAbrMetadata({int? bitrate});
+}
+
+extension THEOplayerAbrMetadataExtension on THEOplayerAbrMetadata {
+  external int? get bitrate;
 }

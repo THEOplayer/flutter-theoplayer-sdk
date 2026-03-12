@@ -155,6 +155,24 @@ class _MyAppState extends State<MyApp> {
                             onPressed: () => player.showDebugPanel(context),
                             child: const Text("DEBUG FLAGS"),
                           ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text("ABR: "),
+                              ...AbrStrategyType.values.map((type) =>
+                                Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 2),
+                                  child: FilledButton(
+                                    onPressed: () {
+                                      player.abr.setStrategy(AbrStrategyConfiguration(type: type));
+                                      debugPrint("ABR strategy set to ${type.name}");
+                                    },
+                                    child: Text(type.name.toUpperCase()),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
                           FilledButton(
                               onPressed: () {
                                 player.setPresentationMode(PresentationMode.FULLSCREEN);

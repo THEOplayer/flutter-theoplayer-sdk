@@ -112,6 +112,13 @@ enum SourceIntegrationId: Int {
   case theolive = 0
 }
 
+/// The adaptive bitrate strategy type.
+enum AbrStrategyTypePigeon: Int {
+  case performance = 0
+  case quality = 1
+  case bandwidth = 2
+}
+
 /// Generated class from Pigeon that represents data sent in messages.
 struct TimeRange {
   var start: Double
@@ -354,6 +361,54 @@ struct Endpoint {
   }
 }
 
+/// Metadata for the ABR strategy (e.g. initial bitrate cap).
+///
+/// Generated class from Pigeon that represents data sent in messages.
+struct AbrStrategyMetadataPigeon {
+  var bitrate: Int64? = nil
+
+
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  static func fromList(_ pigeonVar_list: [Any?]) -> AbrStrategyMetadataPigeon? {
+    let bitrate: Int64? = nilOrValue(pigeonVar_list[0])
+
+    return AbrStrategyMetadataPigeon(
+      bitrate: bitrate
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      bitrate
+    ]
+  }
+}
+
+/// The ABR strategy configuration: type + optional metadata.
+///
+/// Generated class from Pigeon that represents data sent in messages.
+struct AbrStrategyConfigurationPigeon {
+  var type: AbrStrategyTypePigeon
+  var metadata: AbrStrategyMetadataPigeon? = nil
+
+
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  static func fromList(_ pigeonVar_list: [Any?]) -> AbrStrategyConfigurationPigeon? {
+    let type = pigeonVar_list[0] as! AbrStrategyTypePigeon
+    let metadata: AbrStrategyMetadataPigeon? = nilOrValue(pigeonVar_list[1])
+
+    return AbrStrategyConfigurationPigeon(
+      type: type,
+      metadata: metadata
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      type,
+      metadata,
+    ]
+  }
+}
+
 /// A single debug flag with its metadata and current state.
 ///
 /// Generated class from Pigeon that represents data sent in messages.
@@ -428,22 +483,32 @@ private class APIsPigeonCodecReader: FlutterStandardReader {
       }
       return nil
     case 135:
-      return TimeRange.fromList(self.readValue() as! [Any?])
+      let enumResultAsInt: Int? = nilOrValue(self.readValue() as! Int?)
+      if let enumResultAsInt = enumResultAsInt {
+        return AbrStrategyTypePigeon(rawValue: enumResultAsInt)
+      }
+      return nil
     case 136:
-      return SourceDescription.fromList(self.readValue() as! [Any?])
+      return TimeRange.fromList(self.readValue() as! [Any?])
     case 137:
-      return TypedSourcePigeon.fromList(self.readValue() as! [Any?])
+      return SourceDescription.fromList(self.readValue() as! [Any?])
     case 138:
-      return DRMConfiguration.fromList(self.readValue() as! [Any?])
+      return TypedSourcePigeon.fromList(self.readValue() as! [Any?])
     case 139:
-      return WidevineDRMConfiguration.fromList(self.readValue() as! [Any?])
+      return DRMConfiguration.fromList(self.readValue() as! [Any?])
     case 140:
-      return FairPlayDRMConfiguration.fromList(self.readValue() as! [Any?])
+      return WidevineDRMConfiguration.fromList(self.readValue() as! [Any?])
     case 141:
-      return HespLatencies.fromList(self.readValue() as! [Any?])
+      return FairPlayDRMConfiguration.fromList(self.readValue() as! [Any?])
     case 142:
-      return Endpoint.fromList(self.readValue() as! [Any?])
+      return HespLatencies.fromList(self.readValue() as! [Any?])
     case 143:
+      return Endpoint.fromList(self.readValue() as! [Any?])
+    case 144:
+      return AbrStrategyMetadataPigeon.fromList(self.readValue() as! [Any?])
+    case 145:
+      return AbrStrategyConfigurationPigeon.fromList(self.readValue() as! [Any?])
+    case 146:
       return DebugFlagPigeon.fromList(self.readValue() as! [Any?])
     default:
       return super.readValue(ofType: type)
@@ -471,32 +536,41 @@ private class APIsPigeonCodecWriter: FlutterStandardWriter {
     } else if let value = value as? SourceIntegrationId {
       super.writeByte(134)
       super.writeValue(value.rawValue)
-    } else if let value = value as? TimeRange {
+    } else if let value = value as? AbrStrategyTypePigeon {
       super.writeByte(135)
-      super.writeValue(value.toList())
-    } else if let value = value as? SourceDescription {
+      super.writeValue(value.rawValue)
+    } else if let value = value as? TimeRange {
       super.writeByte(136)
       super.writeValue(value.toList())
-    } else if let value = value as? TypedSourcePigeon {
+    } else if let value = value as? SourceDescription {
       super.writeByte(137)
       super.writeValue(value.toList())
-    } else if let value = value as? DRMConfiguration {
+    } else if let value = value as? TypedSourcePigeon {
       super.writeByte(138)
       super.writeValue(value.toList())
-    } else if let value = value as? WidevineDRMConfiguration {
+    } else if let value = value as? DRMConfiguration {
       super.writeByte(139)
       super.writeValue(value.toList())
-    } else if let value = value as? FairPlayDRMConfiguration {
+    } else if let value = value as? WidevineDRMConfiguration {
       super.writeByte(140)
       super.writeValue(value.toList())
-    } else if let value = value as? HespLatencies {
+    } else if let value = value as? FairPlayDRMConfiguration {
       super.writeByte(141)
       super.writeValue(value.toList())
-    } else if let value = value as? Endpoint {
+    } else if let value = value as? HespLatencies {
       super.writeByte(142)
       super.writeValue(value.toList())
-    } else if let value = value as? DebugFlagPigeon {
+    } else if let value = value as? Endpoint {
       super.writeByte(143)
+      super.writeValue(value.toList())
+    } else if let value = value as? AbrStrategyMetadataPigeon {
+      super.writeByte(144)
+      super.writeValue(value.toList())
+    } else if let value = value as? AbrStrategyConfigurationPigeon {
+      super.writeByte(145)
+      super.writeValue(value.toList())
+    } else if let value = value as? DebugFlagPigeon {
+      super.writeByte(146)
       super.writeValue(value.toList())
     } else {
       super.writeValue(value)
@@ -1008,6 +1082,122 @@ class THEOplayerFlutterTHEOliveAPI: THEOplayerFlutterTHEOliveAPIProtocol {
       } else {
         completion(.success(Void()))
       }
+    }
+  }
+}
+/// Host API: Dart → Native calls for ABR configuration.
+///
+/// Generated protocol from Pigeon that represents a handler of messages from Flutter.
+protocol THEOplayerNativeAbrAPI {
+  /// Get the current ABR strategy.
+  func getAbrStrategy() throws -> AbrStrategyConfigurationPigeon
+  /// Set the ABR strategy.
+  func setAbrStrategy(config: AbrStrategyConfigurationPigeon) throws
+  /// Get the target buffer in seconds.
+  func getTargetBuffer() throws -> Double
+  /// Set the target buffer in seconds.
+  func setTargetBuffer(value: Double) throws
+  /// Get the preferred peak bitrate in bps (iOS only, returns 0 on other platforms).
+  func getPreferredPeakBitRate() throws -> Double
+  /// Set the preferred peak bitrate in bps (iOS only, no-op on other platforms).
+  func setPreferredPeakBitRate(value: Double) throws
+}
+
+/// Generated setup class from Pigeon to handle messages through the `binaryMessenger`.
+class THEOplayerNativeAbrAPISetup {
+  static var codec: FlutterStandardMessageCodec { APIsPigeonCodec.shared }
+  /// Sets up an instance of `THEOplayerNativeAbrAPI` to handle messages through the `binaryMessenger`.
+  static func setUp(binaryMessenger: FlutterBinaryMessenger, api: THEOplayerNativeAbrAPI?, messageChannelSuffix: String = "") {
+    let channelSuffix = messageChannelSuffix.count > 0 ? ".\(messageChannelSuffix)" : ""
+    /// Get the current ABR strategy.
+    let getAbrStrategyChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.getAbrStrategy\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      getAbrStrategyChannel.setMessageHandler { _, reply in
+        do {
+          let result = try api.getAbrStrategy()
+          reply(wrapResult(result))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      getAbrStrategyChannel.setMessageHandler(nil)
+    }
+    /// Set the ABR strategy.
+    let setAbrStrategyChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.setAbrStrategy\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      setAbrStrategyChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let configArg = args[0] as! AbrStrategyConfigurationPigeon
+        do {
+          try api.setAbrStrategy(config: configArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      setAbrStrategyChannel.setMessageHandler(nil)
+    }
+    /// Get the target buffer in seconds.
+    let getTargetBufferChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.getTargetBuffer\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      getTargetBufferChannel.setMessageHandler { _, reply in
+        do {
+          let result = try api.getTargetBuffer()
+          reply(wrapResult(result))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      getTargetBufferChannel.setMessageHandler(nil)
+    }
+    /// Set the target buffer in seconds.
+    let setTargetBufferChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.setTargetBuffer\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      setTargetBufferChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let valueArg = args[0] as! Double
+        do {
+          try api.setTargetBuffer(value: valueArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      setTargetBufferChannel.setMessageHandler(nil)
+    }
+    /// Get the preferred peak bitrate in bps (iOS only, returns 0 on other platforms).
+    let getPreferredPeakBitRateChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.getPreferredPeakBitRate\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      getPreferredPeakBitRateChannel.setMessageHandler { _, reply in
+        do {
+          let result = try api.getPreferredPeakBitRate()
+          reply(wrapResult(result))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      getPreferredPeakBitRateChannel.setMessageHandler(nil)
+    }
+    /// Set the preferred peak bitrate in bps (iOS only, no-op on other platforms).
+    let setPreferredPeakBitRateChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAbrAPI.setPreferredPeakBitRate\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      setPreferredPeakBitRateChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let valueArg = args[0] as! Double
+        do {
+          try api.setPreferredPeakBitRate(value: valueArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      setPreferredPeakBitRateChannel.setMessageHandler(nil)
     }
   }
 }

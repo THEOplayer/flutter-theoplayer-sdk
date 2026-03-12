@@ -81,6 +81,22 @@ void main() {
     testWidgets('Test quality properties with SURFACE_TEXTURE', (WidgetTester tester) async {
       await runQualityPropertiesTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
     });
+
+    testWidgets('Test THEOlive ABR strategy performance with HYBRID_COMPOSITION', (WidgetTester tester) async {
+      await runTHEOliveAbrStrategyPerformanceTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
+    });
+
+    testWidgets('Test THEOlive ABR strategy performance with SURFACE_TEXTURE', (WidgetTester tester) async {
+      await runTHEOliveAbrStrategyPerformanceTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
+    });
+
+    testWidgets('Test THEOlive ABR strategy quality with HYBRID_COMPOSITION', (WidgetTester tester) async {
+      await runTHEOliveAbrStrategyQualityTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
+    });
+
+    testWidgets('Test THEOlive ABR strategy quality with SURFACE_TEXTURE', (WidgetTester tester) async {
+      await runTHEOliveAbrStrategyQualityTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
+    });
   }
 }
 
@@ -446,4 +462,134 @@ Future<void> runLatenciesTest(WidgetTester tester, AndroidViewComposition androi
   print("Current latency: $currentLatency");
   expect(currentLatency, isNotNull);
   expect(currentLatency!, greaterThan(0));
+}
+
+Future<void> runTHEOliveAbrStrategyPerformanceTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
+  TestApp app = TestApp(androidViewComposition: androidViewComposition);
+  await tester.pumpWidget(app);
+
+  final chromlessPlayerView = find.byKey(const Key('testChromelessPlayer'));
+  await tester.ensureVisible(chromlessPlayerView);
+  final player = (tester.firstElement(chromlessPlayerView).widget as ChromelessPlayerView).player;
+  await tester.pumpAndSettle();
+  await app.waitForPlayerReady();
+  await tester.pumpAndSettle();
+
+  expect(player.isInitialized, isTrue);
+
+  player.setMuted(true);
+  player.setAutoplay(true);
+
+  // Set ABR strategy to performance before setting source
+  print("Setting ABR strategy to performance");
+  await player.abr.setStrategy(AbrStrategyConfiguration(type: AbrStrategyType.performance));
+
+  // Verify strategy is set
+  final strategy = await player.abr.strategy;
+  print("Current ABR strategy: ${strategy.type}");
+  expect(strategy.type, equals(AbrStrategyType.performance));
+
+  print("Setting THEOlive source");
+  player.setSource(SourceDescription(sources: [
+    TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
+  ]));
+
+  // Wait just enough for initial track selection - ABR strategy only affects initial selection
+  await tester.pumpAndSettle(const Duration(seconds: 3));
+
+  // Verify video tracks are available
+  expect(player.videoTracks.length, greaterThan(0));
+  final videoTrack = player.videoTracks[0];
+  expect(videoTrack.qualities.length, greaterThan(0));
+
+  // Find the lowest bandwidth quality
+  int lowestBandwidth = videoTrack.qualities.first.bandwidth;
+  for (final quality in videoTrack.qualities) {
+    if (quality.bandwidth < lowestBandwidth) {
+      lowestBandwidth = quality.bandwidth;
+    }
+  }
+
+  print("Available qualities:");
+  for (final quality in videoTrack.qualities) {
+    print("  ${quality.width}x${quality.height}, bandwidth=${quality.bandwidth}");
+  }
+
+  // With performance strategy, the initial active quality should be the lowest bandwidth
+  final activeQuality = videoTrack.activeQuality;
+  expect(activeQuality, isNotNull, reason: "Active quality should be available after playback starts");
+  print("Initial active quality: ${activeQuality!.width}x${activeQuality.height}, bandwidth=${activeQuality.bandwidth}");
+  print("Lowest bandwidth: $lowestBandwidth");
+
+  // Verify the initial active quality is the lowest bandwidth quality
+  expect(activeQuality.bandwidth, equals(lowestBandwidth),
+      reason: "Performance strategy should select the lowest bandwidth video quality for initial track selection");
+}
+
+Future<void> runTHEOliveAbrStrategyQualityTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
+  TestApp app = TestApp(androidViewComposition: androidViewComposition);
+  await tester.pumpWidget(app);
+
+  final chromlessPlayerView = find.byKey(const Key('testChromelessPlayer'));
+  await tester.ensureVisible(chromlessPlayerView);
+  final player = (tester.firstElement(chromlessPlayerView).widget as ChromelessPlayerView).player;
+  await tester.pumpAndSettle();
+  await app.waitForPlayerReady();
+  await tester.pumpAndSettle();
+
+  expect(player.isInitialized, isTrue);
+
+  player.setMuted(true);
+  player.setAutoplay(true);
+
+  // Set ABR strategy to quality before setting source
+  print("Setting ABR strategy to quality");
+  await player.abr.setStrategy(AbrStrategyConfiguration(type: AbrStrategyType.quality));
+
+  // Verify strategy is set
+  final strategy = await player.abr.strategy;
+  print("Current ABR strategy: ${strategy.type}");
+  expect(strategy.type, equals(AbrStrategyType.quality));
+
+  print("Setting THEOlive source");
+  player.setSource(SourceDescription(sources: [
+    TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
+  ]));
+
+  // Wait just enough for initial track selection - ABR strategy only affects initial selection
+  await tester.pumpAndSettle(const Duration(seconds: 3));
+
+  // Verify video tracks are available
+  expect(player.videoTracks.length, greaterThan(0));
+  final videoTrack = player.videoTracks[0];
+  expect(videoTrack.qualities.length, greaterThan(0));
+
+  // Get player view size in physical pixels (native SDK uses physical pixels)
+  final viewSize = tester.getSize(chromlessPlayerView);
+  final devicePixelRatio = tester.view.devicePixelRatio;
+  final physicalHeight = (viewSize.height * devicePixelRatio).toInt();
+  print("Player view size: ${viewSize.width}x${viewSize.height} (logical), physical height: $physicalHeight");
+
+  // Find the highest quality that fits the physical view height
+  int expectedBandwidth = 0;
+  for (final quality in videoTrack.qualities) {
+    if (quality.height <= physicalHeight && quality.bandwidth > expectedBandwidth) {
+      expectedBandwidth = quality.bandwidth;
+    }
+  }
+
+  print("Available qualities:");
+  for (final quality in videoTrack.qualities) {
+    print("  ${quality.width}x${quality.height}, bandwidth=${quality.bandwidth}");
+  }
+
+  // With quality strategy, the initial active quality should be the highest fitting the view
+  final activeQuality = videoTrack.activeQuality;
+  expect(activeQuality, isNotNull, reason: "Active quality should be available after playback starts");
+  print("Initial active quality: ${activeQuality!.width}x${activeQuality.height}, bandwidth=${activeQuality.bandwidth}");
+  print("Expected bandwidth (highest fitting view): $expectedBandwidth");
+
+  // Verify the initial active quality matches the expected quality for view size
+  expect(activeQuality.bandwidth, equals(expectedBandwidth),
+      reason: "Quality strategy should select the highest bandwidth video quality fitting the view size");
 }
