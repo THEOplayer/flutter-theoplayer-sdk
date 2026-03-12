@@ -564,11 +564,17 @@ Future<void> runTHEOliveAbrStrategyQualityTest(WidgetTester tester, AndroidViewC
   final videoTrack = player.videoTracks[0];
   expect(videoTrack.qualities.length, greaterThan(0));
 
-  // Find the highest bandwidth quality
-  int highestBandwidth = videoTrack.qualities.first.bandwidth;
+  // Get player view size in physical pixels (native SDK uses physical pixels)
+  final viewSize = tester.getSize(chromlessPlayerView);
+  final devicePixelRatio = tester.view.devicePixelRatio;
+  final physicalHeight = (viewSize.height * devicePixelRatio).toInt();
+  print("Player view size: ${viewSize.width}x${viewSize.height} (logical), physical height: $physicalHeight");
+
+  // Find the highest quality that fits the physical view height
+  int expectedBandwidth = 0;
   for (final quality in videoTrack.qualities) {
-    if (quality.bandwidth > highestBandwidth) {
-      highestBandwidth = quality.bandwidth;
+    if (quality.height <= physicalHeight && quality.bandwidth > expectedBandwidth) {
+      expectedBandwidth = quality.bandwidth;
     }
   }
 
@@ -577,13 +583,13 @@ Future<void> runTHEOliveAbrStrategyQualityTest(WidgetTester tester, AndroidViewC
     print("  ${quality.width}x${quality.height}, bandwidth=${quality.bandwidth}");
   }
 
-  // With quality strategy, the initial active quality should be the highest bandwidth
+  // With quality strategy, the initial active quality should be the highest fitting the view
   final activeQuality = videoTrack.activeQuality;
   expect(activeQuality, isNotNull, reason: "Active quality should be available after playback starts");
   print("Initial active quality: ${activeQuality!.width}x${activeQuality.height}, bandwidth=${activeQuality.bandwidth}");
-  print("Highest bandwidth: $highestBandwidth");
+  print("Expected bandwidth (highest fitting view): $expectedBandwidth");
 
-  // Verify the initial active quality is the highest bandwidth quality
-  expect(activeQuality.bandwidth, equals(highestBandwidth),
-      reason: "Quality strategy should select the highest bandwidth video quality for initial track selection");
+  // Verify the initial active quality matches the expected quality for view size
+  expect(activeQuality.bandwidth, equals(expectedBandwidth),
+      reason: "Quality strategy should select the highest bandwidth video quality fitting the view size");
 }
