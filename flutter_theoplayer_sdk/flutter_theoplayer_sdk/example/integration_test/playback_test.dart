@@ -578,6 +578,16 @@ Future<void> runTHEOliveAbrStrategyQualityTest(WidgetTester tester, AndroidViewC
     }
   }
 
+  // If no quality fits, native SDK picks the lowest (smallest) quality
+  if (expectedBandwidth == 0) {
+    expectedBandwidth = videoTrack.qualities.first.bandwidth;
+    for (final quality in videoTrack.qualities) {
+      if (quality.bandwidth < expectedBandwidth) {
+        expectedBandwidth = quality.bandwidth;
+      }
+    }
+  }
+
   print("Available qualities:");
   for (final quality in videoTrack.qualities) {
     print("  ${quality.width}x${quality.height}, bandwidth=${quality.bandwidth}");
