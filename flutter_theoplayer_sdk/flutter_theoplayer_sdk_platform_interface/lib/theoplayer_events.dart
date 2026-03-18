@@ -10,6 +10,7 @@ class Event {
 
 class PlayerEventTypes {
   static const SOURCECHANGE = "SOURCECHANGE";
+  static const CURRENTSOURCECHANGE = "CURRENTSOURCECHANGE";
   static const PLAY = "PLAY";
   static const PLAYING = "PLAYING";
   static const PAUSE = "PAUSE";
@@ -38,6 +39,12 @@ class SourceChangeEvent extends Event {
   final SourceDescription? source;
 
   SourceChangeEvent({required this.source}) : super(type: PlayerEventTypes.SOURCECHANGE);
+}
+
+class CurrentSourceChangeEvent extends Event {
+  final TypedSourcePigeon? currentSource;
+
+  CurrentSourceChangeEvent({required this.currentSource}) : super(type: PlayerEventTypes.CURRENTSOURCECHANGE);
 }
 
 class PlayEvent extends Event {

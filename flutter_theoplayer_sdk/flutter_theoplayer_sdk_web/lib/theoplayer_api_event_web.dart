@@ -16,6 +16,15 @@ extension SourceChangeEventJSExtension on SourceChangeEventJS {
 @JS()
 @anonymous
 @staticInterop
+class CurrentSourceChangeEventJS {}
+
+extension CurrentSourceChangeEventJSExtension on CurrentSourceChangeEventJS {
+  external TypedSource? currentSource;
+}
+
+@JS()
+@anonymous
+@staticInterop
 class PlayEventJS {}
 
 extension PlayEventJSExtension on PlayEventJS {

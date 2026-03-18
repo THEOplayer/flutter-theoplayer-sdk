@@ -376,6 +376,8 @@ abstract class THEOplayerNativeDebugFlagsAPI {
 abstract class THEOplayerFlutterAPI {
   void onSourceChange(SourceDescription? source);
 
+  void onCurrentSourceChange(TypedSourcePigeon? currentSource);
+
   void onPlay(double currentTime);
 
   void onPlaying(double currentTime);
