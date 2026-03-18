@@ -72,6 +72,9 @@ class _TestAppState extends State<TestApp> {
           player.addEventListener(PlayerEventTypes.WAITING, (event) {
             print("_DEBUG: PAUSE received");
           });
+          player.addEventListener(PlayerEventTypes.CURRENTSOURCECHANGE, (event) {
+            print("_DEBUG: CURRENTSOURCECHANGE received ${(event as CurrentSourceChangeEvent).currentSource?.src}");
+          });
 
           widget._playerReady.complete();
         });
