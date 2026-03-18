@@ -20,6 +20,7 @@ import com.theoplayer.android.api.event.player.ReadyStateChangeEvent
 import com.theoplayer.android.api.event.player.ResizeEvent
 import com.theoplayer.android.api.event.player.SeekedEvent
 import com.theoplayer.android.api.event.player.SeekingEvent
+import com.theoplayer.android.api.event.player.CurrentSourceChangeEvent
 import com.theoplayer.android.api.event.player.SourceChangeEvent
 import com.theoplayer.android.api.event.player.TimeUpdateEvent
 import com.theoplayer.android.api.event.player.VolumeChangeEvent
@@ -37,6 +38,10 @@ class PlayerEventForwarder(
 
     private val sourceChangeEventListener = EventListener<SourceChangeEvent> {
         flutterAPI.onSourceChange(SourceTransformer.toFlutterSourceDescription(it.source), emptyCallback)
+    }
+
+    private val currentSourceChangeEventListener = EventListener<CurrentSourceChangeEvent> {
+        flutterAPI.onCurrentSourceChange(SourceTransformer.toFlutterTypedSource(it.currentSource), emptyCallback)
     }
 
     private val playEventListener = EventListener<PlayEvent> {
@@ -125,6 +130,7 @@ class PlayerEventForwarder(
 
     fun attachListeners() {
         player.addEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeEventListener)
+        player.addEventListener(PlayerEventTypes.CURRENTSOURCECHANGE, currentSourceChangeEventListener)
         player.addEventListener(PlayerEventTypes.PLAY, playEventListener)
         player.addEventListener(PlayerEventTypes.PLAYING, playingEventListener)
         player.addEventListener(PlayerEventTypes.PAUSE, pauseEventListener)
@@ -150,6 +156,7 @@ class PlayerEventForwarder(
 
     fun removeListeners() {
         player.removeEventListener(PlayerEventTypes.SOURCECHANGE, sourceChangeEventListener)
+        player.removeEventListener(PlayerEventTypes.CURRENTSOURCECHANGE, currentSourceChangeEventListener)
         player.removeEventListener(PlayerEventTypes.PLAY, playEventListener)
         player.removeEventListener(PlayerEventTypes.PLAYING, playingEventListener)
         player.removeEventListener(PlayerEventTypes.PAUSE, pauseEventListener)

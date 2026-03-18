@@ -27,6 +27,27 @@ PlatformInterface.ReadyState toFlutterReadyState(int readyState) {
   return flutterReadyState;
 }
 
+PlatformInterface.TypedSourcePigeon? toFlutterTypedSource(TypedSource? typedSource) {
+  if (typedSource == null) {
+    return null;
+  }
+
+  PlatformInterface.FairPlayDRMConfiguration? fairPlayDRMConfiguration;
+  FairplayContentProtectionConfiguration? fairplay = typedSource.contentProtection?.fairplay;
+  if (fairplay != null) {
+    fairPlayDRMConfiguration = PlatformInterface.FairPlayDRMConfiguration(licenseAcquisitionURL: fairplay.licenseAcquisitionURL, certificateURL: fairplay.certificateURL);
+  }
+
+  PlatformInterface.WidevineDRMConfiguration? widevineDRMConfiguration;
+  WidevineContentProtectionConfiguration? widevine = typedSource.contentProtection?.widevine;
+  if (widevine != null) {
+    widevineDRMConfiguration = PlatformInterface.WidevineDRMConfiguration(licenseAcquisitionURL: widevine.licenseAcquisitionURL);
+  }
+
+  return PlatformInterface.TypedSourcePigeon(
+      src: typedSource.src, type: typedSource.type, drm: PlatformInterface.DRMConfiguration(fairplay: fairPlayDRMConfiguration, widevine: widevineDRMConfiguration));
+}
+
 PlatformInterface.SourceDescription? toFlutterSourceDescription(SourceDescription? sourceDescription) {
   if (sourceDescription == null) {
     return null;

@@ -27,6 +27,11 @@ class THEOplayerFlutterAPIImpl implements THEOplayerFlutterAPI, EventDispatcher 
   }
 
   @override
+  void onCurrentSourceChange(TypedSourcePigeon? currentSource) {
+    _eventManager.dispatchEvent(CurrentSourceChangeEvent(currentSource: currentSource));
+  }
+
+  @override
   void onPlay(double currentTime) {
     _eventManager.dispatchEvent(PlayEvent(currentTime: currentTime));
   }

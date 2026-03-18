@@ -1902,6 +1902,7 @@ class THEOplayerNativeDebugFlagsAPISetup {
 /// Generated protocol from Pigeon that represents Flutter messages that can be called from Swift.
 protocol THEOplayerFlutterAPIProtocol {
   func onSourceChange(source sourceArg: SourceDescription?, completion: @escaping (Result<Void, PigeonError>) -> Void)
+  func onCurrentSourceChange(currentSource currentSourceArg: TypedSourcePigeon?, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onPlay(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onPlaying(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onPause(currentTime currentTimeArg: Double, completion: @escaping (Result<Void, PigeonError>) -> Void)
@@ -1938,6 +1939,24 @@ class THEOplayerFlutterAPI: THEOplayerFlutterAPIProtocol {
     let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onSourceChange\(messageChannelSuffix)"
     let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([sourceArg] as [Any?]) { response in
+      guard let listResponse = response as? [Any?] else {
+        completion(.failure(createConnectionError(withChannelName: channelName)))
+        return
+      }
+      if listResponse.count > 1 {
+        let code: String = listResponse[0] as! String
+        let message: String? = nilOrValue(listResponse[1])
+        let details: String? = nilOrValue(listResponse[2])
+        completion(.failure(PigeonError(code: code, message: message, details: details)))
+      } else {
+        completion(.success(Void()))
+      }
+    }
+  }
+  func onCurrentSourceChange(currentSource currentSourceArg: TypedSourcePigeon?, completion: @escaping (Result<Void, PigeonError>) -> Void) {
+    let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onCurrentSourceChange\(messageChannelSuffix)"
+    let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([currentSourceArg] as [Any?]) { response in
       guard let listResponse = response as? [Any?] else {
         completion(.failure(createConnectionError(withChannelName: channelName)))
         return
