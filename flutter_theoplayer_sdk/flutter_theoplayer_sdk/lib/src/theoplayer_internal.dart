@@ -242,8 +242,13 @@ class THEOplayer implements EventDispatcher {
   }
 
   /// Start or resume playback.
+  ///
+  /// If the player has fallen back from THEOlive to HLS, this will also seek to the live point.
   void play() {
     _theoPlayerViewController?.play();
+    if (_playerState.isTheoLiveHLSFallback) {
+      currentTime = double.infinity;
+    }
   }
 
   /// Pause playback.

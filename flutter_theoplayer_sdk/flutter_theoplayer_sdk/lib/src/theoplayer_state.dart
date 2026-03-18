@@ -38,6 +38,7 @@ class PlayerState {
   String? error;
 
   bool isInitialized = false;
+  bool isTheoLiveHLSFallback = false;
 
   PresentationMode _presenationMode = PresentationMode.INLINE;
 
@@ -116,13 +117,32 @@ class PlayerState {
 
   void _sourceChangeEventListener(Event event) {
     source = (event as SourceChangeEvent).source;
+    isTheoLiveHLSFallback = false;
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
   }
 
   void _currentSourceChangeEventListener(Event event) {
+    final currentSource = (event as CurrentSourceChangeEvent).currentSource;
+    bool sourceIsTheoLive = source?.sources.any((s) => _isTheoLiveSource(s)) ?? false;
+    bool currentSourceIsTheoLive = _isTheoLiveSource(currentSource);
+    isTheoLiveHLSFallback = sourceIsTheoLive && !currentSourceIsTheoLive && currentSource != null;
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
+  }
+
+  bool _isTheoLiveSource(TypedSourcePigeon? source) {
+    if (source == null) return false;
+    return
+      // Android
+      source.integration == SourceIntegrationId.theolive ||
+      // direct HESP manifest
+      source.type == "application/vnd.theo.hesp+json" ||
+      // iOS
+      source.type == "application/vnd.theo.live+channel" ||
+      // web
+      source.type == "theolive";
+    ;
   }
 
   void _playEventListener(Event event) {
@@ -253,6 +273,7 @@ class PlayerState {
     seekable = [];
     played = [];
     error = null;
+    isTheoLiveHLSFallback = false;
     _presenationMode = PresentationMode.INLINE;
   }
 
