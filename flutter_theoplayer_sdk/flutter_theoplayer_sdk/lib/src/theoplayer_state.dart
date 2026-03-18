@@ -69,6 +69,7 @@ class PlayerState {
 
   void _attachEventListeners() {
     _theoPlayerViewController.addEventListener(PlayerEventTypes.SOURCECHANGE, _sourceChangeEventListener);
+    _theoPlayerViewController.addEventListener(PlayerEventTypes.CURRENTSOURCECHANGE, _currentSourceChangeEventListener);
     _theoPlayerViewController.addEventListener(PlayerEventTypes.PLAY, _playEventListener);
     _theoPlayerViewController.addEventListener(PlayerEventTypes.PLAYING, _playingEventListener);
     _theoPlayerViewController.addEventListener(PlayerEventTypes.PAUSE, _pauseEventListener);
@@ -89,6 +90,7 @@ class PlayerState {
 
   void _removeEventListeners() {
     _theoPlayerViewController.removeEventListener(PlayerEventTypes.SOURCECHANGE, _sourceChangeEventListener);
+    _theoPlayerViewController.removeEventListener(PlayerEventTypes.CURRENTSOURCECHANGE, _currentSourceChangeEventListener);
     _theoPlayerViewController.removeEventListener(PlayerEventTypes.PLAY, _playEventListener);
     _theoPlayerViewController.removeEventListener(PlayerEventTypes.PLAYING, _playingEventListener);
     _theoPlayerViewController.removeEventListener(PlayerEventTypes.PAUSE, _pauseEventListener);
@@ -114,6 +116,11 @@ class PlayerState {
 
   void _sourceChangeEventListener(Event event) {
     source = (event as SourceChangeEvent).source;
+    eventManager.dispatchEvent(event);
+    _stateChangeListener?.call();
+  }
+
+  void _currentSourceChangeEventListener(Event event) {
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
   }

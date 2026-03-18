@@ -2590,6 +2590,8 @@ abstract class THEOplayerFlutterAPI {
 
   void onSourceChange(SourceDescription? source);
 
+  void onCurrentSourceChange(TypedSourcePigeon? currentSource);
+
   void onPlay(double currentTime);
 
   void onPlaying(double currentTime);
@@ -2648,6 +2650,29 @@ abstract class THEOplayerFlutterAPI {
           final SourceDescription? arg_source = (args[0] as SourceDescription?);
           try {
             api.onSourceChange(arg_source);
+            return wrapResponse(empty: true);
+          } on PlatformException catch (e) {
+            return wrapResponse(error: e);
+          }          catch (e) {
+            return wrapResponse(error: PlatformException(code: 'error', message: e.toString()));
+          }
+        });
+      }
+    }
+    {
+      final BasicMessageChannel<Object?> pigeonVar_channel = BasicMessageChannel<Object?>(
+          'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onCurrentSourceChange$messageChannelSuffix', pigeonChannelCodec,
+          binaryMessenger: binaryMessenger);
+      if (api == null) {
+        pigeonVar_channel.setMessageHandler(null);
+      } else {
+        pigeonVar_channel.setMessageHandler((Object? message) async {
+          assert(message != null,
+          'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onCurrentSourceChange was null.');
+          final List<Object?> args = (message as List<Object?>?)!;
+          final TypedSourcePigeon? arg_currentSource = (args[0] as TypedSourcePigeon?);
+          try {
+            api.onCurrentSourceChange(arg_currentSource);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);

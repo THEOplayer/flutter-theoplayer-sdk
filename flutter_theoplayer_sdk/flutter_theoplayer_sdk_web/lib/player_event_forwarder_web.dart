@@ -33,6 +33,7 @@ class PlayerEventForwarderWeb {
   late final loadedDataEventListener;
   late final canPlayThroughEventListener;
   late final sourceChangeEventListener;
+  late final currentSourceChangeEventListener;
 
   PlayerEventForwarderWeb(this._theoplayerJS) {
     canPlayEventListener = (CanPlayEventJS event) {
@@ -123,6 +124,10 @@ class PlayerEventForwarderWeb {
       _eventManager.dispatchEvent(SourceChangeEvent(source: toFlutterSourceDescription(event.source)));
     }.toJS;
 
+    currentSourceChangeEventListener = (CurrentSourceChangeEventJS event) {
+      _eventManager.dispatchEvent(CurrentSourceChangeEvent(currentSource: toFlutterTypedSource(event.currentSource)));
+    }.toJS;
+
     attachEventListeners();
   }
 
@@ -149,6 +154,7 @@ class PlayerEventForwarderWeb {
     _theoplayerJS.addEventListener(PlayerEventTypes.CANPLAY.toLowerCase(), canPlayEventListener);
     _theoplayerJS.addEventListener(PlayerEventTypes.CANPLAYTHROUGH.toLowerCase(), canPlayThroughEventListener);
     _theoplayerJS.addEventListener(PlayerEventTypes.SOURCECHANGE.toLowerCase(), sourceChangeEventListener);
+    _theoplayerJS.addEventListener(PlayerEventTypes.CURRENTSOURCECHANGE.toLowerCase(), currentSourceChangeEventListener);
   }
 
   void detachEventListeners() {
@@ -174,6 +180,7 @@ class PlayerEventForwarderWeb {
     _theoplayerJS.removeEventListener(PlayerEventTypes.CANPLAY.toLowerCase(), canPlayEventListener);
     _theoplayerJS.removeEventListener(PlayerEventTypes.CANPLAYTHROUGH.toLowerCase(), canPlayThroughEventListener);
     _theoplayerJS.removeEventListener(PlayerEventTypes.SOURCECHANGE.toLowerCase(), sourceChangeEventListener);
+    _theoplayerJS.removeEventListener(PlayerEventTypes.CURRENTSOURCECHANGE.toLowerCase(), currentSourceChangeEventListener);
   }
 
   void removeEventListener(String eventType, EventListener<Event> listener) {

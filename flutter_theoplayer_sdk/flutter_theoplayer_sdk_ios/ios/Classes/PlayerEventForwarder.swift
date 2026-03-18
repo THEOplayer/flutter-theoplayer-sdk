@@ -15,6 +15,7 @@ class PlayerEventForwarder {
     private let flutterAPI: THEOplayerFlutterAPI
     
     private var sourceChangeEventListener: EventListener?
+    private var currentSourceChangeEventListener: EventListener?
     private var playEventListener: EventListener?
     private var playingEventListener: EventListener?
     private var pauseEventListener: EventListener?
@@ -48,6 +49,11 @@ class PlayerEventForwarder {
         sourceChangeEventListener = theoplayer.addEventListener(type: PlayerEventTypes.SOURCE_CHANGE, listener: { [weak self] event in
             guard let self else { return }
             self.flutterAPI.onSourceChange(source: SourceTransformer.toFlutterSourceDescription(source: event.source), completion: self.emptyCompletion)
+        })
+        
+        currentSourceChangeEventListener = theoplayer.addEventListener(type: PlayerEventTypes.CURRENT_SOURCE_CHANGE, listener: { [weak self] event in
+            guard let self else { return }
+            self.flutterAPI.onCurrentSourceChange(currentSource: SourceTransformer.toFlutterTypedSource(typedSource: event.currentSource), completion: self.emptyCompletion)
         })
         
         playEventListener = theoplayer.addEventListener(type: PlayerEventTypes.PLAY, listener: { [weak self] event in
@@ -168,6 +174,7 @@ class PlayerEventForwarder {
     // TODO: remove force unwraps
     func removeListeners() {
         theoplayer.removeEventListener(type: PlayerEventTypes.SOURCE_CHANGE, listener: sourceChangeEventListener!)
+        theoplayer.removeEventListener(type: PlayerEventTypes.CURRENT_SOURCE_CHANGE, listener: currentSourceChangeEventListener!)
         theoplayer.removeEventListener(type: PlayerEventTypes.PLAY, listener: playEventListener!)
         theoplayer.removeEventListener(type: PlayerEventTypes.PLAYING, listener: playingEventListener!)
         theoplayer.removeEventListener(type: PlayerEventTypes.PAUSE, listener: pauseEventListener!)
