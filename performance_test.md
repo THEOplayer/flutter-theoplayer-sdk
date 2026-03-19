@@ -147,7 +147,69 @@ Memory Analysis Summary (mem.rss.anon)
 
 Report saved to: test_results/memory_report.json
 ```
+### What the Memory Leak Test Does 
+The test simulates real-world usage where a player is repeatedly created and destroyed — like navigating in and out of a video screen.
 
+Each cycle (repeated 10 times by default):
+1. Creates a TestApp with a THEOplayer instance
+2. Waits for the player to initialize
+3. Sets a THEOlive source and plays for ~5 seconds
+4. Destroys the player by replacing the widget with an
+empty SizedBox.shrink()
+1. Waits ~2 seconds for garbage collection to settle
+
+This runs as two separate tests — one for HYBRID_COMPOSITION and one for SURFACE_TEXTURE (Android rendering modes).
+
+Meanwhile, Perfetto traces memory (RSS) on the device at 1Hz. After the test, the Python analysis script checks whether memory grew beyond a threshold.
+
+What the Results Mean
+
+From the actual run:
+
+Baseline (after settle): 72.5 MB    ← memory after first cycle settled
+Final:                   20.5 MB    ← memory after all cycles completed
+Peak:                    181.7 MB   ← highest memory during playback
+Delta (final-baseline):  -52.0 MB   ← memory change over time
+Threshold:               50.0 MB
+Verdict: PASS
+
+- Baseline 72.5 MB: The app's memory footprint after the first create/play/destroy cycle settled.
+- Peak 181.7 MB: During active playback, the player allocates video buffers, decoders, etc. This is expected.
+- Final 20.5 MB: After all cycles completed and the player was destroyed. It dropped below baseline because the app was idle with no player.
+- Delta -52.0 MB: Memory went down, meaning no leak. The native player resources, video buffers, and Dart objects were properly released on each destroy.
+- PASS: The delta is below the 50 MB threshold (it's actually negative), so no leak was detected.
+
+If there were a leak, you'd see the final memory climb with each iteration (e.g., baseline 72 MB → final 180 MB → delta +108 MB → FAIL). That would indicate the native SDK or Flutter binding isn't releasing resources on dispose.
+
+## Perfetto UI-
+Find the right process (`com.theoplayer.theoplayer_example` PID 27050). Here's what to look for:
+
+## Key Counters
+
+**`mem.rss.anon`** (200M scale) — This is the most important one. It shows anonymous memory (heap allocations, native buffers, Dart VM). This is what our analysis script uses.
+- Look for a **sawtooth pattern**: spikes up when player is created/playing, drops when destroyed
+- If each successive peak is higher than the last → potential leak
+- If the valleys (after destroy) keep rising → definite leak
+
+**`mem.rss`** (400M scale) — Total resident memory (anon + file-backed + shared). Useful as an overall view but noisier because file-backed pages (shared libs, mmap'd files) can fluctuate.
+
+**`mem.rss.file`** (200M scale) — Memory-mapped files (shared libraries, APK assets). Should be roughly flat after initial load. If it keeps growing, the player may be loading and not releasing native libraries.
+
+## What to Look For in Your Trace
+
+From your screenshot, the counters appear mostly flat/stable across the test duration, which is consistent with the **PASS** verdict. Zoom in on `mem.rss.anon` to check:
+
+1. **Zoom in** (scroll wheel or drag-select the time range) to see individual cycles
+2. You should see ~3 bumps (your 3-iteration run) in `mem.rss.anon`
+3. Check that the **valley after each bump returns to roughly the same level** — that means memory is being released properly
+4. If the valleys trend upward, that's the leak amount per cycle
+
+## Counters You Can Ignore
+- **`mem.virt`** (25G) — Virtual address space, not actual physical memory. Always large on Android, not meaningful for leak detection.
+- **`mem.locked`** — Typically zero, not relevant
+- **`oom_score_adj`** — OOM killer priority, not memory usage
+- **`mem.swap`** / **`mem.rss.shmem`** — Usually small and stable
+- 
 ## Key Files Referenced
 - `example/integration_test_app/test_app.dart` -- TestApp widget pattern
 - `example/integration_test/playback_test.dart` -- source loading / play patterns
