@@ -1,8 +1,6 @@
 # THEOlive support
 
-High-quality real-time video streaming at scale for providers of sports betting, iGaming and interactive entertainment
-
-For more info, visit [THEOlive website](https://www.theoplayer.com/product/theolive).
+High-quality synchronized video streaming at scale for providers of large sports broadcasting, sports betting, and interactive entertainment
 
 ## Limitations
 
