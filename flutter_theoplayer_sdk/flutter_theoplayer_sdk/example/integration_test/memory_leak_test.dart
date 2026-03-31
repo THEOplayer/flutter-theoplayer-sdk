@@ -46,7 +46,7 @@ Future<void> runMemoryLeakTest(WidgetTester tester, AndroidViewComposition andro
     player.autoplay = true;
 
     player.source = SourceDescription(sources: [
-      TypedSource(src: "https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8"),
+      TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
     ]);
 
     await tester.pumpAndSettle(playbackDuration);
