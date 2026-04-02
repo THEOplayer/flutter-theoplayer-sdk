@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:theoplayer/theoplayer.dart';
@@ -25,6 +27,9 @@ class _MyAppState extends State<MyApp> {
   UniqueKey key1 = UniqueKey();
   UniqueKey key2 = UniqueKey();
   late THEOplayer player;
+  bool _isTheoLiveSource = false;
+  double? _currentLatency;
+  Timer? _latencyTimer;
 
   final _messengerKey = GlobalKey<ScaffoldMessengerState>();
 
@@ -87,8 +92,31 @@ class _MyAppState extends State<MyApp> {
         });
   }
 
+  void _startLatencyPolling() {
+    _latencyTimer?.cancel();
+    _latencyTimer = Timer.periodic(const Duration(seconds: 1), (_) async {
+      final latency = await player.theoLive?.currentLatency;
+      debugPrint("THEOlive currentLatency: $latency");
+      if (mounted) {
+        setState(() {
+          _currentLatency = latency;
+        });
+      }
+    });
+  }
+
+  void _stopLatencyPolling() {
+    _latencyTimer?.cancel();
+    _latencyTimer = null;
+    setState(() {
+      _isTheoLiveSource = false;
+      _currentLatency = null;
+    });
+  }
+
   @override
   void dispose() {
+    _latencyTimer?.cancel();
     player.dispose();
     super.dispose();
   }
@@ -129,6 +157,8 @@ class _MyAppState extends State<MyApp> {
                       Column(
                         children: [
                           CurrentTimeWidget(player: player),
+                          if (_isTheoLiveSource)
+                            Text('Latency: ${_currentLatency != null ? '${_currentLatency!.toStringAsFixed(2)}s' : '—'}'),
                           const SizedBox(
                             height: 16,
                           ),
@@ -203,6 +233,7 @@ class _MyAppState extends State<MyApp> {
                               FilledButton(
                                 onPressed: () {
                                   _licenseConfigCheckDialog(context);
+                                  _stopLatencyPolling();
                                   player.source = SourceDescription(sources: [
                                     TypedSource(src: "https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8", type: "application/x-mpegurl"),
                                   ]);
@@ -245,12 +276,17 @@ class _MyAppState extends State<MyApp> {
                                   player.source = SourceDescription(sources: [
                                     TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
                                   ]);
+                                  setState(() {
+                                    _isTheoLiveSource = true;
+                                  });
+                                  _startLatencyPolling();
                                 },
                                 child: const Text("THEOlive source"),
                               ),
                               FilledButton(
                                 onPressed: () {
                                   _licenseConfigCheckDialog(context);
+                                  _stopLatencyPolling();
                                   player.source = SourceDescription(sources: [
                                     TypedSource(
                                         src: "https://storage.googleapis.com/wvmedia/cenc/h264/tears/tears_sd.mpd",
@@ -265,6 +301,7 @@ class _MyAppState extends State<MyApp> {
                               FilledButton(
                                 onPressed: () {
                                   _licenseConfigCheckDialog(context);
+                                  _stopLatencyPolling();
                                   player.source = SourceDescription(sources: [
                                     TypedSource(
                                         src: "https://fps.ezdrm.com/demo/video/ezdrm.m3u8",
@@ -284,6 +321,7 @@ class _MyAppState extends State<MyApp> {
                               FilledButton(
                                 onPressed: () {
                                   _licenseConfigCheckDialog(context);
+                                  _stopLatencyPolling();
                                   player.source = SourceDescription(sources: [
                                     TypedSource(
                                         src: "https://d2jl6e4h8300i8.cloudfront.net/netflix_meridian/4k-18.5!9/keyos-logo/g180-avc_a2.0-vbr-aac-128k/r30/dash-wv-pr/stream.mpd",
