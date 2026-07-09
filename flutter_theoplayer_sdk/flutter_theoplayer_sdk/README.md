@@ -136,7 +136,6 @@ and discussed in the next section. Finally, an overview of features, limitations
     - [Getting started on Web](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/creating-minimal-app.md#getting-started-on-web)
 - [The THEOplayer component](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/theoplayer-component.md)
 - Knowledge Base
-  - [SDK architecture](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/architecture.md)
   - [Using custom DRM connectors](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/custom_drm.md)
   - [Limitations and known issues](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/limitations.md)
   - [Picture-in-picture](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/picture-in-picture.md)
