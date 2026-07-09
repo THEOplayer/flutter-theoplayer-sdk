@@ -12,7 +12,7 @@ import THEOplayerTHEOliveIntegration
 
 class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
     
-    private let theoLive: THEOlive
+    private var theoLive: THEOlive
     private let pigeonMessenger: PigeonBinaryMessengerWrapper
     private let flutterTHEOliveAPI: THEOplayerFlutterTHEOliveAPI
     
