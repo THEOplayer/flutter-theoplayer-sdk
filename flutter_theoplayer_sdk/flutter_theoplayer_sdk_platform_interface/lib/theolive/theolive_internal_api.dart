@@ -5,6 +5,8 @@ abstract class THEOliveInternalInterface implements EventDispatcher {
   void preloadChannels(List<String> channelIDs);
   void set badNetworkMode(bool badNetworkMode);
   bool get badNetworkMode;
+  void set authToken(String? authToken);
+  String? get authToken;
   Future<double?> get currentLatency;
   Future<HespLatencies?> get latencies;
   void dispose();

@@ -107,6 +107,10 @@ class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
         }
     }
 
+    func setAuthToken(authToken: String?) throws {
+        theoLive.authToken = authToken
+    }
+
     func currentLatency(completion: @escaping (Result<Double?, Error>) -> Void) {
         let latency = theoLive.currentLatency
         completion(.success(latency))

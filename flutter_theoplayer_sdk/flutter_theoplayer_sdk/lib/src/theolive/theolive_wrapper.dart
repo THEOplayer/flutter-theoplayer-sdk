@@ -89,6 +89,16 @@ class THEOliveAPIHolder extends THEOlive {
   }
 
   @override
+  String? get authToken {
+    return _internalTHEOliveAPI?.authToken;
+  }
+
+  @override
+  set authToken(String? authToken) {
+    _internalTHEOliveAPI?.authToken = authToken;
+  }
+
+  @override
   void preloadChannels(List<String> channelIDs) {
     _internalTHEOliveAPI?.preloadChannels(channelIDs);
   }

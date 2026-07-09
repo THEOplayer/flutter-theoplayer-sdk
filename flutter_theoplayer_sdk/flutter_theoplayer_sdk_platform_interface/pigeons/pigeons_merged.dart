@@ -168,6 +168,7 @@ class HespLatencies {
 abstract class THEOplayerNativeTHEOliveAPI {
   void goLive();
   void preloadChannels(List<String>? channelIds);
+  void setAuthToken(String? authToken);
   @async
   double? currentLatency();
   @async
