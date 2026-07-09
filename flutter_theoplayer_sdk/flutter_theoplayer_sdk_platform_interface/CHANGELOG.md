@@ -1,3 +1,7 @@
+## 10.12.3
+
+* Updated THEOplayer to 10.12.3.
+
 ## 10.12.2
 
 * Fixed an issue when playing OptiView Live streams (THEOlive) the player did not jump to the live point after a fallback.
