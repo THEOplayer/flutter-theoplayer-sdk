@@ -44,12 +44,14 @@ A typical feature touching all platforms (e.g. exposing a new player event) foll
 
 1. **Define** the new API/event in `flutter_theoplayer_sdk_platform_interface/pigeons/apis/*.dart` (and `pigeons/models/` if new data types are needed).
 2. **Generate code**: run `dart run build_runner build --delete-conflicting-outputs` in the `flutter_theoplayer_sdk_platform_interface` folder, and commit all regenerated files.
-3. **Dart plumbing** (platform interface): add the event class in `theoplayer_events.dart` and dispatch it in `theoplayer_flutter_api.dart`.
-4. **Dart facade** (`theoplayer` package): cache/expose the new state in `theoplayer_state.dart` / `theoplayer_internal.dart`.
+3. **Dart plumbing** (platform interface): add the event type constant to `PlayerEventTypes` and the event class in `theoplayer_events.dart`, then dispatch it in `theoplayer_flutter_api.dart`.
+4. **Dart facade** (`theoplayer` package): attach/remove the listener in `PlayerState` (`_attachEventListeners` / `_removeEventListeners` in `theoplayer_state.dart`) to re-dispatch the event (and cache state if needed); expose any new API on `THEOplayer` in `theoplayer_internal.dart`.
 5. **Android**: handle it in `PlayerEventForwarder.kt` or the relevant bridge (add a `transformers/` conversion if needed).
 6. **iOS**: do the same in the Swift mirror files (`PlayerEventForwarder.swift`, etc.).
 7. **Web** (bypasses pigeon): add the JS interop binding in `theoplayer_api_event_web.dart` / `theoplayer_api_web.dart`, convert in `transformers_web.dart`, and forward in `player_event_forwarder_web.dart`.
 8. **Tests**: add integration tests in `example/integration_test/` (and make sure they are reachable from the web single entrypoint in `example/integration_test_single_entrypoint/`).
+
+For a real-world example covering steps 1-7, check how the `currentsourcechange` event was exposed in commit [`af145cc`](https://github.com/THEOplayer/flutter-theoplayer-sdk/commit/af145ccb29dbcae342908c02df77ddb309243639).
 
 For a bigger sub-API (like ABR or THEOlive), the pattern is:
 
