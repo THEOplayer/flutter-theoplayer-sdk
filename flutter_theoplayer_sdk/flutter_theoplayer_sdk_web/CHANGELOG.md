@@ -1,6 +1,6 @@
 ## 10.12.4
 
-* Added `authToken` getter/setter to the THEOlive API (`player.theoLive.authToken`) to authenticate OptiView Live (THEOlive) streams.
+* Added an `authToken` property to the THEOlive API (`player.theoLive.authToken`) to authenticate OptiView Live (THEOlive) streams.
 
 ## 10.12.3
 
