@@ -92,6 +92,16 @@ class THEOliveControllerWeb extends THEOliveInternalInterface {
   }
 
   @override
+  set authToken(String? authToken) {
+    _theoLiveApi.authToken = authToken;
+  }
+
+  @override
+  String? get authToken {
+    return _theoLiveApi.authToken;
+  }
+
+  @override
   void preloadChannels(List<String> channelIDs) {
     _theoLiveApi.preloadPublications(JSHelpers.stringListToJSArray(channelIDs));
   }

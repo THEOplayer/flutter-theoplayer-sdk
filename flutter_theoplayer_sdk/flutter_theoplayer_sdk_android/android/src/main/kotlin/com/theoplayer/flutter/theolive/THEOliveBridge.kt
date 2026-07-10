@@ -58,6 +58,10 @@ class THEOliveBridge(private val theoLive: TheoLive, private val pigeonMessenger
         }
     }
 
+    override fun setAuthToken(authToken: String?) {
+        this.theoLive.authToken = authToken
+    }
+
     override fun currentLatency(callback: (Result<Double?>) -> Unit) {
         callback(Result.success(null))
     }

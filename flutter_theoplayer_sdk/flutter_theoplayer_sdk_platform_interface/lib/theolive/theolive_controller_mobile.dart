@@ -14,6 +14,7 @@ class THEOplayerTHEOliveControllerMobile extends THEOliveInternalInterface imple
   late final PigeonBinaryMessengerWrapper _pigeonMessenger;
   late final THEOplayerNativeTHEOliveAPI _nativeTHEOliveAPI;
   final EventManager _eventManager = EventManager();
+  String? _authToken;
 
   THEOplayerTHEOliveControllerMobile(String channelSuffix) {
     _pigeonMessenger = PigeonBinaryMessengerWrapper(suffix: channelSuffix);
@@ -30,6 +31,17 @@ class THEOplayerTHEOliveControllerMobile extends THEOliveInternalInterface imple
   bool get badNetworkMode {
     printLog("Using badNetworkMode is not supported on ${defaultTargetPlatform.name}");
     return false;
+  }
+
+  @override
+  set authToken(String? authToken) {
+    _authToken = authToken;
+    _nativeTHEOliveAPI.setAuthToken(authToken);
+  }
+
+  @override
+  String? get authToken {
+    return _authToken;
   }
 
   @override

@@ -14,6 +14,8 @@
 4. The project contains the `flutter_theoplayer_sdk/flutter_theoplayer_sdk/example` folder that can be used during development.
 5. Use `main.dart` to run the project
 
+For an overview of how the SDK is structured internally (packages, communication layers, rendering modes), check the [architecture documentation](doc/architecture.md).
+
 ### Pigeon
 The project uses pigeons for type-safe communication between Flutter and the native mobile platforms.
 
@@ -25,6 +27,38 @@ To add new communication interfaces:
 2. Run `dart run build_runner build --delete-conflicting-outputs` in `flutter_theoplayer_sdk/flutter_theoplayer_sdk_platform_interface` folder to generate the final (merged) pigeon file
    and subsequently to generate the platform-specific bindings based on the merged `pigeons_merged.dart` file.
 3. Implement the new APIs on the Flutter and native side.
+
+The code generation produces the following files (all of them are **committed to git**, so don't forget to regenerate and commit them after changing the pigeon definitions):
+
+| Output | Path |
+|--------|------|
+| Dart | `flutter_theoplayer_sdk_platform_interface/lib/pigeon/apis.g.dart` |
+| Kotlin | `flutter_theoplayer_sdk_android/android/src/main/kotlin/com/theoplayer/flutter/pigeon/APIs.g.kt` |
+| Swift | `flutter_theoplayer_sdk_ios/ios/Classes/pigeon/APIs.g.swift` |
+
+Every pigeon channel name is suffixed with `id_<playerId>` through `PigeonBinaryMessengerWrapper` (available in Dart, Kotlin and Swift) to support multiple player instances.
+
+### Adding a new cross-platform feature
+
+A typical feature touching all platforms (e.g. exposing a new player event) follows these steps:
+
+1. **Define** the new API/event in `flutter_theoplayer_sdk_platform_interface/pigeons/apis/*.dart` (and `pigeons/models/` if new data types are needed).
+2. **Generate code**: run `dart run build_runner build --delete-conflicting-outputs` in the `flutter_theoplayer_sdk_platform_interface` folder, and commit all regenerated files.
+3. **Dart plumbing** (platform interface): add the event type constant to `PlayerEventTypes` and the event class in `theoplayer_events.dart`, then dispatch it in `theoplayer_flutter_api.dart`.
+4. **Dart facade** (`theoplayer` package): attach/remove the listener in `PlayerState` (`_attachEventListeners` / `_removeEventListeners` in `theoplayer_state.dart`) to re-dispatch the event (and cache state if needed); expose any new API on `THEOplayer` in `theoplayer_internal.dart`.
+5. **Android**: handle it in `PlayerEventForwarder.kt` or the relevant bridge (add a `transformers/` conversion if needed).
+6. **iOS**: do the same in the Swift mirror files (`PlayerEventForwarder.swift`, etc.).
+7. **Web** (bypasses pigeon): add the JS interop binding in `theoplayer_api_event_web.dart` / `theoplayer_api_web.dart`, convert in `transformers_web.dart`, and forward in `player_event_forwarder_web.dart`.
+8. **Tests**: add integration tests in `example/integration_test/` (and make sure they are reachable from the web single entrypoint in `example/integration_test_single_entrypoint/`).
+
+For a real-world example covering steps 1-7, check how the `currentsourcechange` event was exposed in commit [`af145cc`](https://github.com/THEOplayer/flutter-theoplayer-sdk/commit/af145ccb29dbcae342908c02df77ddb309243639).
+
+For a bigger sub-API (like ABR or THEOlive), the pattern is:
+
+1. A dedicated pigeon bridge file in `pigeons/apis/`.
+2. A `XxxBridge.kt` + `XxxBridge.swift` pair (instantiated and disposed in `THEOplayerViewNative` on both platforms).
+3. A `XxxControllerMobile` (platform interface) + `XxxControllerWeb` (web package).
+4. Exposure via the `THEOplayerViewController` interface (`getXxx()`) and a holder/facade on `THEOplayer`, wired up in the `THEOplayer` constructor's `onCreated` callback.
 
 ## Pull-requests
 Before making a pull-request, please make sure:
