@@ -887,6 +887,7 @@ class THEOplayerFlutterTextTracksAPI: THEOplayerFlutterTextTracksAPIProtocol {
 protocol THEOplayerNativeTHEOliveAPI {
   func goLive() throws
   func preloadChannels(channelIds: [String]?) throws
+  func setAuthToken(authToken: String?) throws
   func currentLatency(completion: @escaping (Result<Double?, Error>) -> Void)
   func latencies(completion: @escaping (Result<HespLatencies?, Error>) -> Void)
 }
@@ -924,6 +925,21 @@ class THEOplayerNativeTHEOliveAPISetup {
       }
     } else {
       preloadChannelsChannel.setMessageHandler(nil)
+    }
+    let setAuthTokenChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeTHEOliveAPI.setAuthToken\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      setAuthTokenChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let authTokenArg: String? = nilOrValue(args[0])
+        do {
+          try api.setAuthToken(authToken: authTokenArg)
+          reply(wrapResult(nil))
+        } catch {
+          reply(wrapError(error))
+        }
+      }
+    } else {
+      setAuthTokenChannel.setMessageHandler(nil)
     }
     let currentLatencyChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeTHEOliveAPI.currentLatency\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {

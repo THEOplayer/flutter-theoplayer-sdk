@@ -12,11 +12,18 @@ class HespLatencies {
   HespLatencies({this.engineLatency, this.distributionLatency, this.playerLatency, this.theoliveLatency});
 }
 
-
 abstract class THEOlive implements EventDispatcher {
   void preloadChannels(List<String> channelIDs);
   void set badNetworkMode(bool badNetworkMode);
   bool get badNetworkMode;
+
+  /// The authentication token that will be used when requesting a manifest or segment.
+  ///
+  /// To unset the token, pass `null` or an empty string.
+  void set authToken(String? authToken);
+
+  /// The authentication token that will be used when requesting a manifest or segment.
+  String? get authToken;
   void setStateListener(THEOliveStateChangeListener listener);
   DistributionState get distributionState;
   Future<double?> get currentLatency;

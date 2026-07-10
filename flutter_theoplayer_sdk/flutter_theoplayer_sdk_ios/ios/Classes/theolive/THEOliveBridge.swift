@@ -12,7 +12,7 @@ import THEOplayerTHEOliveIntegration
 
 class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
     
-    private let theoLive: THEOlive
+    private var theoLive: THEOlive
     private let pigeonMessenger: PigeonBinaryMessengerWrapper
     private let flutterTHEOliveAPI: THEOplayerFlutterTHEOliveAPI
     
@@ -105,6 +105,10 @@ class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
         if let channelIds = channelIds {
             theoLive.preloadPublications(publicationIds: channelIds)
         }
+    }
+
+    func setAuthToken(authToken: String?) throws {
+        theoLive.authToken = authToken
     }
 
     func currentLatency(completion: @escaping (Result<Double?, Error>) -> Void) {

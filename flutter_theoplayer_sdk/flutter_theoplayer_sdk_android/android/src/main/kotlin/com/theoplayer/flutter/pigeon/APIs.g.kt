@@ -873,6 +873,7 @@ class THEOplayerFlutterTextTracksAPI(private val binaryMessenger: BinaryMessenge
 interface THEOplayerNativeTHEOliveAPI {
   fun goLive()
   fun preloadChannels(channelIds: List<String>?)
+  fun setAuthToken(authToken: String?)
   fun currentLatency(callback: (Result<Double?>) -> Unit)
   fun latencies(callback: (Result<HespLatencies?>) -> Unit)
 
@@ -909,6 +910,24 @@ interface THEOplayerNativeTHEOliveAPI {
             val channelIdsArg = args[0] as List<String>?
             val wrapped: List<Any?> = try {
               api.preloadChannels(channelIdsArg)
+              listOf(null)
+            } catch (exception: Throwable) {
+              wrapError(exception)
+            }
+            reply.reply(wrapped)
+          }
+        } else {
+          channel.setMessageHandler(null)
+        }
+      }
+      run {
+        val channel = BasicMessageChannel<Any?>(binaryMessenger, "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeTHEOliveAPI.setAuthToken$separatedMessageChannelSuffix", codec)
+        if (api != null) {
+          channel.setMessageHandler { message, reply ->
+            val args = message as List<Any?>
+            val authTokenArg = args[0] as String?
+            val wrapped: List<Any?> = try {
+              api.setAuthToken(authTokenArg)
               listOf(null)
             } catch (exception: Throwable) {
               wrapError(exception)
