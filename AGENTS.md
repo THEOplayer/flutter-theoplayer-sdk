@@ -63,3 +63,14 @@ melos bootstrap   # creates pubspec_overrides.yaml linking local packages
 
 `feature/*`, `bugfix/*`, `experimental/*`, `poc/*` (public sample forks), `release/x.y.z`.
 PRs target `develop` for regular work.
+
+## Commits & wrapping up
+
+- **Commit in separate, logical chunks** — split unrelated concerns into their own
+  commits (e.g. pigeon definition + regenerated files, Dart facade, per-platform
+  implementations, tests, docs). Don't lump a whole feature into one commit.
+- **After the implementation is done, review the session**: does anything in
+  [doc/](doc/), [CONTRIBUTING.md](CONTRIBUTING.md), the package READMEs (feature
+  tables), the `CHANGELOG.md` files, or doc comments on changed public APIs need
+  updating? Propose the specific updates — but don't touch docs that aren't
+  affected; no churn for the sake of it.
