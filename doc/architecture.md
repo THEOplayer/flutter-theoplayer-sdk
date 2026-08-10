@@ -14,7 +14,7 @@ The THEOplayer Flutter SDK is a **federated Flutter plugin** that wraps the nati
 | iOS | `THEOplayerSDK-core` + `THEOplayer-Integration-THEOlive` (CocoaPods) |
 | Web | `THEOplayer.chromeless.js` (shipped manually in your app's `web/` folder) |
 
-The Flutter SDK version is **locked to the native player version** (e.g. Flutter SDK `10.12.3` uses native SDKs `10.12.3` on all platforms).
+The Flutter SDK version is **locked to the native player version** (e.g. Flutter SDK `11.9.0` uses native SDKs `11.9.0` on all platforms).
 
 ## Package structure
 

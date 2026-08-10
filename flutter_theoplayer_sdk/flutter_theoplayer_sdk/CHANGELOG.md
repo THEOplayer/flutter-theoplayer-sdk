@@ -1,3 +1,7 @@
+## 11.9.0
+
+* Updated THEOplayer to 11.9.0.
+
 ## 10.12.3
 
 * Updated THEOplayer to 10.12.3.
