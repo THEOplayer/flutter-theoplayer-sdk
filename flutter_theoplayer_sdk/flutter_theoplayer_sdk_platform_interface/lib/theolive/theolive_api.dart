@@ -24,6 +24,11 @@ abstract class THEOlive implements EventDispatcher {
 
   /// The authentication token that will be used when requesting a manifest or segment.
   String? get authToken;
+
+  // Forces the player back to HESP when available: resets the HESP cooldown
+  // and re-selects a HESP source.
+  void switchToHesp();
+
   void setStateListener(THEOliveStateChangeListener listener);
   DistributionState get distributionState;
   Future<double?> get currentLatency;

@@ -99,6 +99,11 @@ class THEOliveAPIHolder extends THEOlive {
   }
 
   @override
+  void switchToHesp() {
+    return _internalTHEOliveAPI?.switchToHesp();
+  }
+
+  @override
   void preloadChannels(List<String> channelIDs) {
     _internalTHEOliveAPI?.preloadChannels(channelIDs);
   }

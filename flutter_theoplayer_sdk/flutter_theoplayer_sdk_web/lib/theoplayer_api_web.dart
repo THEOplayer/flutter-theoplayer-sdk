@@ -326,6 +326,7 @@ class THEOplayerTheoLiveApi implements THEOplayerEventListener {}
 extension THEOplayerTheoLiveApiExtension on THEOplayerTheoLiveApi {
   external bool badNetworkMode;
   external String? authToken;
+  external void switchToHesp();
   external JSNumber? get currentLatency;
   external HespLatenciesJS? get latencies;
   external JSAny? preloadPublications(JSArray<JSAny?> publicationIds);

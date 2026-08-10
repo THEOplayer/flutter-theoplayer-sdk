@@ -102,6 +102,11 @@ class THEOliveControllerWeb extends THEOliveInternalInterface {
   }
 
   @override
+  void switchToHesp() {
+    _theoLiveApi.switchToHesp();
+  }
+
+  @override
   void preloadChannels(List<String> channelIDs) {
     _theoLiveApi.preloadPublications(JSHelpers.stringListToJSArray(channelIDs));
   }

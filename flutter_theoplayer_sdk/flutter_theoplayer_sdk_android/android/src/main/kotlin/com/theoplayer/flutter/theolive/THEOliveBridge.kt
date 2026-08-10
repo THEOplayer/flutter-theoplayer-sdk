@@ -48,6 +48,10 @@ class THEOliveBridge(private val theoLive: TheoLive, private val pigeonMessenger
         flutterTHEOliveAPI.onIntentToFallbackEvent(it.reason?.code?.id?.toString(), it.reason?.message, emptyCallback)
     }
 
+    override fun switchToHesp() {
+        this.theoLive.switchToHesp()
+    }
+
     override fun goLive() {
         this.theoLive.goLive()
     }

@@ -96,6 +96,10 @@ class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
     }
     
     //MARK: THEOplayerNativeTHEOliveAPI API
+
+    func switchToHesp() {
+        theoLive.switchToHesp()
+    }
     
     func goLive() throws {
         theoLive.goLive()

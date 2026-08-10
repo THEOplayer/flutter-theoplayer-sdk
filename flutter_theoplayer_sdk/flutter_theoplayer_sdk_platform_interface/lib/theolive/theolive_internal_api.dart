@@ -7,6 +7,7 @@ abstract class THEOliveInternalInterface implements EventDispatcher {
   bool get badNetworkMode;
   void set authToken(String? authToken);
   String? get authToken;
+  void switchToHesp();
   Future<double?> get currentLatency;
   Future<HespLatencies?> get latencies;
   void dispose();

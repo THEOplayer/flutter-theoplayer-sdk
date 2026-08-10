@@ -169,6 +169,7 @@ abstract class THEOplayerNativeTHEOliveAPI {
   void goLive();
   void preloadChannels(List<String>? channelIds);
   void setAuthToken(String? authToken);
+  void switchToHesp();
   @async
   double? currentLatency();
   @async

@@ -45,6 +45,11 @@ class THEOplayerTHEOliveControllerMobile extends THEOliveInternalInterface imple
   }
 
   @override
+  void switchToHesp() {
+    _nativeTHEOliveAPI.switchToHesp();
+  }
+
+  @override
   void addEventListener(String eventType, EventListener<Event> listener) {
     _eventManager.addEventListener(eventType, listener);
   }
