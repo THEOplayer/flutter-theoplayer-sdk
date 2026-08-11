@@ -54,6 +54,10 @@ class THEOplayerViewControllerMobile extends THEOplayerViewController {
     return _nativeAPI.getSource();
   }
 
+  Future<TypedSourcePigeon> getCurrentSource() {
+    return _nativeAPI.getCurrentSource();
+  }
+
   void setAutoplay(bool autoplay) async {
     _nativeAPI.setAutoplay(autoplay);
   }

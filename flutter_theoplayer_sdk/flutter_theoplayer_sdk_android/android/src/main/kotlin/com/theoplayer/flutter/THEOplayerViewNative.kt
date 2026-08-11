@@ -211,6 +211,10 @@ class THEOplayerViewNative(
         return SourceTransformer.toFlutterSourceDescription(tpv.player.source)
     }
 
+    override fun getCurrentSource(): FlutterTypedSource? {
+        return SourceTransformer.toFlutterTypedSource(tpv.player.getCurrentSource())
+    }
+
     override fun setAutoplay(autoplay: Boolean) {
         tpv.player.isAutoplay = true
     }

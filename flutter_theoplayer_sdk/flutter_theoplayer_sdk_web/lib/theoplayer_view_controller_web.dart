@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'dart:js_interop_unsafe';
 
 import 'package:flutter/foundation.dart';
@@ -108,6 +109,12 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   Future<PlatformInterface.SourceDescription?> getSource() {
     PlatformInterface.SourceDescription? source = toFlutterSourceDescription(_theoPlayerJS.source);
     return Future.value(source);
+  }
+
+  @override
+  Future<PlatformInterface.TypedSourcePigeon?> getCurrentSource() {
+    PlatformInterface.TypedSourcePigeon? currentSource = toFlutterTypedSource(_theoPlayerJS.currentSource);
+    return Future.value(currentSource);
   }
 
   @override

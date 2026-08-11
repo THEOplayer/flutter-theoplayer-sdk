@@ -44,6 +44,7 @@ extension THEOplayerJSExtension on THEOplayerJS {
   external bool autoplay;
   external double currentTime;
   external SourceDescription source;
+  external TypedSource? get currentSource;
   external JSDate? currentProgramDateTime;
   external double playbackRate;
   external double get duration;

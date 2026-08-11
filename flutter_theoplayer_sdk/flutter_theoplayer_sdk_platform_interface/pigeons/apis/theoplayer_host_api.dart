@@ -12,6 +12,8 @@ abstract class THEOplayerNativeAPI {
 
   SourceDescription? getSource();
 
+  TypedSourcePigeon? getCurrentSource();
+
   void setAutoplay(bool autoplay);
 
   bool isAutoplay();

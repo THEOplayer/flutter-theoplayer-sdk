@@ -110,6 +110,10 @@ extension THEOplayerViewNative: THEOplayerNativeAPI {
     func getSource() throws -> SourceDescription? {
         return SourceTransformer.toFlutterSourceDescription(source: _theoplayer.source)
     }
+
+    func getCurrentSource() throws -> TypedSource? {
+        return SourceTransformer.toFlutterTypedSource(source: _theoplayer.currentSource)
+    }
     
     func setAutoplay(autoplay: Bool) throws {
         _theoplayer.autoplay = autoplay

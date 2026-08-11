@@ -19,6 +19,8 @@ abstract class THEOplayerViewController implements EventDispatcher {
 
   Future<SourceDescription?> getSource();
 
+  Future<TypedSourcePigeon?> getCurrentSource();
+
   void setAutoplay(bool autoplay);
 
   Future<bool> isAutoplay();

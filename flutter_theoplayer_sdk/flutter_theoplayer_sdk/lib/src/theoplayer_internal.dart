@@ -223,6 +223,10 @@ class THEOplayer implements EventDispatcher {
     return _playerState.source;
   }
 
+  Future<TypedSourcePigeon?> get currentSource async {
+    return _theoPlayerViewController?.getCurrentSource();
+  }
+
   /// Set whether the player should immediately start playback after source change.
   /// Deprecated("Use [autoplay] instead.")
   @Deprecated("Use [autoplay] instead.")
