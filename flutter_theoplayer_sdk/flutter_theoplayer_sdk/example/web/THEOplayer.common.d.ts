@@ -4550,6 +4550,15 @@ interface TextTrack extends Track, EventDispatcher<TextTrackEventMap> {
      */
     readonly forced: boolean;
     /**
+     * The closed caption service number of the text track.
+     *
+     * @remarks
+     * <br/> - For CEA-608 caption tracks, this holds the channel number.
+     * <br/> - For CEA-708 caption tracks, this holds the service number.
+     * <br/> - Otherwise, this is `undefined`.
+     */
+    readonly captionChannel?: number;
+    /**
      * {@inheritDoc EventDispatcher.addEventListener}
      */
     addEventListener<TType extends StringKeyOf<TextTrackEventMap>>(type: TType | readonly TType[], listener: EventListener<TextTrackEventMap[TType]>): void;
@@ -8801,6 +8810,15 @@ interface CustomTextTrackOptions {
      * The language of the text track.
      */
     language?: string;
+    /**
+     * The closed caption service number of the text track.
+     *
+     * @remarks
+     * <br/> - This should only be used when {@link kind} is 'captions'.
+     *
+     * @see {@link TextTrack.captionChannel}
+     */
+    captionChannel?: number;
 }
 /**
  * The supported cue types for custom text tracks.
@@ -8988,7 +9006,8 @@ interface ABRConfiguration {
      * Clears the buffer when setting a single target quality on a MediaTrack.
      *
      * @remarks
-     * <br/> - Available since v6.8.0 for HLS streams only.
+     * <br/> - Available since v6.8.0 for HLS streams.
+     * <br/> - Available since v10.13.0 for DASH streams.
      *
      * @defaultValue `false`
      */
@@ -10503,10 +10522,6 @@ interface TheoLiveApi extends EventDispatcher<TheoLiveApiEventMap> {
      * Get or set the auth token that will be used when requesting a manifest or segment.
      */
     authToken: string | undefined;
-    /**
-     * @deprecated This will be removed in a future version.
-     */
-    preloadPublications(publicationIds: string[]): Promise<TheoLivePublication[]>;
 }
 /**
  * A THEOlive endpoint.
