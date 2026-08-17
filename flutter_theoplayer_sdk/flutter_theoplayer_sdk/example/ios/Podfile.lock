@@ -2,14 +2,14 @@ PODS:
   - Flutter (1.0.0)
   - integration_test (0.0.1):
     - Flutter
-  - THEOplayer-Integration-THEOlive (11.0.0):
-    - THEOplayer-Integration-THEOlive/Base (= 11.0.0)
-  - THEOplayer-Integration-THEOlive/Base (11.0.0)
+  - THEOplayer-Integration-THEOlive (11.1.0):
+    - THEOplayer-Integration-THEOlive/Base (= 11.1.0)
+  - THEOplayer-Integration-THEOlive/Base (11.1.0)
   - theoplayer_ios (1.0.3):
     - Flutter
-    - THEOplayer-Integration-THEOlive (= 11.0.0)
-    - THEOplayerSDK-core (= 11.0.0)
-  - THEOplayerSDK-core (11.0.0)
+    - THEOplayer-Integration-THEOlive (= 11.1.0)
+    - THEOplayerSDK-core (= 11.1.0)
+  - THEOplayerSDK-core (11.1.0)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)

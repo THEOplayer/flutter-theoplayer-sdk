@@ -11775,6 +11775,14 @@ declare class MultiViewPlayer implements EventDispatcher<MultiViewPlayerEventMap
      */
     volume: number;
     /**
+     * The version of the THEOplayer SDK that created this player.
+     *
+     * @remarks
+     * <br/> - This is the same as {@link Globals.version | THEOplayer.version}.
+     * <br/> - Available since v11.1.0.
+     */
+    readonly version: string;
+    /**
      * Creates a new view.
      *
      * @param label - The name belonging to a view which is used in the multiview menu.
@@ -13888,6 +13896,14 @@ declare class ChromelessPlayer implements EventDispatcher<PlayerEventMap> {
      * <br/> - Volume is represented by a floating point number between `0.0` and `1.0`.
      */
     volume: number;
+    /**
+     * The version of the THEOplayer SDK that created this player.
+     *
+     * @remarks
+     * <br/> - This is the same as {@link Globals.version | THEOplayer.version}.
+     * <br/> - Available since v11.1.0.
+     */
+    readonly version: string;
     /**
      * The latency manager for low latency live playback.
      */
