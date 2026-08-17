@@ -32,12 +32,14 @@ class DebugFlagsAPI {
     final pigeonFlags = _nativeAPI?.getAvailableFlags();
     if (pigeonFlags == null) return [];
     final result = await pigeonFlags;
-    return result.map((f) => DebugFlag(
-      key: f.key,
-      description: f.description,
-      defaultValue: f.defaultValue,
-      isEnabled: f.isEnabled,
-    )).toList();
+    return result
+        .map((f) => DebugFlag(
+              key: f.key,
+              description: f.description,
+              defaultValue: f.defaultValue,
+              isEnabled: f.isEnabled,
+            ))
+        .toList();
   }
 
   /// Enable a flag by key.

@@ -83,8 +83,7 @@ class THEOplayer implements EventDispatcher {
           _audioTrackListHolder.setup(viewController.getAudioTracks());
           _videoTrackListHolder.setup(viewController.getVideoTracks());
           _theoLiveAPIHolder.setup(viewController.getTheoLive());
-          _debugFlagsAPI.setup(THEOplayerNativeDebugFlagsAPI(
-              binaryMessenger: PigeonBinaryMessengerWrapper(suffix: viewController.channelSuffix)));
+          _debugFlagsAPI.setup(THEOplayerNativeDebugFlagsAPI(binaryMessenger: PigeonBinaryMessengerWrapper(suffix: viewController.channelSuffix)));
           _abrAPI.setup(viewController.getAbr());
           _setupLifeCycleListeners();
           onCreate?.call();

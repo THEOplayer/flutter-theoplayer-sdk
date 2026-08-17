@@ -77,18 +77,14 @@ class AbrAPI {
   static AbrStrategyConfiguration _fromInternal(AbrStrategyConfigurationInternal i) {
     return AbrStrategyConfiguration(
       type: AbrStrategyType.values[i.type.index],
-      metadata: i.metadata != null
-          ? AbrStrategyMetadata(bitrate: i.metadata!.bitrate)
-          : null,
+      metadata: i.metadata != null ? AbrStrategyMetadata(bitrate: i.metadata!.bitrate) : null,
     );
   }
 
   static AbrStrategyConfigurationInternal _toInternal(AbrStrategyConfiguration c) {
     return AbrStrategyConfigurationInternal(
       type: AbrStrategyTypeInternal.values[c.type.index],
-      metadata: c.metadata != null
-          ? AbrStrategyMetadataInternal(bitrate: c.metadata!.bitrate)
-          : null,
+      metadata: c.metadata != null ? AbrStrategyMetadataInternal(bitrate: c.metadata!.bitrate) : null,
     );
   }
 }
