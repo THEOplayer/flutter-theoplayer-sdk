@@ -132,8 +132,8 @@ Future<void> runBasicPlaybackTest(WidgetTester tester, AndroidViewComposition an
   print("Testing playback duration():  ${player.getDuration()}");
   expect(player.getDuration() >= 0, isTrue);
 
-  print("Testing playback currentTime():  ${player.getCurrentTime()}");
-  expect(player.getCurrentTime() >= 5, isTrue);
+  print("Testing playback currentTime():  ${player.currentTime}");
+  expect(player.currentTime >= 5, isTrue);
 }
 
 Future<void> runBasicTHEOlivePlaybackTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
@@ -436,13 +436,13 @@ Future<void> runLatenciesTest(WidgetTester tester, AndroidViewComposition androi
 
   expect(player.isInitialized, isTrue);
 
-  player.setMuted(true);
-  player.setAutoplay(true);
+  player.muted = true;
+  player.autoplay = true;
 
   print("Setting source for latencies test");
-  player.setSource(SourceDescription(sources: [
+  player.source = SourceDescription(sources: [
     TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
-  ]));
+  ]);
 
   await tester.pumpAndSettle(const Duration(seconds: 10));
 
