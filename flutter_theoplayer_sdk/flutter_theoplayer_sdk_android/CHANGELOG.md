@@ -1,3 +1,7 @@
+## 11.1.0
+
+* Updated THEOplayer to 11.1.0.
+
 ## 10.12.4
 
 * Added an `authToken` property to the THEOlive API (`player.theoLive.authToken`) to authenticate OptiView Live (THEOlive) streams.
