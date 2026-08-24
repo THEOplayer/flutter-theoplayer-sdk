@@ -100,12 +100,6 @@ class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
     func goLive() throws {
         theoLive.goLive()
     }
-    
-    func preloadChannels(channelIds: [String]?) throws {
-        if let channelIds = channelIds {
-            theoLive.preloadPublications(publicationIds: channelIds)
-        }
-    }
 
     func setAuthToken(authToken: String?) throws {
         theoLive.authToken = authToken

@@ -159,8 +159,8 @@ class _MyAppState extends State<MyApp> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               const Text("ABR: "),
-                              ...AbrStrategyType.values.map((type) =>
-                                Padding(
+                              ...AbrStrategyType.values.map(
+                                (type) => Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 2),
                                   child: FilledButton(
                                     onPressed: () {
@@ -237,11 +237,6 @@ class _MyAppState extends State<MyApp> {
                                   });
                                    */
 
-                                  /**
-                                   * preload channels for faster startup
-                                   *
-                                   player.theoLive?.preloadChannels(["38yyniscxeglzr8n0lbku57b0"]);
-                                   */
                                   player.source = SourceDescription(sources: [
                                     TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
                                   ]);

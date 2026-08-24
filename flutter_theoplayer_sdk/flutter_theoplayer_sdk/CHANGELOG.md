@@ -1,3 +1,13 @@
+## 11.1.0
+
+* Updated THEOplayer to 11.1.0.
+* **BREAKING CHANGE**: 
+  - iOS: the minimum supported iOS version is now 15.0, dropping support for iOS 13 and 14:
+  - iOS: the native THEOplayer SDK and its integrations are built with Xcode 26 instead of Xcode 16, so building an app that uses this SDK requires **Xcode 26 or later** (CI is validated on `macos-15` with Xcode 26.3 and an iOS 18.5+ simulator).
+  - **Removed**: OptiView Live preloading API on all platforms, following its removal from the native SDKs (`preloadChannels` on Android and iOS, `preloadPublications` on web). Remove these calls, streams are loaded when the source is set on the player
+
+For native SDK changes please consult with the [THEOplayer SDK 11.0.0 changelog](https://optiview.dolby.com/docs/theoplayer/changelog/#-1100-20260416) and the [THEOplayer SDK 11.1.0 changelog](https://optiview.dolby.com/docs/theoplayer/changelog/#-1110-20260428).
+
 ## 10.12.4
 
 * Added an `authToken` property to the THEOlive API (`player.theoLive.authToken`) to authenticate OptiView Live (THEOlive) streams.

@@ -27,15 +27,17 @@ class _DebugFlagsPanelState extends State<DebugFlagsPanel> {
 
   Future<void> _loadFlags() async {
     final flags = await widget.api.getAvailableFlags();
-    if (mounted) setState(() { _flags = flags; _loading = false; });
+    if (mounted)
+      setState(() {
+        _flags = flags;
+        _loading = false;
+      });
   }
 
   List<DebugFlag> get _filtered {
     if (_search.isEmpty) return _flags;
     final q = _search.toLowerCase();
-    return _flags.where((f) =>
-        f.key.toLowerCase().contains(q) ||
-        f.description.toLowerCase().contains(q)).toList();
+    return _flags.where((f) => f.key.toLowerCase().contains(q) || f.description.toLowerCase().contains(q)).toList();
   }
 
   int get _enabledCount => _flags.where((f) => f.isEnabled).length;
@@ -46,17 +48,27 @@ class _DebugFlagsPanelState extends State<DebugFlagsPanel> {
     } else {
       await widget.api.disableFlag(flag.key);
     }
-    setState(() { flag.isEnabled = value; });
+    setState(() {
+      flag.isEnabled = value;
+    });
   }
 
   Future<void> _enableAll() async {
     await widget.api.enableAll();
-    setState(() { for (final f in _flags) { f.isEnabled = true; } });
+    setState(() {
+      for (final f in _flags) {
+        f.isEnabled = true;
+      }
+    });
   }
 
   Future<void> _disableAll() async {
     await widget.api.disableAll();
-    setState(() { for (final f in _flags) { f.isEnabled = false; } });
+    setState(() {
+      for (final f in _flags) {
+        f.isEnabled = false;
+      }
+    });
   }
 
   Future<void> _resetAll() async {
@@ -66,7 +78,9 @@ class _DebugFlagsPanelState extends State<DebugFlagsPanel> {
 
   Future<void> _toggleFileLogging() async {
     await widget.api.enableFileLogging();
-    setState(() { _fileLoggingEnabled = true; });
+    setState(() {
+      _fileLoggingEnabled = true;
+    });
   }
 
   @override
@@ -81,10 +95,14 @@ class _DebugFlagsPanelState extends State<DebugFlagsPanel> {
           PopupMenuButton<String>(
             onSelected: (value) {
               switch (value) {
-                case 'enable_all': _enableAll();
-                case 'disable_all': _disableAll();
-                case 'reset': _resetAll();
-                case 'file_logging': _toggleFileLogging();
+                case 'enable_all':
+                  _enableAll();
+                case 'disable_all':
+                  _disableAll();
+                case 'reset':
+                  _resetAll();
+                case 'file_logging':
+                  _toggleFileLogging();
               }
             },
             itemBuilder: (_) => [
@@ -127,7 +145,9 @@ class _DebugFlagsPanelState extends State<DebugFlagsPanel> {
                       ),
                       isDense: true,
                     ),
-                    onChanged: (v) => setState(() { _search = v; }),
+                    onChanged: (v) => setState(() {
+                      _search = v;
+                    }),
                   ),
                 ),
                 Expanded(

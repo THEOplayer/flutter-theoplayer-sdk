@@ -18,9 +18,7 @@ class AbrControllerWeb implements AbrInternalInterface {
     final strategy = strategyJS as THEOplayerAbrStrategy;
     return AbrStrategyConfigurationInternal(
       type: _fromJsType(strategy.type),
-      metadata: strategy.metadata != null
-          ? AbrStrategyMetadataInternal(bitrate: strategy.metadata!.bitrate)
-          : null,
+      metadata: strategy.metadata != null ? AbrStrategyMetadataInternal(bitrate: strategy.metadata!.bitrate) : null,
     );
   }
 

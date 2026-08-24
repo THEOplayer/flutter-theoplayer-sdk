@@ -52,12 +52,6 @@ class THEOliveBridge(private val theoLive: TheoLive, private val pigeonMessenger
         this.theoLive.goLive()
     }
 
-    override fun preloadChannels(channelIds: List<String>?) {
-        if (channelIds != null) {
-            this.theoLive.preloadChannels(channelIds)
-        }
-    }
-
     override fun setAuthToken(authToken: String?) {
         this.theoLive.authToken = authToken
     }

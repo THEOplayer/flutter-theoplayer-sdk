@@ -16,9 +16,7 @@ class AbrControllerMobile implements AbrInternalInterface {
     final pigeon = await _nativeAbrAPI.getAbrStrategy();
     return AbrStrategyConfigurationInternal(
       type: AbrStrategyTypeInternal.values[pigeon.type.index],
-      metadata: pigeon.metadata != null
-          ? AbrStrategyMetadataInternal(bitrate: pigeon.metadata!.bitrate?.toInt())
-          : null,
+      metadata: pigeon.metadata != null ? AbrStrategyMetadataInternal(bitrate: pigeon.metadata!.bitrate?.toInt()) : null,
     );
   }
 
@@ -26,9 +24,7 @@ class AbrControllerMobile implements AbrInternalInterface {
   Future<void> setAbrStrategy(AbrStrategyConfigurationInternal config) async {
     await _nativeAbrAPI.setAbrStrategy(AbrStrategyConfigurationPigeon(
       type: AbrStrategyTypePigeon.values[config.type.index],
-      metadata: config.metadata != null
-          ? AbrStrategyMetadataPigeon(bitrate: config.metadata!.bitrate)
-          : null,
+      metadata: config.metadata != null ? AbrStrategyMetadataPigeon(bitrate: config.metadata!.bitrate) : null,
     ));
   }
 

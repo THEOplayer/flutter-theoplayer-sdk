@@ -134,14 +134,14 @@ class PlayerState {
   bool _isTheoLiveSource(TypedSourcePigeon? source) {
     if (source == null) return false;
     return
-      // Android
-      source.integration == SourceIntegrationId.theolive ||
-      // direct HESP manifest
-      source.type == "application/vnd.theo.hesp+json" ||
-      // iOS
-      source.type == "application/vnd.theo.live+channel" ||
-      // web
-      source.type == "theolive";
+        // Android
+        source.integration == SourceIntegrationId.theolive ||
+            // direct HESP manifest
+            source.type == "application/vnd.theo.hesp+json" ||
+            // iOS
+            source.type == "application/vnd.theo.live+channel" ||
+            // web
+            source.type == "theolive";
     ;
   }
 
