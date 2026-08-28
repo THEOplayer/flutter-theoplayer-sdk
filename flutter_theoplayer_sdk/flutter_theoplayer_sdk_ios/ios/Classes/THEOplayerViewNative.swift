@@ -140,14 +140,11 @@ extension THEOplayerViewNative: THEOplayerNativeAPI {
     }
     
     func setCurrentProgramDateTime(currentProgramDateTime: Int64) throws {
-        _theoplayer.setCurrentProgramDateTime(Date(timeIntervalSince1970: TimeInterval(currentProgramDateTime)))
+        _theoplayer.setCurrentProgramDateTime(Date(millisecondsSinceEpoch: currentProgramDateTime))
     }
     
     func getCurrentProgramDateTime() throws -> Int64? {
-        if let currentProgramDateTime = _theoplayer.currentProgramDateTime?.timeIntervalSince1970 {
-            return Int64(currentProgramDateTime)
-        }
-        return nil
+        return _theoplayer.currentProgramDateTime?.millisecondsSinceEpoch
     }
     
     func getDuration() throws -> Double {
