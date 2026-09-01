@@ -134,7 +134,6 @@ object SourceTransformer {
                     typedSourceBuilder.hlsDateRange(it)
                 }
 
-
                 return typedSourceBuilder.build()
             }
         }

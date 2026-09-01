@@ -210,7 +210,6 @@ class THEOplayerViewNative(
     override fun setSource(source: FlutterSourceDescription?) {
         isFirstPlaying = false
         tpv.player.source = SourceTransformer.toSourceDescription(source, hlsDateRange)
-
     }
 
     override fun getSource(): FlutterSourceDescription? {

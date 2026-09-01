@@ -26,6 +26,7 @@ import com.theoplayer.flutter.pigeon.THEOplayerNativeTextTracksAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeTextTracksAPI.Companion.setUp
 import com.theoplayer.flutter.transformers.FlutterTextTrackMode
 import com.theoplayer.flutter.transformers.TrackTransformer
+import org.json.JSONException
 import org.json.JSONObject
 
 class TextTrackBridge(
@@ -101,12 +102,17 @@ class TextTrackBridge(
         val attributes = customAttributes.asMap() ?: return null
         val json = JSONObject()
         attributes.forEach { (key, value) ->
-            json.put(key, when (value) {
-                null -> JSONObject.NULL
-                is Boolean, is Number, is String -> value
-                is ByteArray -> base64Encoder(value)
-                else -> value.toString()
-            })
+            try {
+                json.put(key, when (value) {
+                    null -> JSONObject.NULL
+                    is Boolean, is Number, is String -> value
+                    is ByteArray -> base64Encoder(value)
+                    else -> value.toString()
+                })
+            } catch (e: JSONException) {
+                // e.g. NaN/infinite numbers are not valid JSON; fall back to their string form instead of breaking cue delivery
+                json.put(key, value.toString())
+            }
         }
         return json.toString()
     }
