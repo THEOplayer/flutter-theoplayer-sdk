@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:typed_data';
 
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
 import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
@@ -162,4 +163,13 @@ abstract class DateRangeCue extends Cue {
 
   /// Custom attributes from the EXT-X-DATERANGE tag.
   Map<String, dynamic>? get customAttributes;
+
+  /// The SCTE-35 command from the SCTE35-CMD attribute, if available.
+  Uint8List? get scte35Cmd;
+
+  /// The SCTE-35 splice out payload from the SCTE35-OUT attribute, if available.
+  Uint8List? get scte35Out;
+
+  /// The SCTE-35 splice in payload from the SCTE35-IN attribute, if available.
+  Uint8List? get scte35In;
 }

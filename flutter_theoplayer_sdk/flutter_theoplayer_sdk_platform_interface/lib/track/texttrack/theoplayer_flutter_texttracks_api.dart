@@ -63,7 +63,7 @@ class THEOplayerFlutterTextTracksAPIImpl implements THEOplayerFlutterTextTracksA
 
   @override
   void onTextTrackAddDateRangeCue(int textTrackUid, String id, int uid, double startTime, double endTime, String? cueClass, double startDateMillis, double? endDateMillis, double? duration,
-      double? plannedDuration, bool endOnNext, String? customAttributesJson) {
+      double? plannedDuration, bool endOnNext, String? customAttributesJson, Uint8List? scte35Cmd, Uint8List? scte35Out, Uint8List? scte35In) {
     TextTrack? textTrack = _textTracks.firstWhereOrNull((item) => item.uid == textTrackUid);
     if (textTrack == null) {
       return;
@@ -75,7 +75,7 @@ class THEOplayerFlutterTextTracksAPIImpl implements THEOplayerFlutterTextTracksA
     }
 
     Cue cue = DateRangeCueImpl(id, uid, startTime, endTime, DateTime.fromMillisecondsSinceEpoch(startDateMillis.toInt()),
-        endDateMillis != null ? DateTime.fromMillisecondsSinceEpoch(endDateMillis.toInt()) : null, duration, plannedDuration, cueClass, endOnNext, customAttributes);
+        endDateMillis != null ? DateTime.fromMillisecondsSinceEpoch(endDateMillis.toInt()) : null, duration, plannedDuration, cueClass, endOnNext, customAttributes, scte35Cmd, scte35Out, scte35In);
     textTrack.cues.add(cue);
     (textTrack as TextTrackImpl).dispatchEvent(TextTrackAddCueEvent(track: textTrack, cue: cue));
   }

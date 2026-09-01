@@ -30,8 +30,14 @@ class TypedSource extends TypedSourcePigeon {
 
   String? type;
 
-  TypedSource({required String src, this.type, DRMConfiguration? drm, SourceIntegrationId? integration, this.androidSourceConfiguration, this.headers})
-      : super(src: src, type: type, drm: drm, integration: integration, headers: headers);
+  /// Whether the player should parse and expose HLS EXT-X-DATERANGE tags as [DateRangeCue]s on a TextTrack.
+  ///
+  /// When `null`, the player-level [THEOplayerConfig.hlsDateRange] setting applies.
+
+  final bool? hlsDateRange;
+
+  TypedSource({required String src, this.type, DRMConfiguration? drm, SourceIntegrationId? integration, this.androidSourceConfiguration, this.headers, this.hlsDateRange})
+      : super(src: src, type: type, drm: drm, integration: integration, headers: headers, hlsDateRange: hlsDateRange);
 }
 
 /// THEOlive TypedSource
