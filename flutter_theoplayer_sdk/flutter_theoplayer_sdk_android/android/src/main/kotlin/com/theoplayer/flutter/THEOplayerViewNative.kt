@@ -100,9 +100,12 @@ class THEOplayerViewNative(
         val theoLiveConfigExternalSessionId = flutterTheoLiveConfig?.get("externalSessionId") as? String
         val theoLiveDiscoveryUrl = flutterTheoLiveConfig?.get("discoveryUrl") as? String
 
+        val hlsDateRange = flutterPlayerConfig?.get("hlsDateRange") as? Boolean
+
         val playerConfigBuilder = THEOplayerConfig.Builder()
         license?.let { playerConfigBuilder.license(it) }
         licenseUrl?.let { playerConfigBuilder.licenseUrl(it) }
+        hlsDateRange?.let { playerConfigBuilder.hlsDateRange(it) }
         playerConfigBuilder.pipConfiguration(PipConfiguration.Builder().build())
 
         val theoLiveConfigurationBuilder = THEOLiveConfig.Builder()

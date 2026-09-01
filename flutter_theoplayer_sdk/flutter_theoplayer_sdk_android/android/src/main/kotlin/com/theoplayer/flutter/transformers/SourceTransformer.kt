@@ -45,7 +45,8 @@ object SourceTransformer {
             type = typedSource.type?.mimeType,
             drm = drm,
             integration = integrationID,
-            headers = typedSource.headers as Map<String?, String?>?
+            headers = typedSource.headers as Map<String?, String?>?,
+            hlsDateRange = typedSource.hlsDateRange
         )
     }
 
@@ -126,6 +127,10 @@ object SourceTransformer {
                     ?.let {
                         typedSourceBuilder.headers(it)
                     }
+
+                flutterTypedSource.hlsDateRange?.let {
+                    typedSourceBuilder.hlsDateRange(it)
+                }
 
 
                 return typedSourceBuilder.build()
