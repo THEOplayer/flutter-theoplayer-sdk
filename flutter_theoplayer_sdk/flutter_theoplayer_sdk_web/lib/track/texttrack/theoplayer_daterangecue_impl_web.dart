@@ -63,7 +63,7 @@ class DateRangeCueImplWeb extends DateRangeCueImpl {
 
   /// Converts the JS custom attributes record to a Dart map.
   /// String and number values are kept as-is, ArrayBuffer values are base64-encoded strings.
-  static Map<String, dynamic>? _toCustomAttributesMap(JSObject customAttributes) {
+  static Map<String, dynamic> _toCustomAttributesMap(JSObject customAttributes) {
     final map = <String, dynamic>{};
     final keys = _objectKeys(customAttributes).toDart;
     for (final key in keys) {

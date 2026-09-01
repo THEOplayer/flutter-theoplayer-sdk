@@ -45,6 +45,10 @@ class TextTrackImplWeb extends TextTrackImpl {
       cues.remove(flutterCue);
       activeCues.remove(flutterCue);
       dispatchEvent(TextTrackRemoveCueEvent(track: this, cue: flutterCue));
+
+      if (flutterCue is DateRangeCueImplWeb) {
+        flutterCue.dispose();
+      }
     }).toJS;
 
     enterCueEventListener = ((TextTrackEnterCueEventJS event) {
@@ -105,7 +109,8 @@ class TextTrackImplWeb extends TextTrackImpl {
     for (var cue in cues) {
       if (cue is CueImplWeb) {
         cue.dispose();
-      } else if (cue is DateRangeCueImplWeb) {
+      }
+      if (cue is DateRangeCueImplWeb) {
         cue.dispose();
       }
     }
