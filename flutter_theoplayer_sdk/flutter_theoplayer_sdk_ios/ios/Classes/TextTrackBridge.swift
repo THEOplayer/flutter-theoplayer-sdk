@@ -40,7 +40,7 @@ class TextTrackBridge: THEOplayerNativeTextTracksAPI {
                     kind: textTrack.kind,
                     inBandMetadataTrackDispatchType: textTrack.inBandMetadataTrackDispatchType,
                     readyState: TextTrackReadyState.loaded,
-                    type: TextTrackType.none,
+                    type: TrackTransformer.toFlutterTextTrackType(type: textTrack.type),
                     source: textTrack.src,
                     isForced: false,
                     mode: TrackTransformer.toFlutterTextTrackMode(mode: textTrack.mode),
