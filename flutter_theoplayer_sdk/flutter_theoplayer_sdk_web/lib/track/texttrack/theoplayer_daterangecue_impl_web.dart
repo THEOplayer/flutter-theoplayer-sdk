@@ -16,6 +16,7 @@ class DateRangeCueImplWeb extends DateRangeCueImpl {
 
   late final enterEventListener;
   late final exitEventListener;
+  late final updateEventListener;
 
   DateRangeCueImplWeb(super.id, super.uid, super.startTime, super.endTime, super.startDate, super.endDate, super.duration, super.plannedDuration, super.cueClass, super.endOnNext,
       super.customAttributes, super.scte35Cmd, super.scte35Out, super.scte35In, this._nativeDateRangeCue) {
@@ -27,14 +28,31 @@ class DateRangeCueImplWeb extends DateRangeCueImpl {
       dispatchEvent(CueExitEvent(cue: this));
     }.toJS;
 
+    updateEventListener = (CueUpdateEventJS event) {
+      final cue = event.cue as THEOplayerDateRangeCue;
+      update(
+        cue.endTime,
+        cue.endDate != null ? DateTime.fromMillisecondsSinceEpoch(cue.endDate!.getTime()) : null,
+        cue.duration,
+        cue.plannedDuration,
+        _toCustomAttributesMap(cue.customAttributes),
+        _toUint8List(cue.scte35Cmd),
+        _toUint8List(cue.scte35Out),
+        _toUint8List(cue.scte35In),
+      );
+      dispatchEvent(CueUpdateEvent(cue: this));
+    }.toJS;
+
     _nativeDateRangeCue.addEventListener(TextTrackCueEventTypes.ENTER.toLowerCase(), enterEventListener);
     _nativeDateRangeCue.addEventListener(TextTrackCueEventTypes.EXIT.toLowerCase(), exitEventListener);
+    _nativeDateRangeCue.addEventListener(TextTrackCueEventTypes.UPDATE.toLowerCase(), updateEventListener);
   }
 
   void dispose() {
     super.dispose();
     _nativeDateRangeCue.removeEventListener(TextTrackCueEventTypes.ENTER.toLowerCase(), enterEventListener);
     _nativeDateRangeCue.removeEventListener(TextTrackCueEventTypes.EXIT.toLowerCase(), exitEventListener);
+    _nativeDateRangeCue.removeEventListener(TextTrackCueEventTypes.UPDATE.toLowerCase(), updateEventListener);
   }
 
   static DateRangeCueImplWeb fromNativeCue(THEOplayerDateRangeCue cue) {

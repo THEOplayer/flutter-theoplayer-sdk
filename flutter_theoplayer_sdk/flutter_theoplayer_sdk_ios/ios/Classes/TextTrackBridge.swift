@@ -177,7 +177,29 @@ class TextTrackBridge: THEOplayerNativeTextTracksAPI {
         var eventListeners: [RemovableEventListenerProtocol] = [cueEnterListener, cueExitListener]
 
         // The generic update path would clobber daterange semantics (e.g. infinite endTime becoming 0).
-        if !(cue is DateRangeCue) {
+        if cue is DateRangeCue {
+            let dateRangeCueUpdateListener = cue.addRemovableEventListener(type: TextTrackCueEventTypes.UPDATE, listener: { [weak self] event in
+                guard let self, let dateRangeCue = event.cue as? DateRangeCue else { return }
+                self.flutterTextTracksAPI.onTextTrackUpdateDateRangeCue(
+                    textTrackUid: Int64(track.uid),
+                    id: dateRangeCue.id,
+                    uid: Int64(dateRangeCue.uid),
+                    startTime: dateRangeCue.startTime ?? 0,
+                    endTime: dateRangeCue.endTime ?? Double.infinity,
+                    cueClass: dateRangeCue.attributeClass,
+                    startDateMillis: dateRangeCue.startDate.timeIntervalSince1970 * 1000.0,
+                    endDateMillis: dateRangeCue.endDate.map { $0.timeIntervalSince1970 * 1000.0 },
+                    duration: dateRangeCue.duration,
+                    plannedDuration: dateRangeCue.plannedDuration,
+                    endOnNext: dateRangeCue.endOnNext,
+                    customAttributesJson: CueTransformer.toCustomAttributesJson(dateRangeCue.customAttributes),
+                    scte35Cmd: dateRangeCue.scte35Cmd.map { FlutterStandardTypedData(bytes: $0) },
+                    scte35Out: dateRangeCue.scte35Out.map { FlutterStandardTypedData(bytes: $0) },
+                    scte35In: dateRangeCue.scte35In.map { FlutterStandardTypedData(bytes: $0) },
+                    completion: self.emptyCompletion)
+            })
+            eventListeners.append(dateRangeCueUpdateListener)
+        } else {
             let cueUpdateListener = cue.addRemovableEventListener(type: TextTrackCueEventTypes.UPDATE, listener: { [weak self] event in
                 guard let self else { return }
                 self.flutterTextTracksAPI.onCueUpdate(

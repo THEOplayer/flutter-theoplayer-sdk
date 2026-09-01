@@ -150,6 +150,31 @@ class TextTrackBridge(
         flutterTextTracksAPI.onCueUpdate(track.uid.toLong(), it.cue.uid, it.cue.endTime, it.cue.content.toString(), emptyCallback)
     }
 
+    private fun dateRangeCueUpdateListener(track: TextTrack) = EventListener<UpdateEvent> {
+        val cue = it.cue
+        if (cue !is DateRangeCue) {
+            return@EventListener
+        }
+        flutterTextTracksAPI.onTextTrackUpdateDateRangeCue(
+            track.uid.toLong(),
+            cue.id,
+            cue.uid,
+            cue.startTime,
+            cue.endTime,
+            cue.attributeClass,
+            cue.startDate.time.toDouble(),
+            cue.endDate?.time?.toDouble(),
+            cue.duration,
+            cue.plannedDuration,
+            cue.isEndOnNext,
+            toCustomAttributesJson(cue.customAttributes),
+            cue.scte35Cmd,
+            cue.scte35Out,
+            cue.scte35In,
+            emptyCallback
+        )
+    }
+
     fun attachListeners() {
         player.textTracks.addEventListener(TextTrackListEventTypes.ADDTRACK, addTextTrackListener)
         player.textTracks.addEventListener(TextTrackListEventTypes.REMOVETRACK, removeTextTrackListener)
@@ -194,7 +219,9 @@ class TextTrackBridge(
         cue.addEventListener(TextTrackCueEventTypes.ENTER, cueEnterListener(track))
         cue.addEventListener(TextTrackCueEventTypes.EXIT, cueExitListener(track))
         // The generic update path would clobber daterange semantics (e.g. infinite endTime becoming 0).
-        if (cue !is DateRangeCue) {
+        if (cue is DateRangeCue) {
+            cue.addEventListener(TextTrackCueEventTypes.UPDATE, dateRangeCueUpdateListener(track))
+        } else {
             cue.addEventListener(TextTrackCueEventTypes.UPDATE, cueUpdateListener(track))
         }
     }
@@ -202,7 +229,9 @@ class TextTrackBridge(
     private fun removeCueListeners(track: TextTrack, cue: TextTrackCue) {
         cue.removeEventListener(TextTrackCueEventTypes.ENTER, cueEnterListener(track))
         cue.removeEventListener(TextTrackCueEventTypes.EXIT, cueExitListener(track))
-        if (cue !is DateRangeCue) {
+        if (cue is DateRangeCue) {
+            cue.removeEventListener(TextTrackCueEventTypes.UPDATE, dateRangeCueUpdateListener(track))
+        } else {
             cue.removeEventListener(TextTrackCueEventTypes.UPDATE, cueUpdateListener(track))
         }
     }

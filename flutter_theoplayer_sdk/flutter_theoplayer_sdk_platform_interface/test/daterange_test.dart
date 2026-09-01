@@ -88,5 +88,54 @@ void main() {
       expect(cue.scte35Out, scte35Out);
       expect(cue.scte35In, isNull);
     });
+
+    test('onTextTrackUpdateDateRangeCue mutates the existing cue fields and dispatches CueUpdateEvent', () {
+      final api = THEOplayerFlutterTextTracksAPIImpl();
+      api.onAddTextTrack('track-1', 1, 'label', 'en', 'metadata', null, TextTrackReadyState.loaded, TextTrackType.daterange, null, false, TextTrackMode.hidden, null);
+      api.onTextTrackAddDateRangeCue(1, 'cue-1', 7, 10.0, double.infinity, 'ad-break', 1000.0, null, null, 30.0, false, '{"X-CUSTOM":"value"}', null, null, null);
+
+      final track = api.getTextTracks().first;
+      final cue = track.cues.first as DateRangeCueImpl;
+      Cue? updatedCue;
+      cue.addEventListener(TextTrackCueEventTypes.UPDATE, (event) {
+        updatedCue = (event as CueUpdateEvent).cue;
+      });
+
+      final scte35In = Uint8List.fromList([0xFC, 0x31]);
+      api.onTextTrackUpdateDateRangeCue(1, 'cue-1', 7, 10.0, 40.0, 'ad-break', 1000.0, 31000.0, 30.0, 30.0, false, '{"X-CUSTOM":"value2"}', null, null, scte35In);
+
+      expect(track.cues.length, 1);
+      expect(updatedCue, cue);
+      expect(cue.endTime, 40.0);
+      expect(cue.endDate, DateTime.fromMillisecondsSinceEpoch(31000));
+      expect(cue.duration, 30.0);
+      expect(cue.plannedDuration, 30.0);
+      expect(cue.customAttributes, {'X-CUSTOM': 'value2'});
+      expect(cue.scte35In, scte35In);
+    });
+
+    test('onTextTrackUpdateDateRangeCue keeps an open-ended cue infinite when the update has no end', () {
+      final api = THEOplayerFlutterTextTracksAPIImpl();
+      api.onAddTextTrack('track-1', 1, 'label', 'en', 'metadata', null, TextTrackReadyState.loaded, TextTrackType.daterange, null, false, TextTrackMode.hidden, null);
+      api.onTextTrackAddDateRangeCue(1, 'cue-1', 7, 10.0, double.infinity, 'ad-break', 1000.0, null, null, 30.0, false, null, null, null, null);
+
+      final track = api.getTextTracks().first;
+      final cue = track.cues.first as DateRangeCue;
+
+      api.onTextTrackUpdateDateRangeCue(1, 'cue-1', 7, 10.0, double.infinity, 'ad-break', 1000.0, null, null, 45.0, false, null, null, null, null);
+
+      expect(cue.endTime, double.infinity);
+      expect(cue.endDate, isNull);
+      expect(cue.plannedDuration, 45.0);
+    });
+
+    test('onTextTrackUpdateDateRangeCue for an unknown cue is a no-op', () {
+      final api = THEOplayerFlutterTextTracksAPIImpl();
+      api.onAddTextTrack('track-1', 1, 'label', 'en', 'metadata', null, TextTrackReadyState.loaded, TextTrackType.daterange, null, false, TextTrackMode.hidden, null);
+
+      api.onTextTrackUpdateDateRangeCue(1, 'cue-x', 99, 0.0, 1.0, null, 0.0, null, null, null, false, null, null, null, null);
+
+      expect(api.getTextTracks().first.cues, isEmpty);
+    });
   });
 }
