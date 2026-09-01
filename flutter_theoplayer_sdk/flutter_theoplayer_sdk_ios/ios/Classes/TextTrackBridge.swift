@@ -94,14 +94,34 @@ class TextTrackBridge: THEOplayerNativeTextTracksAPI {
     private func attachTrackListeners(track: TextTrack) {
         let textTrackAddCueListener = track.addRemovableEventListener(type: TextTrackEventTypes.ADD_CUE, listener: { [weak self] event in
             guard let self else { return }
-            self.flutterTextTracksAPI.onTextTrackAddCue(
-                textTrackUid: Int64(track.uid),
-                id: event.cue.id,
-                uid: Int64(event.cue.uid),
-                startTime: event.cue.startTime ?? 0,
-                endTime: event.cue.endTime ?? 0,
-                content: event.cue.contentString ?? "",
-                completion: self.emptyCompletion)
+            if let dateRangeCue = event.cue as? DateRangeCue {
+                self.flutterTextTracksAPI.onTextTrackAddDateRangeCue(
+                    textTrackUid: Int64(track.uid),
+                    id: dateRangeCue.id,
+                    uid: Int64(dateRangeCue.uid),
+                    startTime: dateRangeCue.startTime ?? 0,
+                    endTime: dateRangeCue.endTime ?? Double.infinity,
+                    cueClass: dateRangeCue.attributeClass,
+                    startDateMillis: dateRangeCue.startDate.timeIntervalSince1970 * 1000.0,
+                    endDateMillis: dateRangeCue.endDate.map { $0.timeIntervalSince1970 * 1000.0 },
+                    duration: dateRangeCue.duration,
+                    plannedDuration: dateRangeCue.plannedDuration,
+                    endOnNext: dateRangeCue.endOnNext,
+                    customAttributesJson: CueTransformer.toCustomAttributesJson(dateRangeCue.customAttributes),
+                    scte35Cmd: dateRangeCue.scte35Cmd.map { FlutterStandardTypedData(bytes: $0) },
+                    scte35Out: dateRangeCue.scte35Out.map { FlutterStandardTypedData(bytes: $0) },
+                    scte35In: dateRangeCue.scte35In.map { FlutterStandardTypedData(bytes: $0) },
+                    completion: self.emptyCompletion)
+            } else {
+                self.flutterTextTracksAPI.onTextTrackAddCue(
+                    textTrackUid: Int64(track.uid),
+                    id: event.cue.id,
+                    uid: Int64(event.cue.uid),
+                    startTime: event.cue.startTime ?? 0,
+                    endTime: event.cue.endTime ?? 0,
+                    content: event.cue.contentString ?? "",
+                    completion: self.emptyCompletion)
+            }
             self.attachCueListeners(track: track, cue: event.cue)
         })
         let textTrackRemoveCueListener = track.addRemovableEventListener(type: TextTrackEventTypes.REMOVE_CUE, listener: { [weak self] event in
