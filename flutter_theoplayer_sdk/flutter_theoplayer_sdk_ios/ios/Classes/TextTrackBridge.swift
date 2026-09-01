@@ -174,21 +174,23 @@ class TextTrackBridge: THEOplayerNativeTextTracksAPI {
             guard let self else { return }
             self.flutterTextTracksAPI.onCueExit(textTrackUid: Int64(track.uid), cueUid: Int64(cue.uid), completion: self.emptyCompletion)
         })
-        let cueUpdateListener = cue.addRemovableEventListener(type: TextTrackCueEventTypes.UPDATE, listener: { [weak self] event in
-            guard let self else { return }
-            self.flutterTextTracksAPI.onCueUpdate(
-                textTrackUid: Int64(track.uid),
-                cueUid: Int64(cue.uid),
-                endTime: event.cue.endTime ?? 0,
-                content: event.cue.contentString ?? "",
-                completion: self.emptyCompletion)
-        })
-        
-        cueDispatchObservers.append(DispatchObserver(dispatcher: cue, eventListeners: [
-            cueEnterListener,
-            cueExitListener,
-            cueUpdateListener
-        ]))
+        var eventListeners: [RemovableEventListenerProtocol] = [cueEnterListener, cueExitListener]
+
+        // The generic update path would clobber daterange semantics (e.g. infinite endTime becoming 0).
+        if !(cue is DateRangeCue) {
+            let cueUpdateListener = cue.addRemovableEventListener(type: TextTrackCueEventTypes.UPDATE, listener: { [weak self] event in
+                guard let self else { return }
+                self.flutterTextTracksAPI.onCueUpdate(
+                    textTrackUid: Int64(track.uid),
+                    cueUid: Int64(cue.uid),
+                    endTime: event.cue.endTime ?? 0,
+                    content: event.cue.contentString ?? "",
+                    completion: self.emptyCompletion)
+            })
+            eventListeners.append(cueUpdateListener)
+        }
+
+        cueDispatchObservers.append(DispatchObserver(dispatcher: cue, eventListeners: eventListeners))
     }
     
     private func removeCueListeners(track: TextTrack, cue: TextTrackCue) {
