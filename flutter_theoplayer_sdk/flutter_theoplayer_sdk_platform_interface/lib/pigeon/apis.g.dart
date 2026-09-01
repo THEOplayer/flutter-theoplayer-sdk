@@ -135,6 +135,7 @@ class TypedSourcePigeon {
     this.drm,
     this.integration,
     this.headers,
+    this.hlsDateRange,
   });
 
   String src;
@@ -147,6 +148,8 @@ class TypedSourcePigeon {
 
   Map<String?, String?>? headers;
 
+  bool? hlsDateRange;
+
   Object encode() {
     return <Object?>[
       src,
@@ -154,6 +157,7 @@ class TypedSourcePigeon {
       drm,
       integration,
       headers,
+      hlsDateRange,
     ];
   }
 
@@ -165,6 +169,7 @@ class TypedSourcePigeon {
       drm: result[2] as DRMConfiguration?,
       integration: result[3] as SourceIntegrationId?,
       headers: (result[4] as Map<Object?, Object?>?)?.cast<String?, String?>(),
+      hlsDateRange: result[5] as bool?,
     );
   }
 }
@@ -596,7 +601,7 @@ abstract class THEOplayerFlutterTextTracksAPI {
   void onTextTrackAddCue(int textTrackUid, String id, int uid, double startTime, double endTime, String content);
 
   void onTextTrackAddDateRangeCue(int textTrackUid, String id, int uid, double startTime, double endTime, String? cueClass, double startDateMillis, double? endDateMillis, double? duration,
-      double? plannedDuration, bool endOnNext, String? customAttributesJson);
+      double? plannedDuration, bool endOnNext, String? customAttributesJson, Uint8List? scte35Cmd, Uint8List? scte35Out, Uint8List? scte35In);
 
   void onTextTrackRemoveCue(int textTrackUid, int cueUid);
 
@@ -769,9 +774,12 @@ abstract class THEOplayerFlutterTextTracksAPI {
           final bool? arg_endOnNext = (args[10] as bool?);
           assert(arg_endOnNext != null, 'Argument for dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue was null, expected non-null bool.');
           final String? arg_customAttributesJson = (args[11] as String?);
+          final Uint8List? arg_scte35Cmd = (args[12] as Uint8List?);
+          final Uint8List? arg_scte35Out = (args[13] as Uint8List?);
+          final Uint8List? arg_scte35In = (args[14] as Uint8List?);
           try {
             api.onTextTrackAddDateRangeCue(arg_textTrackUid!, arg_id!, arg_uid!, arg_startTime!, arg_endTime!, arg_cueClass, arg_startDateMillis!, arg_endDateMillis, arg_duration, arg_plannedDuration,
-                arg_endOnNext!, arg_customAttributesJson);
+                arg_endOnNext!, arg_customAttributesJson, arg_scte35Cmd, arg_scte35Out, arg_scte35In);
             return wrapResponse(empty: true);
           } on PlatformException catch (e) {
             return wrapResponse(error: e);
