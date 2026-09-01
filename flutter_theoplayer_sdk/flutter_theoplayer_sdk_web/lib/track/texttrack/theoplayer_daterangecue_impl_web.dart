@@ -68,11 +68,11 @@ class DateRangeCueImplWeb extends DateRangeCueImpl {
     final keys = _objectKeys(customAttributes).toDart;
     for (final key in keys) {
       final value = customAttributes.getProperty(key);
-      if (value.isA<JSString>()) {
+      if (value.typeofEquals('string')) {
         map[key.toDart] = (value as JSString).toDart;
-      } else if (value.isA<JSNumber>()) {
+      } else if (value.typeofEquals('number')) {
         map[key.toDart] = (value as JSNumber).toDartDouble;
-      } else if (value.isA<JSArrayBuffer>()) {
+      } else if (value.instanceOfString('ArrayBuffer')) {
         map[key.toDart] = base64Encode((value as JSArrayBuffer).toDart.asUint8List());
       } else if (value != null) {
         map[key.toDart] = value.toString();
