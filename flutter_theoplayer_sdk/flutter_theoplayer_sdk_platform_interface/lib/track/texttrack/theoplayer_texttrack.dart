@@ -140,6 +140,8 @@ abstract class Cue implements EventDispatcher {
 }
 
 /// A cue representing an HLS EXT-X-DATERANGE tag.
+///
+/// For open-ended date ranges (no end date or duration) [endTime] is [double.infinity].
 abstract class DateRangeCue extends Cue {
   DateRangeCue(super.id, super.uid, super.startTime);
 
@@ -162,6 +164,8 @@ abstract class DateRangeCue extends Cue {
   bool get endOnNext;
 
   /// Custom attributes from the EXT-X-DATERANGE tag.
+  ///
+  /// Values are strings or numbers; binary attribute values are base64-encoded strings.
   Map<String, dynamic>? get customAttributes;
 
   /// The SCTE-35 command from the SCTE35-CMD attribute, if available.
