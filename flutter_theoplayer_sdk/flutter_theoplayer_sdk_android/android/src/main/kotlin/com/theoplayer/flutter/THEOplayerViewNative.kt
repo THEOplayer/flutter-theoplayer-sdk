@@ -62,6 +62,10 @@ class THEOplayerViewNative(
 
     private var allowAutomaticPictureInPicture: Boolean = false;
 
+    // The pinned native Android SDK has no player-level hlsDateRange config,
+    // so the player-level flag is applied as a per-source default instead.
+    private val hlsDateRange: Boolean?
+
     private var surface: Surface? = null;
 
     var destroyListener: DestroyListener? = null;
@@ -100,12 +104,11 @@ class THEOplayerViewNative(
         val theoLiveConfigExternalSessionId = flutterTheoLiveConfig?.get("externalSessionId") as? String
         val theoLiveDiscoveryUrl = flutterTheoLiveConfig?.get("discoveryUrl") as? String
 
-        val hlsDateRange = flutterPlayerConfig?.get("hlsDateRange") as? Boolean
+        hlsDateRange = flutterPlayerConfig?.get("hlsDateRange") as? Boolean
 
         val playerConfigBuilder = THEOplayerConfig.Builder()
         license?.let { playerConfigBuilder.license(it) }
         licenseUrl?.let { playerConfigBuilder.licenseUrl(it) }
-        hlsDateRange?.let { playerConfigBuilder.hlsDateRange(it) }
         playerConfigBuilder.pipConfiguration(PipConfiguration.Builder().build())
 
         val theoLiveConfigurationBuilder = THEOLiveConfig.Builder()
@@ -206,7 +209,7 @@ class THEOplayerViewNative(
 
     override fun setSource(source: FlutterSourceDescription?) {
         isFirstPlaying = false
-        tpv.player.source = SourceTransformer.toSourceDescription(source)
+        tpv.player.source = SourceTransformer.toSourceDescription(source, hlsDateRange)
 
     }
 

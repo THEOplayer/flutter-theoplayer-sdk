@@ -88,7 +88,7 @@ object SourceTransformer {
         )
     }
 
-    fun toSourceDescription(flutterSourceDescription: FlutterSourceDescription?): SourceDescription? {
+    fun toSourceDescription(flutterSourceDescription: FlutterSourceDescription?, defaultHlsDateRange: Boolean? = null): SourceDescription? {
         if (flutterSourceDescription == null) {
             return null
         }
@@ -96,12 +96,12 @@ object SourceTransformer {
         return SourceDescription.Builder(
             *flutterSourceDescription.sources
                 .filterNotNull()
-                .map { toTypedSource(it) as TypedSource}
+                .map { toTypedSource(it, defaultHlsDateRange) as TypedSource}
                 .toTypedArray())
             .build()
     }
 
-    fun toTypedSource(flutterTypedSource: FlutterTypedSource?): TypedSource? {
+    fun toTypedSource(flutterTypedSource: FlutterTypedSource?, defaultHlsDateRange: Boolean? = null): TypedSource? {
         if (flutterTypedSource == null) {
             return null
         }
@@ -128,7 +128,9 @@ object SourceTransformer {
                         typedSourceBuilder.headers(it)
                     }
 
-                flutterTypedSource.hlsDateRange?.let {
+                // The pinned native Android SDK has no player-level hlsDateRange config,
+                // so the player-level flag acts as the default when the source doesn't set it.
+                (flutterTypedSource.hlsDateRange ?: defaultHlsDateRange)?.let {
                     typedSourceBuilder.hlsDateRange(it)
                 }
 
