@@ -102,11 +102,6 @@ class THEOliveControllerWeb extends THEOliveInternalInterface {
   }
 
   @override
-  void preloadChannels(List<String> channelIDs) {
-    _theoLiveApi.preloadPublications(JSHelpers.stringListToJSArray(channelIDs));
-  }
-
-  @override
   void addEventListener(String eventType, EventListener<Event> listener) {
     _eventManager.addEventListener(eventType, listener);
   }

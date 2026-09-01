@@ -13,7 +13,6 @@ class HespLatencies {
 }
 
 abstract class THEOlive implements EventDispatcher {
-  void preloadChannels(List<String> channelIDs);
   void set badNetworkMode(bool badNetworkMode);
   bool get badNetworkMode;
 

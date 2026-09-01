@@ -60,11 +60,6 @@ class THEOplayerTHEOliveControllerMobile extends THEOliveInternalInterface imple
   }
 
   @override
-  void preloadChannels(List<String> channelIDs) {
-    _nativeTHEOliveAPI.preloadChannels(channelIDs);
-  }
-
-  @override
   Future<double?> get currentLatency async {
     return _nativeTHEOliveAPI.currentLatency();
   }

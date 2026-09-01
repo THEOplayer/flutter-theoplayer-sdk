@@ -40,7 +40,6 @@ void main() {
       });
     }
 
-
     testWidgets('Test basic THEOlive playback with HYBRID_COMPOSITION', (WidgetTester tester) async {
       await runBasicTHEOlivePlaybackTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
     });
@@ -133,8 +132,8 @@ Future<void> runBasicPlaybackTest(WidgetTester tester, AndroidViewComposition an
   print("Testing playback duration():  ${player.getDuration()}");
   expect(player.getDuration() >= 0, isTrue);
 
-  print("Testing playback currentTime():  ${player.getCurrentTime()}");
-  expect(player.getCurrentTime() >= 5, isTrue);
+  print("Testing playback currentTime():  ${player.currentTime}");
+  expect(player.currentTime >= 5, isTrue);
 }
 
 Future<void> runBasicTHEOlivePlaybackTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
@@ -437,13 +436,13 @@ Future<void> runLatenciesTest(WidgetTester tester, AndroidViewComposition androi
 
   expect(player.isInitialized, isTrue);
 
-  player.setMuted(true);
-  player.setAutoplay(true);
+  player.muted = true;
+  player.autoplay = true;
 
   print("Setting source for latencies test");
-  player.setSource(SourceDescription(sources: [
+  player.source = SourceDescription(sources: [
     TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
-  ]));
+  ]);
 
   await tester.pumpAndSettle(const Duration(seconds: 10));
 
@@ -451,7 +450,8 @@ Future<void> runLatenciesTest(WidgetTester tester, AndroidViewComposition androi
   expect(player.theoLive, isNotNull);
 
   final latencies = await player.theoLive!.latencies;
-  print("Latencies: engineLatency=${latencies?.engineLatency}, distributionLatency=${latencies?.distributionLatency}, playerLatency=${latencies?.playerLatency}, theoliveLatency=${latencies?.theoliveLatency}");
+  print(
+      "Latencies: engineLatency=${latencies?.engineLatency}, distributionLatency=${latencies?.distributionLatency}, playerLatency=${latencies?.playerLatency}, theoliveLatency=${latencies?.theoliveLatency}");
 
   expect(latencies, isNotNull);
   expect(latencies!.theoliveLatency, isNotNull);
@@ -522,8 +522,7 @@ Future<void> runTHEOliveAbrStrategyPerformanceTest(WidgetTester tester, AndroidV
   print("Lowest bandwidth: $lowestBandwidth");
 
   // Verify the initial active quality is the lowest bandwidth quality
-  expect(activeQuality.bandwidth, equals(lowestBandwidth),
-      reason: "Performance strategy should select the lowest bandwidth video quality for initial track selection");
+  expect(activeQuality.bandwidth, equals(lowestBandwidth), reason: "Performance strategy should select the lowest bandwidth video quality for initial track selection");
 }
 
 Future<void> runTHEOliveAbrStrategyQualityTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
@@ -600,6 +599,5 @@ Future<void> runTHEOliveAbrStrategyQualityTest(WidgetTester tester, AndroidViewC
   print("Expected bandwidth (highest fitting view): $expectedBandwidth");
 
   // Verify the initial active quality matches the expected quality for view size
-  expect(activeQuality.bandwidth, equals(expectedBandwidth),
-      reason: "Quality strategy should select the highest bandwidth video quality fitting the view size");
+  expect(activeQuality.bandwidth, equals(expectedBandwidth), reason: "Quality strategy should select the highest bandwidth video quality fitting the view size");
 }

@@ -99,11 +99,6 @@ class THEOliveAPIHolder extends THEOlive {
   }
 
   @override
-  void preloadChannels(List<String> channelIDs) {
-    _internalTHEOliveAPI?.preloadChannels(channelIDs);
-  }
-
-  @override
   void setStateListener(THEOliveStateChangeListener listener) {
     _stateChangeListener = listener;
   }

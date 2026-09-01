@@ -10,10 +10,10 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        xcode_version: ['16.2']
+        xcode_version: ['26.3']
         flutter_version: ['stable', 'beta']
 
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -48,10 +48,10 @@ jobs:
       working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk
 
     - name: Start iOS simulator
-      uses: futureware-tech/simulator-action@v3
+      uses: futureware-tech/simulator-action@v5
       with:
-        model: 'iPhone 15'
-        os_version: '>=16.0'
+        model: 'iPhone 16'
+        os_version: '>=18.5'
 
     - name: Run integration tests
       run: flutter test integration_test_single_entrypoint/entrypoint.dart
