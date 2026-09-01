@@ -187,13 +187,18 @@ class TextTrackBridge(
     private fun attachCueListeners(track: TextTrack, cue: TextTrackCue) {
         cue.addEventListener(TextTrackCueEventTypes.ENTER, cueEnterListener(track))
         cue.addEventListener(TextTrackCueEventTypes.EXIT, cueExitListener(track))
-        cue.addEventListener(TextTrackCueEventTypes.UPDATE, cueUpdateListener(track))
+        // The generic update path would clobber daterange semantics (e.g. infinite endTime becoming 0).
+        if (cue !is DateRangeCue) {
+            cue.addEventListener(TextTrackCueEventTypes.UPDATE, cueUpdateListener(track))
+        }
     }
 
     private fun removeCueListeners(track: TextTrack, cue: TextTrackCue) {
         cue.removeEventListener(TextTrackCueEventTypes.ENTER, cueEnterListener(track))
         cue.removeEventListener(TextTrackCueEventTypes.EXIT, cueExitListener(track))
-        cue.removeEventListener(TextTrackCueEventTypes.UPDATE, cueUpdateListener(track))
+        if (cue !is DateRangeCue) {
+            cue.removeEventListener(TextTrackCueEventTypes.UPDATE, cueUpdateListener(track))
+        }
     }
 
     override fun setMode(textTrackUid: Long, mode: FlutterTextTrackMode) {
