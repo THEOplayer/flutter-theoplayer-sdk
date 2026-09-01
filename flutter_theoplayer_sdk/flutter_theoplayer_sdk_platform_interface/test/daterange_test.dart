@@ -4,6 +4,9 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
 import 'package:theoplayer_platform_interface/theopalyer_config.dart';
 import 'package:theoplayer_platform_interface/api/source.dart';
+import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_flutter_texttracks_api.dart';
+import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack.dart';
+import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack_events.dart';
 import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack_impl.dart';
 
 void main() {
@@ -59,6 +62,30 @@ void main() {
       expect(cue.endDate, isNull);
       expect(cue.scte35Cmd, isNull);
       expect(cue.scte35Out, isNull);
+      expect(cue.scte35In, isNull);
+    });
+
+    test('onTextTrackAddDateRangeCue forwards a DateRangeCue with SCTE-35 fields to the track', () {
+      final api = THEOplayerFlutterTextTracksAPIImpl();
+      api.onAddTextTrack('track-1', 1, 'label', 'en', 'metadata', null, TextTrackReadyState.loaded, TextTrackType.daterange, null, false, TextTrackMode.hidden, null);
+
+      final track = api.getTextTracks().first;
+      Cue? dispatchedCue;
+      track.addEventListener(TextTrackEventTypes.ADDCUE, (event) {
+        dispatchedCue = (event as TextTrackAddCueEvent).cue;
+      });
+
+      final scte35Out = Uint8List.fromList([0xFC, 0x30]);
+      api.onTextTrackAddDateRangeCue(1, 'cue-1', 7, 10.0, double.infinity, 'ad-break', 1000.0, null, null, 30.0, false, '{"X-CUSTOM":"value"}', null, scte35Out, null);
+
+      expect(track.cues.length, 1);
+      final cue = track.cues.first as DateRangeCue;
+      expect(dispatchedCue, cue);
+      expect(cue.startDate, DateTime.fromMillisecondsSinceEpoch(1000));
+      expect(cue.endTime, double.infinity);
+      expect(cue.customAttributes, {'X-CUSTOM': 'value'});
+      expect(cue.scte35Cmd, isNull);
+      expect(cue.scte35Out, scte35Out);
       expect(cue.scte35In, isNull);
     });
   });
