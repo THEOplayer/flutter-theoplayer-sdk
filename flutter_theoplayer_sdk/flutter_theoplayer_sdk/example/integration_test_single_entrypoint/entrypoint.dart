@@ -2,6 +2,7 @@ import '../integration_test/plugin_integration_test.dart' as plugin_tests;
 import '../integration_test/player_creation_test.dart' as playercreation_tests;
 import '../integration_test/playback_test.dart' as playback_tests;
 import '../integration_test/theolive_authtoken_test.dart' as theolive_authtoken_tests;
+import '../integration_test/daterange_test.dart' as daterange_tests;
 
 // entry point for web integration tests to run them with `flutter drive`
 // entry point for iOS tests, becuase the simulator is sensitive to start test multiple times
@@ -11,4 +12,5 @@ void main() {
   playercreation_tests.main();
   playback_tests.main();
   theolive_authtoken_tests.main();
+  daterange_tests.main();
 }
