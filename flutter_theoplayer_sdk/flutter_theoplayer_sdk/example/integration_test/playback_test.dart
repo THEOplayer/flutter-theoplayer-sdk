@@ -144,7 +144,7 @@ Future<void> runBasicPlaybackTest(WidgetTester tester, AndroidViewComposition an
   expect(player.currentTime >= 5, isTrue);
 }
 
-/// OPTIP-476: playbackRate must reflect the native player's rate (1.0 by default) without any prior `ratechange`.
+/// playbackRate must reflect the native player's rate (1.0 by default) without any prior `ratechange`.
 Future<void> runPlaybackRateTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
   TestApp app = TestApp(androidViewComposition: androidViewComposition);
   await tester.pumpWidget(app);
