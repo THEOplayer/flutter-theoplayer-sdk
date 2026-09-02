@@ -228,7 +228,7 @@ class _MyAppState extends State<MyApp> {
                                   });
                                   player.source = SourceDescription(sources: [
                                     TypedSource(
-                                        src: "https://cdn.theoplayer.com/video/star_wars_episode_vii-the_force_awakens_official_comic-con_2015_reel_(2015)/index-daterange.m3u8",
+                                        src: "https://cdn.theoplayer.com/video/star_wars_episode_vii-the_force_awakens_official_comic-con_2015_reel_(2015)/daterange-test.m3u8",
                                         type: "application/x-mpegurl",
                                         hlsDateRange: true),
                                   ]);

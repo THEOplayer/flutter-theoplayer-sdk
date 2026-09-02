@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
@@ -7,7 +5,14 @@ import 'package:theoplayer/theoplayer.dart';
 
 import '../integration_test_app/test_app.dart';
 
-const daterangeStream = "https://cdn.theoplayer.com/video/star_wars_episode_vii-the_force_awakens_official_comic-con_2015_reel_(2015)/index-daterange.m3u8";
+const daterangeStream = "https://cdn.theoplayer.com/video/star_wars_episode_vii-the_force_awakens_official_comic-con_2015_reel_(2015)/daterange-test.m3u8";
+
+// First daterange in the stream: starts 10s into the video (PDT 12:36:33 + 10s) and lasts 5s.
+const testCueId = "test-010";
+const testCueClass = "com.theoplayer.daterange-test";
+const testCueStartDate = "2015-07-30T12:36:43.000Z";
+const testCueEndDate = "2015-07-30T12:36:48.000Z";
+const testCueDurationSeconds = 5.0;
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -44,11 +49,20 @@ Future<THEOplayer> _preparePlayer(WidgetTester tester, TestApp app) async {
   return player;
 }
 
+Future<void> _pumpUntil(WidgetTester tester, bool Function() condition, {Duration timeout = const Duration(seconds: 60)}) async {
+  final end = DateTime.now().add(timeout);
+  while (!condition() && DateTime.now().isBefore(end)) {
+    await tester.pump(const Duration(milliseconds: 500));
+  }
+}
+
 Future<void> runDateRangeCueTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
   TestApp app = TestApp(androidViewComposition: androidViewComposition);
   final player = await _preparePlayer(tester, app);
 
-  final dateRangeCueCompleter = Completer<DateRangeCue>();
+  DateRangeCue? testCue;
+  var enteredTestCue = false;
+  var exitedTestCue = false;
 
   player.textTracks.addEventListener(TextTracksEventTypes.ADDTRACK, (event) {
     final track = (event as AddTextTrackEvent).track;
@@ -59,8 +73,22 @@ Future<void> runDateRangeCueTest(WidgetTester tester, AndroidViewComposition and
     track.addEventListener(TextTrackEventTypes.ADDCUE, (cueEvent) {
       final cue = (cueEvent as TextTrackAddCueEvent).cue;
       print("Received daterange ADDCUE event, cue: ${cue.id}");
-      if (cue is DateRangeCue && !dateRangeCueCompleter.isCompleted) {
-        dateRangeCueCompleter.complete(cue);
+      if (cue is DateRangeCue && cue.id == testCueId) {
+        testCue = cue;
+      }
+    });
+    track.addEventListener(TextTrackEventTypes.ENTERCUE, (cueEvent) {
+      final cue = (cueEvent as TextTrackEnterCueEvent).cue;
+      print("Received daterange ENTERCUE event, cue: ${cue.id}");
+      if (cue.id == testCueId) {
+        enteredTestCue = true;
+      }
+    });
+    track.addEventListener(TextTrackEventTypes.EXITCUE, (cueEvent) {
+      final cue = (cueEvent as TextTrackExitCueEvent).cue;
+      print("Received daterange EXITCUE event, cue: ${cue.id}");
+      if (cue.id == testCueId) {
+        exitedTestCue = true;
       }
     });
   });
@@ -70,28 +98,42 @@ Future<void> runDateRangeCueTest(WidgetTester tester, AndroidViewComposition and
     TypedSource(src: daterangeStream, hlsDateRange: true),
   ]);
 
-  await tester.pumpAndSettle(const Duration(seconds: 10));
+  await _pumpUntil(tester, () => testCue != null, timeout: const Duration(seconds: 30));
+  expect(testCue, isNotNull, reason: "DateRangeCue '$testCueId' should arrive on a daterange text track");
 
-  print("Testing daterange cue received");
-  expect(dateRangeCueCompleter.isCompleted, isTrue, reason: "A DateRangeCue should arrive on a daterange text track");
-
-  final cue = await dateRangeCueCompleter.future;
+  final cue = testCue!;
   print("Testing daterange cue fields");
   print("  id: ${cue.id}, uid: ${cue.uid}, startTime: ${cue.startTime}, endTime: ${cue.endTime}");
   print("  startDate: ${cue.startDate}, endDate: ${cue.endDate}, duration: ${cue.duration}, plannedDuration: ${cue.plannedDuration}");
   print("  cueClass: ${cue.cueClass}, endOnNext: ${cue.endOnNext}, customAttributes: ${cue.customAttributes}");
-  expect(cue.id, isNotEmpty);
-  expect(cue.startTime, isNotNull);
-  expect(cue.startDate, isNotNull);
-  // open-ended dateranges surface an infinite endTime
-  if (cue.endDate == null && cue.duration == null && cue.plannedDuration == null) {
-    expect(cue.endTime, double.infinity);
-  }
+  print("  scte35Cmd: ${cue.scte35Cmd?.length}, scte35Out: ${cue.scte35Out?.length}, scte35In: ${cue.scte35In?.length}");
+
+  expect(cue.id, testCueId);
+  expect(cue.cueClass, testCueClass);
+  expect(cue.startDate.millisecondsSinceEpoch, DateTime.parse(testCueStartDate).millisecondsSinceEpoch);
+  expect(cue.endDate?.millisecondsSinceEpoch, DateTime.parse(testCueEndDate).millisecondsSinceEpoch);
+  expect(cue.duration, testCueDurationSeconds);
+  expect(cue.plannedDuration, testCueDurationSeconds);
+  expect(cue.endTime.isFinite, isTrue, reason: "A daterange with END-DATE/DURATION should have a finite endTime");
+  expect(cue.endTime - cue.startTime, closeTo(testCueDurationSeconds, 0.1));
+  expect(cue.scte35Out, isNotNull, reason: "SCTE35-OUT payload should be forwarded");
+  expect(cue.scte35Out, isNotEmpty);
+  expect(cue.scte35In, isNotNull, reason: "SCTE35-IN payload should be forwarded");
+  expect(cue.scte35In, isNotEmpty);
+  expect(cue.customAttributes, isNotNull, reason: "X-COM-* custom attributes should be forwarded");
+  expect(cue.customAttributes!.values.map((value) => value.toString()), contains("cue-010"));
 
   final dateRangeTracks = player.textTracks.where((track) => track.type == TextTrackType.daterange);
   expect(dateRangeTracks, isNotEmpty);
   print("Testing cue is stored on the track, cue count: ${dateRangeTracks.first.cues.length}");
-  expect(dateRangeTracks.first.cues, isNotEmpty);
+  expect(dateRangeTracks.first.cues.where((trackCue) => trackCue.id == testCueId), isNotEmpty);
+
+  // the cue is active between 10s and 15s of playback
+  await _pumpUntil(tester, () => enteredTestCue);
+  expect(enteredTestCue, isTrue, reason: "ENTERCUE should fire when playback reaches the daterange start");
+
+  await _pumpUntil(tester, () => exitedTestCue);
+  expect(exitedTestCue, isTrue, reason: "EXITCUE should fire when playback passes the daterange end");
 }
 
 Future<void> runDateRangeDisabledTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
