@@ -5,6 +5,8 @@ import 'package:theoplayer_platform_interface/theoplayer_event_manager.dart';
 import 'package:theoplayer_platform_interface/theoplayer_events.dart';
 import 'package:theoplayer_platform_interface/theoplayer_view_controller_interface.dart';
 
+/// Stands in for the platform view controllers so tests can dispatch player events into [PlayerState]
+/// without creating the real pigeon/JS bridges; everything but the event plumbing is unimplemented.
 class FakeViewController implements THEOplayerViewController {
   final EventManager _eventManager = EventManager();
 
