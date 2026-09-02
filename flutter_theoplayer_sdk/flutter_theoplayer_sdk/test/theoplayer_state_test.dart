@@ -7,6 +7,10 @@ import 'package:theoplayer_platform_interface/theoplayer_view_controller_interfa
 
 class FakeViewController implements THEOplayerViewController {
   final EventManager _eventManager = EventManager();
+  double nativePlaybackRate = 1.0;
+
+  @override
+  Future<double> getPlaybackRate() => Future.value(nativePlaybackRate);
 
   @override
   void addEventListener(String eventType, EventListener<Event> listener) {
@@ -47,5 +51,32 @@ void main() {
     viewController.dispatchEvent(TimeUpdateEvent(currentTime: 13.0, currentProgramDateTime: null));
 
     expect(playerState.currentProgramDateTime, isNull);
+  });
+
+  test('playbackRate is 1.0 before any ratechange', () {
+    expect(playerState.playbackRate, 1.0);
+  });
+
+  test('playbackRate is pulled from the native player on initialization', () async {
+    viewController.nativePlaybackRate = 1.25;
+    playerState.initialized();
+    await Future<void>.delayed(Duration.zero);
+
+    expect(playerState.playbackRate, 1.25);
+  });
+
+  test('playbackRate is pulled from the native player on sourcechange', () async {
+    viewController.dispatchEvent(RateChangeEvent(currentTime: 0, playbackRate: 2.0));
+    viewController.nativePlaybackRate = 1.0;
+    viewController.dispatchEvent(SourceChangeEvent(source: null));
+    await Future<void>.delayed(Duration.zero);
+
+    expect(playerState.playbackRate, 1.0);
+  });
+
+  test('ratechange updates playbackRate', () {
+    viewController.dispatchEvent(RateChangeEvent(currentTime: 0, playbackRate: 0.5));
+
+    expect(playerState.playbackRate, 0.5);
   });
 }

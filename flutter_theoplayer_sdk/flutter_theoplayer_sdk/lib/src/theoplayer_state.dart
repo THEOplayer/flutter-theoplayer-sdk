@@ -20,7 +20,7 @@ class PlayerState {
   double currentTime = 0.0;
   DateTime? currentProgramDateTime;
   double duration = 0.0;
-  double playbackRate = 0.0;
+  double playbackRate = 1.0;
   double volume = 1.0;
   bool muted = false;
   PreloadType preload = PreloadType.none;
@@ -65,7 +65,18 @@ class PlayerState {
   /// Use it signal that the native player creation is done.
   void initialized() {
     isInitialized = true;
+    _syncPlaybackRateFromNative();
     _stateChangeListener?.call();
+  }
+
+  /// The native players never emit `ratechange` for a rate that did not change, so the initial
+  /// (and per-source) rate has to be pulled rather than waited for.
+  void _syncPlaybackRateFromNative() {
+    _theoPlayerViewController.getPlaybackRate().then((nativeRate) {
+      if (nativeRate == playbackRate) return;
+      playbackRate = nativeRate;
+      _stateChangeListener?.call();
+    });
   }
 
   void _attachEventListeners() {
@@ -118,6 +129,7 @@ class PlayerState {
   void _sourceChangeEventListener(Event event) {
     source = (event as SourceChangeEvent).source;
     isTheoLiveHLSFallback = false;
+    _syncPlaybackRateFromNative();
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
   }
