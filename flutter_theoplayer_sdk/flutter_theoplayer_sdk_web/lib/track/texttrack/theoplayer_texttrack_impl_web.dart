@@ -6,6 +6,7 @@ import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttra
 import 'package:theoplayer_platform_interface/track/texttrack/theoplayer_texttrack_impl.dart';
 import 'package:theoplayer_web/theoplayer_api_event_web.dart';
 import 'package:theoplayer_web/theoplayer_api_web.dart';
+import 'package:theoplayer_web/track/texttrack/theoplayer_daterangecue_impl_web.dart';
 import 'package:theoplayer_web/track/texttrack/theoplayer_texttrackcue_impl_web.dart';
 import 'package:theoplayer_web/transformers_web.dart';
 import 'package:theoplayer_web/utils/js_utils.dart';
@@ -24,7 +25,12 @@ class TextTrackImplWeb extends TextTrackImpl {
       super.isForced, super.mode, this._nativeTextTrack) {
     addCueEventListener = ((TextTrackAddCueEventJS event) {
       var cue = event.cue;
-      var flutterCue = CueImplWeb(cue.id, cue.uid, cue.startTime, cue.endTime, jsObjectToJsonString(cue.content) ?? "", cue);
+      Cue flutterCue;
+      if (type == TextTrackType.daterange) {
+        flutterCue = DateRangeCueImplWeb.fromNativeCue(cue as THEOplayerDateRangeCue);
+      } else {
+        flutterCue = CueImplWeb(cue.id, cue.uid, cue.startTime, cue.endTime, jsObjectToJsonString(cue.content) ?? "", cue);
+      }
       cues.add(flutterCue);
       dispatchEvent(TextTrackAddCueEvent(track: this, cue: flutterCue));
     }).toJS;
@@ -39,6 +45,10 @@ class TextTrackImplWeb extends TextTrackImpl {
       cues.remove(flutterCue);
       activeCues.remove(flutterCue);
       dispatchEvent(TextTrackRemoveCueEvent(track: this, cue: flutterCue));
+
+      if (flutterCue is DateRangeCueImplWeb) {
+        flutterCue.dispose();
+      }
     }).toJS;
 
     enterCueEventListener = ((TextTrackEnterCueEventJS event) {
@@ -97,7 +107,12 @@ class TextTrackImplWeb extends TextTrackImpl {
     _nativeTextTrack.removeEventListener(TextTrackEventTypes.CUECHANGE.toLowerCase(), cueChangeEventListener);
 
     for (var cue in cues) {
-      (cue as CueImplWeb).dispose();
+      if (cue is CueImplWeb) {
+        cue.dispose();
+      }
+      if (cue is DateRangeCueImplWeb) {
+        cue.dispose();
+      }
     }
 
     cues.clear();
