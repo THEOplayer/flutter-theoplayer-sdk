@@ -83,6 +83,12 @@ class TextTrackImplWeb extends TextTrackImpl {
       dispatchEvent(TextTrackChangeEvent(track: this));
     }).toJS;
 
+    // Daterange tracks start disabled on web (unlike Android/iOS where they start hidden),
+    // and cue enter/exit events only fire on non-disabled tracks.
+    if (type == TextTrackType.daterange && getMode() == TextTrackMode.disabled) {
+      setMode(TextTrackMode.hidden);
+    }
+
     _nativeTextTrack.addEventListener(TextTrackEventTypes.ADDCUE.toLowerCase(), addCueEventListener);
     _nativeTextTrack.addEventListener(TextTrackEventTypes.REMOVECUE.toLowerCase(), removeCueEventListener);
     _nativeTextTrack.addEventListener(TextTrackEventTypes.ENTERCUE.toLowerCase(), enterCueEventListener);
