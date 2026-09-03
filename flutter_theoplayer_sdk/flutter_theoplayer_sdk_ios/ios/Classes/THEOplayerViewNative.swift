@@ -39,6 +39,7 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
         let playerConfig = params?["playerConfig"] as? [String: Any]
         let license = playerConfig?["license"] as? String
         let licenseUrl = playerConfig?["licenseUrl"] as? String
+        let hlsDateRange = playerConfig?["hlsDateRange"] as? Bool
 
         let theoLiveConfig = playerConfig?["theoLive"] as? [String: Any]
         let theoLiveExternalSessionId = theoLiveConfig?["externalSessionId"] as? String
@@ -51,6 +52,7 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
         let theoConfig = THEOplayerConfigurationBuilder()
         theoConfig.license = license
         theoConfig.licenseUrl = licenseUrl
+        theoConfig.hlsDateRange = hlsDateRange
         //we need to enable pip on theoplayerConfig, otherwise theoplayer.pip will be not setup correctly
         theoConfig.pip = pipConfig.build()
         

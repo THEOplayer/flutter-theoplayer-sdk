@@ -23,6 +23,31 @@ struct TrackTransformer {
         }
     }
     
+    static func toFlutterTextTrackType(type: String) -> TextTrackType {
+        switch(type) {
+        case "srt":
+            return .srt
+        case "ttml":
+            return .ttml
+        case "webvtt":
+            return .webvtt
+        case "emsg":
+            return .emsg
+        case "eventstream":
+            return .eventstream
+        case "id3":
+            return .id3
+        case "cea608":
+            return .cea608
+        case "daterange":
+            return .daterange
+        case "timecode":
+            return .timecode
+        default:
+            return .none
+        }
+    }
+
     static func toTextTrackMode(mode: TextTrackMode) -> THEOplayerSDK.TextTrackMode {
         switch(mode) {
         case .disabled:
