@@ -50,7 +50,7 @@ jobs:
     - name: Start iOS simulator
       uses: futureware-tech/simulator-action@v5
       with:
-        model: 'iPhone 16'
+        model: 'iPhone 17'
         os_version: '>=18.5'
 
     - name: Run integration tests
