@@ -735,6 +735,23 @@ class THEOplayerFlutterTextTracksAPI(private val binaryMessenger: BinaryMessenge
       } 
     }
   }
+  fun onTextTrackUpdateDateRangeCue(textTrackUidArg: Long, idArg: String, uidArg: Long, startTimeArg: Double, endTimeArg: Double, cueClassArg: String?, startDateMillisArg: Double, endDateMillisArg: Double?, durationArg: Double?, plannedDurationArg: Double?, endOnNextArg: Boolean, customAttributesJsonArg: String?, scte35CmdArg: ByteArray?, scte35OutArg: ByteArray?, scte35InArg: ByteArray?, callback: (Result<Unit>) -> Unit)
+{
+    val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
+    val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackUpdateDateRangeCue$separatedMessageChannelSuffix"
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
+    channel.send(listOf(textTrackUidArg, idArg, uidArg, startTimeArg, endTimeArg, cueClassArg, startDateMillisArg, endDateMillisArg, durationArg, plannedDurationArg, endOnNextArg, customAttributesJsonArg, scte35CmdArg, scte35OutArg, scte35InArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
+        } else {
+          callback(Result.success(Unit))
+        }
+      } else {
+        callback(Result.failure(createConnectionError(channelName)))
+      } 
+    }
+  }
   fun onTextTrackRemoveCue(textTrackUidArg: Long, cueUidArg: Long, callback: (Result<Unit>) -> Unit)
 {
     val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""

@@ -633,6 +633,7 @@ protocol THEOplayerFlutterTextTracksAPIProtocol {
   func onTextTrackListChange(uid uidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onTextTrackAddCue(textTrackUid textTrackUidArg: Int64, id idArg: String, uid uidArg: Int64, startTime startTimeArg: Double, endTime endTimeArg: Double, content contentArg: String, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onTextTrackAddDateRangeCue(textTrackUid textTrackUidArg: Int64, id idArg: String, uid uidArg: Int64, startTime startTimeArg: Double, endTime endTimeArg: Double, cueClass cueClassArg: String?, startDateMillis startDateMillisArg: Double, endDateMillis endDateMillisArg: Double?, duration durationArg: Double?, plannedDuration plannedDurationArg: Double?, endOnNext endOnNextArg: Bool, customAttributesJson customAttributesJsonArg: String?, scte35Cmd scte35CmdArg: FlutterStandardTypedData?, scte35Out scte35OutArg: FlutterStandardTypedData?, scte35In scte35InArg: FlutterStandardTypedData?, completion: @escaping (Result<Void, PigeonError>) -> Void)
+  func onTextTrackUpdateDateRangeCue(textTrackUid textTrackUidArg: Int64, id idArg: String, uid uidArg: Int64, startTime startTimeArg: Double, endTime endTimeArg: Double, cueClass cueClassArg: String?, startDateMillis startDateMillisArg: Double, endDateMillis endDateMillisArg: Double?, duration durationArg: Double?, plannedDuration plannedDurationArg: Double?, endOnNext endOnNextArg: Bool, customAttributesJson customAttributesJsonArg: String?, scte35Cmd scte35CmdArg: FlutterStandardTypedData?, scte35Out scte35OutArg: FlutterStandardTypedData?, scte35In scte35InArg: FlutterStandardTypedData?, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onTextTrackRemoveCue(textTrackUid textTrackUidArg: Int64, cueUid cueUidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onTextTrackEnterCue(textTrackUid textTrackUidArg: Int64, cueUid cueUidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
   func onTextTrackExitCue(textTrackUid textTrackUidArg: Int64, cueUid cueUidArg: Int64, completion: @escaping (Result<Void, PigeonError>) -> Void)
@@ -726,6 +727,24 @@ class THEOplayerFlutterTextTracksAPI: THEOplayerFlutterTextTracksAPIProtocol {
   }
   func onTextTrackAddDateRangeCue(textTrackUid textTrackUidArg: Int64, id idArg: String, uid uidArg: Int64, startTime startTimeArg: Double, endTime endTimeArg: Double, cueClass cueClassArg: String?, startDateMillis startDateMillisArg: Double, endDateMillis endDateMillisArg: Double?, duration durationArg: Double?, plannedDuration plannedDurationArg: Double?, endOnNext endOnNextArg: Bool, customAttributesJson customAttributesJsonArg: String?, scte35Cmd scte35CmdArg: FlutterStandardTypedData?, scte35Out scte35OutArg: FlutterStandardTypedData?, scte35In scte35InArg: FlutterStandardTypedData?, completion: @escaping (Result<Void, PigeonError>) -> Void) {
     let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue\(messageChannelSuffix)"
+    let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
+    channel.sendMessage([textTrackUidArg, idArg, uidArg, startTimeArg, endTimeArg, cueClassArg, startDateMillisArg, endDateMillisArg, durationArg, plannedDurationArg, endOnNextArg, customAttributesJsonArg, scte35CmdArg, scte35OutArg, scte35InArg] as [Any?]) { response in
+      guard let listResponse = response as? [Any?] else {
+        completion(.failure(createConnectionError(withChannelName: channelName)))
+        return
+      }
+      if listResponse.count > 1 {
+        let code: String = listResponse[0] as! String
+        let message: String? = nilOrValue(listResponse[1])
+        let details: String? = nilOrValue(listResponse[2])
+        completion(.failure(PigeonError(code: code, message: message, details: details)))
+      } else {
+        completion(.success(Void()))
+      }
+    }
+  }
+  func onTextTrackUpdateDateRangeCue(textTrackUid textTrackUidArg: Int64, id idArg: String, uid uidArg: Int64, startTime startTimeArg: Double, endTime endTimeArg: Double, cueClass cueClassArg: String?, startDateMillis startDateMillisArg: Double, endDateMillis endDateMillisArg: Double?, duration durationArg: Double?, plannedDuration plannedDurationArg: Double?, endOnNext endOnNextArg: Bool, customAttributesJson customAttributesJsonArg: String?, scte35Cmd scte35CmdArg: FlutterStandardTypedData?, scte35Out scte35OutArg: FlutterStandardTypedData?, scte35In scte35InArg: FlutterStandardTypedData?, completion: @escaping (Result<Void, PigeonError>) -> Void) {
+    let channelName: String = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackUpdateDateRangeCue\(messageChannelSuffix)"
     let channel = FlutterBasicMessageChannel(name: channelName, binaryMessenger: binaryMessenger, codec: codec)
     channel.sendMessage([textTrackUidArg, idArg, uidArg, startTimeArg, endTimeArg, cueClassArg, startDateMillisArg, endDateMillisArg, durationArg, plannedDurationArg, endOnNextArg, customAttributesJsonArg, scte35CmdArg, scte35OutArg, scte35InArg] as [Any?]) { response in
       guard let listResponse = response as? [Any?] else {

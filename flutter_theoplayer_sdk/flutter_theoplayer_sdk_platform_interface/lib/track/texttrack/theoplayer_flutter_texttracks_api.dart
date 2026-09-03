@@ -81,6 +81,24 @@ class THEOplayerFlutterTextTracksAPIImpl implements THEOplayerFlutterTextTracksA
   }
 
   @override
+  void onTextTrackUpdateDateRangeCue(int textTrackUid, String id, int uid, double startTime, double endTime, String? cueClass, double startDateMillis, double? endDateMillis, double? duration,
+      double? plannedDuration, bool endOnNext, String? customAttributesJson, Uint8List? scte35Cmd, Uint8List? scte35Out, Uint8List? scte35In) {
+    TextTrack? textTrack = _textTracks.firstWhereOrNull((item) => item.uid == textTrackUid);
+    DateRangeCueImpl? cue = textTrack?.cues.firstWhereOrNull((element) => element.uid == uid) as DateRangeCueImpl?;
+    if (cue == null) {
+      return;
+    }
+
+    Map<String, dynamic>? customAttributes;
+    if (customAttributesJson != null) {
+      customAttributes = json.decode(customAttributesJson) as Map<String, dynamic>;
+    }
+
+    cue.update(endTime, endDateMillis != null ? DateTime.fromMillisecondsSinceEpoch(endDateMillis.toInt()) : null, duration, plannedDuration, customAttributes, scte35Cmd, scte35Out, scte35In);
+    cue.dispatchEvent(CueUpdateEvent(cue: cue));
+  }
+
+  @override
   void onTextTrackRemoveCue(int textTrackUid, int cueUid) {
     TextTrack? textTrack = _textTracks.firstWhereOrNull((element) => element.uid == textTrackUid);
     Cue? cue = textTrack?.cues.firstWhereOrNull((element) => element.uid == cueUid);
