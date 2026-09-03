@@ -1,3 +1,7 @@
+## Unreleased
+
+* Added support for HLS `EXT-X-DATERANGE` tags: a new `hlsDateRange` flag on `THEOplayerConfig` and `TypedSource` (source-level overrides player-level), exposing the parsed date ranges as `DateRangeCue`s on the TextTracks API.
+
 ## 11.1.0
 
 * Updated THEOplayer to 11.1.0.
