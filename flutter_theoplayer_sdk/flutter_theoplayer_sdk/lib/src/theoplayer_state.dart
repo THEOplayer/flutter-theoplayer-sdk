@@ -188,11 +188,7 @@ class PlayerState {
     TimeUpdateEvent timeupdateEvent = event as TimeUpdateEvent;
     currentTime = timeupdateEvent.currentTime;
     int? programDateTime = timeupdateEvent.currentProgramDateTime;
-    if (programDateTime == null) {
-      currentProgramDateTime = null;
-    } else {
-      DateTime.fromMillisecondsSinceEpoch(programDateTime);
-    }
+    currentProgramDateTime = programDateTime == null ? null : DateTime.fromMillisecondsSinceEpoch(programDateTime);
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
   }
