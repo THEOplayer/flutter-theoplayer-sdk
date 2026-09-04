@@ -15,8 +15,9 @@ class TypedSourcePigeon {
   final DRMConfiguration? drm;
   final SourceIntegrationId? integration;
   final Map<String?, String?>? headers;
+  final bool? hlsDateRange;
 
-  TypedSourcePigeon({required this.src, this.type, this.drm, this.integration, this.headers});
+  TypedSourcePigeon({required this.src, this.type, this.drm, this.integration, this.headers, this.hlsDateRange});
 }
 
 enum SourceIntegrationId {

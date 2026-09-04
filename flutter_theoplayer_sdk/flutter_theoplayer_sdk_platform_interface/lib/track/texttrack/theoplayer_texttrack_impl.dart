@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
 import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
@@ -118,14 +120,29 @@ class DateRangeCueImpl extends DateRangeCue {
   final EventManager _eventManager = EventManager();
   double _endTime;
   final DateTime _startDate;
-  final DateTime? _endDate;
-  final double? _duration;
-  final double? _plannedDuration;
+  DateTime? _endDate;
+  double? _duration;
+  double? _plannedDuration;
   final String? _cueClass;
   final bool _endOnNext;
-  final Map<String, dynamic>? _customAttributes;
+  Map<String, dynamic>? _customAttributes;
+  Uint8List? _scte35Cmd;
+  Uint8List? _scte35Out;
+  Uint8List? _scte35In;
 
-  DateRangeCueImpl(super.id, super.uid, super.startTime, this._endTime, this._startDate, this._endDate, this._duration, this._plannedDuration, this._cueClass, this._endOnNext, this._customAttributes);
+  DateRangeCueImpl(super.id, super.uid, super.startTime, this._endTime, this._startDate, this._endDate, this._duration, this._plannedDuration, this._cueClass, this._endOnNext, this._customAttributes,
+      this._scte35Cmd, this._scte35Out, this._scte35In);
+
+  void update(double endTime, DateTime? endDate, double? duration, double? plannedDuration, Map<String, dynamic>? customAttributes, Uint8List? scte35Cmd, Uint8List? scte35Out, Uint8List? scte35In) {
+    _endTime = endTime;
+    _endDate = endDate;
+    _duration = duration;
+    _plannedDuration = plannedDuration;
+    _customAttributes = customAttributes;
+    _scte35Cmd = scte35Cmd;
+    _scte35Out = scte35Out;
+    _scte35In = scte35In;
+  }
 
   @override
   double get endTime => _endTime;
@@ -153,6 +170,15 @@ class DateRangeCueImpl extends DateRangeCue {
 
   @override
   Map<String, dynamic>? get customAttributes => _customAttributes;
+
+  @override
+  Uint8List? get scte35Cmd => _scte35Cmd;
+
+  @override
+  Uint8List? get scte35Out => _scte35Out;
+
+  @override
+  Uint8List? get scte35In => _scte35In;
 
   @override
   void addEventListener(String eventType, EventListener<Event> listener) {

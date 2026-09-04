@@ -42,7 +42,11 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
     _theoPlayerJS = THEOplayerJS(
         _playerWrapperDiv,
         THEOplayerConfigParams(
-            license: theoPlayerConfig.license, licenseUrl: theoPlayerConfig.licenseUrl, theoLive: webTheoliveConfig, libraryLocation: theoPlayerConfig.webConfig.libraryLocation ?? "/"));
+            license: theoPlayerConfig.license,
+            licenseUrl: theoPlayerConfig.licenseUrl,
+            hlsDateRange: theoPlayerConfig.hlsDateRange,
+            theoLive: webTheoliveConfig,
+            libraryLocation: theoPlayerConfig.webConfig.libraryLocation ?? "/"));
     _eventForwarder = PlayerEventForwarderWeb(_theoPlayerJS);
     _tracksController = THEOplayerTrackControllerWeb(_theoPlayerJS);
     if (_theoPlayerJS.theoLive != null) {
