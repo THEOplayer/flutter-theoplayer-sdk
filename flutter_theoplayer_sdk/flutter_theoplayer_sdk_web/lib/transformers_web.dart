@@ -45,7 +45,10 @@ PlatformInterface.TypedSourcePigeon? toFlutterTypedSource(TypedSource? typedSour
   }
 
   return PlatformInterface.TypedSourcePigeon(
-      src: typedSource.src, type: typedSource.type, drm: PlatformInterface.DRMConfiguration(fairplay: fairPlayDRMConfiguration, widevine: widevineDRMConfiguration));
+      src: typedSource.src,
+      type: typedSource.type,
+      drm: PlatformInterface.DRMConfiguration(fairplay: fairPlayDRMConfiguration, widevine: widevineDRMConfiguration),
+      hlsDateRange: typedSource.hlsDateRange);
 }
 
 PlatformInterface.SourceDescription? toFlutterSourceDescription(SourceDescription? sourceDescription) {
@@ -70,7 +73,10 @@ PlatformInterface.SourceDescription? toFlutterSourceDescription(SourceDescriptio
     }
 
     typedSources.add(PlatformInterface.TypedSourcePigeon(
-        src: typedSource.src, type: typedSource.type, drm: PlatformInterface.DRMConfiguration(fairplay: fairPlayDRMConfiguration, widevine: widevineDRMConfiguration)));
+        src: typedSource.src,
+        type: typedSource.type,
+        drm: PlatformInterface.DRMConfiguration(fairplay: fairPlayDRMConfiguration, widevine: widevineDRMConfiguration),
+        hlsDateRange: typedSource.hlsDateRange));
   }
 
   return PlatformInterface.SourceDescription(sources: typedSources);
@@ -100,7 +106,8 @@ SourceDescription toSourceDescription(PlatformInterface.SourceDescription flutte
         integration: flutterTypedSource.integration?.name,
         src: flutterTypedSource.src,
         type: flutterTypedSource.type,
-        contentProtection: ContentProtection(fairplay: flutterFairplayDrmConfiguration, widevine: flutterWidevineDrmConfiguration)));
+        contentProtection: ContentProtection(fairplay: flutterFairplayDrmConfiguration, widevine: flutterWidevineDrmConfiguration),
+        hlsDateRange: flutterTypedSource.hlsDateRange));
   }
 
   return SourceDescription(sources: JSHelpers.jsItemsToJSArray(flutterTypedSources));

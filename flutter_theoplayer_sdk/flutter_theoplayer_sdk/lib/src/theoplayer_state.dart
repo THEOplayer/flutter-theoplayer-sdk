@@ -20,7 +20,7 @@ class PlayerState {
   double currentTime = 0.0;
   DateTime? currentProgramDateTime;
   double duration = 0.0;
-  double playbackRate = 0.0;
+  double playbackRate = 1.0;
   double volume = 1.0;
   bool muted = false;
   PreloadType preload = PreloadType.none;
@@ -188,11 +188,7 @@ class PlayerState {
     TimeUpdateEvent timeupdateEvent = event as TimeUpdateEvent;
     currentTime = timeupdateEvent.currentTime;
     int? programDateTime = timeupdateEvent.currentProgramDateTime;
-    if (programDateTime == null) {
-      currentProgramDateTime = null;
-    } else {
-      DateTime.fromMillisecondsSinceEpoch(programDateTime);
-    }
+    currentProgramDateTime = programDateTime == null ? null : DateTime.fromMillisecondsSinceEpoch(programDateTime);
     eventManager.dispatchEvent(event);
     _stateChangeListener?.call();
   }

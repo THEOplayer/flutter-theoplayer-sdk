@@ -212,6 +212,32 @@ class _MyAppState extends State<MyApp> {
                               FilledButton(
                                 onPressed: () {
                                   _licenseConfigCheckDialog(context);
+                                  player.textTracks.addEventListener(TextTracksEventTypes.ADDTRACK, (event) {
+                                    final track = (event as AddTextTrackEvent).track;
+                                    if (track.type != TextTrackType.daterange) {
+                                      return;
+                                    }
+                                    print("Daterange track added: ${track.uid}");
+                                    track.addEventListener(TextTrackEventTypes.ADDCUE, (cueEvent) {
+                                      final cue = (cueEvent as TextTrackAddCueEvent).cue;
+                                      if (cue is DateRangeCue) {
+                                        print("DateRangeCue added: id=${cue.id}, startDate=${cue.startDate}, endDate=${cue.endDate}, "
+                                            "duration=${cue.duration}, class=${cue.cueClass}, customAttributes=${cue.customAttributes}");
+                                      }
+                                    });
+                                  });
+                                  player.source = SourceDescription(sources: [
+                                    TypedSource(
+                                        src: "https://cdn.theoplayer.com/video/star_wars_episode_vii-the_force_awakens_official_comic-con_2015_reel_(2015)/daterange-test.m3u8",
+                                        type: "application/x-mpegurl",
+                                        hlsDateRange: true),
+                                  ]);
+                                },
+                                child: const Text("Daterange source"),
+                              ),
+                              FilledButton(
+                                onPressed: () {
+                                  _licenseConfigCheckDialog(context);
 
                                   /**
                                    * register for theolive events, if interested
