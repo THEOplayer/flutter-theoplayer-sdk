@@ -4,8 +4,14 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build_ios:
+    # A healthy run takes ~20 min. Without this cap a hung job runs until GitHub's 6 h limit.
+    timeout-minutes: 45
 
     strategy:
       fail-fast: false
@@ -54,11 +60,18 @@ jobs:
         os_version: '>=18.5'
 
     - name: Run integration tests
+      # `flutter test` sometimes never gets past app launch on the simulator and produces no output.
+      timeout-minutes: 25
       run: flutter test integration_test_single_entrypoint/entrypoint.dart
       working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
       env:
         TEST_LICENSE: ${{ secrets.TEST_LICENSE }}
 
+    - name: Dump simulator state on failure
+      if: failure()
+      run: |
+        xcrun simctl list devices booted
+        xcrun simctl spawn booted log show --last 10m --predicate 'process == "Runner" OR process == "SpringBoard" OR eventMessage CONTAINS "Runner"' --style compact | tail -n 300
 
     - name: Build iOS
       run: flutter build ios --release --no-codesign
