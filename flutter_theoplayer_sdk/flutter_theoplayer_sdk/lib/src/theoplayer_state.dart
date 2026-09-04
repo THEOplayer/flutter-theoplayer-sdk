@@ -20,7 +20,7 @@ class PlayerState {
   double currentTime = 0.0;
   DateTime? currentProgramDateTime;
   double duration = 0.0;
-  double playbackRate = 0.0;
+  double playbackRate = 1.0;
   double volume = 1.0;
   bool muted = false;
   PreloadType preload = PreloadType.none;

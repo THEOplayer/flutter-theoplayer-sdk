@@ -5,6 +5,8 @@ import 'package:theoplayer_platform_interface/theoplayer_event_manager.dart';
 import 'package:theoplayer_platform_interface/theoplayer_events.dart';
 import 'package:theoplayer_platform_interface/theoplayer_view_controller_interface.dart';
 
+/// Stands in for the platform view controllers so tests can dispatch player events into [PlayerState]
+/// without creating the real pigeon/JS bridges; everything but the event plumbing is unimplemented.
 class FakeViewController implements THEOplayerViewController {
   final EventManager _eventManager = EventManager();
 
@@ -47,5 +49,15 @@ void main() {
     viewController.dispatchEvent(TimeUpdateEvent(currentTime: 13.0, currentProgramDateTime: null));
 
     expect(playerState.currentProgramDateTime, isNull);
+  });
+
+  test('playbackRate is 1.0 before any ratechange', () {
+    expect(playerState.playbackRate, 1.0);
+  });
+
+  test('ratechange updates playbackRate', () {
+    viewController.dispatchEvent(RateChangeEvent(currentTime: 0, playbackRate: 0.5));
+
+    expect(playerState.playbackRate, 0.5);
   });
 }
