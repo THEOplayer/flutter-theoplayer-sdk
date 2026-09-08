@@ -32,7 +32,7 @@ struct SourceTransformer {
             flutterDRMConfiguration = toFlutterDRMConfiguration(drmConfiguration: drmConfiguration)
         }
         
-        return TypedSourcePigeon(src: typedSource.src, type: typedSource.type, drm: flutterDRMConfiguration, headers: typedSource.headers)
+        return TypedSourcePigeon(src: typedSource.src, type: typedSource.type, drm: flutterDRMConfiguration, headers: typedSource.headers, hlsDateRange: typedSource.hlsDateRange)
     }
     
     
@@ -93,6 +93,7 @@ struct SourceTransformer {
                     src: typedSource.src,
                     type: typedSource.type ?? "",
                     drm: drm,
+                    hlsDateRange: typedSource.hlsDateRange,
                     headers: cleanOptionalHashMap(typedSource.headers)
                 )
         }

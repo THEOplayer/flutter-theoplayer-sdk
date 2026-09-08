@@ -120,6 +120,7 @@ class THEOplayerConfigParams {
     String? libraryLocation,
     String? license,
     String? licenseUrl,
+    bool? hlsDateRange,
     TheoLiveConfig? theoLive,
   });
 }
@@ -150,7 +151,7 @@ extension SourceDescriptionExtension on SourceDescription {
 @anonymous
 @staticInterop
 class TypedSource {
-  external factory TypedSource({required String src, String? type, ContentProtection? contentProtection, String? integration});
+  external factory TypedSource({required String src, String? type, ContentProtection? contentProtection, String? integration, bool? hlsDateRange});
 }
 
 extension TypedSourceExtension on TypedSource {
@@ -158,6 +159,7 @@ extension TypedSourceExtension on TypedSource {
   external String get src;
   external String? get type;
   external ContentProtection? get contentProtection;
+  external bool? get hlsDateRange;
 }
 
 @JS()
@@ -249,6 +251,25 @@ extension THEOplayerTextTrackCueExtension on THEOplayerTextTrackCue {
   external JSAny? get content;
 
   external THEOplayerTextTrack track;
+}
+
+@JS()
+@anonymous
+@staticInterop
+class THEOplayerDateRangeCue implements THEOplayerTextTrackCue {}
+
+extension THEOplayerDateRangeCueExtension on THEOplayerDateRangeCue {
+  @JS('class')
+  external String? get cueClass;
+  external JSDate get startDate;
+  external JSDate? get endDate;
+  external double? get duration;
+  external double? get plannedDuration;
+  external bool get endOnNext;
+  external JSObject get customAttributes;
+  external JSArrayBuffer? get scte35Cmd;
+  external JSArrayBuffer? get scte35Out;
+  external JSArrayBuffer? get scte35In;
 }
 
 @JS()

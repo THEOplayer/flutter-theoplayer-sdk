@@ -4,8 +4,14 @@ on:
   pull_request:
     types: [opened, reopened, synchronize]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build_ios:
+    # A healthy run takes ~20 min. Without this cap a hung job runs until GitHub's 6 h limit.
+    timeout-minutes: 45
 
     strategy:
       fail-fast: false
@@ -13,7 +19,7 @@ jobs:
         xcode_version: ['26.3']
         flutter_version: ['stable', 'beta']
 
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
     - name: Checkout
       uses: actions/checkout@v4
@@ -50,15 +56,25 @@ jobs:
     - name: Start iOS simulator
       uses: futureware-tech/simulator-action@v5
       with:
-        model: 'iPhone 16'
+        model: 'iPhone 17'
         os_version: '>=18.5'
 
     - name: Run integration tests
+      # `flutter test` sometimes never gets past app launch on the simulator and produces no output.
+      timeout-minutes: 25
       run: flutter test integration_test_single_entrypoint/entrypoint.dart
       working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
       env:
         TEST_LICENSE: ${{ secrets.TEST_LICENSE }}
 
+    - name: Dump simulator state on failure
+      if: failure()
+      run: |
+        xcrun simctl list devices booted
+        xcrun simctl listapps booted | grep -A3 theoplayerExample || echo "example app not installed on the simulator"
+        xcrun simctl spawn booted log show --last 30m --style compact \
+          --predicate 'process == "Runner" OR eventMessage CONTAINS "theoplayerExample" OR eventMessage CONTAINS[c] "Runner.app" OR ((process == "SpringBoard" OR process == "installd" OR process == "runningboardd") AND messageType == error)' \
+          | tail -n 400
 
     - name: Build iOS
       run: flutter build ios --release --no-codesign

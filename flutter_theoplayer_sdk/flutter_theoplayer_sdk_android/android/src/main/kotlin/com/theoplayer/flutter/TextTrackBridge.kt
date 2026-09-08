@@ -1,5 +1,6 @@
 package com.theoplayer.flutter
 
+import android.util.Base64
 import com.theoplayer.android.api.event.EventListener
 import com.theoplayer.android.api.event.track.texttrack.AddCueEvent
 import com.theoplayer.android.api.event.track.texttrack.ChangeEvent
@@ -18,16 +19,20 @@ import com.theoplayer.android.api.event.track.texttrack.texttrackcue.TextTrackCu
 import com.theoplayer.android.api.event.track.texttrack.texttrackcue.UpdateEvent
 import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.api.player.track.texttrack.TextTrack
+import com.theoplayer.android.api.player.track.texttrack.cue.DateRangeCue
 import com.theoplayer.android.api.player.track.texttrack.cue.TextTrackCue
 import com.theoplayer.flutter.pigeon.THEOplayerFlutterTextTracksAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeTextTracksAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeTextTracksAPI.Companion.setUp
 import com.theoplayer.flutter.transformers.FlutterTextTrackMode
 import com.theoplayer.flutter.transformers.TrackTransformer
+import org.json.JSONException
+import org.json.JSONObject
 
 class TextTrackBridge(
     private val player: Player,
     private val pigeonMessenger: PigeonBinaryMessengerWrapper,
+    private val base64Encoder: (ByteArray) -> String = { Base64.encodeToString(it, Base64.NO_WRAP) },
 ) : THEOplayerNativeTextTracksAPI {
 
     private val flutterTextTracksAPI = THEOplayerFlutterTextTracksAPI(pigeonMessenger)
@@ -67,8 +72,49 @@ class TextTrackBridge(
     }
 
     private val textTrackAddCueListener = EventListener<AddCueEvent> {
-        flutterTextTracksAPI.onTextTrackAddCue(it.track.uid.toLong(), it.cue.id, it.cue.uid, it.cue.startTime, it.cue.endTime, it.cue.content.toString(), emptyCallback)
-        attachCueListeners(it.track, it.cue)
+        val cue = it.cue
+        if (cue is DateRangeCue) {
+            flutterTextTracksAPI.onTextTrackAddDateRangeCue(
+                it.track.uid.toLong(),
+                cue.id,
+                cue.uid,
+                cue.startTime,
+                cue.endTime,
+                cue.attributeClass,
+                cue.startDate.time.toDouble(),
+                cue.endDate?.time?.toDouble(),
+                cue.duration,
+                cue.plannedDuration,
+                cue.isEndOnNext,
+                toCustomAttributesJson(cue.customAttributes),
+                cue.scte35Cmd,
+                cue.scte35Out,
+                cue.scte35In,
+                emptyCallback
+            )
+        } else {
+            flutterTextTracksAPI.onTextTrackAddCue(it.track.uid.toLong(), cue.id, cue.uid, cue.startTime, cue.endTime, cue.content.toString(), emptyCallback)
+        }
+        attachCueListeners(it.track, cue)
+    }
+
+    private fun toCustomAttributesJson(customAttributes: DateRangeCue.CustomAttributes): String? {
+        val attributes = customAttributes.asMap() ?: return null
+        val json = JSONObject()
+        attributes.forEach { (key, value) ->
+            try {
+                json.put(key, when (value) {
+                    null -> JSONObject.NULL
+                    is Boolean, is Number, is String -> value
+                    is ByteArray -> base64Encoder(value)
+                    else -> value.toString()
+                })
+            } catch (e: JSONException) {
+                // e.g. NaN/infinite numbers are not valid JSON; fall back to their string form instead of breaking cue delivery
+                json.put(key, value.toString())
+            }
+        }
+        return json.toString()
     }
 
     private val textTrackRemoveCueListener = EventListener<RemoveCueEvent> {
@@ -102,6 +148,31 @@ class TextTrackBridge(
 
     private fun cueUpdateListener(track: TextTrack) = EventListener<UpdateEvent> {
         flutterTextTracksAPI.onCueUpdate(track.uid.toLong(), it.cue.uid, it.cue.endTime, it.cue.content.toString(), emptyCallback)
+    }
+
+    private fun dateRangeCueUpdateListener(track: TextTrack) = EventListener<UpdateEvent> {
+        val cue = it.cue
+        if (cue !is DateRangeCue) {
+            return@EventListener
+        }
+        flutterTextTracksAPI.onTextTrackUpdateDateRangeCue(
+            track.uid.toLong(),
+            cue.id,
+            cue.uid,
+            cue.startTime,
+            cue.endTime,
+            cue.attributeClass,
+            cue.startDate.time.toDouble(),
+            cue.endDate?.time?.toDouble(),
+            cue.duration,
+            cue.plannedDuration,
+            cue.isEndOnNext,
+            toCustomAttributesJson(cue.customAttributes),
+            cue.scte35Cmd,
+            cue.scte35Out,
+            cue.scte35In,
+            emptyCallback
+        )
     }
 
     fun attachListeners() {
@@ -147,13 +218,22 @@ class TextTrackBridge(
     private fun attachCueListeners(track: TextTrack, cue: TextTrackCue) {
         cue.addEventListener(TextTrackCueEventTypes.ENTER, cueEnterListener(track))
         cue.addEventListener(TextTrackCueEventTypes.EXIT, cueExitListener(track))
-        cue.addEventListener(TextTrackCueEventTypes.UPDATE, cueUpdateListener(track))
+        // The generic update path would clobber daterange semantics (e.g. infinite endTime becoming 0).
+        if (cue is DateRangeCue) {
+            cue.addEventListener(TextTrackCueEventTypes.UPDATE, dateRangeCueUpdateListener(track))
+        } else {
+            cue.addEventListener(TextTrackCueEventTypes.UPDATE, cueUpdateListener(track))
+        }
     }
 
     private fun removeCueListeners(track: TextTrack, cue: TextTrackCue) {
         cue.removeEventListener(TextTrackCueEventTypes.ENTER, cueEnterListener(track))
         cue.removeEventListener(TextTrackCueEventTypes.EXIT, cueExitListener(track))
-        cue.removeEventListener(TextTrackCueEventTypes.UPDATE, cueUpdateListener(track))
+        if (cue is DateRangeCue) {
+            cue.removeEventListener(TextTrackCueEventTypes.UPDATE, dateRangeCueUpdateListener(track))
+        } else {
+            cue.removeEventListener(TextTrackCueEventTypes.UPDATE, cueUpdateListener(track))
+        }
     }
 
     override fun setMode(textTrackUid: Long, mode: FlutterTextTrackMode) {

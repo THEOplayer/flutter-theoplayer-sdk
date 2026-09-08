@@ -39,6 +39,7 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
         let playerConfig = params?["playerConfig"] as? [String: Any]
         let license = playerConfig?["license"] as? String
         let licenseUrl = playerConfig?["licenseUrl"] as? String
+        let hlsDateRange = playerConfig?["hlsDateRange"] as? Bool
 
         let theoLiveConfig = playerConfig?["theoLive"] as? [String: Any]
         let theoLiveExternalSessionId = theoLiveConfig?["externalSessionId"] as? String
@@ -51,6 +52,7 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
         let theoConfig = THEOplayerConfigurationBuilder()
         theoConfig.license = license
         theoConfig.licenseUrl = licenseUrl
+        theoConfig.hlsDateRange = hlsDateRange
         //we need to enable pip on theoplayerConfig, otherwise theoplayer.pip will be not setup correctly
         theoConfig.pip = pipConfig.build()
         
@@ -140,14 +142,11 @@ extension THEOplayerViewNative: THEOplayerNativeAPI {
     }
     
     func setCurrentProgramDateTime(currentProgramDateTime: Int64) throws {
-        _theoplayer.setCurrentProgramDateTime(Date(timeIntervalSince1970: TimeInterval(currentProgramDateTime)))
+        _theoplayer.setCurrentProgramDateTime(Date(millisecondsSinceEpoch: currentProgramDateTime))
     }
     
     func getCurrentProgramDateTime() throws -> Int64? {
-        if let currentProgramDateTime = _theoplayer.currentProgramDateTime?.timeIntervalSince1970 {
-            return Int64(currentProgramDateTime)
-        }
-        return nil
+        return _theoplayer.currentProgramDateTime?.millisecondsSinceEpoch
     }
     
     func getDuration() throws -> Double {

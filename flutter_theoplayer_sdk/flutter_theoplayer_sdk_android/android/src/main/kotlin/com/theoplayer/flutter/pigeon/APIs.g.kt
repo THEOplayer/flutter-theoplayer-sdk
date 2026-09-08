@@ -195,7 +195,8 @@ data class TypedSourcePigeon (
   val type: String? = null,
   val drm: DRMConfiguration? = null,
   val integration: SourceIntegrationId? = null,
-  val headers: Map<String?, String?>? = null
+  val headers: Map<String?, String?>? = null,
+  val hlsDateRange: Boolean? = null
 )
  {
   companion object {
@@ -205,7 +206,8 @@ data class TypedSourcePigeon (
       val drm = pigeonVar_list[2] as DRMConfiguration?
       val integration = pigeonVar_list[3] as SourceIntegrationId?
       val headers = pigeonVar_list[4] as Map<String?, String?>?
-      return TypedSourcePigeon(src, type, drm, integration, headers)
+      val hlsDateRange = pigeonVar_list[5] as Boolean?
+      return TypedSourcePigeon(src, type, drm, integration, headers, hlsDateRange)
     }
   }
   fun toList(): List<Any?> {
@@ -215,6 +217,7 @@ data class TypedSourcePigeon (
       drm,
       integration,
       headers,
+      hlsDateRange,
     )
   }
 }
@@ -715,12 +718,29 @@ class THEOplayerFlutterTextTracksAPI(private val binaryMessenger: BinaryMessenge
       } 
     }
   }
-  fun onTextTrackAddDateRangeCue(textTrackUidArg: Long, idArg: String, uidArg: Long, startTimeArg: Double, endTimeArg: Double, cueClassArg: String?, startDateMillisArg: Double, endDateMillisArg: Double?, durationArg: Double?, plannedDurationArg: Double?, endOnNextArg: Boolean, customAttributesJsonArg: String?, callback: (Result<Unit>) -> Unit)
+  fun onTextTrackAddDateRangeCue(textTrackUidArg: Long, idArg: String, uidArg: Long, startTimeArg: Double, endTimeArg: Double, cueClassArg: String?, startDateMillisArg: Double, endDateMillisArg: Double?, durationArg: Double?, plannedDurationArg: Double?, endOnNextArg: Boolean, customAttributesJsonArg: String?, scte35CmdArg: ByteArray?, scte35OutArg: ByteArray?, scte35InArg: ByteArray?, callback: (Result<Unit>) -> Unit)
 {
     val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
     val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackAddDateRangeCue$separatedMessageChannelSuffix"
     val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
-    channel.send(listOf(textTrackUidArg, idArg, uidArg, startTimeArg, endTimeArg, cueClassArg, startDateMillisArg, endDateMillisArg, durationArg, plannedDurationArg, endOnNextArg, customAttributesJsonArg)) {
+    channel.send(listOf(textTrackUidArg, idArg, uidArg, startTimeArg, endTimeArg, cueClassArg, startDateMillisArg, endDateMillisArg, durationArg, plannedDurationArg, endOnNextArg, customAttributesJsonArg, scte35CmdArg, scte35OutArg, scte35InArg)) {
+      if (it is List<*>) {
+        if (it.size > 1) {
+          callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))
+        } else {
+          callback(Result.success(Unit))
+        }
+      } else {
+        callback(Result.failure(createConnectionError(channelName)))
+      } 
+    }
+  }
+  fun onTextTrackUpdateDateRangeCue(textTrackUidArg: Long, idArg: String, uidArg: Long, startTimeArg: Double, endTimeArg: Double, cueClassArg: String?, startDateMillisArg: Double, endDateMillisArg: Double?, durationArg: Double?, plannedDurationArg: Double?, endOnNextArg: Boolean, customAttributesJsonArg: String?, scte35CmdArg: ByteArray?, scte35OutArg: ByteArray?, scte35InArg: ByteArray?, callback: (Result<Unit>) -> Unit)
+{
+    val separatedMessageChannelSuffix = if (messageChannelSuffix.isNotEmpty()) ".$messageChannelSuffix" else ""
+    val channelName = "dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterTextTracksAPI.onTextTrackUpdateDateRangeCue$separatedMessageChannelSuffix"
+    val channel = BasicMessageChannel<Any?>(binaryMessenger, channelName, codec)
+    channel.send(listOf(textTrackUidArg, idArg, uidArg, startTimeArg, endTimeArg, cueClassArg, startDateMillisArg, endDateMillisArg, durationArg, plannedDurationArg, endOnNextArg, customAttributesJsonArg, scte35CmdArg, scte35OutArg, scte35InArg)) {
       if (it is List<*>) {
         if (it.size > 1) {
           callback(Result.failure(FlutterError(it[0] as String, it[1] as String, it[2] as String?)))

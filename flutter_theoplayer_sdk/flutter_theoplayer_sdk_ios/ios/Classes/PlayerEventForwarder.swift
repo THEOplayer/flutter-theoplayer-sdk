@@ -89,8 +89,8 @@ class PlayerEventForwarder {
         timeUpdateEventListener = theoplayer.addEventListener(type: PlayerEventTypes.TIME_UPDATE, listener: { [weak self] event in
             guard let self else { return }
             var currentProgramDateTime: Int64?;
-            if let timeIntervalSince1970 = event.currentProgramDateTime?.timeIntervalSince1970 {
-                currentProgramDateTime = Int64(timeIntervalSince1970)
+            if let date = event.currentProgramDateTime {
+                currentProgramDateTime = date.millisecondsSinceEpoch
             }
 
             self.flutterAPI.onTimeUpdate(currentTime: event.currentTime, currentProgramDateTime: currentProgramDateTime, completion: self.emptyCompletion)

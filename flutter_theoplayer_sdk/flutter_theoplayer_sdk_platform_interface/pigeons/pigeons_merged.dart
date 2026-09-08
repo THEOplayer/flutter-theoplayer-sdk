@@ -76,8 +76,9 @@ class TypedSourcePigeon {
   final DRMConfiguration? drm;
   final SourceIntegrationId? integration;
   final Map<String?, String?>? headers;
+  final bool? hlsDateRange;
 
-  TypedSourcePigeon({required this.src, this.type, this.drm, this.integration, this.headers});
+  TypedSourcePigeon({required this.src, this.type, this.drm, this.integration, this.headers, this.hlsDateRange});
 }
 
 enum SourceIntegrationId {
@@ -127,7 +128,10 @@ abstract class THEOplayerFlutterTextTracksAPI {
   void onTextTrackAddCue(int textTrackUid, String id, int uid, double startTime, double endTime, String content);
 
   void onTextTrackAddDateRangeCue(int textTrackUid, String id, int uid, double startTime, double endTime, String? cueClass, double startDateMillis, double? endDateMillis, double? duration,
-      double? plannedDuration, bool endOnNext, String? customAttributesJson);
+      double? plannedDuration, bool endOnNext, String? customAttributesJson, Uint8List? scte35Cmd, Uint8List? scte35Out, Uint8List? scte35In);
+
+  void onTextTrackUpdateDateRangeCue(int textTrackUid, String id, int uid, double startTime, double endTime, String? cueClass, double startDateMillis, double? endDateMillis, double? duration,
+      double? plannedDuration, bool endOnNext, String? customAttributesJson, Uint8List? scte35Cmd, Uint8List? scte35Out, Uint8List? scte35In);
 
   void onTextTrackRemoveCue(int textTrackUid, int cueUid);
 

@@ -29,14 +29,14 @@ class CueImplWeb extends CueImpl {
     }.toJS;
 
     this._nativeTextTrackCue.addEventListener(TextTrackCueEventTypes.ENTER.toLowerCase(), enterEventListener);
-    this._nativeTextTrackCue.addEventListener(TextTrackCueEventTypes.ENTER.toLowerCase(), exitEventListener);
-    this._nativeTextTrackCue.addEventListener(TextTrackCueEventTypes.ENTER.toLowerCase(), updateEventlistener);
+    this._nativeTextTrackCue.addEventListener(TextTrackCueEventTypes.EXIT.toLowerCase(), exitEventListener);
+    this._nativeTextTrackCue.addEventListener(TextTrackCueEventTypes.UPDATE.toLowerCase(), updateEventlistener);
   }
 
   void dispose() {
     super.dispose();
     this._nativeTextTrackCue.removeEventListener(TextTrackCueEventTypes.ENTER.toLowerCase(), enterEventListener);
-    this._nativeTextTrackCue.removeEventListener(TextTrackCueEventTypes.ENTER.toLowerCase(), exitEventListener);
-    this._nativeTextTrackCue.removeEventListener(TextTrackCueEventTypes.ENTER.toLowerCase(), updateEventlistener);
+    this._nativeTextTrackCue.removeEventListener(TextTrackCueEventTypes.EXIT.toLowerCase(), exitEventListener);
+    this._nativeTextTrackCue.removeEventListener(TextTrackCueEventTypes.UPDATE.toLowerCase(), updateEventlistener);
   }
 }

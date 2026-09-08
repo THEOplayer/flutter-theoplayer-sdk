@@ -27,6 +27,14 @@ void main() {
     await runBasicPlaybackTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
   });
 
+  testWidgets('Test playbackRate reporting with HYBRID_COMPOSITION', (WidgetTester tester) async {
+    await runPlaybackRateTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
+  });
+
+  testWidgets('Test playbackRate reporting with SURFACE_TEXTURE', (WidgetTester tester) async {
+    await runPlaybackRateTest(tester, AndroidViewComposition.SURFACE_TEXTURE);
+  });
+
   //disabled for now only on WEB, we need to figure out the license
   if (!kIsWeb) {
     // Latency tests are iOS-only for now: Android native SDK doesn't expose latency properties yet.
@@ -134,6 +142,46 @@ Future<void> runBasicPlaybackTest(WidgetTester tester, AndroidViewComposition an
 
   print("Testing playback currentTime():  ${player.currentTime}");
   expect(player.currentTime >= 5, isTrue);
+}
+
+/// playbackRate must reflect the native player's rate (1.0 by default) without any prior `ratechange`.
+Future<void> runPlaybackRateTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
+  TestApp app = TestApp(androidViewComposition: androidViewComposition);
+  await tester.pumpWidget(app);
+
+  final chromlessPlayerView = find.byKey(const Key('testChromelessPlayer'));
+  await tester.ensureVisible(chromlessPlayerView);
+  final player = (tester.firstElement(chromlessPlayerView).widget as ChromelessPlayerView).player;
+  await tester.pumpAndSettle();
+  await app.waitForPlayerReady();
+  await tester.pumpAndSettle();
+
+  expect(player.isInitialized, isTrue);
+
+  print("Testing playbackRate before any source: ${player.playbackRate}");
+  expect(player.playbackRate, equals(1.0));
+
+  final rateChanges = <double>[];
+  player.addEventListener(PlayerEventTypes.RATECHANGE, (event) => rateChanges.add((event as RateChangeEvent).playbackRate));
+
+  player.muted = true;
+  player.autoplay = true;
+  player.source = SourceDescription(sources: [
+    TypedSource(src: "https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8"),
+  ]);
+
+  await tester.pumpAndSettle(const Duration(seconds: 10));
+
+  print("Testing playbackRate while playing at default speed: ${player.playbackRate} (ratechange events: $rateChanges)");
+  expect(player.currentTime, greaterThan(0));
+  expect(player.playbackRate, equals(1.0));
+
+  player.playbackRate = 1.5;
+  await tester.pumpAndSettle(const Duration(seconds: 3));
+
+  print("Testing playbackRate after setting 1.5: ${player.playbackRate} (ratechange events: $rateChanges)");
+  expect(player.playbackRate, equals(1.5));
+  expect(rateChanges, contains(1.5));
 }
 
 Future<void> runBasicTHEOlivePlaybackTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {

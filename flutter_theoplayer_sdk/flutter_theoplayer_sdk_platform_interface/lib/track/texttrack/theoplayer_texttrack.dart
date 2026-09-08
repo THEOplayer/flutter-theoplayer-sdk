@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:typed_data';
 
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
 import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
@@ -139,6 +140,8 @@ abstract class Cue implements EventDispatcher {
 }
 
 /// A cue representing an HLS EXT-X-DATERANGE tag.
+///
+/// For open-ended date ranges (no end date or duration) [endTime] is [double.infinity].
 abstract class DateRangeCue extends Cue {
   DateRangeCue(super.id, super.uid, super.startTime);
 
@@ -161,5 +164,16 @@ abstract class DateRangeCue extends Cue {
   bool get endOnNext;
 
   /// Custom attributes from the EXT-X-DATERANGE tag.
+  ///
+  /// Values are strings or numbers; binary attribute values are base64-encoded strings.
   Map<String, dynamic>? get customAttributes;
+
+  /// The SCTE-35 command from the SCTE35-CMD attribute, if available.
+  Uint8List? get scte35Cmd;
+
+  /// The SCTE-35 splice out payload from the SCTE35-OUT attribute, if available.
+  Uint8List? get scte35Out;
+
+  /// The SCTE-35 splice in payload from the SCTE35-IN attribute, if available.
+  Uint8List? get scte35In;
 }

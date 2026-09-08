@@ -428,6 +428,9 @@ class _MockTHEOplayerFlutterAPI extends THEOplayerFlutterAPI {
 
   // Stub implementations for other required methods
   @override
+  void onCurrentSourceChange(TypedSourcePigeon? currentSource) {}
+
+  @override
   void onPlaying(double currentTime) {}
 
   @override

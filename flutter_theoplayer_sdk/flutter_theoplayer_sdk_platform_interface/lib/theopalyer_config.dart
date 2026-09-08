@@ -7,11 +7,19 @@ class THEOplayerConfig {
   FullscreenConfig _fullscreenConfig = FullscreenConfig();
   TheoLiveConfiguration? _theoLive = null;
   WebConfig _webConfig = WebConfig();
+  bool? _hlsDateRange;
 
   THEOplayerConfig(
-      {String? license, String? licenseUrl, AndroidConfig? androidConfiguration, FullscreenConfig? fullscreenConfiguration, TheoLiveConfiguration? theolive, WebConfig? webConfiguration}) {
+      {String? license,
+      String? licenseUrl,
+      AndroidConfig? androidConfiguration,
+      FullscreenConfig? fullscreenConfiguration,
+      TheoLiveConfiguration? theolive,
+      WebConfig? webConfiguration,
+      bool? hlsDateRange}) {
     _license = license;
     _licenseUrl = licenseUrl;
+    _hlsDateRange = hlsDateRange;
     if (androidConfiguration != null) {
       _androidConfig = androidConfiguration;
     }
@@ -51,8 +59,16 @@ class THEOplayerConfig {
     return _webConfig;
   }
 
+  /// Whether the player should parse and expose HLS EXT-X-DATERANGE tags as DateRangeCues on a TextTrack.
+  ///
+  /// Can be overridden per source with [TypedSource.hlsDateRange].
+  bool? get hlsDateRange {
+    return _hlsDateRange;
+  }
+
   //TODO: fix this, don't generate JSON manually.
-  Map<String, dynamic> toJson() => {'license': _license, 'licenseUrl': _licenseUrl, 'androidConfig': _androidConfig._toJson(), 'theoLive': _theoLive?._toJson(), 'webConfig': _webConfig._toJson()};
+  Map<String, dynamic> toJson() =>
+      {'license': _license, 'licenseUrl': _licenseUrl, 'androidConfig': _androidConfig._toJson(), 'theoLive': _theoLive?._toJson(), 'webConfig': _webConfig._toJson(), 'hlsDateRange': _hlsDateRange};
 }
 
 class AndroidConfig {
