@@ -2,8 +2,6 @@
 
 * Updated THEOplayer to 11.10.2.
 
-For native SDK changes please consult with the [THEOplayer SDK 11.10.1 changelog](https://optiview.dolby.com/docs/theoplayer/changelog/#-11101-20260828) and the [THEOplayer SDK 11.10.2 changelog](https://optiview.dolby.com/docs/theoplayer/changelog/#-11102-20260903).
-
 ## 11.10.0
 
 * Updated THEOplayer to 11.10.0.
