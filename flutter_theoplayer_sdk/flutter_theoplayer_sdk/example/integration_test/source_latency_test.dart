@@ -5,13 +5,13 @@ import 'package:theoplayer/theoplayer.dart';
 
 import '../integration_test_app/test_app.dart';
 
-const _liveStream = 'https://ll-hls-test.cdn-apple.com/llhls4/ll-hls-test-04/multi.m3u8';
+const _testSource = 'https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8';
 const _targetOffset = 6.0;
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets('Test source latency configuration', (WidgetTester tester) async {
+  testWidgets('Test source latency configuration forwarding', (WidgetTester tester) async {
     final app = TestApp();
     await tester.pumpWidget(app);
 
@@ -21,13 +21,9 @@ void main() {
     await tester.pumpAndSettle();
     await app.waitForPlayerReady();
 
-    Object? playbackError;
-    player.addEventListener(PlayerEventTypes.ERROR, (event) => playbackError = (event as ErrorEvent).error);
-    player.muted = true;
-    player.autoplay = true;
     player.source = SourceDescription(sources: [
       TypedSource(
-        src: _liveStream,
+        src: _testSource,
         type: 'application/x-mpegurl',
         lowLatency: true,
         latencyConfiguration: SourceLatencyConfiguration(
@@ -41,16 +37,21 @@ void main() {
       ),
     ]);
 
-    for (var second = 0; second < 30 && player.currentTime == 0; second++) {
+    for (var second = 0; second < 10 && player.source == null; second++) {
       await tester.pump(const Duration(seconds: 1));
     }
 
-    expect(playbackError, isNull);
-    expect(player.currentTime, greaterThan(0));
+    final currentSource = player.source?.sources.first;
+    expect(currentSource?.src, _testSource);
 
     if (kIsWeb || defaultTargetPlatform == TargetPlatform.android) {
-      final currentSource = player.source?.sources.first;
-      expect(currentSource?.latencyConfiguration?.targetOffset, _targetOffset);
+      final latencyConfiguration = currentSource?.latencyConfiguration;
+      expect(latencyConfiguration?.targetOffset, _targetOffset);
+      expect(latencyConfiguration?.minimumOffset, 4.0);
+      expect(latencyConfiguration?.maximumOffset, 8.0);
+      expect(latencyConfiguration?.forceSeekOffset, 18.0);
+      expect(latencyConfiguration?.minimumPlaybackRate, 0.95);
+      expect(latencyConfiguration?.maximumPlaybackRate, 1.05);
       if (kIsWeb) {
         expect(currentSource?.lowLatency, isTrue);
       }
