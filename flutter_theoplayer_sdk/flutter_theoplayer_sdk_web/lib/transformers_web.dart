@@ -27,6 +27,43 @@ PlatformInterface.ReadyState toFlutterReadyState(int readyState) {
   return flutterReadyState;
 }
 
+PlatformInterface.SourceIntegrationId? toFlutterSourceIntegrationId(String? integration) {
+  if (integration == 'theolive') {
+    return PlatformInterface.SourceIntegrationId.theolive;
+  }
+  return null;
+}
+
+PlatformInterface.SourceLatencyConfiguration? toFlutterSourceLatencyConfiguration(SourceLatencyConfiguration? latencyConfiguration) {
+  if (latencyConfiguration == null) {
+    return null;
+  }
+
+  return PlatformInterface.SourceLatencyConfiguration(
+    targetOffset: latencyConfiguration.targetOffset,
+    minimumOffset: latencyConfiguration.minimumOffset,
+    maximumOffset: latencyConfiguration.maximumOffset,
+    forceSeekOffset: latencyConfiguration.forceSeekOffset,
+    minimumPlaybackRate: latencyConfiguration.minimumPlaybackRate,
+    maximumPlaybackRate: latencyConfiguration.maximumPlaybackRate,
+  );
+}
+
+SourceLatencyConfiguration? toWebSourceLatencyConfiguration(PlatformInterface.SourceLatencyConfiguration? latencyConfiguration) {
+  if (latencyConfiguration == null) {
+    return null;
+  }
+
+  return SourceLatencyConfiguration(
+    targetOffset: latencyConfiguration.targetOffset,
+    minimumOffset: latencyConfiguration.minimumOffset,
+    maximumOffset: latencyConfiguration.maximumOffset,
+    forceSeekOffset: latencyConfiguration.forceSeekOffset,
+    minimumPlaybackRate: latencyConfiguration.minimumPlaybackRate,
+    maximumPlaybackRate: latencyConfiguration.maximumPlaybackRate,
+  );
+}
+
 PlatformInterface.TypedSourcePigeon? toFlutterTypedSource(TypedSource? typedSource) {
   if (typedSource == null) {
     return null;
@@ -48,7 +85,10 @@ PlatformInterface.TypedSourcePigeon? toFlutterTypedSource(TypedSource? typedSour
       src: typedSource.src,
       type: typedSource.type,
       drm: PlatformInterface.DRMConfiguration(fairplay: fairPlayDRMConfiguration, widevine: widevineDRMConfiguration),
-      hlsDateRange: typedSource.hlsDateRange);
+      integration: toFlutterSourceIntegrationId(typedSource.integration),
+      hlsDateRange: typedSource.hlsDateRange,
+      lowLatency: typedSource.lowLatency,
+      latencyConfiguration: toFlutterSourceLatencyConfiguration(typedSource.latencyConfiguration));
 }
 
 PlatformInterface.SourceDescription? toFlutterSourceDescription(SourceDescription? sourceDescription) {
@@ -76,7 +116,10 @@ PlatformInterface.SourceDescription? toFlutterSourceDescription(SourceDescriptio
         src: typedSource.src,
         type: typedSource.type,
         drm: PlatformInterface.DRMConfiguration(fairplay: fairPlayDRMConfiguration, widevine: widevineDRMConfiguration),
-        hlsDateRange: typedSource.hlsDateRange));
+        integration: toFlutterSourceIntegrationId(typedSource.integration),
+        hlsDateRange: typedSource.hlsDateRange,
+        lowLatency: typedSource.lowLatency,
+        latencyConfiguration: toFlutterSourceLatencyConfiguration(typedSource.latencyConfiguration)));
   }
 
   return PlatformInterface.SourceDescription(sources: typedSources);
@@ -107,7 +150,9 @@ SourceDescription toSourceDescription(PlatformInterface.SourceDescription flutte
         src: flutterTypedSource.src,
         type: flutterTypedSource.type,
         contentProtection: ContentProtection(fairplay: flutterFairplayDrmConfiguration, widevine: flutterWidevineDrmConfiguration),
-        hlsDateRange: flutterTypedSource.hlsDateRange));
+        hlsDateRange: flutterTypedSource.hlsDateRange,
+        lowLatency: flutterTypedSource.lowLatency,
+        latencyConfiguration: toWebSourceLatencyConfiguration(flutterTypedSource.latencyConfiguration)));
   }
 
   return SourceDescription(sources: JSHelpers.jsItemsToJSArray(flutterTypedSources));

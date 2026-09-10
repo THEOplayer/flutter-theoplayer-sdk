@@ -212,6 +212,20 @@ class _MyAppState extends State<MyApp> {
                               FilledButton(
                                 onPressed: () {
                                   _licenseConfigCheckDialog(context);
+                                  player.source = SourceDescription(sources: [
+                                    TypedSource(
+                                      src: "https://ll-hls-test.cdn-apple.com/llhls4/ll-hls-test-04/multi.m3u8",
+                                      type: "application/x-mpegurl",
+                                      lowLatency: true,
+                                      latencyConfiguration: SourceLatencyConfiguration(targetOffset: 6.0),
+                                    ),
+                                  ]);
+                                },
+                                child: const Text("Low-latency source"),
+                              ),
+                              FilledButton(
+                                onPressed: () {
+                                  _licenseConfigCheckDialog(context);
                                   player.textTracks.addEventListener(TextTracksEventTypes.ADDTRACK, (event) {
                                     final track = (event as AddTextTrackEvent).track;
                                     if (track.type != TextTrackType.daterange) {
@@ -264,7 +278,7 @@ class _MyAppState extends State<MyApp> {
                                    */
 
                                   player.source = SourceDescription(sources: [
-                                    TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
+                                    TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0", latencyConfiguration: SourceLatencyConfiguration(targetOffset: 2.0)),
                                   ]);
                                 },
                                 child: const Text("THEOlive source"),

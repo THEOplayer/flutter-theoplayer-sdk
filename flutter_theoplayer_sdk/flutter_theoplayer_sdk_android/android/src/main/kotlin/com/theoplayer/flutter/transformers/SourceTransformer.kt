@@ -1,5 +1,6 @@
 package com.theoplayer.flutter.transformers
 
+import com.theoplayer.android.api.latency.LatencyConfiguration
 import com.theoplayer.android.api.source.SourceDescription
 import com.theoplayer.android.api.source.SourceType
 import com.theoplayer.android.api.source.TypedSource
@@ -12,6 +13,7 @@ import com.theoplayer.flutter.pigeon.SourceIntegrationId
 import com.theoplayer.flutter.pigeon.WidevineDRMConfiguration
 
 typealias FlutterSourceDescription = com.theoplayer.flutter.pigeon.SourceDescription
+typealias FlutterSourceLatencyConfiguration = com.theoplayer.flutter.pigeon.SourceLatencyConfiguration
 typealias FlutterTypedSource = com.theoplayer.flutter.pigeon.TypedSourcePigeon
 typealias FlutterDRMConfiguration = com.theoplayer.flutter.pigeon.DRMConfiguration
 typealias FlutterWidevineDRMConfiguration = WidevineDRMConfiguration
@@ -46,7 +48,8 @@ object SourceTransformer {
             drm = drm,
             integration = integrationID,
             headers = typedSource.headers as Map<String?, String?>?,
-            hlsDateRange = typedSource.hlsDateRange
+            hlsDateRange = typedSource.hlsDateRange,
+            latencyConfiguration = typedSource.latencyConfiguration?.let { toFlutterSourceLatencyConfiguration(it) }
         )
     }
 
@@ -108,7 +111,10 @@ object SourceTransformer {
 
         when(flutterTypedSource.integration) {
             SourceIntegrationId.THEOLIVE -> {
-                return TheoLiveSource(flutterTypedSource.src)
+                return TheoLiveSource(
+                    src = flutterTypedSource.src,
+                    latencyConfiguration = flutterTypedSource.latencyConfiguration?.let { toLatencyConfiguration(it) }
+                )
             }
             else -> {
                 val typedSourceBuilder = TypedSource.Builder(flutterTypedSource.src)
@@ -134,10 +140,34 @@ object SourceTransformer {
                     typedSourceBuilder.hlsDateRange(it)
                 }
 
+                flutterTypedSource.latencyConfiguration?.let {
+                    typedSourceBuilder.latencyConfiguration(toLatencyConfiguration(it))
+                }
+
                 return typedSourceBuilder.build()
             }
         }
     }
+
+    fun toFlutterSourceLatencyConfiguration(latencyConfiguration: LatencyConfiguration) = FlutterSourceLatencyConfiguration(
+        targetOffset = latencyConfiguration.targetOffset,
+        minimumOffset = latencyConfiguration.minimumOffset,
+        maximumOffset = latencyConfiguration.maximumOffset,
+        forceSeekOffset = latencyConfiguration.forceSeekOffset,
+        minimumPlaybackRate = latencyConfiguration.minimumPlaybackRate,
+        maximumPlaybackRate = latencyConfiguration.maximumPlaybackRate
+    )
+
+    fun toLatencyConfiguration(flutterLatencyConfiguration: FlutterSourceLatencyConfiguration): LatencyConfiguration = LatencyConfiguration.Builder()
+        .setTargetOffset(flutterLatencyConfiguration.targetOffset)
+        .apply {
+            flutterLatencyConfiguration.minimumOffset?.let { setMinimumOffset(it) }
+            flutterLatencyConfiguration.maximumOffset?.let { setMaximumOffset(it) }
+            flutterLatencyConfiguration.forceSeekOffset?.let { setForceSeekOffset(it) }
+            flutterLatencyConfiguration.minimumPlaybackRate?.let { setMinimumPlaybackRate(it) }
+            flutterLatencyConfiguration.maximumPlaybackRate?.let { setMaximumPlaybackRate(it) }
+        }
+        .build()
 
     fun toDRMConfiguration(flutterDRMConfiguration: FlutterDRMConfiguration): DRMConfiguration {
         val drm = DRMConfiguration.Builder()
