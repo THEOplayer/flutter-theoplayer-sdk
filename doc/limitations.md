@@ -30,6 +30,21 @@ First check the Dart documentation if you see behaviour differences on certain p
 We try to keep the documentation in sync as much as possible.
 If you see no difference mentioned in behaviour, please consult with the [native SDK documentations](https://www.theoplayer.com/docs/theoplayer/).
 
+### Live latency configuration
+
+`TypedSource.latencyConfiguration` configures live playback when the source is loaded. All offsets are expressed in seconds.
+
+| Option | Android | iOS | Web |
+|---|---|---|---|
+| `targetOffset` | Supported | Supported | Supported |
+| `minimumOffset`, `maximumOffset`, `forceSeekOffset` | Supported | Ignored | Supported |
+| `minimumPlaybackRate`, `maximumPlaybackRate` | Supported | Ignored | Supported |
+| `lowLatency` | Ignored | Ignored | Supported |
+
+On iOS, `targetOffset` is passed to AVPlayer as its configured time offset from live. AVPlayer will not use a configured offset below its recommended time offset, so very small targets might not be reached.
+
+The `lowLatency` option enables the player's low-latency mode on Web and is required for Low-Latency CMAF with ABR. It is not required to play Low-Latency HLS.
+
 ## Version limitations
 
 THEOplayer Flutter SDK only compatible with THEOplayer 6.x and above.

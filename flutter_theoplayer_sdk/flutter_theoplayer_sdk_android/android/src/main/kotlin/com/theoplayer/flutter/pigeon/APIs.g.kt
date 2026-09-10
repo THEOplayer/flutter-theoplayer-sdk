@@ -196,7 +196,9 @@ data class TypedSourcePigeon (
   val drm: DRMConfiguration? = null,
   val integration: SourceIntegrationId? = null,
   val headers: Map<String?, String?>? = null,
-  val hlsDateRange: Boolean? = null
+  val hlsDateRange: Boolean? = null,
+  val lowLatency: Boolean? = null,
+  val latencyConfiguration: SourceLatencyConfiguration? = null
 )
  {
   companion object {
@@ -207,7 +209,9 @@ data class TypedSourcePigeon (
       val integration = pigeonVar_list[3] as SourceIntegrationId?
       val headers = pigeonVar_list[4] as Map<String?, String?>?
       val hlsDateRange = pigeonVar_list[5] as Boolean?
-      return TypedSourcePigeon(src, type, drm, integration, headers, hlsDateRange)
+      val lowLatency = pigeonVar_list[6] as Boolean?
+      val latencyConfiguration = pigeonVar_list[7] as SourceLatencyConfiguration?
+      return TypedSourcePigeon(src, type, drm, integration, headers, hlsDateRange, lowLatency, latencyConfiguration)
     }
   }
   fun toList(): List<Any?> {
@@ -218,6 +222,73 @@ data class TypedSourcePigeon (
       integration,
       headers,
       hlsDateRange,
+      lowLatency,
+      latencyConfiguration,
+    )
+  }
+}
+
+/**
+ * The source-level latency configuration for live playback.
+ *
+ * All offsets are expressed in seconds. On iOS, only [targetOffset] is supported.
+ *
+ * Generated class from Pigeon that represents data sent in messages.
+ */
+data class SourceLatencyConfiguration (
+  /** The live offset that the player aims for. */
+  val targetOffset: Double,
+  /**
+   * The offset below which the player slows down.
+   *
+   * Defaults to 0.66 times [targetOffset].
+   */
+  val minimumOffset: Double? = null,
+  /**
+   * The offset above which the player speeds up.
+   *
+   * Defaults to 1.5 times [targetOffset].
+   */
+  val maximumOffset: Double? = null,
+  /**
+   * The offset above which the player seeks to live.
+   *
+   * Defaults to 3 times [targetOffset].
+   */
+  val forceSeekOffset: Double? = null,
+  /**
+   * The minimum playback rate used to increase latency.
+   *
+   * Defaults to 0.92.
+   */
+  val minimumPlaybackRate: Double? = null,
+  /**
+   * The maximum playback rate used to decrease latency.
+   *
+   * Defaults to 1.08.
+   */
+  val maximumPlaybackRate: Double? = null
+)
+ {
+  companion object {
+    fun fromList(pigeonVar_list: List<Any?>): SourceLatencyConfiguration {
+      val targetOffset = pigeonVar_list[0] as Double
+      val minimumOffset = pigeonVar_list[1] as Double?
+      val maximumOffset = pigeonVar_list[2] as Double?
+      val forceSeekOffset = pigeonVar_list[3] as Double?
+      val minimumPlaybackRate = pigeonVar_list[4] as Double?
+      val maximumPlaybackRate = pigeonVar_list[5] as Double?
+      return SourceLatencyConfiguration(targetOffset, minimumOffset, maximumOffset, forceSeekOffset, minimumPlaybackRate, maximumPlaybackRate)
+    }
+  }
+  fun toList(): List<Any?> {
+    return listOf(
+      targetOffset,
+      minimumOffset,
+      maximumOffset,
+      forceSeekOffset,
+      minimumPlaybackRate,
+      maximumPlaybackRate,
     )
   }
 }
@@ -486,40 +557,45 @@ private open class APIsPigeonCodec : StandardMessageCodec() {
       }
       139.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          DRMConfiguration.fromList(it)
+          SourceLatencyConfiguration.fromList(it)
         }
       }
       140.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          WidevineDRMConfiguration.fromList(it)
+          DRMConfiguration.fromList(it)
         }
       }
       141.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          FairPlayDRMConfiguration.fromList(it)
+          WidevineDRMConfiguration.fromList(it)
         }
       }
       142.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          HespLatencies.fromList(it)
+          FairPlayDRMConfiguration.fromList(it)
         }
       }
       143.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          Endpoint.fromList(it)
+          HespLatencies.fromList(it)
         }
       }
       144.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          AbrStrategyMetadataPigeon.fromList(it)
+          Endpoint.fromList(it)
         }
       }
       145.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
-          AbrStrategyConfigurationPigeon.fromList(it)
+          AbrStrategyMetadataPigeon.fromList(it)
         }
       }
       146.toByte() -> {
+        return (readValue(buffer) as? List<Any?>)?.let {
+          AbrStrategyConfigurationPigeon.fromList(it)
+        }
+      }
+      147.toByte() -> {
         return (readValue(buffer) as? List<Any?>)?.let {
           DebugFlagPigeon.fromList(it)
         }
@@ -569,36 +645,40 @@ private open class APIsPigeonCodec : StandardMessageCodec() {
         stream.write(138)
         writeValue(stream, value.toList())
       }
-      is DRMConfiguration -> {
+      is SourceLatencyConfiguration -> {
         stream.write(139)
         writeValue(stream, value.toList())
       }
-      is WidevineDRMConfiguration -> {
+      is DRMConfiguration -> {
         stream.write(140)
         writeValue(stream, value.toList())
       }
-      is FairPlayDRMConfiguration -> {
+      is WidevineDRMConfiguration -> {
         stream.write(141)
         writeValue(stream, value.toList())
       }
-      is HespLatencies -> {
+      is FairPlayDRMConfiguration -> {
         stream.write(142)
         writeValue(stream, value.toList())
       }
-      is Endpoint -> {
+      is HespLatencies -> {
         stream.write(143)
         writeValue(stream, value.toList())
       }
-      is AbrStrategyMetadataPigeon -> {
+      is Endpoint -> {
         stream.write(144)
         writeValue(stream, value.toList())
       }
-      is AbrStrategyConfigurationPigeon -> {
+      is AbrStrategyMetadataPigeon -> {
         stream.write(145)
         writeValue(stream, value.toList())
       }
-      is DebugFlagPigeon -> {
+      is AbrStrategyConfigurationPigeon -> {
         stream.write(146)
+        writeValue(stream, value.toList())
+      }
+      is DebugFlagPigeon -> {
+        stream.write(147)
         writeValue(stream, value.toList())
       }
       else -> super.writeValue(stream, value)

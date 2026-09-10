@@ -150,8 +150,39 @@ extension SourceDescriptionExtension on SourceDescription {
 @JS()
 @anonymous
 @staticInterop
+class SourceLatencyConfiguration {
+  external factory SourceLatencyConfiguration({
+    required double targetOffset,
+    double? minimumOffset,
+    double? maximumOffset,
+    double? forceSeekOffset,
+    double? minimumPlaybackRate,
+    double? maximumPlaybackRate,
+  });
+}
+
+extension SourceLatencyConfigurationExtension on SourceLatencyConfiguration {
+  external double get targetOffset;
+  external double? get minimumOffset;
+  external double? get maximumOffset;
+  external double? get forceSeekOffset;
+  external double? get minimumPlaybackRate;
+  external double? get maximumPlaybackRate;
+}
+
+@JS()
+@anonymous
+@staticInterop
 class TypedSource {
-  external factory TypedSource({required String src, String? type, ContentProtection? contentProtection, String? integration, bool? hlsDateRange});
+  external factory TypedSource({
+    required String src,
+    String? type,
+    ContentProtection? contentProtection,
+    String? integration,
+    bool? hlsDateRange,
+    bool? lowLatency,
+    SourceLatencyConfiguration? latencyConfiguration,
+  });
 }
 
 extension TypedSourceExtension on TypedSource {
@@ -160,6 +191,8 @@ extension TypedSourceExtension on TypedSource {
   external String? get type;
   external ContentProtection? get contentProtection;
   external bool? get hlsDateRange;
+  external bool? get lowLatency;
+  external SourceLatencyConfiguration? get latencyConfiguration;
 }
 
 @JS()
