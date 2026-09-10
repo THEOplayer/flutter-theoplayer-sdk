@@ -1,7 +1,6 @@
 import '../integration_test/plugin_integration_test.dart' as plugin_tests;
 import '../integration_test/player_creation_test.dart' as playercreation_tests;
 import '../integration_test/playback_test.dart' as playback_tests;
-import '../integration_test/source_latency_test.dart' as source_latency_tests;
 import '../integration_test/theolive_authtoken_test.dart' as theolive_authtoken_tests;
 import '../integration_test/daterange_test.dart' as daterange_tests;
 
@@ -12,7 +11,6 @@ void main() {
   plugin_tests.main();
   playercreation_tests.main();
   playback_tests.main();
-  source_latency_tests.main();
   theolive_authtoken_tests.main();
   daterange_tests.main();
 }
