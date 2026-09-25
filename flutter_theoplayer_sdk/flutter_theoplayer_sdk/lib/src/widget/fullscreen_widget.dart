@@ -79,7 +79,7 @@ class _CustomWillPopScopeState extends State<CustomWillPopScope> {
   bool _canPop = false;
 
   Future<void> _handlePop() async {
-    if (!await widget.onWillPop()) {
+    if (!await widget.onWillPop() || !mounted) {
       return;
     }
     setState(() {
