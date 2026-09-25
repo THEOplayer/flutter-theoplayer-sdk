@@ -64,7 +64,7 @@ THEOplayerViewController (per-player; Mobile impl shared by Android+iOS, Web sep
 | Pigeon definitions (source of truth) | `..._platform_interface/pigeons/` |
 | Android native entry | `..._android/android/src/main/kotlin/com/theoplayer/flutter/TheoplayerPlugin.kt` |
 | Android player wrapper | `..._android/.../THEOplayerViewNative.kt` |
-| iOS native entry | `..._ios/ios/Classes/TheoplayerPlugin.swift` |
+| iOS native entry | `..._ios/ios/theoplayer_ios/Sources/theoplayer_ios/TheoplayerPlugin.swift` |
 | Web JS interop bindings | `..._web/lib/theoplayer_api_web.dart` |
 
 ## Dart ⇄ native communication
