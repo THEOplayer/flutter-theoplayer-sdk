@@ -72,13 +72,13 @@ class _QualityChangeState extends State<QualityChangeWidget> {
   @override
   void dispose() {
     widget.player.audioTracks.removeEventListener(AudioTracksEventTypes.ADDTRACK, addAudioTrackListener);
-    widget.player.audioTracks.forEach((element) {
+    for (final element in widget.player.audioTracks) {
       element.removeEventListener(AudioTrackEventTypes.ACTIVEQUALITYCHANGED, activeAudioQualityListener);
-    });
+    }
     widget.player.videoTracks.removeEventListener(VideoTracksEventTypes.ADDTRACK, addVideoTrackListener);
-    widget.player.videoTracks.forEach((element) {
+    for (final element in widget.player.videoTracks) {
       element.removeEventListener(VideoTrackEventTypes.ACTIVEQUALITYCHANGED, activeVideoQualityListener);
-    });
+    }
     super.dispose();
   }
 
