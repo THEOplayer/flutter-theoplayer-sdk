@@ -6,9 +6,6 @@ import 'package:web/web.dart' as web;
 @JS('JSON.stringify')
 external String? _jsonStringify(JSAny? obj);
 
-@JS('JSON.parse')
-external JSAny? _jsonParse(String jsonString);
-
 String? jsObjectToJsonString(JSAny? obj) {
   if (obj == null) return null;
   return _jsonStringify(obj);
