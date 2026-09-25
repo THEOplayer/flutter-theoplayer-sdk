@@ -170,7 +170,6 @@ String toTextTrackMode(PlatformInterface.TextTrackMode flutterTextTrackmode) {
     case PlatformInterface.TextTrackMode.hidden:
       return "hidden";
     case PlatformInterface.TextTrackMode.disabled:
-    default:
       return "disabled";
   }
 }
