@@ -66,15 +66,9 @@ jobs:
       # `flutter test` sometimes never gets past app launch on the simulator and produces no output.
       timeout-minutes: 25
       run: |
-        flutter_args=()
-        # Verbose output is useful for diagnosing manual runs but adds thousands of lines to regular PR logs.
-        if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
-          flutter_args+=(--verbose)
-        fi
         # Use the simulator selected and booted above instead of relying on Flutter's device discovery.
         flutter test integration_test_single_entrypoint/entrypoint.dart \
-          -d '${{ steps.simulator.outputs.udid }}' \
-          "${flutter_args[@]}"
+          -d '${{ steps.simulator.outputs.udid }}'
       working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
       env:
         TEST_LICENSE: ${{ secrets.TEST_LICENSE }}
