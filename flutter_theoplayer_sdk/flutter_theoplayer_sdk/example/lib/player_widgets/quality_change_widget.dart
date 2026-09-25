@@ -35,7 +35,7 @@ class _QualityChangeState extends State<QualityChangeWidget> {
     var addEvent = event as AddVideoTrackEvent;
     print("addVideoTrack ${addEvent.track.uid}");
     for (var quality in addEvent.track.qualities) {
-      var vq = quality as VideoQuality;
+      var vq = quality;
       print("addVideoTrack quality uid=${vq.uid} bw=${vq.bandwidth} ${vq.width}x${vq.height} name=${vq.name}");
     }
     addEvent.track.addEventListener(VideoTrackEventTypes.ACTIVEQUALITYCHANGED, activeVideoQualityListener);
