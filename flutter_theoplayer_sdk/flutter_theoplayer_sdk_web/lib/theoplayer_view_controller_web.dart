@@ -458,7 +458,6 @@ extension on Document {
   external HTMLElement? fullscreenElement;
   external HTMLElement? pictureInPictureElement;
 
-  external JSPromise<JSAny?> exitFullscreen();
   external JSPromise<JSAny?> exitPictureInPicture();
 }
 
