@@ -61,79 +61,9 @@ jobs:
         os_version: '>=18.5'
 
     - name: Run integration tests
-      id: integration-tests
       # `flutter test` sometimes never gets past app launch on the simulator and produces no output.
       timeout-minutes: 25
-      run: |
-        simulator_udid='${{ steps.simulator.outputs.udid }}'
-        max_attempts=2
-        vm_service_timeout=90
-        attempt=1
-
-        while [ "$attempt" -le "$max_attempts" ]; do
-          log="$RUNNER_TEMP/flutter-test-attempt-$attempt.log"
-          watchdog_marker="$RUNNER_TEMP/vm-service-watchdog-$attempt"
-          rm -f "$log" "$watchdog_marker"
-
-          flutter test integration_test_single_entrypoint/entrypoint.dart \
-            -d "$simulator_udid" \
-            --verbose > "$log" 2>&1 &
-          test_pid=$!
-
-          (
-            while kill -0 "$test_pid" 2>/dev/null; do
-              if grep -Fq 'Waiting for VM Service port to be available...' "$log"; then
-                elapsed=0
-                while kill -0 "$test_pid" 2>/dev/null && [ "$elapsed" -lt "$vm_service_timeout" ]; do
-                  if grep -Fq 'VM Service URL on device:' "$log"; then
-                    exit 0
-                  fi
-                  sleep 2
-                  elapsed=$((elapsed + 2))
-                done
-
-                if kill -0 "$test_pid" 2>/dev/null && ! grep -Fq 'VM Service URL on device:' "$log"; then
-                  touch "$watchdog_marker"
-                  echo "::warning title=Flutter VM Service watchdog::attempt $attempt did not discover the VM Service within ${vm_service_timeout}s"
-                  kill -TERM "$test_pid" 2>/dev/null || true
-                  sleep 10
-                  kill -KILL "$test_pid" 2>/dev/null || true
-                fi
-                exit 0
-              fi
-              sleep 2
-            done
-          ) &
-          watchdog_pid=$!
-
-          set +e
-          wait "$test_pid"
-          status=$?
-          set -e
-          kill "$watchdog_pid" 2>/dev/null || true
-          wait "$watchdog_pid" 2>/dev/null || true
-
-          if [ "$status" -eq 0 ] && [ ! -f "$watchdog_marker" ]; then
-            tail -n 50 "$log"
-            exit 0
-          fi
-
-          tail -n 300 "$log"
-
-          if [ -f "$watchdog_marker" ] && [ "$attempt" -lt "$max_attempts" ]; then
-            echo "::warning title=Retrying iOS integration tests::resetting the simulator after a stalled VM Service connection"
-            xcrun simctl shutdown "$simulator_udid" || true
-            xcrun simctl bootstatus "$simulator_udid" -b
-            attempt=$((attempt + 1))
-            continue
-          fi
-
-          if [ "$status" -eq 0 ]; then
-            status=1
-          fi
-          exit "$status"
-        done
-      working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
+      run: ./scripts/run_ios_integration_tests.sh '${{ steps.simulator.outputs.udid }}'
       env:
         TEST_LICENSE: ${{ secrets.TEST_LICENSE }}
 
