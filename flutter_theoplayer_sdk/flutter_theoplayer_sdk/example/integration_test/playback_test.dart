@@ -127,14 +127,14 @@ Future<void> runBasicPlaybackTest(WidgetTester tester, AndroidViewComposition an
   debugLog("Testing isPaused()");
   expect(player.isPaused, isTrue);
 
-  player.setMuted(true);
-  player.setAutoplay(true);
+  player.muted = true;
+  player.autoplay = true;
 
   debugLog("Setting source");
 
-  player.setSource(SourceDescription(sources: [
+  player.source = SourceDescription(sources: [
     TypedSource(src: "https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8"),
-  ]));
+  ]);
 
   await tester.pumpAndSettle(const Duration(seconds: 10));
 
@@ -204,14 +204,14 @@ Future<void> runBasicTHEOlivePlaybackTest(WidgetTester tester, AndroidViewCompos
   debugLog("Testing isPaused()");
   expect(player.isPaused, isTrue);
 
-  player.setMuted(true);
-  player.setAutoplay(true);
+  player.muted = true;
+  player.autoplay = true;
 
   debugLog("Setting source");
 
-  player.setSource(SourceDescription(sources: [
+  player.source = SourceDescription(sources: [
     TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
-  ]));
+  ]);
 
   await tester.pumpAndSettle(const Duration(seconds: 10));
 
@@ -238,8 +238,8 @@ Future<void> runVideoTrackEventsTest(WidgetTester tester, AndroidViewComposition
 
   expect(player.isInitialized, isTrue);
 
-  player.setMuted(true);
-  player.setAutoplay(true);
+  player.muted = true;
+  player.autoplay = true;
 
   // Track events we expect to receive
   final addTrackCompleter = Completer<AddVideoTrackEvent>();
@@ -253,9 +253,9 @@ Future<void> runVideoTrackEventsTest(WidgetTester tester, AndroidViewComposition
   });
 
   debugLog("Setting source for video track events test");
-  player.setSource(SourceDescription(sources: [
+  player.source = SourceDescription(sources: [
     TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
-  ]));
+  ]);
 
   await tester.pumpAndSettle(const Duration(seconds: 10));
 
@@ -319,8 +319,8 @@ Future<void> runAudioTrackEventsTest(WidgetTester tester, AndroidViewComposition
 
   expect(player.isInitialized, isTrue);
 
-  player.setMuted(true);
-  player.setAutoplay(true);
+  player.muted = true;
+  player.autoplay = true;
 
   final addTrackCompleter = Completer<AddAudioTrackEvent>();
 
@@ -332,9 +332,9 @@ Future<void> runAudioTrackEventsTest(WidgetTester tester, AndroidViewComposition
   });
 
   debugLog("Setting source for audio track events test");
-  player.setSource(SourceDescription(sources: [
+  player.source = SourceDescription(sources: [
     TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
-  ]));
+  ]);
 
   await tester.pumpAndSettle(const Duration(seconds: 10));
 
@@ -377,8 +377,8 @@ Future<void> runTextTrackEventsTest(WidgetTester tester, AndroidViewComposition 
 
   expect(player.isInitialized, isTrue);
 
-  player.setMuted(true);
-  player.setAutoplay(true);
+  player.muted = true;
+  player.autoplay = true;
 
   final addTrackCompleter = Completer<AddTextTrackEvent>();
 
@@ -390,9 +390,9 @@ Future<void> runTextTrackEventsTest(WidgetTester tester, AndroidViewComposition 
   });
 
   debugLog("Setting source for text track events test");
-  player.setSource(SourceDescription(sources: [
+  player.source = SourceDescription(sources: [
     TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
-  ]));
+  ]);
 
   await tester.pumpAndSettle(const Duration(seconds: 10));
 
@@ -425,13 +425,13 @@ Future<void> runQualityPropertiesTest(WidgetTester tester, AndroidViewCompositio
 
   expect(player.isInitialized, isTrue);
 
-  player.setMuted(true);
-  player.setAutoplay(true);
+  player.muted = true;
+  player.autoplay = true;
 
   debugLog("Setting source for quality properties test");
-  player.setSource(SourceDescription(sources: [
+  player.source = SourceDescription(sources: [
     TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
-  ]));
+  ]);
 
   await tester.pumpAndSettle(const Duration(seconds: 10));
 
@@ -526,8 +526,8 @@ Future<void> runTHEOliveAbrStrategyPerformanceTest(WidgetTester tester, AndroidV
 
   expect(player.isInitialized, isTrue);
 
-  player.setMuted(true);
-  player.setAutoplay(true);
+  player.muted = true;
+  player.autoplay = true;
 
   // Set ABR strategy to performance before setting source
   debugLog("Setting ABR strategy to performance");
@@ -539,9 +539,9 @@ Future<void> runTHEOliveAbrStrategyPerformanceTest(WidgetTester tester, AndroidV
   expect(strategy.type, equals(AbrStrategyType.performance));
 
   debugLog("Setting THEOlive source");
-  player.setSource(SourceDescription(sources: [
+  player.source = SourceDescription(sources: [
     TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
-  ]));
+  ]);
 
   // Wait just enough for initial track selection - ABR strategy only affects initial selection
   await tester.pumpAndSettle(const Duration(seconds: 3));
@@ -587,8 +587,8 @@ Future<void> runTHEOliveAbrStrategyQualityTest(WidgetTester tester, AndroidViewC
 
   expect(player.isInitialized, isTrue);
 
-  player.setMuted(true);
-  player.setAutoplay(true);
+  player.muted = true;
+  player.autoplay = true;
 
   // Set ABR strategy to quality before setting source
   debugLog("Setting ABR strategy to quality");
@@ -600,9 +600,9 @@ Future<void> runTHEOliveAbrStrategyQualityTest(WidgetTester tester, AndroidViewC
   expect(strategy.type, equals(AbrStrategyType.quality));
 
   debugLog("Setting THEOlive source");
-  player.setSource(SourceDescription(sources: [
+  player.source = SourceDescription(sources: [
     TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
-  ]));
+  ]);
 
   // Wait just enough for initial track selection - ABR strategy only affects initial selection
   await tester.pumpAndSettle(const Duration(seconds: 3));
