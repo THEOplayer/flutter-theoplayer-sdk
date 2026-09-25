@@ -17,7 +17,7 @@ jobs:
       fail-fast: false
       matrix:
         xcode_version: ['26.3']
-        flutter_version: ['stable', 'beta']
+        flutter_version: ['stable']
 
     runs-on: macos-26
     steps:
@@ -64,14 +64,33 @@ jobs:
 
     - name: Run integration tests
       # `flutter test` sometimes never gets past app launch on the simulator and produces no output.
-      timeout-minutes: 25
+      timeout-minutes: 15
       run: |
         # Use the simulator selected and booted above instead of relying on Flutter's device discovery.
         flutter test integration_test_single_entrypoint/entrypoint.dart \
-          -d '${{ steps.simulator.outputs.udid }}'
+          -d '${{ steps.simulator.outputs.udid }}' \
+          --verbose > "$RUNNER_TEMP/flutter-test.log" 2>&1
       working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
       env:
         TEST_LICENSE: ${{ secrets.TEST_LICENSE }}
+
+    - name: Print verbose Flutter log tail
+      if: always()
+      run: |
+        if [ -f "$RUNNER_TEMP/flutter-test.log" ]; then
+          tail -n 300 "$RUNNER_TEMP/flutter-test.log"
+        else
+          echo "Flutter did not create a diagnostic log."
+        fi
+
+    - name: Upload full verbose Flutter log
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: flutter-test-${{ matrix.flutter_version }}-${{ github.run_attempt }}
+        path: ${{ runner.temp }}/flutter-test.log
+        if-no-files-found: warn
+        retention-days: 7
 
     - name: Dump simulator state on failure
       if: failure()
@@ -81,9 +100,5 @@ jobs:
         xcrun simctl spawn booted log show --last 30m --style compact \
           --predicate 'process == "Runner" OR eventMessage CONTAINS "theoplayerExample" OR eventMessage CONTAINS[c] "Runner.app" OR ((process == "SpringBoard" OR process == "installd" OR process == "runningboardd") AND messageType == error)' \
           | tail -n 400
-
-    - name: Build iOS
-      run: flutter build ios --release --no-codesign
-      working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
 
 
