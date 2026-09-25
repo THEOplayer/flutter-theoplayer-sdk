@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:theoplayer/src/abr/abr_api.dart';
 import 'package:theoplayer/src/debug/debug_flags_api.dart';
 import 'package:theoplayer/src/debug/debug_flags_panel.dart';
@@ -101,7 +100,7 @@ class THEOplayer implements EventDispatcher {
   int get id => _theoPlayerViewController?.id ?? -1;
 
   void _setupLifeCycleListeners() {
-    print("THEOplayer_$id: _setupLifeCycleListeners");
+    debugLog("THEOplayer_$id: _setupLifeCycleListeners");
     _lifecycleListener = AppLifecycleListener(onResume: () {
       _theoPlayerViewController?.onLifecycleResume();
     }, onPause: () {
@@ -694,7 +693,7 @@ class THEOplayer implements EventDispatcher {
   /// * [PresentationMode.PIP]: The player is shown in Picture-in-Picture mode. ONLY AVAILABLE ON WEB! For Android and iOS check [setAllowAutomaticPictureInPicture].
   set presentationMode(PresentationMode presentationMode) {
     if (!kIsWeb && presentationMode == PresentationMode.PIP) {
-      print("Programmatically setting Picture-in-Picture mode it not possible on ${defaultTargetPlatform.name}! Please check the `setAllowAutomaticPictureInPicture()` API.");
+      debugLog("Programmatically setting Picture-in-Picture mode it not possible on ${defaultTargetPlatform.name}! Please check the `setAllowAutomaticPictureInPicture()` API.");
       return;
     }
 
@@ -838,9 +837,6 @@ class THEOplayer implements EventDispatcher {
             }
             */
         }
-
-      default:
-        print("THEOplayer_$id: Unsupported presentationMode $presentationMode");
     }
   }
 
@@ -997,7 +993,6 @@ class _PlayerPlatformActivityServiceListener implements PlatformActivityServiceL
 /// We use this widget to present the player in "fullscreen" to make it fully visible in PiP without any UI elements
 class _FakePiPFullscreenWindow extends StatelessWidget {
   const _FakePiPFullscreenWindow({
-    super.key,
     required this.player,
   });
 

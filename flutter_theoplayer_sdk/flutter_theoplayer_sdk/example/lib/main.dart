@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:theoplayer/theoplayer.dart';
+import 'package:theoplayer_example/debug_log.dart';
 import 'package:theoplayer_example/player_widgets/current_time_widget.dart';
 import 'package:theoplayer_example/player_widgets/player_ui_widget.dart';
 import 'package:theoplayer_example/player_widgets/texture_widgets/aspect_ratio_chromeless_widget.dart';
@@ -8,7 +9,7 @@ import 'package:theoplayer_example/player_widgets/texture_widgets/aspect_ratio_c
 
 // use your THEOplayer Flutter license here from https://portal.theoplayer.com
 // without a license the player only accepts URLs from 'localhost' or 'theoplayer.com' domains
-const PLAYER_LICENSE = "";
+const playerLicense = "";
 
 void main() {
   runApp(const MyApp());
@@ -53,12 +54,12 @@ class _MyAppState extends State<MyApp> {
           );
         },
         theoPlayerConfig: THEOplayerConfig(
-            license: PLAYER_LICENSE,
+            license: playerLicense,
             // Extra THEOlive configuration:
             //theolive: TheoLiveConfiguration(externalSessionId: "mySessionID"),
             webConfiguration: WebConfig(libraryLocation: "/theoplayer")),
         onCreate: () {
-          print("main - THEOplayer - onCreate");
+          debugLog("main - THEOplayer - onCreate");
           player.autoplay = true;
           player.allowBackgroundPlayback = true;
           player.allowAutomaticPictureInPicture = true;
@@ -82,7 +83,7 @@ class _MyAppState extends State<MyApp> {
 
           player.addEventListener(PlayerEventTypes.PRESENTATIONMODECHANGE, (pmEvent) {
             var pmd = pmEvent as PresentationModeChangeEvent;
-            print("New presentation mode: ${pmd.presentationMode}");
+            debugLog("New presentation mode: ${pmd.presentationMode}");
           });
         });
   }
@@ -194,7 +195,7 @@ class _MyAppState extends State<MyApp> {
                               child: const Text("INLINE")),
                           FilledButton(
                               onPressed: () {
-                                player.getVideoTracks().first.targetQuality = player.getVideoTracks().first.qualities.first;
+                                player.videoTracks.first.targetQuality = player.videoTracks.first.qualities.first;
                               },
                               child: const Text("set video target quality")),
                           Column(
@@ -217,11 +218,11 @@ class _MyAppState extends State<MyApp> {
                                     if (track.type != TextTrackType.daterange) {
                                       return;
                                     }
-                                    print("Daterange track added: ${track.uid}");
+                                    debugLog("Daterange track added: ${track.uid}");
                                     track.addEventListener(TextTrackEventTypes.ADDCUE, (cueEvent) {
                                       final cue = (cueEvent as TextTrackAddCueEvent).cue;
                                       if (cue is DateRangeCue) {
-                                        print("DateRangeCue added: id=${cue.id}, startDate=${cue.startDate}, endDate=${cue.endDate}, "
+                                        debugLog("DateRangeCue added: id=${cue.id}, startDate=${cue.startDate}, endDate=${cue.endDate}, "
                                             "duration=${cue.duration}, class=${cue.cueClass}, customAttributes=${cue.customAttributes}");
                                       }
                                     });
@@ -244,22 +245,22 @@ class _MyAppState extends State<MyApp> {
                                    *
                                    *
                                   player.theoLive?.addEventListener(THEOliveApiEventTypes.DISTRIBUTIONLOADSTART, (e) {
-                                    print("DISTRIBUTIONLOADSTART");
+                                    debugLog("DISTRIBUTIONLOADSTART");
                                   });
                                   player.theoLive?.addEventListener(THEOliveApiEventTypes.DISTRIBUTIONOFFLINE, (e) {
-                                    print("DISTRIBUTIONOFFLINE");
+                                    debugLog("DISTRIBUTIONOFFLINE");
                                   });
                                   player.theoLive?.addEventListener(THEOliveApiEventTypes.ENDPOINTLOADED, (e) {
-                                    print("ENDPOINTLOADED");
+                                    debugLog("ENDPOINTLOADED");
                                   });
                                   player.theoLive?.addEventListener(THEOliveApiEventTypes.INTENTTOFALLBACK, (e) {
-                                    print("INTENTTOFALLBACK");
+                                    debugLog("INTENTTOFALLBACK");
                                   });
                                   player.theoLive?.addEventListener(THEOliveApiEventTypes.ENTERBADNETWORKMODE, (e) {
-                                    print("ENTERBADNETWORKMODE");
+                                    debugLog("ENTERBADNETWORKMODE");
                                   });
                                   player.theoLive?.addEventListener(THEOliveApiEventTypes.EXITBADNETWORKMODE, (e) {
-                                    print("EXITBADNETWORKMODE");
+                                    debugLog("EXITBADNETWORKMODE");
                                   });
                                    */
 
@@ -338,39 +339,39 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> logApiCalls() async {
-    print("source: ${player.source}");
-    print("isAutoplay: ${player.isAutoplay}");
-    print("isPaused: ${player.isPaused}");
-    print("currentTime: ${player.currentTime}");
-    print("currentProgramDateTIme: ${player.currentProgramDateTime}");
-    print("duration: ${player.duration}");
-    print("playbackRate: ${player.playbackRate}");
-    print("volume: ${player.volume}");
-    print("isMuted: ${player.isMuted}");
-    print("preload: ${player.preload}");
-    print("readyState: ${player.readyState}");
-    print("isSeeking: ${player.isSeeking}");
-    print("isEnded: ${player.isEnded}");
-    print("videoHeight: ${player.videoHeight}");
-    print("videoWidth: ${player.videoWidth}");
-    print("buffered: ${player.buffered}");
-    print("seekable: ${player.seekable}");
-    print("played: ${(player.played)}");
-    print("error: ${player.error}");
-    print("audio target quality: ${player.audioTracks.first.targetQuality?.uid}");
-    print("audio active quality: ${player.audioTracks.first.activeQuality?.uid}");
-    print("video target quality: ${player.videoTracks.first.targetQuality?.uid}");
-    print("video active quality: ${player.videoTracks.first.activeQuality?.uid}");
-    print("allowBackgroundPlayback: ${player.allowBackgroundPlayback}");
+    debugLog("source: ${player.source}");
+    debugLog("isAutoplay: ${player.isAutoplay}");
+    debugLog("isPaused: ${player.isPaused}");
+    debugLog("currentTime: ${player.currentTime}");
+    debugLog("currentProgramDateTIme: ${player.currentProgramDateTime}");
+    debugLog("duration: ${player.duration}");
+    debugLog("playbackRate: ${player.playbackRate}");
+    debugLog("volume: ${player.volume}");
+    debugLog("isMuted: ${player.isMuted}");
+    debugLog("preload: ${player.preload}");
+    debugLog("readyState: ${player.readyState}");
+    debugLog("isSeeking: ${player.isSeeking}");
+    debugLog("isEnded: ${player.isEnded}");
+    debugLog("videoHeight: ${player.videoHeight}");
+    debugLog("videoWidth: ${player.videoWidth}");
+    debugLog("buffered: ${player.buffered}");
+    debugLog("seekable: ${player.seekable}");
+    debugLog("played: ${(player.played)}");
+    debugLog("error: ${player.error}");
+    debugLog("audio target quality: ${player.audioTracks.first.targetQuality?.uid}");
+    debugLog("audio active quality: ${player.audioTracks.first.activeQuality?.uid}");
+    debugLog("video target quality: ${player.videoTracks.first.targetQuality?.uid}");
+    debugLog("video active quality: ${player.videoTracks.first.activeQuality?.uid}");
+    debugLog("allowBackgroundPlayback: ${player.allowBackgroundPlayback}");
 
     if (kIsWeb) {
-      print("theolive distributionState: ${player.theoLive?.distributionState}");
-      print("theolive badnetwork: ${player.theoLive?.badNetworkMode}");
+      debugLog("theolive distributionState: ${player.theoLive?.distributionState}");
+      debugLog("theolive badnetwork: ${player.theoLive?.badNetworkMode}");
     }
   }
 
   Future<void> _licenseConfigCheckDialog(BuildContext context) async {
-    if (PLAYER_LICENSE != "") {
+    if (playerLicense != "") {
       //ok
       return;
     }

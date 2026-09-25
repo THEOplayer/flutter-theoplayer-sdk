@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
@@ -331,13 +330,13 @@ void main() {
       api = THEOplayerNativeAPI();
     });
 
-    tearDown() {
+    tearDown(() {
       // Clean up all registered channels
       for (final channel in registeredChannels) {
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler(channel, null);
       }
       registeredChannels.clear();
-    }
+    });
 
     void registerMockHandler(String channelName, Future<ByteData?> Function(ByteData?) handler) {
       registeredChannels.add(channelName);

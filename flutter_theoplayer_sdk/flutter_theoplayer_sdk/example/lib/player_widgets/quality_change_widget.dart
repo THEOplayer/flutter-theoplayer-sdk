@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:theoplayer/theoplayer.dart';
+import 'package:theoplayer_example/debug_log.dart';
 
 class QualityChangeWidget extends StatefulWidget {
   const QualityChangeWidget({
@@ -24,26 +25,26 @@ class _QualityChangeState extends State<QualityChangeWidget> {
 
   void addAudioTrackListener(Event event) {
     var addEvent = event as AddAudioTrackEvent;
-    print("addAudioTrack ${addEvent.track.uid}");
+    debugLog("addAudioTrack ${addEvent.track.uid}");
     for (var quality in addEvent.track.qualities) {
-      print("addAudioTrack quality uid=${quality.uid} bw=${quality.bandwidth} name=${quality.name}");
+      debugLog("addAudioTrack quality uid=${quality.uid} bw=${quality.bandwidth} name=${quality.name}");
     }
     addEvent.track.addEventListener(AudioTrackEventTypes.ACTIVEQUALITYCHANGED, activeAudioQualityListener);
   }
 
   void addVideoTrackListener(Event event) {
     var addEvent = event as AddVideoTrackEvent;
-    print("addVideoTrack ${addEvent.track.uid}");
+    debugLog("addVideoTrack ${addEvent.track.uid}");
     for (var quality in addEvent.track.qualities) {
-      var vq = quality as VideoQuality;
-      print("addVideoTrack quality uid=${vq.uid} bw=${vq.bandwidth} ${vq.width}x${vq.height} name=${vq.name}");
+      var vq = quality;
+      debugLog("addVideoTrack quality uid=${vq.uid} bw=${vq.bandwidth} ${vq.width}x${vq.height} name=${vq.name}");
     }
     addEvent.track.addEventListener(VideoTrackEventTypes.ACTIVEQUALITYCHANGED, activeVideoQualityListener);
   }
 
   void activeAudioQualityListener(Event event) {
     var e = event as AudioActiveQualityChangedEvent;
-    print("activeAudioQuality changed: uid=${e.quality.uid} bw=${e.quality.bandwidth} name=${e.quality.name}");
+    debugLog("activeAudioQuality changed: uid=${e.quality.uid} bw=${e.quality.bandwidth} name=${e.quality.name}");
     setState(() {
       _activeAudioQuality = e.quality;
     });
@@ -51,7 +52,7 @@ class _QualityChangeState extends State<QualityChangeWidget> {
 
   void activeVideoQualityListener(Event event) {
     var e = event as VideoActiveQualityChangedEvent;
-    print("activeVideoQuality changed: uid=${e.quality.uid} bw=${e.quality.bandwidth} ${e.quality.width}x${e.quality.height} name=${e.quality.name}");
+    debugLog("activeVideoQuality changed: uid=${e.quality.uid} bw=${e.quality.bandwidth} ${e.quality.width}x${e.quality.height} name=${e.quality.name}");
     setState(() {
       _activeVideoQuality = e.quality;
     });
@@ -61,23 +62,23 @@ class _QualityChangeState extends State<QualityChangeWidget> {
   void initState() {
     super.initState();
 
-    _activeAudioQuality = widget.player.getAudioTracks().firstWhereOrNull((track) => track.isEnabled)?.activeQuality;
-    _activeVideoQuality = widget.player.getVideoTracks().firstWhereOrNull((track) => track.isEnabled)?.activeQuality;
+    _activeAudioQuality = widget.player.audioTracks.firstWhereOrNull((track) => track.isEnabled)?.activeQuality;
+    _activeVideoQuality = widget.player.videoTracks.firstWhereOrNull((track) => track.isEnabled)?.activeQuality;
 
-    widget.player.getAudioTracks().addEventListener(AudioTracksEventTypes.ADDTRACK, addAudioTrackListener);
-    widget.player.getVideoTracks().addEventListener(VideoTracksEventTypes.ADDTRACK, addVideoTrackListener);
+    widget.player.audioTracks.addEventListener(AudioTracksEventTypes.ADDTRACK, addAudioTrackListener);
+    widget.player.videoTracks.addEventListener(VideoTracksEventTypes.ADDTRACK, addVideoTrackListener);
   }
 
   @override
   void dispose() {
-    widget.player.getAudioTracks().removeEventListener(AudioTracksEventTypes.ADDTRACK, addAudioTrackListener);
-    widget.player.getAudioTracks().forEach((element) {
+    widget.player.audioTracks.removeEventListener(AudioTracksEventTypes.ADDTRACK, addAudioTrackListener);
+    for (final element in widget.player.audioTracks) {
       element.removeEventListener(AudioTrackEventTypes.ACTIVEQUALITYCHANGED, activeAudioQualityListener);
-    });
-    widget.player.getVideoTracks().removeEventListener(VideoTracksEventTypes.ADDTRACK, addVideoTrackListener);
-    widget.player.getVideoTracks().forEach((element) {
+    }
+    widget.player.videoTracks.removeEventListener(VideoTracksEventTypes.ADDTRACK, addVideoTrackListener);
+    for (final element in widget.player.videoTracks) {
       element.removeEventListener(VideoTrackEventTypes.ACTIVEQUALITYCHANGED, activeVideoQualityListener);
-    });
+    }
     super.dispose();
   }
 

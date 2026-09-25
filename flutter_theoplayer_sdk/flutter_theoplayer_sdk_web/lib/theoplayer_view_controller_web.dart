@@ -423,8 +423,6 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
             print('Error when requestPictureInPicture() , $e');
           }
         }
-      default:
-        print("Unsupported presentationMode $presentationMode");
     }
   }
 
@@ -456,24 +454,9 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   }
 }
 
-extension on HTMLElement {
-  external JSPromise<JSAny?> requestFullscreen();
-}
-
-extension on HTMLVideoElement {
-  external JSPromise<JSAny?> requestPictureInPicture();
-}
-
-extension on VideoElement {
-  external JSPromise<JSAny?> requestPictureInPicture();
-}
-
 extension on Document {
   external HTMLElement? fullscreenElement;
   external HTMLElement? pictureInPictureElement;
-
-  external JSPromise<JSAny?> exitFullscreen();
-  external JSPromise<JSAny?> exitPictureInPicture();
 }
 
 class WebEventTypes {

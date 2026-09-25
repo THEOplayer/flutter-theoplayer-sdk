@@ -1,5 +1,4 @@
 import 'package:flutter/services.dart';
-import 'package:flutter/widgets.dart';
 import 'package:theoplayer_platform_interface/platform/platform_helper_channels.dart';
 
 /// Provides access to the platform views service.

@@ -11,7 +11,8 @@ class PigeonBinaryMessengerWrapper implements BinaryMessenger {
 
   @override
   Future<void> handlePlatformMessage(String channel, ByteData? data, ui.PlatformMessageResponseCallback? callback) {
-    return _binaryMessenger.handlePlatformMessage("$channel/$_channelSuffix", data, callback);
+    ServicesBinding.instance.channelBuffers.push("$channel/$_channelSuffix", data, callback ?? (_) {});
+    return Future<void>.value();
   }
 
   @override

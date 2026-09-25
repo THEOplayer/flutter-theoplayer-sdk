@@ -29,8 +29,8 @@ class _FullscreenStatefulWidgetState extends State<AspectRatioCustomFullscreenWi
   @override
   void initState() {
     super.initState();
-    var initialVideoWidth = widget.theoplayer.getVideoWidth();
-    var initialVideoHeight = widget.theoplayer.getVideoHeight();
+    var initialVideoWidth = widget.theoplayer.videoWidth;
+    var initialVideoHeight = widget.theoplayer.videoHeight;
     if (initialVideoWidth != 0 && initialVideoHeight != 0) {
       currentAspectRatio = initialVideoWidth / initialVideoHeight;
     }
@@ -79,32 +79,50 @@ class _FullscreenStatefulWidgetState extends State<AspectRatioCustomFullscreenWi
 }
 
 // Custom WillPopScope, because the original WillPopScope breaks the back navigation on iOS
-class CustomWillPopScope extends StatelessWidget {
+class CustomWillPopScope extends StatefulWidget {
   const CustomWillPopScope({required this.child, required this.onWillPop, Key? key}) : super(key: key);
 
   final Widget child;
-  final WillPopCallback onWillPop;
+  final Future<bool> Function() onWillPop;
+
+  @override
+  State<CustomWillPopScope> createState() => _CustomWillPopScopeState();
+}
+
+class _CustomWillPopScopeState extends State<CustomWillPopScope> {
+  bool _canPop = false;
+
+  Future<void> _handlePop() async {
+    if (!await widget.onWillPop() || !mounted) {
+      return;
+    }
+    setState(() {
+      _canPop = true;
+    });
+    Navigator.of(context).pop();
+  }
 
   @override
   Widget build(BuildContext context) {
-    if (!kIsWeb) {
-      if (Platform.isIOS) {
-        return GestureDetector(
-            onPanUpdate: (details) async {
-              if (details.delta.dx > 0) {
-                if (await onWillPop()) {
-                  Navigator.of(context).pop();
-                }
-              }
-            },
-            child: WillPopScope(
-              onWillPop: () async {
-                return false;
-              },
-              child: child,
-            ));
-      }
+    final popScope = PopScope(
+      canPop: _canPop,
+      onPopInvokedWithResult: (didPop, result) async {
+        if (!didPop) {
+          await _handlePop();
+        }
+      },
+      child: widget.child,
+    );
+    if (!kIsWeb && Platform.isIOS) {
+      return GestureDetector(
+        onPanUpdate: (details) async {
+          if (details.delta.dx > 0) {
+            await _handlePop();
+          }
+        },
+        child: popScope,
+      );
     }
-    return WillPopScope(onWillPop: onWillPop, child: child);
+    return popScope;
   }
 }
