@@ -59,6 +59,7 @@ jobs:
       with:
         model: 'iPhone 17'
         os_version: '>=18.5'
+        # Starting tests before CoreSimulator is fully ready can leave `flutter test` hanging after the Xcode build.
         wait_for_boot: true
 
     - name: Run integration tests
@@ -66,9 +67,11 @@ jobs:
       timeout-minutes: 25
       run: |
         flutter_args=()
+        # Verbose output is useful for diagnosing manual runs but adds thousands of lines to regular PR logs.
         if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
           flutter_args+=(--verbose)
         fi
+        # Use the simulator selected and booted above instead of relying on Flutter's device discovery.
         flutter test integration_test_single_entrypoint/entrypoint.dart \
           -d '${{ steps.simulator.outputs.udid }}' \
           "${flutter_args[@]}"
