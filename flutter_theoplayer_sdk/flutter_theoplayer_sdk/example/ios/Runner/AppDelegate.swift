@@ -3,6 +3,7 @@ import Flutter
 import THEOplayerSDK
 
 @main
+// FlutterImplicitEngineDelegate registers plugins after the implicit engine initializes, as required by the UIScene lifecycle.
 @objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   override func application(
     _ application: UIApplication,
