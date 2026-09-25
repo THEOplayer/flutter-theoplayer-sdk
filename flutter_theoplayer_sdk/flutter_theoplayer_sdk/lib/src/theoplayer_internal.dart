@@ -994,7 +994,6 @@ class _PlayerPlatformActivityServiceListener implements PlatformActivityServiceL
 /// We use this widget to present the player in "fullscreen" to make it fully visible in PiP without any UI elements
 class _FakePiPFullscreenWindow extends StatelessWidget {
   const _FakePiPFullscreenWindow({
-    super.key,
     required this.player,
   });
 
