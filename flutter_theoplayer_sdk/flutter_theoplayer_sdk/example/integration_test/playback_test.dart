@@ -138,8 +138,8 @@ Future<void> runBasicPlaybackTest(WidgetTester tester, AndroidViewComposition an
 
   await tester.pumpAndSettle(const Duration(seconds: 10));
 
-  debugLog("Testing playback duration():  ${player.getDuration()}");
-  expect(player.getDuration() >= 0, isTrue);
+  debugLog("Testing playback duration():  ${player.duration}");
+  expect(player.duration >= 0, isTrue);
 
   debugLog("Testing playback currentTime():  ${player.currentTime}");
   expect(player.currentTime >= 5, isTrue);
@@ -218,11 +218,11 @@ Future<void> runBasicTHEOlivePlaybackTest(WidgetTester tester, AndroidViewCompos
   debugLog("Testing channel state :  ${player.theoLive!.distributionState}");
   expect(player.theoLive?.distributionState == DistributionState.loaded, isTrue);
 
-  debugLog("Testing playback duration():  ${player.getDuration()}");
-  expect(player.getDuration() == double.infinity, isTrue);
+  debugLog("Testing playback duration():  ${player.duration}");
+  expect(player.duration == double.infinity, isTrue);
 
-  debugLog("Testing playback currentTime():  ${player.getCurrentTime()}");
-  expect(player.getCurrentTime() >= 0, isTrue);
+  debugLog("Testing playback currentTime():  ${player.currentTime}");
+  expect(player.currentTime >= 0, isTrue);
 }
 
 Future<void> runVideoTrackEventsTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
