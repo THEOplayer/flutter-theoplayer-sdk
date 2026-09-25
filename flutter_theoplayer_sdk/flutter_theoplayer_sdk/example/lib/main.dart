@@ -9,7 +9,7 @@ import 'package:theoplayer_example/player_widgets/texture_widgets/aspect_ratio_c
 
 // use your THEOplayer Flutter license here from https://portal.theoplayer.com
 // without a license the player only accepts URLs from 'localhost' or 'theoplayer.com' domains
-const PLAYER_LICENSE = "";
+const playerLicense = "";
 
 void main() {
   runApp(const MyApp());
@@ -54,7 +54,7 @@ class _MyAppState extends State<MyApp> {
           );
         },
         theoPlayerConfig: THEOplayerConfig(
-            license: PLAYER_LICENSE,
+            license: playerLicense,
             // Extra THEOlive configuration:
             //theolive: TheoLiveConfiguration(externalSessionId: "mySessionID"),
             webConfiguration: WebConfig(libraryLocation: "/theoplayer")),
@@ -371,7 +371,7 @@ class _MyAppState extends State<MyApp> {
   }
 
   Future<void> _licenseConfigCheckDialog(BuildContext context) async {
-    if (PLAYER_LICENSE != "") {
+    if (playerLicense != "") {
       //ok
       return;
     }
