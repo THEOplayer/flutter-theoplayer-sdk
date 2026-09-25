@@ -13,7 +13,7 @@ THEOplayer Flutter iOS SDK
   s.license          = { :file => '../LICENSE' }
   s.author           = { 'THEO Technologies' => 'support@theoplayer.com' }
   s.source           = { :path => '.' }
-  s.source_files = 'Classes/**/*'
+  s.source_files = 'theoplayer_ios/Sources/theoplayer_ios/**/*'
   s.dependency 'Flutter'
 
   s.platform = :ios, '15.0'
