@@ -838,9 +838,6 @@ class THEOplayer implements EventDispatcher {
             }
             */
         }
-
-      default:
-        print("THEOplayer_$id: Unsupported presentationMode $presentationMode");
     }
   }
 
