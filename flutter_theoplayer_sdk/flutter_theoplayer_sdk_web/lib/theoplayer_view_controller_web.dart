@@ -454,10 +454,6 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   }
 }
 
-extension on HTMLVideoElement {
-  external JSPromise<JSAny?> requestPictureInPicture();
-}
-
 extension on VideoElement {
   external JSPromise<JSAny?> requestPictureInPicture();
 }
