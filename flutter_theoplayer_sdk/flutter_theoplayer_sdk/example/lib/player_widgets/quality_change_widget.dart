@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:theoplayer/theoplayer.dart';
+import 'package:theoplayer_example/debug_log.dart';
 
 class QualityChangeWidget extends StatefulWidget {
   const QualityChangeWidget({
@@ -24,26 +25,26 @@ class _QualityChangeState extends State<QualityChangeWidget> {
 
   void addAudioTrackListener(Event event) {
     var addEvent = event as AddAudioTrackEvent;
-    print("addAudioTrack ${addEvent.track.uid}");
+    debugLog("addAudioTrack ${addEvent.track.uid}");
     for (var quality in addEvent.track.qualities) {
-      print("addAudioTrack quality uid=${quality.uid} bw=${quality.bandwidth} name=${quality.name}");
+      debugLog("addAudioTrack quality uid=${quality.uid} bw=${quality.bandwidth} name=${quality.name}");
     }
     addEvent.track.addEventListener(AudioTrackEventTypes.ACTIVEQUALITYCHANGED, activeAudioQualityListener);
   }
 
   void addVideoTrackListener(Event event) {
     var addEvent = event as AddVideoTrackEvent;
-    print("addVideoTrack ${addEvent.track.uid}");
+    debugLog("addVideoTrack ${addEvent.track.uid}");
     for (var quality in addEvent.track.qualities) {
       var vq = quality;
-      print("addVideoTrack quality uid=${vq.uid} bw=${vq.bandwidth} ${vq.width}x${vq.height} name=${vq.name}");
+      debugLog("addVideoTrack quality uid=${vq.uid} bw=${vq.bandwidth} ${vq.width}x${vq.height} name=${vq.name}");
     }
     addEvent.track.addEventListener(VideoTrackEventTypes.ACTIVEQUALITYCHANGED, activeVideoQualityListener);
   }
 
   void activeAudioQualityListener(Event event) {
     var e = event as AudioActiveQualityChangedEvent;
-    print("activeAudioQuality changed: uid=${e.quality.uid} bw=${e.quality.bandwidth} name=${e.quality.name}");
+    debugLog("activeAudioQuality changed: uid=${e.quality.uid} bw=${e.quality.bandwidth} name=${e.quality.name}");
     setState(() {
       _activeAudioQuality = e.quality;
     });
@@ -51,7 +52,7 @@ class _QualityChangeState extends State<QualityChangeWidget> {
 
   void activeVideoQualityListener(Event event) {
     var e = event as VideoActiveQualityChangedEvent;
-    print("activeVideoQuality changed: uid=${e.quality.uid} bw=${e.quality.bandwidth} ${e.quality.width}x${e.quality.height} name=${e.quality.name}");
+    debugLog("activeVideoQuality changed: uid=${e.quality.uid} bw=${e.quality.bandwidth} ${e.quality.width}x${e.quality.height} name=${e.quality.name}");
     setState(() {
       _activeVideoQuality = e.quality;
     });

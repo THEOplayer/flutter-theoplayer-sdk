@@ -4,6 +4,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:theoplayer/theoplayer.dart';
 
 import '../integration_test_app/test_app.dart';
+import 'package:theoplayer_example/debug_log.dart';
 
 const daterangeStream = "https://cdn.theoplayer.com/video/star_wars_episode_vii-the_force_awakens_official_comic-con_2015_reel_(2015)/daterange-test.m3u8";
 
@@ -66,34 +67,34 @@ Future<void> runDateRangeCueTest(WidgetTester tester, AndroidViewComposition and
 
   player.textTracks.addEventListener(TextTracksEventTypes.ADDTRACK, (event) {
     final track = (event as AddTextTrackEvent).track;
-    print("Received text ADDTRACK event, type: ${track.type}");
+    debugLog("Received text ADDTRACK event, type: ${track.type}");
     if (track.type != TextTrackType.daterange) {
       return;
     }
     track.addEventListener(TextTrackEventTypes.ADDCUE, (cueEvent) {
       final cue = (cueEvent as TextTrackAddCueEvent).cue;
-      print("Received daterange ADDCUE event, cue: ${cue.id}");
+      debugLog("Received daterange ADDCUE event, cue: ${cue.id}");
       if (cue is DateRangeCue && cue.id == testCueId) {
         testCue = cue;
       }
     });
     track.addEventListener(TextTrackEventTypes.ENTERCUE, (cueEvent) {
       final cue = (cueEvent as TextTrackEnterCueEvent).cue;
-      print("Received daterange ENTERCUE event, cue: ${cue.id}");
+      debugLog("Received daterange ENTERCUE event, cue: ${cue.id}");
       if (cue.id == testCueId) {
         enteredTestCue = true;
       }
     });
     track.addEventListener(TextTrackEventTypes.EXITCUE, (cueEvent) {
       final cue = (cueEvent as TextTrackExitCueEvent).cue;
-      print("Received daterange EXITCUE event, cue: ${cue.id}");
+      debugLog("Received daterange EXITCUE event, cue: ${cue.id}");
       if (cue.id == testCueId) {
         exitedTestCue = true;
       }
     });
   });
 
-  print("Setting daterange source with hlsDateRange enabled");
+  debugLog("Setting daterange source with hlsDateRange enabled");
   player.source = SourceDescription(sources: [
     TypedSource(src: daterangeStream, hlsDateRange: true),
   ]);
@@ -102,11 +103,11 @@ Future<void> runDateRangeCueTest(WidgetTester tester, AndroidViewComposition and
   expect(testCue, isNotNull, reason: "DateRangeCue '$testCueId' should arrive on a daterange text track");
 
   final cue = testCue!;
-  print("Testing daterange cue fields");
-  print("  id: ${cue.id}, uid: ${cue.uid}, startTime: ${cue.startTime}, endTime: ${cue.endTime}");
-  print("  startDate: ${cue.startDate}, endDate: ${cue.endDate}, duration: ${cue.duration}, plannedDuration: ${cue.plannedDuration}");
-  print("  cueClass: ${cue.cueClass}, endOnNext: ${cue.endOnNext}, customAttributes: ${cue.customAttributes}");
-  print("  scte35Cmd: ${cue.scte35Cmd?.length}, scte35Out: ${cue.scte35Out?.length}, scte35In: ${cue.scte35In?.length}");
+  debugLog("Testing daterange cue fields");
+  debugLog("  id: ${cue.id}, uid: ${cue.uid}, startTime: ${cue.startTime}, endTime: ${cue.endTime}");
+  debugLog("  startDate: ${cue.startDate}, endDate: ${cue.endDate}, duration: ${cue.duration}, plannedDuration: ${cue.plannedDuration}");
+  debugLog("  cueClass: ${cue.cueClass}, endOnNext: ${cue.endOnNext}, customAttributes: ${cue.customAttributes}");
+  debugLog("  scte35Cmd: ${cue.scte35Cmd?.length}, scte35Out: ${cue.scte35Out?.length}, scte35In: ${cue.scte35In?.length}");
 
   expect(cue.id, testCueId);
   expect(cue.cueClass, testCueClass);
@@ -125,7 +126,7 @@ Future<void> runDateRangeCueTest(WidgetTester tester, AndroidViewComposition and
 
   final dateRangeTracks = player.textTracks.where((track) => track.type == TextTrackType.daterange);
   expect(dateRangeTracks, isNotEmpty);
-  print("Testing cue is stored on the track, cue count: ${dateRangeTracks.first.cues.length}");
+  debugLog("Testing cue is stored on the track, cue count: ${dateRangeTracks.first.cues.length}");
   expect(dateRangeTracks.first.cues.where((trackCue) => trackCue.id == testCueId), isNotEmpty);
 
   // the cue is active between 10s and 15s of playback
@@ -140,7 +141,7 @@ Future<void> runDateRangeDisabledTest(WidgetTester tester, AndroidViewCompositio
   TestApp app = TestApp(androidViewComposition: androidViewComposition);
   final player = await _preparePlayer(tester, app);
 
-  print("Setting daterange source without hlsDateRange");
+  debugLog("Setting daterange source without hlsDateRange");
   player.source = SourceDescription(sources: [
     TypedSource(src: daterangeStream),
   ]);
@@ -148,7 +149,7 @@ Future<void> runDateRangeDisabledTest(WidgetTester tester, AndroidViewCompositio
   await tester.pumpAndSettle(const Duration(seconds: 10));
 
   final dateRangeTracks = player.textTracks.where((track) => track.type == TextTrackType.daterange);
-  print("Testing no daterange cues arrive, daterange track count: ${dateRangeTracks.length}");
+  debugLog("Testing no daterange cues arrive, daterange track count: ${dateRangeTracks.length}");
   final cueCount = dateRangeTracks.fold(0, (count, track) => count + track.cues.length);
   expect(cueCount, 0, reason: "No DateRangeCues should arrive when hlsDateRange is not enabled");
 }
