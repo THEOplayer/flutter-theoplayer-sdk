@@ -457,8 +457,6 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
 extension on Document {
   external HTMLElement? fullscreenElement;
   external HTMLElement? pictureInPictureElement;
-
-  external JSPromise<JSAny?> exitPictureInPicture();
 }
 
 class WebEventTypes {
