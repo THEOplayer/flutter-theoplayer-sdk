@@ -8,7 +8,6 @@ import 'package:theoplayer_platform_interface/theoplayer_event_manager.dart';
 import 'package:theoplayer_platform_interface/theoplayer_events.dart';
 import 'package:theoplayer_web/theoplayer_api_event_web.dart';
 import 'package:theoplayer_web/theoplayer_api_web.dart';
-import 'package:theoplayer_web/theoplayer_js_helpers_web.dart';
 
 class THEOliveControllerWeb extends THEOliveInternalInterface {
   final THEOplayerTheoLiveApi _theoLiveApi;
