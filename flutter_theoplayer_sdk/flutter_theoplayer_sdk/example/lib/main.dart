@@ -195,7 +195,7 @@ class _MyAppState extends State<MyApp> {
                               child: const Text("INLINE")),
                           FilledButton(
                               onPressed: () {
-                                player.getVideoTracks().first.targetQuality = player.getVideoTracks().first.qualities.first;
+                                player.videoTracks.first.targetQuality = player.videoTracks.first.qualities.first;
                               },
                               child: const Text("set video target quality")),
                           Column(

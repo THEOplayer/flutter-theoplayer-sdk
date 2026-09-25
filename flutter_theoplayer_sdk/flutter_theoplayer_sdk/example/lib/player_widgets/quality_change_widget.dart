@@ -62,21 +62,21 @@ class _QualityChangeState extends State<QualityChangeWidget> {
   void initState() {
     super.initState();
 
-    _activeAudioQuality = widget.player.getAudioTracks().firstWhereOrNull((track) => track.isEnabled)?.activeQuality;
-    _activeVideoQuality = widget.player.getVideoTracks().firstWhereOrNull((track) => track.isEnabled)?.activeQuality;
+    _activeAudioQuality = widget.player.audioTracks.firstWhereOrNull((track) => track.isEnabled)?.activeQuality;
+    _activeVideoQuality = widget.player.videoTracks.firstWhereOrNull((track) => track.isEnabled)?.activeQuality;
 
-    widget.player.getAudioTracks().addEventListener(AudioTracksEventTypes.ADDTRACK, addAudioTrackListener);
-    widget.player.getVideoTracks().addEventListener(VideoTracksEventTypes.ADDTRACK, addVideoTrackListener);
+    widget.player.audioTracks.addEventListener(AudioTracksEventTypes.ADDTRACK, addAudioTrackListener);
+    widget.player.videoTracks.addEventListener(VideoTracksEventTypes.ADDTRACK, addVideoTrackListener);
   }
 
   @override
   void dispose() {
-    widget.player.getAudioTracks().removeEventListener(AudioTracksEventTypes.ADDTRACK, addAudioTrackListener);
-    widget.player.getAudioTracks().forEach((element) {
+    widget.player.audioTracks.removeEventListener(AudioTracksEventTypes.ADDTRACK, addAudioTrackListener);
+    widget.player.audioTracks.forEach((element) {
       element.removeEventListener(AudioTrackEventTypes.ACTIVEQUALITYCHANGED, activeAudioQualityListener);
     });
-    widget.player.getVideoTracks().removeEventListener(VideoTracksEventTypes.ADDTRACK, addVideoTrackListener);
-    widget.player.getVideoTracks().forEach((element) {
+    widget.player.videoTracks.removeEventListener(VideoTracksEventTypes.ADDTRACK, addVideoTrackListener);
+    widget.player.videoTracks.forEach((element) {
       element.removeEventListener(VideoTrackEventTypes.ACTIVEQUALITYCHANGED, activeVideoQualityListener);
     });
     super.dispose();
