@@ -100,7 +100,7 @@ class THEOplayer implements EventDispatcher {
   int get id => _theoPlayerViewController?.id ?? -1;
 
   void _setupLifeCycleListeners() {
-    print("THEOplayer_$id: _setupLifeCycleListeners");
+    debugLog("THEOplayer_$id: _setupLifeCycleListeners");
     _lifecycleListener = AppLifecycleListener(onResume: () {
       _theoPlayerViewController?.onLifecycleResume();
     }, onPause: () {
@@ -693,7 +693,7 @@ class THEOplayer implements EventDispatcher {
   /// * [PresentationMode.PIP]: The player is shown in Picture-in-Picture mode. ONLY AVAILABLE ON WEB! For Android and iOS check [setAllowAutomaticPictureInPicture].
   set presentationMode(PresentationMode presentationMode) {
     if (!kIsWeb && presentationMode == PresentationMode.PIP) {
-      print("Programmatically setting Picture-in-Picture mode it not possible on ${defaultTargetPlatform.name}! Please check the `setAllowAutomaticPictureInPicture()` API.");
+      debugLog("Programmatically setting Picture-in-Picture mode it not possible on ${defaultTargetPlatform.name}! Please check the `setAllowAutomaticPictureInPicture()` API.");
       return;
     }
 
