@@ -331,13 +331,13 @@ void main() {
       api = THEOplayerNativeAPI();
     });
 
-    tearDown() {
+    tearDown(() {
       // Clean up all registered channels
       for (final channel in registeredChannels) {
         TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger.setMockMessageHandler(channel, null);
       }
       registeredChannels.clear();
-    }
+    });
 
     void registerMockHandler(String channelName, Future<ByteData?> Function(ByteData?) handler) {
       registeredChannels.add(channelName);
