@@ -1,0 +1,3 @@
+analyzer:
+  exclude:
+    - pigeons/pigeon_config.dart
