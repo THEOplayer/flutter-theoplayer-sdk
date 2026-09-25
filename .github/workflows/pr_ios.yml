@@ -54,15 +54,24 @@ jobs:
       working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk
 
     - name: Start iOS simulator
+      id: simulator
       uses: futureware-tech/simulator-action@v5
       with:
         model: 'iPhone 17'
         os_version: '>=18.5'
+        wait_for_boot: true
 
     - name: Run integration tests
       # `flutter test` sometimes never gets past app launch on the simulator and produces no output.
       timeout-minutes: 25
-      run: flutter test integration_test_single_entrypoint/entrypoint.dart
+      run: |
+        flutter_args=()
+        if [ "$GITHUB_EVENT_NAME" = "workflow_dispatch" ]; then
+          flutter_args+=(--verbose)
+        fi
+        flutter test integration_test_single_entrypoint/entrypoint.dart \
+          -d '${{ steps.simulator.outputs.udid }}' \
+          "${flutter_args[@]}"
       working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
       env:
         TEST_LICENSE: ${{ secrets.TEST_LICENSE }}
