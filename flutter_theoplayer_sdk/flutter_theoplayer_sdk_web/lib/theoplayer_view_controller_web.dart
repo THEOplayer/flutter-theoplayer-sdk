@@ -423,8 +423,6 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
             print('Error when requestPictureInPicture() , $e');
           }
         }
-      default:
-        print("Unsupported presentationMode $presentationMode");
     }
   }
 
