@@ -1,10 +1,12 @@
-## Unreleased
+## 11.10.2
 
-* Added support for HLS `EXT-X-DATERANGE` tags: a new `hlsDateRange` flag on `THEOplayerConfig` and `TypedSource` (source-level overrides player-level), exposing the parsed date ranges as `DateRangeCue`s on the TextTracks API.
+* Updated THEOplayer to 11.10.2.
 
 ## 11.10.0
 
 * Updated THEOplayer to 11.10.0.
+* Added support for HLS `EXT-X-DATERANGE` tags: a new `hlsDateRange` flag on `THEOplayerConfig` and `TypedSource` (source-level overrides player-level), exposing the parsed date ranges as `DateRangeCue`s on the TextTracks API.
+* Forwarded native daterange cue updates to Flutter: `DateRangeCue` fields are now refreshed and a `CueUpdateEvent` is dispatched when a daterange cue updates.
 
 ## 11.1.0
 
