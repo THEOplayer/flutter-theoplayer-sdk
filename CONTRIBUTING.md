@@ -60,6 +60,16 @@ For a bigger sub-API (like ABR or THEOlive), the pattern is:
 3. A `XxxControllerMobile` (platform interface) + `XxxControllerWeb` (web package).
 4. Exposure via the `THEOplayerViewController` interface (`getXxx()`) and a holder/facade on `THEOplayer`, wired up in the `THEOplayer` constructor's `onCreated` callback.
 
+## Preparing a release
+
+Run the **Prepare release** workflow manually from the `develop` branch and provide the exact stable THEOplayer SDK version to release. The requested version must be newer than the current Flutter SDK and available for Android, iOS core, the iOS THEOlive integration, Web, and in the official THEOplayer changelog. It does not have to be the latest available native SDK version.
+
+Before preparing a release, merge the latest `main` branch back into `develop`. The workflow verifies this, creates `release/x.y.z`, updates the native dependencies and all five Flutter packages, moves `Unreleased` changelog entries into the release section, runs formatting, analysis, tests and platform builds, and opens a pull request against `main`.
+
+The workflow requires a repository-scoped GitHub App with Contents and Pull requests read/write access. Configure its client ID as the `RELEASE_APP_CLIENT_ID` repository variable and its private key as the `RELEASE_APP_PRIVATE_KEY` repository secret.
+
+Merging, tagging, publishing to pub.dev, and merging `main` back into `develop` remain separate release steps.
+
 ## Pull-requests
 Before making a pull-request, please make sure:
 
