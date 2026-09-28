@@ -2,7 +2,8 @@
 set -euo pipefail
 
 SOURCE_SHA="${1:?Usage: scripts/check_release_diff.sh SOURCE_SHA}"
-changed_files=$(git diff --name-only "$SOURCE_SHA")
+git add -A
+changed_files=$(git diff --cached --name-only "$SOURCE_SHA")
 
 if [[ -z "$changed_files" ]]; then
   echo "::error::Release preparation produced no changes."
@@ -34,4 +35,4 @@ while IFS= read -r path; do
   esac
 done <<< "$changed_files"
 
-git diff --check "$SOURCE_SHA"
+git diff --cached --check "$SOURCE_SHA"
