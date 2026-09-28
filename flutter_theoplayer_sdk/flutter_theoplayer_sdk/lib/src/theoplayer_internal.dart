@@ -8,7 +8,6 @@ import 'package:theoplayer/src/abr/abr_api.dart';
 import 'package:theoplayer/src/debug/debug_flags_api.dart';
 import 'package:theoplayer/src/debug/debug_flags_panel.dart';
 import 'package:theoplayer/src/theolive/theolive_wrapper.dart';
-import 'package:theoplayer_platform_interface/pigeon_binary_messenger_wrapper.dart';
 import 'package:theoplayer/src/widget/fullscreen_widget.dart';
 import 'package:theoplayer/src/widget/presentationmode_aware_widget.dart';
 import 'package:theoplayer_platform_interface/helpers/logger.dart';
@@ -83,7 +82,7 @@ class THEOplayer implements EventDispatcher {
           _audioTrackListHolder.setup(viewController.getAudioTracks());
           _videoTrackListHolder.setup(viewController.getVideoTracks());
           _theoLiveAPIHolder.setup(viewController.getTheoLive());
-          _debugFlagsAPI.setup(THEOplayerNativeDebugFlagsAPI(binaryMessenger: PigeonBinaryMessengerWrapper(suffix: viewController.channelSuffix)));
+          _debugFlagsAPI.setup(THEOplayerNativeDebugFlagsAPI(messageChannelSuffix: viewController.channelSuffix));
           _abrAPI.setup(viewController.getAbr());
           _setupLifeCycleListeners();
           onCreate?.call();

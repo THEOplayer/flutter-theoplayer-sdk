@@ -10,17 +10,19 @@ import THEOplayerSDK
 
 class AbrBridge: THEOplayerNativeAbrAPI {
 
-    private let pigeonMessenger: PigeonBinaryMessengerWrapper
+    private let binaryMessenger: FlutterBinaryMessenger
+    private let messageChannelSuffix: String
     private let theoplayer: THEOplayer
 
-    init(theoplayer: THEOplayer, pigeonMessenger: PigeonBinaryMessengerWrapper) {
+    init(theoplayer: THEOplayer, binaryMessenger: FlutterBinaryMessenger, messageChannelSuffix: String) {
         self.theoplayer = theoplayer
-        self.pigeonMessenger = pigeonMessenger
-        THEOplayerNativeAbrAPISetup.setUp(binaryMessenger: pigeonMessenger, api: self)
+        self.binaryMessenger = binaryMessenger
+        self.messageChannelSuffix = messageChannelSuffix
+        THEOplayerNativeAbrAPISetup.setUp(binaryMessenger: binaryMessenger, api: self, messageChannelSuffix: messageChannelSuffix)
     }
 
     func dispose() {
-        THEOplayerNativeAbrAPISetup.setUp(binaryMessenger: pigeonMessenger, api: nil)
+        THEOplayerNativeAbrAPISetup.setUp(binaryMessenger: binaryMessenger, api: nil, messageChannelSuffix: messageChannelSuffix)
     }
 
     // MARK: - THEOplayerNativeAbrAPI

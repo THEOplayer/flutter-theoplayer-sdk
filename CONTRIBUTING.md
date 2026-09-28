@@ -36,7 +36,7 @@ The code generation produces the following files (all of them are **committed to
 | Kotlin | `flutter_theoplayer_sdk_android/android/src/main/kotlin/com/theoplayer/flutter/pigeon/APIs.g.kt` |
 | Swift | `flutter_theoplayer_sdk_ios/ios/Classes/pigeon/APIs.g.swift` |
 
-Every pigeon channel name is suffixed with `id_<playerId>` through `PigeonBinaryMessengerWrapper` (available in Dart, Kotlin and Swift) to support multiple player instances.
+Every Pigeon channel uses the generated `messageChannelSuffix` support with an `id_<playerId>` suffix to support multiple player instances.
 
 ### Adding a new cross-platform feature
 

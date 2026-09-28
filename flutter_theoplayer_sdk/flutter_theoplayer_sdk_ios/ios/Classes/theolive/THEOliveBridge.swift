@@ -13,7 +13,8 @@ import THEOplayerTHEOliveIntegration
 class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
     
     private var theoLive: THEOlive
-    private let pigeonMessenger: PigeonBinaryMessengerWrapper
+    private let binaryMessenger: FlutterBinaryMessenger
+    private let messageChannelSuffix: String
     private let flutterTHEOliveAPI: THEOplayerFlutterTHEOliveAPI
     
     private var distributionLoadStartListener: EventListener?
@@ -27,11 +28,12 @@ class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
     
     private let emptyCompletion: (Result<Void, PigeonError>) -> Void = {result in }
     
-    init(theoLive: THEOlive, pigeonMessenger: PigeonBinaryMessengerWrapper) {
+    init(theoLive: THEOlive, binaryMessenger: FlutterBinaryMessenger, messageChannelSuffix: String) {
         self.theoLive = theoLive
-        self.pigeonMessenger = pigeonMessenger
-        self.flutterTHEOliveAPI = THEOplayerFlutterTHEOliveAPI(binaryMessenger: pigeonMessenger)
-        THEOplayerNativeTHEOliveAPISetup.setUp(binaryMessenger: pigeonMessenger, api: self)
+        self.binaryMessenger = binaryMessenger
+        self.messageChannelSuffix = messageChannelSuffix
+        self.flutterTHEOliveAPI = THEOplayerFlutterTHEOliveAPI(binaryMessenger: binaryMessenger, messageChannelSuffix: messageChannelSuffix)
+        THEOplayerNativeTHEOliveAPISetup.setUp(binaryMessenger: binaryMessenger, api: self, messageChannelSuffix: messageChannelSuffix)
     }
     
     func attachListeners() {
@@ -92,7 +94,7 @@ class THEOliveBridge: THEOplayerNativeTHEOliveAPI {
     
     func dispose() {
         removeListeners()
-        THEOplayerNativeTHEOliveAPISetup.setUp(binaryMessenger: pigeonMessenger, api: nil)
+        THEOplayerNativeTHEOliveAPISetup.setUp(binaryMessenger: binaryMessenger, api: nil, messageChannelSuffix: messageChannelSuffix)
     }
     
     //MARK: THEOplayerNativeTHEOliveAPI API

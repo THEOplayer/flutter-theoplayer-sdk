@@ -16,16 +16,18 @@ import com.theoplayer.android.api.player.track.mediatrack.quality.VideoQuality
 import com.theoplayer.flutter.pigeon.THEOplayerFlutterVideoTracksAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeVideoTracksAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeVideoTracksAPI.Companion.setUp
+import io.flutter.plugin.common.BinaryMessenger
 
 class VideoTrackBridge(
     private val player: Player,
-    private val pigeonMessenger: PigeonBinaryMessengerWrapper,
+    private val binaryMessenger: BinaryMessenger,
+    private val messageChannelSuffix: String,
 ) : THEOplayerNativeVideoTracksAPI {
 
-    private val flutterVideoTracksAPI = THEOplayerFlutterVideoTracksAPI(pigeonMessenger)
+    private val flutterVideoTracksAPI = THEOplayerFlutterVideoTracksAPI(binaryMessenger, messageChannelSuffix)
 
     init {
-        setUp(pigeonMessenger, this)
+        setUp(binaryMessenger, this, messageChannelSuffix)
     }
 
     private val emptyCallback: (Result<Unit>) -> Unit = {}
@@ -117,7 +119,7 @@ class VideoTrackBridge(
         }
 
         // Clean up Pigeon API
-        setUp(pigeonMessenger, null)
+        setUp(binaryMessenger, null, messageChannelSuffix)
     }
 
     private fun attachTrackListeners(track: MediaTrack<VideoQuality>) {

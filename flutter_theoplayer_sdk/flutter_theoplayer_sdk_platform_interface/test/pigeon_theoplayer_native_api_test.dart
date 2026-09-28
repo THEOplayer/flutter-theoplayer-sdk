@@ -189,6 +189,40 @@ void main() {
     });
   });
 
+  group('Message channel suffix', () {
+    const suffix = 'id_42';
+    final messenger = TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger;
+
+    test('routes native API calls to the suffixed channel', () async {
+      const channel = 'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerNativeAPI.play.$suffix';
+      var playCalled = false;
+      messenger.setMockMessageHandler(channel, (message) async {
+        playCalled = true;
+        return THEOplayerNativeAPI.pigeonChannelCodec.encodeMessage(<Object?>[]);
+      });
+      addTearDown(() => messenger.setMockMessageHandler(channel, null));
+
+      await THEOplayerNativeAPI(messageChannelSuffix: suffix).play();
+
+      expect(playCalled, true);
+    });
+
+    test('routes Flutter API calls from the suffixed channel', () async {
+      var receivedTime = 0.0;
+      final mockAPI = _MockTHEOplayerFlutterAPI(onPlayCallback: (time) => receivedTime = time);
+      THEOplayerFlutterAPI.setUp(mockAPI, messageChannelSuffix: suffix);
+      addTearDown(() => THEOplayerFlutterAPI.setUp(null, messageChannelSuffix: suffix));
+
+      await messenger.handlePlatformMessage(
+        'dev.flutter.pigeon.theoplayer_platform_interface.THEOplayerFlutterAPI.onPlay.$suffix',
+        THEOplayerFlutterAPI.pigeonChannelCodec.encodeMessage(<Object?>[15.5]),
+        null,
+      );
+
+      expect(receivedTime, 15.5);
+    });
+  });
+
   group('THEOplayerFlutterAPI Tests', () {
     test('onPlay callback - receives play event from native', () async {
       bool onPlayCalled = false;

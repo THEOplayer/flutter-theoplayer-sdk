@@ -12,7 +12,8 @@ import Flutter
 class VideoTrackBridge: THEOplayerNativeVideoTracksAPI {
 
     private let theoplayer: THEOplayer
-    private let pigeonMessenger: PigeonBinaryMessengerWrapper
+    private let binaryMessenger: FlutterBinaryMessenger
+    private let messageChannelSuffix: String
     private let flutterVideoTracksAPI: THEOplayerFlutterVideoTracksAPI
 
     private var addVideoTrackListener: EventListener?
@@ -22,11 +23,12 @@ class VideoTrackBridge: THEOplayerNativeVideoTracksAPI {
 
     private let emptyCompletion: (Result<Void, PigeonError>) -> Void = {result in }
 
-    init(theoplayer: THEOplayer, pigeonMessenger: PigeonBinaryMessengerWrapper) {
+    init(theoplayer: THEOplayer, binaryMessenger: FlutterBinaryMessenger, messageChannelSuffix: String) {
         self.theoplayer = theoplayer
-        self.pigeonMessenger = pigeonMessenger
-        self.flutterVideoTracksAPI = THEOplayerFlutterVideoTracksAPI(binaryMessenger: pigeonMessenger)
-        THEOplayerNativeVideoTracksAPISetup.setUp(binaryMessenger: pigeonMessenger, api: self)
+        self.binaryMessenger = binaryMessenger
+        self.messageChannelSuffix = messageChannelSuffix
+        self.flutterVideoTracksAPI = THEOplayerFlutterVideoTracksAPI(binaryMessenger: binaryMessenger, messageChannelSuffix: messageChannelSuffix)
+        THEOplayerNativeVideoTracksAPISetup.setUp(binaryMessenger: binaryMessenger, api: self, messageChannelSuffix: messageChannelSuffix)
     }
 
     func attachListeners() {
@@ -120,7 +122,7 @@ class VideoTrackBridge: THEOplayerNativeVideoTracksAPI {
 
     func dispose() {
         removeListeners()
-        THEOplayerNativeVideoTracksAPISetup.setUp(binaryMessenger: pigeonMessenger, api: nil)
+        THEOplayerNativeVideoTracksAPISetup.setUp(binaryMessenger: binaryMessenger, api: nil, messageChannelSuffix: messageChannelSuffix)
     }
 
     func setTargetQuality(videoTrackUid: Int64, qualityUid: Int64?) throws {

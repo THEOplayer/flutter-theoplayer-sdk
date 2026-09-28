@@ -39,7 +39,7 @@ class THEOplayerViewNative(
     context: Context,
     val id: Int,
     creationParams: Map<String, Any>?,
-    messenger: BinaryMessenger
+    private val binaryMessenger: BinaryMessenger
 ) : PlatformView, THEOplayerNativeAPI {
 
     constructor(context: Context, entry: TextureRegistry.TextureEntry, creationParams: Map<String, Any>?, messenger: BinaryMessenger) : this(context, entry.id().toInt(), creationParams, messenger) {
@@ -50,7 +50,7 @@ class THEOplayerViewNative(
 
     private val theoplayerWrapper: LinearLayout
     private val tpv: THEOplayerView
-    private val pigeonMessenger: PigeonBinaryMessengerWrapper
+    private val messageChannelSuffix = "id_$id"
     private val flutterAPI: THEOplayerFlutterAPI
     private val playerEventForwarder: PlayerEventForwarder
     private val textTrackBridge: TextTrackBridge
@@ -131,28 +131,27 @@ class THEOplayerViewNative(
         tpv.player.addEventListener(PlayerEventTypes.PLAYING, playingEventListener)
         theoplayerWrapper.addView(tpv)
 
-        pigeonMessenger = PigeonBinaryMessengerWrapper(messenger, "id_$id")
-        setUp(pigeonMessenger, this)
+        setUp(binaryMessenger, this, messageChannelSuffix)
 
-        flutterAPI = THEOplayerFlutterAPI(pigeonMessenger)
+        flutterAPI = THEOplayerFlutterAPI(binaryMessenger, messageChannelSuffix)
         playerEventForwarder = PlayerEventForwarder(tpv.player, flutterAPI)
         playerEventForwarder.attachListeners()
 
-        textTrackBridge = TextTrackBridge(tpv.player, pigeonMessenger)
+        textTrackBridge = TextTrackBridge(tpv.player, binaryMessenger, messageChannelSuffix)
         textTrackBridge.attachListeners()
 
-        audioTrackBridge = AudioTrackBridge(tpv.player, pigeonMessenger)
+        audioTrackBridge = AudioTrackBridge(tpv.player, binaryMessenger, messageChannelSuffix)
         audioTrackBridge.attachListeners()
 
-        videoTrackBridge = VideoTrackBridge(tpv.player, pigeonMessenger)
+        videoTrackBridge = VideoTrackBridge(tpv.player, binaryMessenger, messageChannelSuffix)
         videoTrackBridge.attachListeners()
 
-        theoLiveBridge = THEOliveBridge(tpv.player.theoLive, pigeonMessenger)
+        theoLiveBridge = THEOliveBridge(tpv.player.theoLive, binaryMessenger, messageChannelSuffix)
         theoLiveBridge.attachListeners()
 
-        debugFlagsBridge = DebugFlagsBridge(pigeonMessenger, THEOplayerGlobal.getSharedInstance(context).logger)
+        debugFlagsBridge = DebugFlagsBridge(binaryMessenger, messageChannelSuffix, THEOplayerGlobal.getSharedInstance(context).logger)
 
-        abrBridge = AbrBridge(pigeonMessenger, tpv.player)
+        abrBridge = AbrBridge(binaryMessenger, messageChannelSuffix, tpv.player)
 
     }
 
@@ -171,7 +170,7 @@ class THEOplayerViewNative(
         abrBridge.dispose()
 
         // Clean up native API
-        setUp(pigeonMessenger, null)
+        setUp(binaryMessenger, null, messageChannelSuffix)
 
         // Remove view from parent and destroy player
         theoplayerWrapper.removeView(tpv)

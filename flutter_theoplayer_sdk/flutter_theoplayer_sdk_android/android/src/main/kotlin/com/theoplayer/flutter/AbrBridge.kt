@@ -8,18 +8,20 @@ import com.theoplayer.flutter.pigeon.AbrStrategyConfigurationPigeon
 import com.theoplayer.flutter.pigeon.AbrStrategyMetadataPigeon
 import com.theoplayer.flutter.pigeon.AbrStrategyTypePigeon
 import com.theoplayer.flutter.pigeon.THEOplayerNativeAbrAPI
+import io.flutter.plugin.common.BinaryMessenger
 
 class AbrBridge(
-    private val pigeonMessenger: PigeonBinaryMessengerWrapper,
+    private val binaryMessenger: BinaryMessenger,
+    private val messageChannelSuffix: String,
     private val player: Player
 ) : THEOplayerNativeAbrAPI {
 
     init {
-        THEOplayerNativeAbrAPI.setUp(pigeonMessenger, this)
+        THEOplayerNativeAbrAPI.setUp(binaryMessenger, this, messageChannelSuffix)
     }
 
     fun dispose() {
-        THEOplayerNativeAbrAPI.setUp(pigeonMessenger, null)
+        THEOplayerNativeAbrAPI.setUp(binaryMessenger, null, messageChannelSuffix)
     }
 
     // MARK: - THEOplayerNativeAbrAPI
