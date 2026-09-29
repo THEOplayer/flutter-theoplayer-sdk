@@ -9,8 +9,19 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  check_ios_dependency_versions:
+    name: Check iOS dependency versions
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v7
+
+    - name: Verify dependency versions
+      run: bash scripts/check_ios_dependency_versions.sh
+
   build_ios:
     name: iOS ${{ matrix.flutter_version }} / ${{ matrix.dependency_manager.name }}
+    needs: check_ios_dependency_versions
     # A healthy run takes ~20 min. Without this cap a hung job runs until GitHub's 6 h limit.
     timeout-minutes: 45
 
