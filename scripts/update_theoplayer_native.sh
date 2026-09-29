@@ -88,4 +88,5 @@ echo ""
 update_theoplayer_android
 update_theoplayer_ios
 update_theoplayer_web
-exit 0
+bash scripts/check_ios_dependency_versions.sh
+exit $?
