@@ -10,6 +10,7 @@ concurrency:
 
 jobs:
   build_ios:
+    name: iOS ${{ matrix.flutter_version }} / ${{ matrix.dependency_manager.name }}
     # A healthy run takes ~20 min. Without this cap a hung job runs until GitHub's 6 h limit.
     timeout-minutes: 45
 
@@ -18,6 +19,11 @@ jobs:
       matrix:
         xcode_version: ['26.3']
         flutter_version: ['stable', 'beta']
+        dependency_manager:
+          - name: SwiftPM
+            flag: --enable-swift-package-manager
+          - name: CocoaPods
+            flag: --no-enable-swift-package-manager
 
     runs-on: macos-26
     steps:
@@ -41,6 +47,9 @@ jobs:
 
     - name: Print flutter version
       run: flutter doctor
+
+    - name: Configure ${{ matrix.dependency_manager.name }}
+      run: flutter config ${{ matrix.dependency_manager.flag }}
 
     - name: Setup Melos
       uses: bluefireteam/melos-action@v3
