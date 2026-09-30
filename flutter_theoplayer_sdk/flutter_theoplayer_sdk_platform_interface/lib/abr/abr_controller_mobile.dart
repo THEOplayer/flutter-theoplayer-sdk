@@ -1,14 +1,11 @@
 import 'package:theoplayer_platform_interface/abr/abr_internal_api.dart';
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
-import 'package:theoplayer_platform_interface/pigeon_binary_messenger_wrapper.dart';
 
 class AbrControllerMobile implements AbrInternalInterface {
-  late final PigeonBinaryMessengerWrapper _pigeonMessenger;
   late final THEOplayerNativeAbrAPI _nativeAbrAPI;
 
   AbrControllerMobile(String channelSuffix) {
-    _pigeonMessenger = PigeonBinaryMessengerWrapper(suffix: channelSuffix);
-    _nativeAbrAPI = THEOplayerNativeAbrAPI(binaryMessenger: _pigeonMessenger);
+    _nativeAbrAPI = THEOplayerNativeAbrAPI(messageChannelSuffix: channelSuffix);
   }
 
   @override

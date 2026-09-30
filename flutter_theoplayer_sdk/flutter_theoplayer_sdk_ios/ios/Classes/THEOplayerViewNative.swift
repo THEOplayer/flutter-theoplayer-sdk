@@ -11,7 +11,8 @@ extension FlutterError: Error {}
 class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDelegate {
     private let _view: UIView
     private let _theoplayer: THEOplayer
-    private let _pigeonMessenger: PigeonBinaryMessengerWrapper
+    private let _binaryMessenger: FlutterBinaryMessenger
+    private let _messageChannelSuffix: String
     private let _flutterAPI: THEOplayerFlutterAPI
     private let _playerEventForwarder: PlayerEventForwarder
     private let _textTrackBridge: TextTrackBridge
@@ -69,31 +70,32 @@ class THEOplayerViewNative: NSObject, FlutterPlatformView, BackgroundPlaybackDel
         _theoplayer.autoresizingMask = [.flexibleHeight, .flexibleWidth]
         _theoplayer.addAsSubview(of: _view)
         
-        _pigeonMessenger = PigeonBinaryMessengerWrapper(with: messenger!, channelSuffix: "id_\(viewId)")
+        _binaryMessenger = messenger!
+        _messageChannelSuffix = "id_\(viewId)"
         
-        _flutterAPI = THEOplayerFlutterAPI(binaryMessenger: _pigeonMessenger)
+        _flutterAPI = THEOplayerFlutterAPI(binaryMessenger: _binaryMessenger, messageChannelSuffix: _messageChannelSuffix)
         _playerEventForwarder = PlayerEventForwarder(theoplayer: _theoplayer, flutterAPI: _flutterAPI)
         _playerEventForwarder.attachListeners()
         
-        _textTrackBridge = TextTrackBridge(theoplayer: _theoplayer, pigeonMessenger: _pigeonMessenger)
+        _textTrackBridge = TextTrackBridge(theoplayer: _theoplayer, binaryMessenger: _binaryMessenger, messageChannelSuffix: _messageChannelSuffix)
         _textTrackBridge.attachListeners()
         
-        _audioTrackBridge = AudioTrackBridge(theoplayer: _theoplayer, pigeonMessenger: _pigeonMessenger)
+        _audioTrackBridge = AudioTrackBridge(theoplayer: _theoplayer, binaryMessenger: _binaryMessenger, messageChannelSuffix: _messageChannelSuffix)
         _audioTrackBridge.attachListeners()
         
-        _videoTrackBridge = VideoTrackBridge(theoplayer: _theoplayer, pigeonMessenger: _pigeonMessenger)
+        _videoTrackBridge = VideoTrackBridge(theoplayer: _theoplayer, binaryMessenger: _binaryMessenger, messageChannelSuffix: _messageChannelSuffix)
         _videoTrackBridge.attachListeners()
         
-        _theoLiveBridge = THEOliveBridge(theoLive: theoLiveIntegration, pigeonMessenger: _pigeonMessenger)
+        _theoLiveBridge = THEOliveBridge(theoLive: theoLiveIntegration, binaryMessenger: _binaryMessenger, messageChannelSuffix: _messageChannelSuffix)
         _theoLiveBridge.attachListeners()
 
-        _debugFlagsBridge = DebugFlagsBridge(pigeonMessenger: _pigeonMessenger)
+        _debugFlagsBridge = DebugFlagsBridge(binaryMessenger: _binaryMessenger, messageChannelSuffix: _messageChannelSuffix)
 
-        _abrBridge = AbrBridge(theoplayer: _theoplayer, pigeonMessenger: _pigeonMessenger)
+        _abrBridge = AbrBridge(theoplayer: _theoplayer, binaryMessenger: _binaryMessenger, messageChannelSuffix: _messageChannelSuffix)
 
         super.init()
         
-        THEOplayerNativeAPISetup.setUp(binaryMessenger: _pigeonMessenger, api: self)
+        THEOplayerNativeAPISetup.setUp(binaryMessenger: _binaryMessenger, api: self, messageChannelSuffix: _messageChannelSuffix)
         _theoplayer.backgroundPlaybackDelegate = self
         
         //TODO: this limitation can be removed in the native SDK
@@ -264,7 +266,7 @@ extension THEOplayerViewNative: THEOplayerNativeAPI {
         _theoplayer.stop()
         
         // Unregister from Pigeon API to break retain cycle
-        THEOplayerNativeAPISetup.setUp(binaryMessenger: _pigeonMessenger, api: nil)
+        THEOplayerNativeAPISetup.setUp(binaryMessenger: _binaryMessenger, api: nil, messageChannelSuffix: _messageChannelSuffix)
 
     }
     

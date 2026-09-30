@@ -10,15 +10,17 @@ import Flutter
 
 class DebugFlagsBridge: THEOplayerNativeDebugFlagsAPI {
 
-    private let pigeonMessenger: PigeonBinaryMessengerWrapper
+    private let binaryMessenger: FlutterBinaryMessenger
+    private let messageChannelSuffix: String
 
-    init(pigeonMessenger: PigeonBinaryMessengerWrapper) {
-        self.pigeonMessenger = pigeonMessenger
-        THEOplayerNativeDebugFlagsAPISetup.setUp(binaryMessenger: pigeonMessenger, api: self)
+    init(binaryMessenger: FlutterBinaryMessenger, messageChannelSuffix: String) {
+        self.binaryMessenger = binaryMessenger
+        self.messageChannelSuffix = messageChannelSuffix
+        THEOplayerNativeDebugFlagsAPISetup.setUp(binaryMessenger: binaryMessenger, api: self, messageChannelSuffix: messageChannelSuffix)
     }
 
     func dispose() {
-        THEOplayerNativeDebugFlagsAPISetup.setUp(binaryMessenger: pigeonMessenger, api: nil)
+        THEOplayerNativeDebugFlagsAPISetup.setUp(binaryMessenger: binaryMessenger, api: nil, messageChannelSuffix: messageChannelSuffix)
     }
 
     // MARK: - THEOplayerNativeDebugFlagsAPI

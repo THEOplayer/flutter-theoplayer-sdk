@@ -7,8 +7,8 @@ import 'package:theoplayer_platform_interface/theoplayer_events.dart';
 class THEOplayerFlutterAPIImpl implements THEOplayerFlutterAPI, EventDispatcher {
   final EventManager _eventManager = EventManager();
 
-  THEOplayerFlutterAPIImpl({BinaryMessenger? binaryMessenger}) {
-    THEOplayerFlutterAPI.setUp(this, binaryMessenger: binaryMessenger);
+  THEOplayerFlutterAPIImpl({BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''}) {
+    THEOplayerFlutterAPI.setUp(this, binaryMessenger: binaryMessenger, messageChannelSuffix: messageChannelSuffix);
   }
 
   @override

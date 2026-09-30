@@ -3,18 +3,20 @@ package com.theoplayer.flutter
 import com.theoplayer.android.api.util.Logger
 import com.theoplayer.flutter.pigeon.DebugFlagPigeon
 import com.theoplayer.flutter.pigeon.THEOplayerNativeDebugFlagsAPI
+import io.flutter.plugin.common.BinaryMessenger
 
 class DebugFlagsBridge(
-    private val pigeonMessenger: PigeonBinaryMessengerWrapper,
+    private val binaryMessenger: BinaryMessenger,
+    private val messageChannelSuffix: String,
     private val logger: Logger
 ) : THEOplayerNativeDebugFlagsAPI {
 
     init {
-        THEOplayerNativeDebugFlagsAPI.setUp(pigeonMessenger, this)
+        THEOplayerNativeDebugFlagsAPI.setUp(binaryMessenger, this, messageChannelSuffix)
     }
 
     fun dispose() {
-        THEOplayerNativeDebugFlagsAPI.setUp(pigeonMessenger, null)
+        THEOplayerNativeDebugFlagsAPI.setUp(binaryMessenger, null, messageChannelSuffix)
     }
 
     // MARK: - THEOplayerNativeDebugFlagsAPI

@@ -26,19 +26,21 @@ import com.theoplayer.flutter.pigeon.THEOplayerNativeTextTracksAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeTextTracksAPI.Companion.setUp
 import com.theoplayer.flutter.transformers.FlutterTextTrackMode
 import com.theoplayer.flutter.transformers.TrackTransformer
+import io.flutter.plugin.common.BinaryMessenger
 import org.json.JSONException
 import org.json.JSONObject
 
 class TextTrackBridge(
     private val player: Player,
-    private val pigeonMessenger: PigeonBinaryMessengerWrapper,
+    private val binaryMessenger: BinaryMessenger,
+    private val messageChannelSuffix: String,
     private val base64Encoder: (ByteArray) -> String = { Base64.encodeToString(it, Base64.NO_WRAP) },
 ) : THEOplayerNativeTextTracksAPI {
 
-    private val flutterTextTracksAPI = THEOplayerFlutterTextTracksAPI(pigeonMessenger)
+    private val flutterTextTracksAPI = THEOplayerFlutterTextTracksAPI(binaryMessenger, messageChannelSuffix)
 
     init {
-        setUp(pigeonMessenger, this)
+        setUp(binaryMessenger, this, messageChannelSuffix)
     }
 
     private val emptyCallback: (Result<Unit>) -> Unit = {}
@@ -191,7 +193,7 @@ class TextTrackBridge(
         }
 
         // Clean up Pigeon API
-        setUp(pigeonMessenger, null)
+        setUp(binaryMessenger, null, messageChannelSuffix)
     }
 
     private fun attachTrackListeners(track: TextTrack) {

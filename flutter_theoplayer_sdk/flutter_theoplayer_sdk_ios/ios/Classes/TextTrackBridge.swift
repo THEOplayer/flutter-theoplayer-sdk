@@ -12,7 +12,8 @@ import Flutter
 class TextTrackBridge: THEOplayerNativeTextTracksAPI {
     
     private let theoplayer: THEOplayer
-    private let pigeonMessenger: PigeonBinaryMessengerWrapper
+    private let binaryMessenger: FlutterBinaryMessenger
+    private let messageChannelSuffix: String
     private let flutterTextTracksAPI: THEOplayerFlutterTextTracksAPI
     
     private var textTrackListDispatchObservers: [DispatchObserver] = []
@@ -21,11 +22,12 @@ class TextTrackBridge: THEOplayerNativeTextTracksAPI {
 
     private let emptyCompletion: (Result<Void, PigeonError>) -> Void = {result in }
     
-    init(theoplayer: THEOplayer, pigeonMessenger: PigeonBinaryMessengerWrapper) {
+    init(theoplayer: THEOplayer, binaryMessenger: FlutterBinaryMessenger, messageChannelSuffix: String) {
         self.theoplayer = theoplayer
-        self.pigeonMessenger = pigeonMessenger
-        self.flutterTextTracksAPI = THEOplayerFlutterTextTracksAPI(binaryMessenger: pigeonMessenger)
-        THEOplayerNativeTextTracksAPISetup.setUp(binaryMessenger: pigeonMessenger, api: self)
+        self.binaryMessenger = binaryMessenger
+        self.messageChannelSuffix = messageChannelSuffix
+        self.flutterTextTracksAPI = THEOplayerFlutterTextTracksAPI(binaryMessenger: binaryMessenger, messageChannelSuffix: messageChannelSuffix)
+        THEOplayerNativeTextTracksAPISetup.setUp(binaryMessenger: binaryMessenger, api: self, messageChannelSuffix: messageChannelSuffix)
     }
     
     func attachListeners() {
@@ -88,7 +90,7 @@ class TextTrackBridge: THEOplayerNativeTextTracksAPI {
     
     func dispose() {
         removeListeners()
-        THEOplayerNativeTextTracksAPISetup.setUp(binaryMessenger: pigeonMessenger, api: nil)
+        THEOplayerNativeTextTracksAPISetup.setUp(binaryMessenger: binaryMessenger, api: nil, messageChannelSuffix: messageChannelSuffix)
     }
     
     private func attachTrackListeners(track: TextTrack) {

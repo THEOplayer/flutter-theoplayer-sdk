@@ -10,9 +10,9 @@ class THEOplayerFlutterTextTracksAPIImpl implements THEOplayerFlutterTextTracksA
   late final THEOplayerNativeTextTracksAPI _nativeTextTrackAPI;
   late final TextTracksImpl _textTracks;
 
-  THEOplayerFlutterTextTracksAPIImpl({BinaryMessenger? binaryMessenger}) {
-    THEOplayerFlutterTextTracksAPI.setUp(this, binaryMessenger: binaryMessenger);
-    _nativeTextTrackAPI = THEOplayerNativeTextTracksAPI(binaryMessenger: binaryMessenger);
+  THEOplayerFlutterTextTracksAPIImpl({BinaryMessenger? binaryMessenger, String messageChannelSuffix = ''}) {
+    THEOplayerFlutterTextTracksAPI.setUp(this, binaryMessenger: binaryMessenger, messageChannelSuffix: messageChannelSuffix);
+    _nativeTextTrackAPI = THEOplayerNativeTextTracksAPI(binaryMessenger: binaryMessenger, messageChannelSuffix: messageChannelSuffix);
     _textTracks = TextTracksImpl();
   }
 

@@ -75,7 +75,7 @@ The mobile platforms communicate through [Pigeon](https://pub.dev/packages/pigeo
 - `THEOplayerFlutterAPI` (`@FlutterApi`): native → Dart events.
 - Dedicated bridge APIs for text/audio/video tracks, THEOlive, ABR and debug flags.
 
-Every channel name is suffixed with `id_<playerId>` through `PigeonBinaryMessengerWrapper` (available in Dart, Kotlin and Swift), which is what allows **multiple player instances** to coexist.
+Every Pigeon API uses the generated `messageChannelSuffix` support with an `id_<playerId>` suffix, which allows **multiple player instances** to coexist.
 
 The **Web** implementation bypasses Pigeon entirely: `theoplayer_api_web.dart` binds to the THEOplayer Web SDK via `dart:js_interop`, and `transformers_web.dart` converts JS objects into the same model classes, so the upper layers stay platform-agnostic.
 

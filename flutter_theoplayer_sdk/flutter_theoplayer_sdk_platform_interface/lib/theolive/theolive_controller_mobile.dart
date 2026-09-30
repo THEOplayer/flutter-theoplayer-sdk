@@ -2,7 +2,6 @@ import 'package:flutter/foundation.dart';
 import 'package:theoplayer_platform_interface/helpers/logger.dart';
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart' hide HespLatencies;
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart' as pigeon show HespLatencies;
-import 'package:theoplayer_platform_interface/pigeon_binary_messenger_wrapper.dart';
 import 'package:theoplayer_platform_interface/theolive/theolive_events.dart';
 import 'package:theoplayer_platform_interface/theolive/theolive_api.dart';
 import 'package:theoplayer_platform_interface/theolive/theolive_internal_api.dart';
@@ -11,15 +10,13 @@ import 'package:theoplayer_platform_interface/theoplayer_event_manager.dart';
 import 'package:theoplayer_platform_interface/theoplayer_events.dart';
 
 class THEOplayerTHEOliveControllerMobile extends THEOliveInternalInterface implements THEOplayerFlutterTHEOliveAPI {
-  late final PigeonBinaryMessengerWrapper _pigeonMessenger;
   late final THEOplayerNativeTHEOliveAPI _nativeTHEOliveAPI;
   final EventManager _eventManager = EventManager();
   String? _authToken;
 
   THEOplayerTHEOliveControllerMobile(String channelSuffix) {
-    _pigeonMessenger = PigeonBinaryMessengerWrapper(suffix: channelSuffix);
-    _nativeTHEOliveAPI = THEOplayerNativeTHEOliveAPI(binaryMessenger: _pigeonMessenger);
-    THEOplayerFlutterTHEOliveAPI.setUp(this, binaryMessenger: _pigeonMessenger);
+    _nativeTHEOliveAPI = THEOplayerNativeTHEOliveAPI(messageChannelSuffix: channelSuffix);
+    THEOplayerFlutterTHEOliveAPI.setUp(this, messageChannelSuffix: channelSuffix);
   }
 
   @override

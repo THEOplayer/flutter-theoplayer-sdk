@@ -12,7 +12,8 @@ import Flutter
 class AudioTrackBridge: THEOplayerNativeAudioTracksAPI {
 
     private let theoplayer: THEOplayer
-    private let pigeonMessenger: PigeonBinaryMessengerWrapper
+    private let binaryMessenger: FlutterBinaryMessenger
+    private let messageChannelSuffix: String
     private let flutterAudioTracksAPI: THEOplayerFlutterAudioTracksAPI
 
     private var addAudioTrackListener: EventListener?
@@ -22,11 +23,12 @@ class AudioTrackBridge: THEOplayerNativeAudioTracksAPI {
 
     private let emptyCompletion: (Result<Void, PigeonError>) -> Void = {result in }
 
-    init(theoplayer: THEOplayer, pigeonMessenger: PigeonBinaryMessengerWrapper) {
+    init(theoplayer: THEOplayer, binaryMessenger: FlutterBinaryMessenger, messageChannelSuffix: String) {
         self.theoplayer = theoplayer
-        self.pigeonMessenger = pigeonMessenger
-        self.flutterAudioTracksAPI = THEOplayerFlutterAudioTracksAPI(binaryMessenger: pigeonMessenger)
-        THEOplayerNativeAudioTracksAPISetup.setUp(binaryMessenger: pigeonMessenger, api: self)
+        self.binaryMessenger = binaryMessenger
+        self.messageChannelSuffix = messageChannelSuffix
+        self.flutterAudioTracksAPI = THEOplayerFlutterAudioTracksAPI(binaryMessenger: binaryMessenger, messageChannelSuffix: messageChannelSuffix)
+        THEOplayerNativeAudioTracksAPISetup.setUp(binaryMessenger: binaryMessenger, api: self, messageChannelSuffix: messageChannelSuffix)
     }
 
     func attachListeners() {
@@ -110,7 +112,7 @@ class AudioTrackBridge: THEOplayerNativeAudioTracksAPI {
 
     func dispose() {
         removeListeners()
-        THEOplayerNativeAudioTracksAPISetup.setUp(binaryMessenger: pigeonMessenger, api: nil)
+        THEOplayerNativeAudioTracksAPISetup.setUp(binaryMessenger: binaryMessenger, api: nil, messageChannelSuffix: messageChannelSuffix)
     }
 
     func setTargetQuality(audioTrackUid: Int64, qualityUid: Int64?) throws {

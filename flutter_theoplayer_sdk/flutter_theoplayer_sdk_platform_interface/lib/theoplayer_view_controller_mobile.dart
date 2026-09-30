@@ -1,7 +1,6 @@
 import 'package:theoplayer_platform_interface/abr/abr_controller_mobile.dart';
 import 'package:theoplayer_platform_interface/abr/abr_internal_api.dart';
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
-import 'package:theoplayer_platform_interface/pigeon_binary_messenger_wrapper.dart';
 import 'package:theoplayer_platform_interface/theolive/theolive_controller_mobile.dart';
 import 'package:theoplayer_platform_interface/theolive/theolive_internal_api.dart';
 import 'package:theoplayer_platform_interface/theoplayer_event_dispatcher_interface.dart';
@@ -17,7 +16,6 @@ class THEOplayerViewControllerMobile extends THEOplayerViewController {
   static const String TAG = "THEOplayerViewControllerMobile";
 
   late final String _channelSuffix;
-  late final PigeonBinaryMessengerWrapper _pigeonMessenger;
   late final THEOplayerNativeAPI _nativeAPI;
   late final THEOplayerFlutterAPIImpl _flutterAPI;
   late final THEOplayerTrackControllerMobile _trackController;
@@ -26,9 +24,8 @@ class THEOplayerViewControllerMobile extends THEOplayerViewController {
 
   THEOplayerViewControllerMobile(int id) : super(id) {
     _channelSuffix = 'id_$id';
-    _pigeonMessenger = PigeonBinaryMessengerWrapper(suffix: _channelSuffix);
-    _nativeAPI = THEOplayerNativeAPI(binaryMessenger: _pigeonMessenger);
-    _flutterAPI = THEOplayerFlutterAPIImpl(binaryMessenger: _pigeonMessenger);
+    _nativeAPI = THEOplayerNativeAPI(messageChannelSuffix: _channelSuffix);
+    _flutterAPI = THEOplayerFlutterAPIImpl(messageChannelSuffix: _channelSuffix);
     _trackController = THEOplayerTrackControllerMobile(_channelSuffix);
     _theoliveController = THEOplayerTHEOliveControllerMobile(_channelSuffix);
     _abrController = AbrControllerMobile(_channelSuffix);

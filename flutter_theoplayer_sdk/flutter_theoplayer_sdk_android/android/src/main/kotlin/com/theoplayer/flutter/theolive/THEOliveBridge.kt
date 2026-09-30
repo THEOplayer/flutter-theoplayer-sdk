@@ -7,20 +7,24 @@ import com.theoplayer.android.api.event.player.theolive.EndpointLoadedEvent
 import com.theoplayer.android.api.event.player.theolive.IntentToFallbackEvent
 import com.theoplayer.android.api.event.player.theolive.TheoLiveEventTypes
 import com.theoplayer.android.api.player.theolive.TheoLive
-import com.theoplayer.flutter.PigeonBinaryMessengerWrapper
 import com.theoplayer.flutter.pigeon.Endpoint
 import com.theoplayer.flutter.pigeon.HespLatencies
 import com.theoplayer.flutter.pigeon.THEOplayerFlutterTHEOliveAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeTHEOliveAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeTHEOliveAPI.Companion.setUp
+import io.flutter.plugin.common.BinaryMessenger
 
-class THEOliveBridge(private val theoLive: TheoLive, private val pigeonMessenger: PigeonBinaryMessengerWrapper) : THEOplayerNativeTHEOliveAPI {
+class THEOliveBridge(
+    private val theoLive: TheoLive,
+    private val binaryMessenger: BinaryMessenger,
+    private val messageChannelSuffix: String,
+) : THEOplayerNativeTHEOliveAPI {
 
-    private val flutterTHEOliveAPI = THEOplayerFlutterTHEOliveAPI(pigeonMessenger)
+    private val flutterTHEOliveAPI = THEOplayerFlutterTHEOliveAPI(binaryMessenger, messageChannelSuffix)
     private val emptyCallback: (Result<Unit>) -> Unit = {}
 
     init {
-        setUp(pigeonMessenger, this)
+        setUp(binaryMessenger, this, messageChannelSuffix)
     }
 
     private val distributionLoadStartListener = EventListener<DistributionLoadStartEvent> {
@@ -78,7 +82,7 @@ class THEOliveBridge(private val theoLive: TheoLive, private val pigeonMessenger
         this.theoLive.removeEventListener(TheoLiveEventTypes.INTENTTOFALLBACK, intentToFallbackListener)
 
         // Clean up Pigeon API
-        setUp(pigeonMessenger, null)
+        setUp(binaryMessenger, null, messageChannelSuffix)
     }
 
 }
