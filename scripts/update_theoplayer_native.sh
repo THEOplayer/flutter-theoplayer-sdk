@@ -38,7 +38,7 @@ update_theoplayer_web() {
 
     URL="https://registry.npmjs.org/theoplayer/-/theoplayer-${WEB}.tgz"
     echo "Fetching the package from ${URL}"
-    curl -s ${URL} | tar -C flutter_theoplayer_sdk/flutter_theoplayer_sdk/example/web/  -xvz --exclude='README.md' --exclude='package.json' --strip-components=1
+    curl -s ${URL} | tar -C flutter_theoplayer_sdk/flutter_theoplayer_sdk/example/web/theoplayer/ -xvz --exclude='README.md' --exclude='package.json' --strip-components=1
   fi
   echo ""
 }
