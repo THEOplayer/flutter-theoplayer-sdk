@@ -14,7 +14,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:theoplayer/theoplayer.dart';
 
 import '../integration_test_app/test_app.dart';
-import 'package:theoplayer_example/debug_log.dart';
+import '../integration_test_app/test_log.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -121,16 +121,16 @@ Future<void> runBasicPlaybackTest(WidgetTester tester, AndroidViewComposition an
   await app.waitForPlayerReady();
   await tester.pumpAndSettle();
 
-  debugLog("Testing isInitialized()");
+  testLog("Testing isInitialized()");
   expect(player.isInitialized, isTrue);
 
-  debugLog("Testing isPaused()");
+  testLog("Testing isPaused()");
   expect(player.isPaused, isTrue);
 
   player.muted = true;
   player.autoplay = true;
 
-  debugLog("Setting source");
+  testLog("Setting source");
 
   player.source = SourceDescription(sources: [
     TypedSource(src: "https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8"),
@@ -138,10 +138,10 @@ Future<void> runBasicPlaybackTest(WidgetTester tester, AndroidViewComposition an
 
   await tester.pumpAndSettle(const Duration(seconds: 10));
 
-  debugLog("Testing playback duration():  ${player.duration}");
+  testLog("Testing playback duration():  ${player.duration}");
   expect(player.duration >= 0, isTrue);
 
-  debugLog("Testing playback currentTime():  ${player.currentTime}");
+  testLog("Testing playback currentTime():  ${player.currentTime}");
   expect(player.currentTime >= 5, isTrue);
 }
 
@@ -159,7 +159,7 @@ Future<void> runPlaybackRateTest(WidgetTester tester, AndroidViewComposition and
 
   expect(player.isInitialized, isTrue);
 
-  debugLog("Testing playbackRate before any source: ${player.playbackRate}");
+  testLog("Testing playbackRate before any source: ${player.playbackRate}");
   expect(player.playbackRate, equals(1.0));
 
   final rateChanges = <double>[];
@@ -173,14 +173,14 @@ Future<void> runPlaybackRateTest(WidgetTester tester, AndroidViewComposition and
 
   await tester.pumpAndSettle(const Duration(seconds: 10));
 
-  debugLog("Testing playbackRate while playing at default speed: ${player.playbackRate} (ratechange events: $rateChanges)");
+  testLog("Testing playbackRate while playing at default speed: ${player.playbackRate} (ratechange events: $rateChanges)");
   expect(player.currentTime, greaterThan(0));
   expect(player.playbackRate, equals(1.0));
 
   player.playbackRate = 1.5;
   await tester.pumpAndSettle(const Duration(seconds: 3));
 
-  debugLog("Testing playbackRate after setting 1.5: ${player.playbackRate} (ratechange events: $rateChanges)");
+  testLog("Testing playbackRate after setting 1.5: ${player.playbackRate} (ratechange events: $rateChanges)");
   expect(player.playbackRate, equals(1.5));
   expect(rateChanges, contains(1.5));
 }
@@ -198,16 +198,16 @@ Future<void> runBasicTHEOlivePlaybackTest(WidgetTester tester, AndroidViewCompos
   await app.waitForPlayerReady();
   await tester.pumpAndSettle();
 
-  debugLog("Testing isInitialized()");
+  testLog("Testing isInitialized()");
   expect(player.isInitialized, isTrue);
 
-  debugLog("Testing isPaused()");
+  testLog("Testing isPaused()");
   expect(player.isPaused, isTrue);
 
   player.muted = true;
   player.autoplay = true;
 
-  debugLog("Setting source");
+  testLog("Setting source");
 
   player.source = SourceDescription(sources: [
     TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
@@ -215,13 +215,13 @@ Future<void> runBasicTHEOlivePlaybackTest(WidgetTester tester, AndroidViewCompos
 
   await tester.pumpAndSettle(const Duration(seconds: 10));
 
-  debugLog("Testing channel state :  ${player.theoLive!.distributionState}");
+  testLog("Testing channel state :  ${player.theoLive!.distributionState}");
   expect(player.theoLive?.distributionState == DistributionState.loaded, isTrue);
 
-  debugLog("Testing playback duration():  ${player.duration}");
+  testLog("Testing playback duration():  ${player.duration}");
   expect(player.duration == double.infinity, isTrue);
 
-  debugLog("Testing playback currentTime():  ${player.currentTime}");
+  testLog("Testing playback currentTime():  ${player.currentTime}");
   expect(player.currentTime >= 0, isTrue);
 }
 
@@ -246,13 +246,13 @@ Future<void> runVideoTrackEventsTest(WidgetTester tester, AndroidViewComposition
   final activeQualityChangedCompleter = Completer<VideoActiveQualityChangedEvent>();
 
   player.videoTracks.addEventListener(VideoTracksEventTypes.ADDTRACK, (event) {
-    debugLog("Received ADDTRACK event");
+    testLog("Received ADDTRACK event");
     if (!addTrackCompleter.isCompleted) {
       addTrackCompleter.complete(event as AddVideoTrackEvent);
     }
   });
 
-  debugLog("Setting source for video track events test");
+  testLog("Setting source for video track events test");
   player.source = SourceDescription(sources: [
     TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
   ]);
@@ -260,17 +260,17 @@ Future<void> runVideoTrackEventsTest(WidgetTester tester, AndroidViewComposition
   await tester.pumpAndSettle(const Duration(seconds: 10));
 
   // Verify ADDTRACK event was received
-  debugLog("Testing ADDTRACK event received");
+  testLog("Testing ADDTRACK event received");
   expect(addTrackCompleter.isCompleted, isTrue);
   final addTrackEvent = addTrackCompleter.isCompleted ? addTrackCompleter.future : null;
   if (addTrackEvent != null) {
     final track = (await addTrackEvent).track;
-    debugLog("Added track: id=${track.id}, label=${track.label}, kind=${track.kind}");
+    testLog("Added track: id=${track.id}, label=${track.label}, kind=${track.kind}");
     expect(track.id, isNotNull);
 
     // Listen for active quality change on the track
     track.addEventListener(VideoTrackEventTypes.ACTIVEQUALITYCHANGED, (event) {
-      debugLog("Received ACTIVEQUALITYCHANGED event");
+      testLog("Received ACTIVEQUALITYCHANGED event");
       if (!activeQualityChangedCompleter.isCompleted) {
         activeQualityChangedCompleter.complete(event as VideoActiveQualityChangedEvent);
       }
@@ -278,30 +278,30 @@ Future<void> runVideoTrackEventsTest(WidgetTester tester, AndroidViewComposition
   }
 
   // Verify video tracks are available
-  debugLog("Testing videoTracks count: ${player.videoTracks.length}");
+  testLog("Testing videoTracks count: ${player.videoTracks.length}");
   expect(player.videoTracks.length, greaterThan(0));
 
   final firstTrack = player.videoTracks[0]; // Video has only one track right now
-  debugLog("Testing first video track properties");
+  testLog("Testing first video track properties");
   expect(firstTrack.id, isNotNull);
-  debugLog("  id: ${firstTrack.id}, label: ${firstTrack.label}, kind: ${firstTrack.kind}, isEnabled: ${firstTrack.isEnabled}");
+  testLog("  id: ${firstTrack.id}, label: ${firstTrack.label}, kind: ${firstTrack.kind}, isEnabled: ${firstTrack.isEnabled}");
 
   // Verify qualities are available
-  debugLog("Testing video qualities count: ${firstTrack.qualities.length}");
+  testLog("Testing video qualities count: ${firstTrack.qualities.length}");
   expect(firstTrack.qualities.length, greaterThan(0));
 
   final firstQuality = firstTrack.qualities[0];
-  debugLog("  quality: ${firstQuality.width}x${firstQuality.height}, bandwidth: ${firstQuality.bandwidth}, codecs: ${firstQuality.codecs}");
+  testLog("  quality: ${firstQuality.width}x${firstQuality.height}, bandwidth: ${firstQuality.bandwidth}, codecs: ${firstQuality.codecs}");
   expect(firstQuality.width, greaterThan(0));
   expect(firstQuality.height, greaterThan(0));
 
   // Wait a bit more for active quality to be reported
   await tester.pumpAndSettle(const Duration(seconds: 5));
 
-  debugLog("Testing activeQuality");
+  testLog("Testing activeQuality");
   final activeQuality = firstTrack.activeQuality;
   expect(activeQuality, isNotNull, reason: "activeQuality should be available after playback starts");
-  debugLog("  activeQuality: ${activeQuality!.width}x${activeQuality.height}");
+  testLog("  activeQuality: ${activeQuality!.width}x${activeQuality.height}");
   expect(activeQuality.width, greaterThan(0));
   expect(activeQuality.height, greaterThan(0));
 }
@@ -325,13 +325,13 @@ Future<void> runAudioTrackEventsTest(WidgetTester tester, AndroidViewComposition
   final addTrackCompleter = Completer<AddAudioTrackEvent>();
 
   player.audioTracks.addEventListener(AudioTracksEventTypes.ADDTRACK, (event) {
-    debugLog("Received audio ADDTRACK event");
+    testLog("Received audio ADDTRACK event");
     if (!addTrackCompleter.isCompleted) {
       addTrackCompleter.complete(event as AddAudioTrackEvent);
     }
   });
 
-  debugLog("Setting source for audio track events test");
+  testLog("Setting source for audio track events test");
   player.source = SourceDescription(sources: [
     TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
   ]);
@@ -339,27 +339,27 @@ Future<void> runAudioTrackEventsTest(WidgetTester tester, AndroidViewComposition
   await tester.pumpAndSettle(const Duration(seconds: 10));
 
   // Verify ADDTRACK event was received
-  debugLog("Testing audio ADDTRACK event received");
+  testLog("Testing audio ADDTRACK event received");
   expect(addTrackCompleter.isCompleted, isTrue);
 
   // Verify audio tracks are available
-  debugLog("Testing audioTracks count: ${player.audioTracks.length}");
+  testLog("Testing audioTracks count: ${player.audioTracks.length}");
   expect(player.audioTracks.length, greaterThan(0));
 
   final firstTrack = player.audioTracks[0];
-  debugLog("Testing first audio track properties");
-  debugLog("  id: ${firstTrack.id}, label: ${firstTrack.label}, kind: ${firstTrack.kind}, isEnabled: ${firstTrack.isEnabled}");
+  testLog("Testing first audio track properties");
+  testLog("  id: ${firstTrack.id}, label: ${firstTrack.label}, kind: ${firstTrack.kind}, isEnabled: ${firstTrack.isEnabled}");
   expect(firstTrack.id, isNotNull);
 
   // Verify audio qualities are available (not supported on iOS)
   final bool isIOS = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
   if (isIOS) {
-    debugLog("Skipping audio qualities check on iOS (not supported)");
+    testLog("Skipping audio qualities check on iOS (not supported)");
   } else {
-    debugLog("Testing audio qualities count: ${firstTrack.qualities.length}");
+    testLog("Testing audio qualities count: ${firstTrack.qualities.length}");
     expect(firstTrack.qualities.length, greaterThan(0), reason: "Audio qualities should be available on ${kIsWeb ? 'Web' : 'Android'}");
     final firstQuality = firstTrack.qualities[0];
-    debugLog("  quality: bandwidth=${firstQuality.bandwidth}, audioSamplingRate=${firstQuality.audioSamplingRate}");
+    testLog("  quality: bandwidth=${firstQuality.bandwidth}, audioSamplingRate=${firstQuality.audioSamplingRate}");
     expect(firstQuality.bandwidth, greaterThan(0));
   }
 }
@@ -383,13 +383,13 @@ Future<void> runTextTrackEventsTest(WidgetTester tester, AndroidViewComposition 
   final addTrackCompleter = Completer<AddTextTrackEvent>();
 
   player.textTracks.addEventListener(TextTracksEventTypes.ADDTRACK, (event) {
-    debugLog("Received text ADDTRACK event");
+    testLog("Received text ADDTRACK event");
     if (!addTrackCompleter.isCompleted) {
       addTrackCompleter.complete(event as AddTextTrackEvent);
     }
   });
 
-  debugLog("Setting source for text track events test");
+  testLog("Setting source for text track events test");
   player.source = SourceDescription(sources: [
     TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
   ]);
@@ -397,17 +397,17 @@ Future<void> runTextTrackEventsTest(WidgetTester tester, AndroidViewComposition 
   await tester.pumpAndSettle(const Duration(seconds: 10));
 
   // Text tracks may or may not be present depending on the source
-  debugLog("Testing textTracks count: ${player.textTracks.length}");
+  testLog("Testing textTracks count: ${player.textTracks.length}");
   if (player.textTracks.isNotEmpty) {
     final firstTrack = player.textTracks[0];
-    debugLog("Testing first text track properties");
-    debugLog("  id: ${firstTrack.id}, label: ${firstTrack.label}, kind: ${firstTrack.kind}, language: ${firstTrack.language}");
+    testLog("Testing first text track properties");
+    testLog("  id: ${firstTrack.id}, label: ${firstTrack.label}, kind: ${firstTrack.kind}, language: ${firstTrack.language}");
     expect(firstTrack.id, isNotNull);
   }
 
   if (addTrackCompleter.isCompleted) {
     final event = await addTrackCompleter.future;
-    debugLog("Text track added: id=${event.track.id}, label=${event.track.label}");
+    testLog("Text track added: id=${event.track.id}, label=${event.track.label}");
     expect(event.track.id, isNotNull);
   }
 }
@@ -428,7 +428,7 @@ Future<void> runQualityPropertiesTest(WidgetTester tester, AndroidViewCompositio
   player.muted = true;
   player.autoplay = true;
 
-  debugLog("Setting source for quality properties test");
+  testLog("Setting source for quality properties test");
   player.source = SourceDescription(sources: [
     TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
   ]);
@@ -441,7 +441,7 @@ Future<void> runQualityPropertiesTest(WidgetTester tester, AndroidViewCompositio
   expect(videoTrack.qualities.length, greaterThan(0));
 
   for (final quality in videoTrack.qualities) {
-    debugLog("Video quality: ${quality.width}x${quality.height}, bandwidth=${quality.bandwidth}, averageBandwidth=${quality.averageBandwidth}, available=${quality.available}");
+    testLog("Video quality: ${quality.width}x${quality.height}, bandwidth=${quality.bandwidth}, averageBandwidth=${quality.averageBandwidth}, available=${quality.available}");
     expect(quality.bandwidth, greaterThan(0));
     expect(quality.available, isNotNull);
     // width and height should be non-negative
@@ -450,21 +450,21 @@ Future<void> runQualityPropertiesTest(WidgetTester tester, AndroidViewCompositio
   }
 
   // Test unlocalizedLabel on video track
-  debugLog("Video track unlocalizedLabel: ${videoTrack.unlocalizedLabel}");
+  testLog("Video track unlocalizedLabel: ${videoTrack.unlocalizedLabel}");
   // unlocalizedLabel may be null, just verify it's accessible
 
   // Test audio quality properties (not supported on iOS)
   final bool isIOS = !kIsWeb && defaultTargetPlatform == TargetPlatform.iOS;
   if (player.audioTracks.isNotEmpty) {
     final audioTrack = player.audioTracks[0];
-    debugLog("Audio track unlocalizedLabel: ${audioTrack.unlocalizedLabel}");
+    testLog("Audio track unlocalizedLabel: ${audioTrack.unlocalizedLabel}");
 
     if (isIOS) {
-      debugLog("Skipping audio quality properties check on iOS (not supported)");
+      testLog("Skipping audio quality properties check on iOS (not supported)");
     } else {
       expect(audioTrack.qualities.length, greaterThan(0), reason: "Audio qualities should be available on ${kIsWeb ? 'Web' : 'Android'}");
       for (final quality in audioTrack.qualities) {
-        debugLog("Audio quality: bandwidth=${quality.bandwidth}, audioSamplingRate=${quality.audioSamplingRate}, averageBandwidth=${quality.averageBandwidth}, available=${quality.available}");
+        testLog("Audio quality: bandwidth=${quality.bandwidth}, audioSamplingRate=${quality.audioSamplingRate}, averageBandwidth=${quality.averageBandwidth}, available=${quality.available}");
         expect(quality.bandwidth, greaterThanOrEqualTo(0));
         expect(quality.available, isNotNull);
       }
@@ -488,7 +488,7 @@ Future<void> runLatenciesTest(WidgetTester tester, AndroidViewComposition androi
   player.muted = true;
   player.autoplay = true;
 
-  debugLog("Setting source for latencies test");
+  testLog("Setting source for latencies test");
   player.source = SourceDescription(sources: [
     TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
   ]);
@@ -499,7 +499,7 @@ Future<void> runLatenciesTest(WidgetTester tester, AndroidViewComposition androi
   expect(player.theoLive, isNotNull);
 
   final latencies = await player.theoLive!.latencies;
-  debugLog(
+  testLog(
       "Latencies: engineLatency=${latencies?.engineLatency}, distributionLatency=${latencies?.distributionLatency}, playerLatency=${latencies?.playerLatency}, theoliveLatency=${latencies?.theoliveLatency}");
 
   expect(latencies, isNotNull);
@@ -508,7 +508,7 @@ Future<void> runLatenciesTest(WidgetTester tester, AndroidViewComposition androi
 
   // Test currentLatency
   final currentLatency = await player.theoLive!.currentLatency;
-  debugLog("Current latency: $currentLatency");
+  testLog("Current latency: $currentLatency");
   expect(currentLatency, isNotNull);
   expect(currentLatency!, greaterThan(0));
 }
@@ -530,15 +530,15 @@ Future<void> runTHEOliveAbrStrategyPerformanceTest(WidgetTester tester, AndroidV
   player.autoplay = true;
 
   // Set ABR strategy to performance before setting source
-  debugLog("Setting ABR strategy to performance");
+  testLog("Setting ABR strategy to performance");
   await player.abr.setStrategy(AbrStrategyConfiguration(type: AbrStrategyType.performance));
 
   // Verify strategy is set
   final strategy = await player.abr.strategy;
-  debugLog("Current ABR strategy: ${strategy.type}");
+  testLog("Current ABR strategy: ${strategy.type}");
   expect(strategy.type, equals(AbrStrategyType.performance));
 
-  debugLog("Setting THEOlive source");
+  testLog("Setting THEOlive source");
   player.source = SourceDescription(sources: [
     TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
   ]);
@@ -559,16 +559,16 @@ Future<void> runTHEOliveAbrStrategyPerformanceTest(WidgetTester tester, AndroidV
     }
   }
 
-  debugLog("Available qualities:");
+  testLog("Available qualities:");
   for (final quality in videoTrack.qualities) {
-    debugLog("  ${quality.width}x${quality.height}, bandwidth=${quality.bandwidth}");
+    testLog("  ${quality.width}x${quality.height}, bandwidth=${quality.bandwidth}");
   }
 
   // With performance strategy, the initial active quality should be the lowest bandwidth
   final activeQuality = videoTrack.activeQuality;
   expect(activeQuality, isNotNull, reason: "Active quality should be available after playback starts");
-  debugLog("Initial active quality: ${activeQuality!.width}x${activeQuality.height}, bandwidth=${activeQuality.bandwidth}");
-  debugLog("Lowest bandwidth: $lowestBandwidth");
+  testLog("Initial active quality: ${activeQuality!.width}x${activeQuality.height}, bandwidth=${activeQuality.bandwidth}");
+  testLog("Lowest bandwidth: $lowestBandwidth");
 
   // Verify the initial active quality is the lowest bandwidth quality
   expect(activeQuality.bandwidth, equals(lowestBandwidth), reason: "Performance strategy should select the lowest bandwidth video quality for initial track selection");
@@ -591,15 +591,15 @@ Future<void> runTHEOliveAbrStrategyQualityTest(WidgetTester tester, AndroidViewC
   player.autoplay = true;
 
   // Set ABR strategy to quality before setting source
-  debugLog("Setting ABR strategy to quality");
+  testLog("Setting ABR strategy to quality");
   await player.abr.setStrategy(AbrStrategyConfiguration(type: AbrStrategyType.quality));
 
   // Verify strategy is set
   final strategy = await player.abr.strategy;
-  debugLog("Current ABR strategy: ${strategy.type}");
+  testLog("Current ABR strategy: ${strategy.type}");
   expect(strategy.type, equals(AbrStrategyType.quality));
 
-  debugLog("Setting THEOlive source");
+  testLog("Setting THEOlive source");
   player.source = SourceDescription(sources: [
     TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
   ]);
@@ -616,7 +616,7 @@ Future<void> runTHEOliveAbrStrategyQualityTest(WidgetTester tester, AndroidViewC
   final viewSize = tester.getSize(chromlessPlayerView);
   final devicePixelRatio = tester.view.devicePixelRatio;
   final physicalHeight = (viewSize.height * devicePixelRatio).toInt();
-  debugLog("Player view size: ${viewSize.width}x${viewSize.height} (logical), physical height: $physicalHeight");
+  testLog("Player view size: ${viewSize.width}x${viewSize.height} (logical), physical height: $physicalHeight");
 
   // Find the highest quality that fits the physical view height
   int expectedBandwidth = 0;
@@ -636,16 +636,16 @@ Future<void> runTHEOliveAbrStrategyQualityTest(WidgetTester tester, AndroidViewC
     }
   }
 
-  debugLog("Available qualities:");
+  testLog("Available qualities:");
   for (final quality in videoTrack.qualities) {
-    debugLog("  ${quality.width}x${quality.height}, bandwidth=${quality.bandwidth}");
+    testLog("  ${quality.width}x${quality.height}, bandwidth=${quality.bandwidth}");
   }
 
   // With quality strategy, the initial active quality should be the highest fitting the view
   final activeQuality = videoTrack.activeQuality;
   expect(activeQuality, isNotNull, reason: "Active quality should be available after playback starts");
-  debugLog("Initial active quality: ${activeQuality!.width}x${activeQuality.height}, bandwidth=${activeQuality.bandwidth}");
-  debugLog("Expected bandwidth (highest fitting view): $expectedBandwidth");
+  testLog("Initial active quality: ${activeQuality!.width}x${activeQuality.height}, bandwidth=${activeQuality.bandwidth}");
+  testLog("Expected bandwidth (highest fitting view): $expectedBandwidth");
 
   // Verify the initial active quality matches the expected quality for view size
   expect(activeQuality.bandwidth, equals(expectedBandwidth), reason: "Quality strategy should select the highest bandwidth video quality fitting the view size");

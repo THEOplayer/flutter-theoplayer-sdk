@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:theoplayer/theoplayer.dart';
 
-import 'package:theoplayer_example/debug_log.dart';
+import 'test_log.dart';
 
 // Test license to load sources from localhost and theoplayer.com domains
 // ignore: constant_identifier_names
@@ -31,51 +31,51 @@ class _TestAppState extends State<TestApp> {
     super.initState();
 
     if (TEST_LICENSE != "") {
-      debugLog("Using test license");
+      testLog("Using test license");
     } else {
-      debugLog("Using empty license");
+      testLog("Using empty license");
     }
 
     player = THEOplayer(
         theoPlayerConfig: THEOplayerConfig(
             license: TEST_LICENSE, androidConfiguration: AndroidConfig.create(viewComposition: widget.androidViewComposition), webConfiguration: WebConfig(libraryLocation: "/theoplayer")),
         onCreate: () {
-          debugLog("TestApp - THEOplayer - onCreate");
+          testLog("TestApp - THEOplayer - onCreate");
           player.addEventListener(PlayerEventTypes.SOURCECHANGE, (event) {
-            debugLog("_DEBUG: SOURCECHANGE received");
+            testLog("_DEBUG: SOURCECHANGE received");
           });
           player.addEventListener(PlayerEventTypes.PLAYING, (event) {
-            debugLog("_DEBUG: PLAYING received");
+            testLog("_DEBUG: PLAYING received");
           });
           player.addEventListener(PlayerEventTypes.PROGRESS, (event) {
-            debugLog("_DEBUG: PROGRESS received");
+            testLog("_DEBUG: PROGRESS received");
           });
           player.addEventListener(PlayerEventTypes.ERROR, (event) {
-            debugLog("_DEBUG: ERROR: ${(event as ErrorEvent).error}");
+            testLog("_DEBUG: ERROR: ${(event as ErrorEvent).error}");
           });
           player.addEventListener(PlayerEventTypes.TIMEUPDATE, (event) {
-            debugLog("_DEBUG: TIMEUPDATE received");
+            testLog("_DEBUG: TIMEUPDATE received");
           });
           player.addEventListener(PlayerEventTypes.CANPLAY, (event) {
-            debugLog("_DEBUG: CANPLAY received");
+            testLog("_DEBUG: CANPLAY received");
           });
           player.addEventListener(PlayerEventTypes.DURATIONCHANGE, (event) {
-            debugLog("_DEBUG: DURATIONCHANGE received");
+            testLog("_DEBUG: DURATIONCHANGE received");
           });
           player.addEventListener(PlayerEventTypes.LOADSTART, (event) {
-            debugLog("_DEBUG: LOADSTART received");
+            testLog("_DEBUG: LOADSTART received");
           });
           player.addEventListener(PlayerEventTypes.PLAY, (event) {
-            debugLog("_DEBUG: PLAY received");
+            testLog("_DEBUG: PLAY received");
           });
           player.addEventListener(PlayerEventTypes.PAUSE, (event) {
-            debugLog("_DEBUG: PAUSE received");
+            testLog("_DEBUG: PAUSE received");
           });
           player.addEventListener(PlayerEventTypes.WAITING, (event) {
-            debugLog("_DEBUG: PAUSE received");
+            testLog("_DEBUG: PAUSE received");
           });
           player.addEventListener(PlayerEventTypes.CURRENTSOURCECHANGE, (event) {
-            debugLog("_DEBUG: CURRENTSOURCECHANGE received ${(event as CurrentSourceChangeEvent).currentSource?.src}");
+            testLog("_DEBUG: CURRENTSOURCECHANGE received ${(event as CurrentSourceChangeEvent).currentSource?.src}");
           });
 
           widget._playerReady.complete();

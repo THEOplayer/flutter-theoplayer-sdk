@@ -12,7 +12,7 @@ import 'package:integration_test/integration_test.dart';
 import 'package:theoplayer/theoplayer.dart';
 
 import '../integration_test_app/test_app.dart';
-import 'package:theoplayer_example/debug_log.dart';
+import '../integration_test_app/test_log.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
@@ -45,15 +45,15 @@ Future<void> runTHEOliveAuthTokenTest(WidgetTester tester, AndroidViewCompositio
 
   final theoLive = player.theoLive!;
 
-  debugLog("Testing THEOlive authToken default is null");
+  testLog("Testing THEOlive authToken default is null");
   expect(theoLive.authToken, isNull);
 
-  debugLog("Testing THEOlive authToken set/get roundtrip");
+  testLog("Testing THEOlive authToken set/get roundtrip");
   const token = "test-auth-token";
   theoLive.authToken = token;
   expect(theoLive.authToken, equals(token));
 
-  debugLog("Testing THEOlive authToken unset via null");
+  testLog("Testing THEOlive authToken unset via null");
   theoLive.authToken = null;
   expect(theoLive.authToken, isNull);
 }
