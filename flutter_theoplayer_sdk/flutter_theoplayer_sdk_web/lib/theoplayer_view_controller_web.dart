@@ -454,11 +454,6 @@ class THEOplayerViewControllerWeb extends THEOplayerViewController {
   }
 }
 
-extension on Document {
-  external HTMLElement? fullscreenElement;
-  external HTMLElement? pictureInPictureElement;
-}
-
 class WebEventTypes {
   static const FULLSCREEN_CHANGE = 'fullscreenchange';
   static const PICTUREINPICTURE_ENTER = 'enterpictureinpicture';
