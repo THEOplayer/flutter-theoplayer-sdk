@@ -1,6 +1,9 @@
 ## Unreleased
 
-* Forwarded source latency targets, live windows, force-seek offsets and playback-rate bounds to the native Android player, including THEOlive sources.
+* Added source-level live latency configuration through `TypedSource.latencyConfiguration` (`SourceLatencyConfiguration`), including OptiView Live (THEOlive) sources.
+  - iOS: only `targetOffset` is supported, the other offsets and the playback-rate bounds are ignored.
+* Added `TypedSource.lowLatency` to enable the player's low-latency mode, required for Low-Latency CMAF with ABR.
+  - Supported only on Web.
 
 ## 11.10.2
 

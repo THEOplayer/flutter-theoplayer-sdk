@@ -1,6 +1,9 @@
 ## Unreleased
 
-* Added source-level live latency configuration through `TypedSource.latencyConfiguration`, including THEOlive target-latency overrides, and the Web-only `TypedSource.lowLatency` option.
+* Added source-level live latency configuration through `TypedSource.latencyConfiguration` (`SourceLatencyConfiguration`), including OptiView Live (THEOlive) sources.
+  - iOS: only `targetOffset` is supported, the other offsets and the playback-rate bounds are ignored.
+* Added `TypedSource.lowLatency` to enable the player's low-latency mode, required for Low-Latency CMAF with ABR.
+  - Supported only on Web.
 
 ## 11.10.2
 
