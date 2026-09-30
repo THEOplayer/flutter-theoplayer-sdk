@@ -26,6 +26,6 @@ class _CurrentTimeWidgetState extends State<CurrentTimeWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Text('Current time: ${widget.player.getCurrentTime()}');
+    return Text('Current time: ${widget.player.currentTime}');
   }
 }

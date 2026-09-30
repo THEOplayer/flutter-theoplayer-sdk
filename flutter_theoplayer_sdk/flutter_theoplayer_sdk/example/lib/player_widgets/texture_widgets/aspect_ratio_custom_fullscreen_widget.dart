@@ -29,8 +29,8 @@ class _FullscreenStatefulWidgetState extends State<AspectRatioCustomFullscreenWi
   @override
   void initState() {
     super.initState();
-    var initialVideoWidth = widget.theoplayer.getVideoWidth();
-    var initialVideoHeight = widget.theoplayer.getVideoHeight();
+    var initialVideoWidth = widget.theoplayer.videoWidth;
+    var initialVideoHeight = widget.theoplayer.videoHeight;
     if (initialVideoWidth != 0 && initialVideoHeight != 0) {
       currentAspectRatio = initialVideoWidth / initialVideoHeight;
     }

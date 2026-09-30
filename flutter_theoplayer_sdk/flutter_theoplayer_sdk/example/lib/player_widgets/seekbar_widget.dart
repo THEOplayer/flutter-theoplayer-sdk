@@ -28,21 +28,21 @@ class _SeekbarWidgetWidgetState extends State<SeekbarWidget> {
     }
 
     setState(() {
-      position = widget.player.getCurrentTime();
+      position = widget.player.currentTime;
     });
   }
 
   void durartionChangeListener(Event event) {
     setState(() {
-      duration = widget.player.getDuration();
+      duration = widget.player.duration;
     });
   }
 
   @override
   void initState() {
     super.initState();
-    position = widget.player.getCurrentTime();
-    duration = widget.player.getDuration();
+    position = widget.player.currentTime;
+    duration = widget.player.duration;
 
     widget.player.addEventListener(PlayerEventTypes.TIMEUPDATE, timeUpdateListener);
     widget.player.addEventListener(PlayerEventTypes.DURATIONCHANGE, durartionChangeListener);
@@ -65,7 +65,7 @@ class _SeekbarWidgetWidgetState extends State<SeekbarWidget> {
       label: "${position.round()}",
       onChanged: (newPosition) {
         if (widget.seekWhileDragging) {
-          widget.player.setCurrentTime(newPosition);
+          widget.player.currentTime = newPosition;
         }
         setState(() {
           position = newPosition;
@@ -76,7 +76,7 @@ class _SeekbarWidgetWidgetState extends State<SeekbarWidget> {
       },
       onChangeEnd: (newPosition) {
         dragging = false;
-        widget.player.setCurrentTime(newPosition);
+        widget.player.currentTime = newPosition;
       },
     );
   }
