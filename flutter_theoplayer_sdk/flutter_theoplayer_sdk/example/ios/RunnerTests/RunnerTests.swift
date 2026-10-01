@@ -1,4 +1,5 @@
 import Flutter
+import THEOplayerTHEOliveIntegration
 import UIKit
 import XCTest
 
@@ -21,6 +22,29 @@ class RunnerTests: XCTestCase {
       resultExpectation.fulfill()
     }
     waitForExpectations(timeout: 1)
+  }
+
+  func testMapsSourceLatencyTarget() {
+    let source = TypedSourcePigeon(
+      src: "https://example.com/live.m3u8",
+      latencyConfiguration: SourceLatencyConfiguration(targetOffset: 3.0)
+    )
+
+    let transformed = SourceTransformer.toTypedSource(typedSource: source)
+
+    XCTAssertNotNil(transformed?.latencyConfiguration)
+  }
+
+  func testMapsTheoLiveLatencyTarget() {
+    let source = TypedSourcePigeon(
+      src: "distribution-id",
+      integration: .theolive,
+      latencyConfiguration: SourceLatencyConfiguration(targetOffset: 2.0)
+    )
+
+    let transformed = SourceTransformer.toTypedSource(typedSource: source) as? TheoLiveSource
+
+    XCTAssertEqual(transformed?.targetLatency, 2.0)
   }
 
 }

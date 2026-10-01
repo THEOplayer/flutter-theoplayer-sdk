@@ -1,6 +1,7 @@
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:theoplayer_platform_interface/api/source.dart';
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart';
 
 void main() {
@@ -38,7 +39,15 @@ void main() {
               final source = decoded[0] as SourceDescription?;
               expect(source, isNotNull);
               expect(source!.sources.length, 1);
-              expect(source.sources[0]!.src, 'https://example.com/video.m3u8');
+              final typedSource = source.sources[0]!;
+              expect(typedSource.src, 'https://example.com/video.m3u8');
+              expect(typedSource.lowLatency, isTrue);
+              expect(typedSource.latencyConfiguration?.targetOffset, 3.0);
+              expect(typedSource.latencyConfiguration?.minimumOffset, 2.0);
+              expect(typedSource.latencyConfiguration?.maximumOffset, 4.0);
+              expect(typedSource.latencyConfiguration?.forceSeekOffset, 10.0);
+              expect(typedSource.latencyConfiguration?.minimumPlaybackRate, 0.95);
+              expect(typedSource.latencyConfiguration?.maximumPlaybackRate, 1.05);
               // Return success (empty response)
               return THEOplayerNativeAPI.pigeonChannelCodec.encodeMessage(<Object?>[]);
             }
@@ -51,10 +60,47 @@ void main() {
         TypedSourcePigeon(
           src: 'https://example.com/video.m3u8',
           type: 'application/x-mpegurl',
+          lowLatency: true,
+          latencyConfiguration: SourceLatencyConfiguration(
+            targetOffset: 3.0,
+            minimumOffset: 2.0,
+            maximumOffset: 4.0,
+            forceSeekOffset: 10.0,
+            minimumPlaybackRate: 0.95,
+            maximumPlaybackRate: 1.05,
+          ),
         ),
       ]);
 
       await api.setSource(source);
+    });
+
+    test('TypedSource carries source latency configuration', () {
+      final source = TypedSource(
+        src: 'https://example.com/live.m3u8',
+        lowLatency: true,
+        latencyConfiguration: SourceLatencyConfiguration(targetOffset: 3.0),
+      );
+
+      expect(source.lowLatency, isTrue);
+      expect(source.latencyConfiguration?.targetOffset, 3.0);
+    });
+
+    test('source latency codec keeps omitted controls unset', () {
+      final source = TypedSourcePigeon(
+        src: 'https://example.com/live.m3u8',
+        latencyConfiguration: SourceLatencyConfiguration(targetOffset: 3.0),
+      );
+      final encoded = THEOplayerNativeAPI.pigeonChannelCodec.encodeMessage(<Object?>[source]);
+      final decoded = THEOplayerNativeAPI.pigeonChannelCodec.decodeMessage(encoded) as List<Object?>;
+      final latencyConfiguration = (decoded.single as TypedSourcePigeon).latencyConfiguration!;
+
+      expect(latencyConfiguration.targetOffset, 3.0);
+      expect(latencyConfiguration.minimumOffset, isNull);
+      expect(latencyConfiguration.maximumOffset, isNull);
+      expect(latencyConfiguration.forceSeekOffset, isNull);
+      expect(latencyConfiguration.minimumPlaybackRate, isNull);
+      expect(latencyConfiguration.maximumPlaybackRate, isNull);
     });
 
     test('getSource - retrieves source from native platform', () async {

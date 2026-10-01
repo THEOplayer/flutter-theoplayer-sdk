@@ -136,6 +136,8 @@ class TypedSourcePigeon {
     this.integration,
     this.headers,
     this.hlsDateRange,
+    this.lowLatency,
+    this.latencyConfiguration,
   });
 
   String src;
@@ -150,6 +152,10 @@ class TypedSourcePigeon {
 
   bool? hlsDateRange;
 
+  bool? lowLatency;
+
+  SourceLatencyConfiguration? latencyConfiguration;
+
   Object encode() {
     return <Object?>[
       src,
@@ -158,6 +164,8 @@ class TypedSourcePigeon {
       integration,
       headers,
       hlsDateRange,
+      lowLatency,
+      latencyConfiguration,
     ];
   }
 
@@ -170,6 +178,73 @@ class TypedSourcePigeon {
       integration: result[3] as SourceIntegrationId?,
       headers: (result[4] as Map<Object?, Object?>?)?.cast<String?, String?>(),
       hlsDateRange: result[5] as bool?,
+      lowLatency: result[6] as bool?,
+      latencyConfiguration: result[7] as SourceLatencyConfiguration?,
+    );
+  }
+}
+
+/// The source-level latency configuration for live playback.
+///
+/// All offsets are expressed in seconds. On iOS, only [targetOffset] is supported.
+class SourceLatencyConfiguration {
+  SourceLatencyConfiguration({
+    required this.targetOffset,
+    this.minimumOffset,
+    this.maximumOffset,
+    this.forceSeekOffset,
+    this.minimumPlaybackRate,
+    this.maximumPlaybackRate,
+  });
+
+  /// The live offset that the player aims for.
+  double targetOffset;
+
+  /// The offset below which the player slows down.
+  ///
+  /// Defaults to 0.66 times [targetOffset].
+  double? minimumOffset;
+
+  /// The offset above which the player speeds up.
+  ///
+  /// Defaults to 1.5 times [targetOffset].
+  double? maximumOffset;
+
+  /// The offset above which the player seeks to live.
+  ///
+  /// Defaults to 3 times [targetOffset].
+  double? forceSeekOffset;
+
+  /// The minimum playback rate used to increase latency.
+  ///
+  /// Defaults to 0.92.
+  double? minimumPlaybackRate;
+
+  /// The maximum playback rate used to decrease latency.
+  ///
+  /// Defaults to 1.08.
+  double? maximumPlaybackRate;
+
+  Object encode() {
+    return <Object?>[
+      targetOffset,
+      minimumOffset,
+      maximumOffset,
+      forceSeekOffset,
+      minimumPlaybackRate,
+      maximumPlaybackRate,
+    ];
+  }
+
+  static SourceLatencyConfiguration decode(Object result) {
+    result as List<Object?>;
+    return SourceLatencyConfiguration(
+      targetOffset: result[0]! as double,
+      minimumOffset: result[1] as double?,
+      maximumOffset: result[2] as double?,
+      forceSeekOffset: result[3] as double?,
+      minimumPlaybackRate: result[4] as double?,
+      maximumPlaybackRate: result[5] as double?,
     );
   }
 }
@@ -472,29 +547,32 @@ class _PigeonCodec extends StandardMessageCodec {
     } else if (value is TypedSourcePigeon) {
       buffer.putUint8(138);
       writeValue(buffer, value.encode());
-    } else if (value is DRMConfiguration) {
+    } else if (value is SourceLatencyConfiguration) {
       buffer.putUint8(139);
       writeValue(buffer, value.encode());
-    } else if (value is WidevineDRMConfiguration) {
+    } else if (value is DRMConfiguration) {
       buffer.putUint8(140);
       writeValue(buffer, value.encode());
-    } else if (value is FairPlayDRMConfiguration) {
+    } else if (value is WidevineDRMConfiguration) {
       buffer.putUint8(141);
       writeValue(buffer, value.encode());
-    } else if (value is HespLatencies) {
+    } else if (value is FairPlayDRMConfiguration) {
       buffer.putUint8(142);
       writeValue(buffer, value.encode());
-    } else if (value is Endpoint) {
+    } else if (value is HespLatencies) {
       buffer.putUint8(143);
       writeValue(buffer, value.encode());
-    } else if (value is AbrStrategyMetadataPigeon) {
+    } else if (value is Endpoint) {
       buffer.putUint8(144);
       writeValue(buffer, value.encode());
-    } else if (value is AbrStrategyConfigurationPigeon) {
+    } else if (value is AbrStrategyMetadataPigeon) {
       buffer.putUint8(145);
       writeValue(buffer, value.encode());
-    } else if (value is DebugFlagPigeon) {
+    } else if (value is AbrStrategyConfigurationPigeon) {
       buffer.putUint8(146);
+      writeValue(buffer, value.encode());
+    } else if (value is DebugFlagPigeon) {
+      buffer.putUint8(147);
       writeValue(buffer, value.encode());
     } else {
       super.writeValue(buffer, value);
@@ -532,20 +610,22 @@ class _PigeonCodec extends StandardMessageCodec {
       case 138:
         return TypedSourcePigeon.decode(readValue(buffer)!);
       case 139:
-        return DRMConfiguration.decode(readValue(buffer)!);
+        return SourceLatencyConfiguration.decode(readValue(buffer)!);
       case 140:
-        return WidevineDRMConfiguration.decode(readValue(buffer)!);
+        return DRMConfiguration.decode(readValue(buffer)!);
       case 141:
-        return FairPlayDRMConfiguration.decode(readValue(buffer)!);
+        return WidevineDRMConfiguration.decode(readValue(buffer)!);
       case 142:
-        return HespLatencies.decode(readValue(buffer)!);
+        return FairPlayDRMConfiguration.decode(readValue(buffer)!);
       case 143:
-        return Endpoint.decode(readValue(buffer)!);
+        return HespLatencies.decode(readValue(buffer)!);
       case 144:
-        return AbrStrategyMetadataPigeon.decode(readValue(buffer)!);
+        return Endpoint.decode(readValue(buffer)!);
       case 145:
-        return AbrStrategyConfigurationPigeon.decode(readValue(buffer)!);
+        return AbrStrategyMetadataPigeon.decode(readValue(buffer)!);
       case 146:
+        return AbrStrategyConfigurationPigeon.decode(readValue(buffer)!);
+      case 147:
         return DebugFlagPigeon.decode(readValue(buffer)!);
       default:
         return super.readValueOfType(type, buffer);

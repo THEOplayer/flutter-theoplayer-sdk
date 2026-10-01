@@ -32,7 +32,19 @@ struct SourceTransformer {
             flutterDRMConfiguration = toFlutterDRMConfiguration(drmConfiguration: drmConfiguration)
         }
         
-        return TypedSourcePigeon(src: typedSource.src, type: typedSource.type, drm: flutterDRMConfiguration, headers: typedSource.headers, hlsDateRange: typedSource.hlsDateRange)
+        let theoLiveSource = typedSource as? TheoLiveSource
+        let integration: SourceIntegrationId? = theoLiveSource == nil ? nil : .theolive
+        let latencyConfiguration = theoLiveSource?.targetLatency.map { SourceLatencyConfiguration(targetOffset: $0) }
+
+        return TypedSourcePigeon(
+            src: typedSource.src,
+            type: typedSource.type,
+            drm: flutterDRMConfiguration,
+            integration: integration,
+            headers: typedSource.headers,
+            hlsDateRange: typedSource.hlsDateRange,
+            latencyConfiguration: latencyConfiguration
+        )
     }
     
     
@@ -85,16 +97,20 @@ struct SourceTransformer {
         
         switch typedSource.integration {
             case .theolive:
-                return TheoLiveSource(channelId: typedSource.src)
+                return TheoLiveSource(channelId: typedSource.src, targetLatency: typedSource.latencyConfiguration?.targetOffset)
             default:
                 let drm = toDRMConfiguration(flutterDRMConfiguration: typedSource.drm)
+                let latencyConfiguration = typedSource.latencyConfiguration.map {
+                    THEOplayerSDK.SourceLatencyConfiguration(targetOffset: $0.targetOffset)
+                }
                 
                 return THEOplayerSDK.TypedSource(
                     src: typedSource.src,
                     type: typedSource.type ?? "",
                     drm: drm,
                     hlsDateRange: typedSource.hlsDateRange,
-                    headers: cleanOptionalHashMap(typedSource.headers)
+                    headers: cleanOptionalHashMap(typedSource.headers),
+                    latencyConfiguration: latencyConfiguration
                 )
         }
     }

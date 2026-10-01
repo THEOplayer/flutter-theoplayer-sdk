@@ -2,15 +2,12 @@
 
 High-quality synchronized video streaming at scale for providers of large sports broadcasting, sports betting, and interactive entertainment
 
-## Limitations
+## Platform support
 
-* Only Flutter Web is supported.
-* Android and iOS will follow later. (You can check out our dedicated [THEOlive Flutter SDK](https://github.com/THEOplayer/flutter-theolive-sdk))
+THEOlive playback is supported on Android, iOS and Web as part of the THEOplayer Flutter SDK.
 
 ## THEOlive playback
-THEOlive playback is becoming crucial part of THEOplayer's playback engine instead of being available as a separate SDK.
-
-The WEB support is already added, Android and iOS support as part of the THEOplayer SDK will come later. (Right now you can use the [dedicated THEOlive Flutter SDK](https://github.com/THEOplayer/flutter-theolive-sdk) for Android and iOS support) 
+THEOlive playback is part of THEOplayer's playback engine instead of being available as a separate SDK.
 
 ### Setting a THEOlive source
 
@@ -21,6 +18,21 @@ player.source = SourceDescription(sources: [
 ```
 
 Instead of using a remote HTTPS url, you can just specify your `channelID` from the [THEOlive Console](https://console.theo.live/) and you can start the playback.
+
+### Overriding the target latency
+
+A source-level latency target overrides the target configured in the THEOlive Console:
+
+```dart
+player.source = SourceDescription(sources: [
+    TheoLiveSource(
+        src: "2vqqekesftg9zuvxu9tdme6kl",
+        latencyConfiguration: SourceLatencyConfiguration(targetOffset: 2.0),
+    ),
+]);
+```
+
+Android and Web also support the optional minimum and maximum offsets, force-seek offset and playback-rate bounds. iOS applies only `targetOffset`.
 
 **NOTE:** your THEOplayer license has to contain the `HESP` feature to make it work. (HESP is the underlying technology of THEOlive).
 
