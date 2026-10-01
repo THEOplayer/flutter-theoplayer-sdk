@@ -43,6 +43,8 @@ If you see no difference mentioned in behaviour, please consult with the [native
 
 On iOS, `targetOffset` is passed to AVPlayer as its configured time offset from live. AVPlayer will not use a configured offset below its recommended time offset, so very small targets might not be reached.
 
+The latency configuration is applied when setting a source on iOS, but the native SDK does not publicly expose the configured value. Consequently, source getters and source-change event payloads do not include `latencyConfiguration` when converted back to Flutter on iOS.
+
 The `lowLatency` option enables the player's low-latency mode on Web and is required for Low-Latency CMAF with ABR. It is not required to play Low-Latency HLS.
 
 ## Version limitations
