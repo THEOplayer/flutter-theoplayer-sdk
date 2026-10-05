@@ -1,11 +1,11 @@
 name: theoplayer_web
 description: THEOplayer Flutter SDK for Web. Used by `theoplayer` to support streaming video playback on Web platforms.
-version: 11.10.2
+version: 11.12.1
 homepage: https://theoplayer.com
 repository: https://github.com/THEOplayer/flutter-theoplayer-sdk
 
 environment:
-  sdk: ^3.4.0
+  sdk: ^3.3.0
   flutter: '>=3.19.0'
 
 dependencies:
@@ -13,7 +13,7 @@ dependencies:
     sdk: flutter
   flutter_web_plugins:
     sdk: flutter
-  theoplayer_platform_interface: 11.10.2
+  theoplayer_platform_interface: 11.12.1
   # WASM-compatible JS interop
   web: '>=1.0.0 <2.0.0'
 
