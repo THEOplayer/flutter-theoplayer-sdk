@@ -1,4 +1,6 @@
-## Unreleased
+## 11.12.1
+
+* Updated THEOplayer to 11.12.1.
 
 * Added source-level live latency configuration through `TypedSource.latencyConfiguration` (`SourceLatencyConfiguration`), including OptiView Live (THEOlive) sources.
   - iOS: only `targetOffset` is supported, the other offsets and the playback-rate bounds are ignored.
