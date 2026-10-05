@@ -71,74 +71,280 @@ interface EventDispatcher<TEventMap extends EventMap<StringKeyOf<TEventMap>>> {
 }
 
 /**
- * Fired when the ad has stalled playback to buffer.
+ * Fired when a text track cue is entered.
  *
- * @category Ads
+ * @category Media and Text Tracks
  * @category Events
  * @public
  */
-interface AdBufferingEvent extends AdEvent<'adbuffering'> {
+interface TextTrackCueEnterEvent extends Event<'enter'> {
     /**
-     * The ad which is buffered.
+     * The text track cue that is entered.
      */
-    readonly ad: GoogleImaAd;
+    readonly cue: TextTrackCue;
 }
-
 /**
- * Fired when an ads list is loaded.
+ * Fired when a text track cue is exited.
  *
- * @category Ads
+ * @category Media and Text Tracks
  * @category Events
  * @public
  */
-interface AdMetadataEvent extends Event<'admetadata'> {
+interface TextTrackCueExitEvent extends Event<'exit'> {
+    /**
+     * The text track cue that is exited.
+     */
+    readonly cue: TextTrackCue;
+}
+/**
+ * Fired when a text track cue is updated.
+ *
+ * @category Media and Text Tracks
+ * @category Events
+ * @public
+ */
+interface TextTrackCueUpdateEvent extends Event<'update'> {
+    /**
+     * The text track cue that is updated.
+     */
+    readonly cue: TextTrackCue;
+}
+/**
+ * The events fired by the {@link TextTrackCue}.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface TextTrackCueEventMap {
+    /**
+     * Fired when the cue is entered.
+     */
+    enter: TextTrackCueEnterEvent;
+    /**
+     * Fired when the cue is exited.
+     */
+    exit: TextTrackCueExitEvent;
+    /**
+     * Fired when the cue is updated.
+     */
+    update: TextTrackCueUpdateEvent;
+}
+/**
+ * Represents a cue of a text track.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface TextTrackCue extends EventDispatcher<TextTrackCueEventMap> {
+    /**
+     * The text track of the cue.
+     */
+    track: TextTrack;
+    /**
+     * The identifier of the cue.
+     */
+    id: string;
+    /**
+     * A unique identifier of the text track cue.
+     *
+     * @remarks
+     * <br/> - This identifier is unique across text track cues of a THEOplayer instance and can be used to distinguish between cues.
+     * <br/> - This identifier is a randomly generated number.
+     */
+    readonly uid: number;
+    /**
+     * The playback position at which the cue becomes active, in seconds.
+     */
+    startTime: number;
+    /**
+     * The playback position at which the cue becomes inactive, in seconds.
+     */
+    endTime: number;
+    /**
+     * The content of the cue.
+     *
+     * @remarks
+     * The content differs depending on the {@link TextTrackCue.track}'s {@link TextTrack."type" | type }:
+     * <br/> - `'emsg'`: Content is a Uint8Array representing the binary message data from the `emsg` box.
+     * <br/> - `'eventstream'`: Content is the value of the `messageData` attribute which was specified in the manifest.
+     * <br/> - `'ttml'`: Content is an intermediate TTML document’s body element. This is a view of a TTML document where all nodes in the document are active during the cue’s startTime and endTime. As a result, all begin, dur and end properties have been removed. TTML Styles, Regions and Metadata are stored in cue.styles, cue.regions, cue.metadata respectively. Combining those properties with the given content should suffice to render a TTML cue.
+     * <br/> - `'webvtt'`: Content is the cue text in raw unparsed form.
+     */
+    content: any;
 }
 
 /**
- * The Google DAI API.
+ * List of text track cues.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface TextTrackCueList extends ReadonlyArray<TextTrackCue> {
+    /**
+     * The number of text track cues in the list.
+     */
+    readonly length: number;
+    /**
+     * Return the text track cue at the requested index in the list.
+     *
+     * @param index - A `number` representing the index of a text track cue in the list.
+     * @returns The text track cue with index `index` in the list.
+     */
+    item(index: number): TextTrackCue;
+    /**
+     * Index signature to get the text track cue at the requested index in the list.
+     */
+    readonly [index: number]: TextTrackCue;
+}
+
+/**
+ * Fired when a new track has been added to this list.
+ *
+ * @category Media and Text Tracks
+ * @category Events
+ * @public
+ */
+interface AddTrackEvent extends Event<'addtrack'> {
+    /**
+     * The track that has been added.
+     */
+    readonly track: Track;
+}
+/**
+ * Fired when a track has been removed to this list.
+ *
+ * @category Media and Text Tracks
+ * @category Events
+ * @public
+ */
+interface RemoveTrackEvent extends Event<'removetrack'> {
+    /**
+     * The track that has been removed.
+     */
+    readonly track: Track;
+}
+/**
+ * Fired when a track has been changed.
+ *
+ * @category Media and Text Tracks
+ * @category Events
+ * @public
+ */
+interface TrackChangeEvent extends Event<'change'> {
+    /**
+     * The track that has changed.
+     */
+    readonly track: Track;
+}
+/**
+ * The events fired by a {@link TrackList}.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface TrackListEventMap {
+    /**
+     * Fired when a track is added.
+     */
+    addtrack: AddTrackEvent;
+    /**
+     * Fired when a track is removed.
+     */
+    removetrack: RemoveTrackEvent;
+    /**
+     * Fired when a track is activated or deactivated.
+     */
+    change: TrackChangeEvent;
+}
+
+/**
+ * Fired when one or more properties of a track have been updated.
+ *
+ * @category Media and Text Tracks
+ * @category Events
+ * @public
+ */
+interface TrackUpdateEvent extends Event<'update'> {
+    /**
+     * The track that has been updated.
+     */
+    readonly track: Track;
+}
+/**
+ * The events fired by a {@link Track}.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface TrackEventMap {
+    /**
+     * Fired when a media track's {@link MediaTrack.enabled | enabled} or a text track's {@link TextTrack.mode | mode} changes.
+     */
+    change: TrackChangeEvent;
+    /**
+     * Fired when the track updates.
+     *
+     * @remarks
+     * <br/> - A track might update because a change propagated from a remote player (e.g. Chromecast).
+     */
+    update: TrackUpdateEvent;
+}
+/**
+ * Represents a track of a media resource.
  *
  * @remarks
- * <br/> - Available since v3.7.0.
+ * <br/> - A specific track type (e.g. {@link TextTrack}) will always be used.
  *
- * @category Ads
+ * @category Media and Text Tracks
  * @public
  */
-interface GoogleDAI {
+interface Track extends EventDispatcher<TrackEventMap> {
     /**
-     * Returns the content time without ads for a given stream time. Returns the given stream time for live streams.
+     * The kind of the track.
      *
-     * @param time - The stream time with inserted ads (in seconds).
+     * @remarks
+     * <br/> - The values for this property depend on the specific type of the track.
      */
-    contentTimeForStreamTime(time: number): number;
+    kind: string;
     /**
-     * Returns the stream time with ads for a given content time. Returns the given content time for live streams.
+     * The identifier of the track.
      *
-     * @param time - The content time without any ads (in seconds).
+     * @remarks
+     * <br/> - This identifier can be used to distinguish between related tracks, e.g. tracks in the same list.
      */
-    streamTimeForContentTime(time: number): number;
+    id: string;
     /**
-     * Replaces all the ad tag parameters used for upcoming ad requests for a live stream.
+     * A unique identifier of the track.
      *
-     * @param adTagParameters - The new ad tag parameters.
+     * @remarks
+     * <br/> - This identifier is unique across tracks of a THEOplayer instance and can be used to distinguish between tracks.
+     * <br/> - This identifier is a randomly generated number.
      */
-    replaceAdTagParameters(adTagParameters?: Record<string, string>): void;
+    uid: number;
     /**
-     * Whether snapback is enabled. When enabled and the user seeks over multiple ad breaks, the last ad break that was seeked past will be played.
+     * The label of the track.
      */
-    snapback: boolean;
+    label: string;
     /**
-     * A source transformer which will receive the source as returned from Google DAI before loading it in the player. This capability can be useful
-     * if you need to add authentication tokens or signatures to the source URL as returned by Google.
+     * The language of the track.
      */
-    sourceTransformer: (url: string) => string | Promise<string>;
+    language: string;
+    /**
+     * The accessibility settings of the track.
+     *
+     * @remarks
+     * <br/> - For DASH: the accessibility descriptors for the corresponding AdaptationSet.
+     * <br/> - For HLS: the CHARACTERISTICS for the corresponding #EXT-X-MEDIA tag.
+     */
+    readonly accessibility: AccessibilityRole[];
 }
-
 /**
- * A synchronous or asynchronous return type
+ * Possible accessibility roles.
  *
+ * @category Media and Text Tracks
  * @public
  */
-type MaybeAsync<T> = T | PromiseLike<T>;
+type AccessibilityRole = 'caption' | 'sign' | 'description' | 'enhanced audio intelligibility' | 'easy reader' | 'transcribes spoken dialog' | 'describes music and sound' | 'describes video';
 
 /**
  * A code that indicates the type of error that has occurred.
@@ -348,7 +554,11 @@ declare enum ErrorCode {
     /**
      * A fatal error occurred regarding THEOlive analytics.
      */
-    THEO_LIVE_ANALYTICS_ERROR = 13003
+    THEO_LIVE_ANALYTICS_ERROR = 13003,
+    /**
+     * The THEOlive channel could not be played because the discovery request failed or returned an invalid response.
+     */
+    THEO_LIVE_DISCOVERY_ERROR = 13004
 }
 /**
  * The category of an error.
@@ -424,6 +634,909 @@ declare namespace ErrorCategory {
      */
     function fromCode(code: ErrorCode): ErrorCategory;
 }
+
+/**
+ * An error that is thrown by THEOplayer.
+ *
+ * @category Errors
+ * @public
+ */
+interface THEOplayerError extends Error {
+    /**
+     * An {@link ErrorCode} that indicates the type of error that has occurred.
+     */
+    readonly code: ErrorCode;
+    /**
+     * An `ErrorCategory` that indicates the category of the error that has occurred.
+     *
+     * @remarks
+     * <br/> - Equivalent to `ErrorCategory.fromCode(error.code)`
+     */
+    readonly category: ErrorCategory;
+    /**
+     * The underlying cause of this error, if known.
+     */
+    readonly cause: Error | undefined;
+}
+
+/**
+ * The events fired by a {@link Quality}.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface QualityEventMap {
+    /**
+     * {@inheritDoc UpdateQualityEvent}
+     */
+    update: UpdateQualityEvent;
+}
+/**
+ * Fired when the quality updates.
+ *
+ * @category Media and Text Tracks
+ * @category Events
+ * @public
+ */
+interface UpdateQualityEvent extends Event<'update'> {
+    /**
+     * The quality which has been updated.
+     */
+    readonly quality: Quality;
+}
+/**
+ * Represents a quality of a media track.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface Quality extends EventDispatcher<QualityEventMap> {
+    /**
+     * The average bandwidth of the quality, in bits per second.
+     */
+    readonly averageBandwidth?: number;
+    /**
+     * The required bandwidth for the quality, in bits per second.
+     */
+    readonly bandwidth: number;
+    /**
+     * The codecs of the quality.
+     *
+     * @remarks
+     * <br/> - These are represented as a string containing the codecs as defined by the manifest.
+     */
+    readonly codecs: string;
+    /**
+     * The identifier for this quality. This identifier is tied to the stream's internal representation. It may be empty. For a unique id, use {@link Quality.uid}.
+     */
+    readonly id: string;
+    /**
+     * The unique identifier for this quality.
+     */
+    readonly uid: number;
+    /**
+     * The name of the quality.
+     */
+    readonly name: string;
+    /**
+     * The label of the quality.
+     */
+    label: string;
+    /**
+     * Whether the quality is available for selection.
+     *
+     * @remarks
+     * <ul>
+     * <li>A quality that is unavailable will be ignored during ABR selection
+     * and when setting {@link MediaTrack.targetQuality}.</li>
+     * <li>A quality can be unavailable due to a DRM restriction (e.g. HDCP).</li>
+     * <li>To prevent a quality from being selected for reasons outside the player,
+     * set {@link enabled} to `false`.</li>
+     * </ul>
+     */
+    readonly available: boolean;
+    /**
+     * Whether the quality is allowed to be selected.
+     *
+     * @remarks
+     * <ul>
+     * <li>A quality that is disabled will be ignored during ABR selection,
+     * and when setting {@link MediaTrack.targetQuality}.</li>
+     * <li>Setting this to `false` will cause {@link available} to become `false`.
+     * However, setting this to `true` **does not** guarantee that {@link available} will become `true`,
+     * since the player might not be able to select this quality for its own reasons.</li>
+     * <li>Available since v11.4.0.</li>
+     * </ul>
+     *
+     * @defaultValue true
+     */
+    enabled: boolean;
+    /**
+     * The HLS SCORE attribute.
+     *
+     * @remarks
+     * <br/> - Available since v6.8.0.
+     * <br/> - Only for HLS streams.
+     */
+    readonly score: number | undefined;
+}
+/**
+ * Represents a quality of a video track.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface VideoQuality extends Quality {
+    /**
+     * The video height of the video quality, in pixels.
+     */
+    readonly height: number;
+    /**
+     * The video width of the video quality, in pixels.
+     */
+    readonly width: number;
+    /**
+     * The framerate of the video quality.
+     */
+    readonly frameRate: number;
+    /**
+     * The timestamp of the first frame of the video quality, in seconds.
+     */
+    readonly firstFrame: number;
+}
+/**
+ * Represents a quality of an audio track.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface AudioQuality extends Quality {
+    /**
+     * The sampling rate of the audio quality.
+     */
+    readonly audioSamplingRate: number | [number, number];
+}
+
+/**
+ * List of qualities.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface QualityList extends Array<Quality> {
+    /**
+     * Index signature to get the quality at the requested index in the list.
+     */
+    [index: number]: Quality;
+    /**
+     * Return the quality at the requested index in the list.
+     *
+     * @param index - A `number` representing the index of a quality in the list.
+     * @returns The quality with index `index` in the list.
+     */
+    item(index: number): Quality;
+}
+
+/**
+ * The type of a media track, represented by a value from the following list:
+ * <br/> - `'audio'`
+ * <br/> - `'video'`
+ * <br/> - `'text'`
+ * <br/> - `'image'`
+ * <br/> - `'unknown'`
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+type MediaTrackType = 'audio' | 'video' | 'text' | 'image' | 'unknown';
+/**
+ * A quality-related event fired by a {@link MediaTrack}.
+ *
+ * @category Media and Text Tracks
+ * @category Events
+ * @public
+ */
+interface QualityEvent<TType extends string> extends Event<TType> {
+    /**
+     * The quality.
+     */
+    readonly quality: Quality;
+}
+/**
+ * Fired when the media track's {@link MediaTrack.targetQuality | target quality} changes.
+ *
+ * @category Media and Text Tracks
+ * @category Events
+ * @public
+ */
+interface TargetQualityChangedEvent extends Event<'targetqualitychanged'> {
+    /**
+     * The new target quality.
+     */
+    readonly quality: Quality | undefined;
+    /**
+     * The new target qualities.
+     */
+    readonly qualities: Quality[];
+}
+/**
+ * The events fired by a {@link MediaTrack}.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface MediaTrackEventMap extends TrackEventMap {
+    /**
+     * Fired when the media track's {@link MediaTrack.activeQuality | active quality} changes.
+     */
+    activequalitychanged: QualityEvent<'activequalitychanged'>;
+    /**
+     * Fired when the media track's {@link MediaTrack.targetQuality | target quality} changes.
+     */
+    targetqualitychanged: TargetQualityChangedEvent;
+    /**
+     * Fired when a quality of the track becomes unavailable.
+     *
+     * @remarks
+     * <br/> - A quality can become unavailable due to a DRM restriction (e.g. HDCP).
+     */
+    qualityunavailable: QualityEvent<'qualityunavailable'>;
+    /**
+     * Fired when a quality of the track becomes available again.
+     *
+     * @remarks
+     * <br/> - A quality can become unavailable due to a DRM restriction (e.g. HDCP).
+     */
+    qualityavailable: QualityEvent<'qualityavailable'>;
+}
+/**
+ * Represents a media track (audio or video) of a media resource.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface MediaTrack extends Track, EventDispatcher<MediaTrackEventMap> {
+    /**
+     * Whether the track is enabled.
+     *
+     * @remarks
+     * <br/> - Only one track of the same type (e.g. video) can be enabled at the same time.
+     * <br/> - Enabling a track will disable all other tracks of the same type.
+     * <br/> - Disabling a track will not enable a different track of the same type.
+     */
+    enabled: boolean;
+    /**
+     * The identifier of the media track.
+     *
+     * @remarks
+     * <br/> - This identifier can be used to distinguish between related tracks, e.g. tracks in the same list.
+     */
+    readonly id: string;
+    /**
+     * A unique identifier of the media track.
+     *
+     * @remarks
+     * <br/> - This identifier is unique across tracks of a THEOplayer instance and can be used to distinguish between tracks.
+     * <br/> - This identifier is a randomly generated number.
+     */
+    readonly uid: number;
+    /**
+     * The kind of the media track, represented by a value from the following list:
+     * <br/> - `'main'`: The track is the default track for playback
+     * <br/> - `'alternative'`: The track is not the default track for playback
+     */
+    readonly kind: string;
+    /**
+     * The label of the media track.
+     */
+    label: string;
+    /**
+     * The language of the media track.
+     */
+    readonly language: string;
+    /**
+     * The active quality of the media track, i.e. the quality that is currently being played.
+     */
+    readonly activeQuality: Quality | undefined;
+    /**
+     * The qualities of the media track.
+     */
+    readonly qualities: QualityList;
+    /**
+     * One or more desired qualities of the media track.
+     *
+     * @remarks
+     * <br/> - If desired qualities are present, the Adaptive Bitrate mechanism of the player will limit itself to these qualities.
+     * <br/> - If one desired quality is present, the Adaptive Bitrate mechanism of the player will be disabled and the desired quality will be played back.
+     */
+    targetQuality: Quality | Quality[] | undefined;
+    /**
+     * {@inheritDoc EventDispatcher.addEventListener}
+     */
+    addEventListener<TType extends StringKeyOf<MediaTrackEventMap>>(type: TType | readonly TType[], listener: EventListener<MediaTrackEventMap[TType]>): void;
+    /**
+     * {@inheritDoc EventDispatcher.removeEventListener}
+     */
+    removeEventListener<TType extends StringKeyOf<MediaTrackEventMap>>(type: TType | readonly TType[], listener: EventListener<MediaTrackEventMap[TType]>): void;
+}
+
+/**
+ * Fired when an error occurs.
+ *
+ * @category Errors
+ * @category Events
+ * @public
+ */
+interface ErrorEvent extends Event<'error'> {
+    /**
+     * The error that occurred.
+     *
+     * @deprecated use {@link ErrorEvent.errorObject | errorObject.message} instead
+     */
+    error: string;
+    /**
+     * An error object containing additional information about the error.
+     */
+    errorObject: THEOplayerError;
+}
+/**
+ * Fired when a manifest cannot be loaded.
+ *
+ * @category Errors
+ * @category Events
+ * @public
+ */
+interface ManifestErrorEvent extends Event<'manifesterror'> {
+    /**
+     * The number of times the loading of a manifest has been tried.
+     */
+    retryCount: number;
+    /**
+     * The HTTP status code corresponding to the network error returned by the network request.
+     */
+    statusCode: number | undefined;
+    /**
+     * The network status message describing the error that occurred while requesting the manifest.
+     */
+    statusMessage: string | undefined;
+    /**
+     * The service location from which the manifest was requested, if available.
+     */
+    serviceLocation: string | undefined;
+}
+/**
+ * Fired when a segment cannot be loaded.
+ *
+ * @category Errors
+ * @category Events
+ * @public
+ */
+interface SegmentErrorEvent extends Event<'segmenterror'> {
+    /**
+     * The general error message describing the error that occurred while requesting the manifest.
+     */
+    error: string;
+    /**
+     * The quality of the track that this segment belongs to, if available.
+     */
+    quality: Quality | undefined;
+    /**
+     * The number of times the loading of a manifest has been tried.
+     */
+    retryCount: number;
+    /**
+     * The time the segment starts in the stream, in seconds.
+     */
+    segmentStartTime: number;
+    /**
+     * The HTTP status code corresponding to the network error returned by the network request.
+     */
+    statusCode: number | undefined;
+    /**
+     * The network status message describing the error that occurred while requesting the manifest.
+     */
+    statusMessage: string | undefined;
+    /**
+     * The track that this segment belongs to, if available.
+     */
+    track: Track | undefined;
+    /**
+     * The type of track that this segment belongs to/
+     */
+    trackType: MediaTrackType;
+    /**
+     * The service location from which the segment was requested, if available.
+     */
+    serviceLocation: string | undefined;
+}
+
+/**
+ * An error code whose category is `ErrorCategory.SUBTITLE`.
+ *
+ * @category Media and Text Tracks
+ * @category Errors
+ * @public
+ */
+type TextTrackErrorCode = ErrorCode.SUBTITLE_LOAD_ERROR | ErrorCode.SUBTITLE_CORS_ERROR | ErrorCode.SUBTITLE_PARSE_ERROR;
+/**
+ * An error thrown by a text track.
+ *
+ * @category Media and Text Tracks
+ * @category Errors
+ * @public
+ */
+interface TextTrackError extends THEOplayerError {
+    /**
+     * {@inheritDoc THEOplayerError.code}
+     */
+    readonly code: TextTrackErrorCode;
+    /**
+     * The URL of the (sideloaded) text track.
+     */
+    readonly url: string;
+    /**
+     * The status code from the HTTP response.
+     */
+    readonly status: number;
+}
+
+/**
+ * The content type of a text track, represented by a value from the following list:
+ * <br/> - `'srt'`: The track contains SRT (SubRip Text) content.
+ * <br/> - `'ttml'`: The track contains TTML (Timed Text Markup Language) content.
+ * <br/> - `'webvtt'`: The track contains WebVTT (Web Video Text Tracks) content.
+ * <br/> - `'emsg'`: The track contains emsg (Event Message) content.
+ * <br/> - `'eventstream'`: The track contains Event Stream content.
+ * <br/> - `'id3'`: The track contains ID3 content.
+ * <br/> - `'cea608'`: The track contains CEA608 content.
+ * <br/> - `'daterange'`: The track contains HLS EXT-X-DATERANGE content.
+ * <br/> - `'millicast'`: The track contains Millicast metadata content.
+ * <br/> - `''`: The type of the track contents is unknown.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+type TextTrackType = 'srt' | 'ttml' | 'webvtt' | 'emsg' | 'eventstream' | 'id3' | 'cea608' | 'daterange' | 'millicast' | '';
+/**
+ * The ready state of a text track, represented by a value from the following list:
+ * <br/> - `0`: Indicates that the text track's cues have not been obtained.
+ * <br/> - `1`: The text track is loading. Further cues might still be added to the track by the parser.
+ * <br/> - `2`: The text track has been loaded with no fatal errors.
+ * <br/> - `3`: An error occurred obtaining the cues for the track. Some or all of the cues are likely missing and will not be obtained.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+type TextTrackReadyState = 0 | 1 | 2 | 3;
+/**
+ * An error event fired by a {@link TextTrack}.
+ *
+ * @category Media and Text Tracks
+ * @category Errors
+ * @category Events
+ * @public
+ */
+interface TextTrackErrorEvent extends ErrorEvent {
+    /**
+     * {@inheritDoc ErrorEvent.errorObject}
+     */
+    readonly errorObject: TextTrackError;
+}
+/**
+ * Fired when a cue is added to the text track.
+ *
+ * @category Media and Text Tracks
+ * @category Events
+ * @public
+ */
+interface TextTrackAddCueEvent extends Event<'addcue'> {
+    /**
+     * The cue that is added to the text track.
+     */
+    readonly cue: TextTrackCue;
+}
+/**
+ * Fired when a cue is removed from the text track.
+ *
+ * @category Media and Text Tracks
+ * @category Events
+ * @public
+ */
+interface TextTrackRemoveCueEvent extends Event<'removecue'> {
+    /**
+     * The cue that is removed from the text track.
+     */
+    readonly cue: TextTrackCue;
+}
+/**
+ * Fired when a cue from the text track is updated.
+ *
+ * @category Media and Text Tracks
+ * @category Events
+ * @public
+ */
+interface TextTrackUpdateCueEvent extends Event<'updatecue'> {
+    /**
+     * The cue from the text track that is updated.
+     */
+    readonly cue: TextTrackCue;
+}
+/**
+ * Fired when a cue of the text track has entered.
+ *
+ * @category Media and Text Tracks
+ * @category Events
+ * @public
+ */
+interface TextTrackEnterCueEvent extends Event<'entercue'> {
+    /**
+     * The cue from the text track that has entered.
+     */
+    readonly cue: TextTrackCue;
+}
+/**
+ * Fired when a cue of the text track has exited.
+ *
+ * @category Media and Text Tracks
+ * @category Events
+ * @public
+ */
+interface TextTrackExitCueEvent extends Event<'exitcue'> {
+    /**
+     * The cue from the text track that has exited.
+     */
+    readonly cue: TextTrackCue;
+}
+/**
+ * Fired when the displaying cues of the text track has changed.
+ *
+ * @category Media and Text Tracks
+ * @category Events
+ * @public
+ */
+interface TextTrackCueChangeEvent extends Event<'cuechange'> {
+    /**
+     * The text track which displaying cues has changed.
+     */
+    readonly track: TextTrack;
+}
+/**
+ * Fired when the {@link TextTrack.readyState | ready state} of the text track has changed.
+ *
+ * @category Media and Text Tracks
+ * @category Events
+ * @public
+ */
+interface TextTrackReadyStateChangeEvent extends Event<'readystatechange'> {
+    /**
+     * The text track which ready state has changed.
+     */
+    readonly track: TextTrack;
+    /**
+     * The new {@link TextTrack.readyState | ready state} of the text track.
+     */
+    readonly readyState: TextTrackReadyState;
+}
+/**
+ * Fired when the {@link TextTrack."type" | type} of the text track has changed.
+ *
+ * @category Media and Text Tracks
+ * @category Events
+ * @public
+ */
+interface TextTrackTypeChangeEvent extends Event<'typechange'> {
+    /**
+     * The text track which type has changed.
+     */
+    readonly track: TextTrack;
+}
+/**
+ * The events fired by a {@link TextTrack}.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface TextTrackEventMap extends TrackEventMap {
+    /**
+     * Fired when a cue is added to the track.
+     */
+    addcue: TextTrackAddCueEvent;
+    /**
+     * Fired when a cue of the track is removed.
+     */
+    removecue: TextTrackRemoveCueEvent;
+    /**
+     * Fired when a cue of the track is updated.
+     */
+    updatecue: TextTrackUpdateCueEvent;
+    /**
+     * Fired when a cue of the track enters.
+     */
+    entercue: TextTrackEnterCueEvent;
+    /**
+     * Fired when a cue of the track exits.
+     */
+    exitcue: TextTrackExitCueEvent;
+    /**
+     * Fired when the displaying cues of the text track changes.
+     */
+    cuechange: TextTrackCueChangeEvent;
+    /**
+     * Fired when the text track's {@link TextTrack.readyState | ready state} changes.
+     */
+    readystatechange: TextTrackReadyStateChangeEvent;
+    /**
+     * Fired when the text track's {@link TextTrack."type" | type} changes.
+     */
+    typechange: TextTrackTypeChangeEvent;
+    /**
+     * Fired when an error occurred while loading or parsing the track.
+     */
+    error: TextTrackErrorEvent;
+}
+/**
+ * Represents a text track of a media resource.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface TextTrack extends Track, EventDispatcher<TextTrackEventMap> {
+    /**
+     * The kind of the text track, represented by a value from the following list:
+     * <br/> - `'subtitles'`: The track contains subtitles.
+     * <br/> - `'captions'`: The track contains closed captions, a translation of dialogue and sound effects.
+     * <br/> - `'descriptions'`: The track contains descriptions, a textual description of the video.
+     * <br/> - `'chapters'`: The track contains chapter titles.
+     * <br/> - `'metadata'`: The track contains metadata. This track will not serve display purposes.
+     */
+    readonly kind: string;
+    /**
+     * The label of the text track.
+     */
+    label: string;
+    /**
+     * The language of the text track.
+     */
+    readonly language: string;
+    /**
+     * The identifier of the text track.
+     *
+     * @remarks
+     * <br/> - This identifier can be used to distinguish between related tracks, e.g. tracks in the same list.
+     * <br/> - For a text track embedded within an MPEG-DASH stream, this returns the Representation’d id attribute.
+     * <br/> - For MPEG-DASH streams a Representation's ID is preferred over the AdaptationSet's ID.
+     */
+    readonly id: string;
+    /**
+     * A unique identifier of the text track.
+     *
+     * @remarks
+     * <br/> - This identifier is unique across tracks of a THEOplayer instance and can be used to distinguish between tracks.
+     * <br/> - This identifier is a randomly generated number.
+     */
+    readonly uid: number;
+    /**
+     * The in-band metadata track dispatch type of the text track.
+     */
+    readonly inBandMetadataTrackDispatchType: string;
+    /**
+     * The mode of the text track, represented by a value from the following list:
+     * <br/> - `'disabled'`: The track is disabled.
+     * <br/> - `'hidden'`: The track is hidden.
+     * <br/> - `'showing'`: The track is showing.
+     *
+     * @remarks
+     * <br/> - A disabled track is not displayed and exposes no active cues, nor fires cue events.
+     * <br/> - A hidden track is not displayed but exposes active cues and fires cue events.
+     * <br/> - A showing track is displayed, exposes active cues and fires cue events.
+     */
+    mode: string;
+    /**
+     * The ready state of the text track.
+     */
+    readonly readyState: TextTrackReadyState;
+    /**
+     * The content type of the text track.
+     */
+    readonly type: TextTrackType;
+    /**
+     * The list of cues of the track.
+     *
+     * @remarks
+     * <br/> - If the {@link TextTrack.mode} is `'disabled'`, this property is `null`.
+     */
+    readonly cues: TextTrackCueList | null;
+    /**
+     * The list of active cues of the track.
+     *
+     * @remarks
+     * <br/> - A cue is active if the current playback position falls within the time bounds of the cue.
+     * <br/> - This list dynamically updates based on the current playback position.
+     * <br/> - If the {@link TextTrack.mode} is `'disabled'`, this property is `null`.
+     */
+    readonly activeCues: TextTrackCueList | null;
+    /**
+     * The source of the text track.
+     */
+    readonly src: string;
+    /**
+     * Indicates whether the track contains Forced Narrative cues.
+     * This may only be true for subtitle tracks where
+     * <br/> - For DASH: the corresponding AdaptationSet contains a child Role with its value attribute equal to `'forced_subtitle'`
+     * <br/> - For HLS: the corresponding #EXT-X-MEDIA tag contains the attributes TYPE=SUBTITLES and FORCED=YES (not supported yet)
+     */
+    readonly forced: boolean;
+    /**
+     * The closed caption service number of the text track.
+     *
+     * @remarks
+     * <br/> - For CEA-608 caption tracks, this holds the channel number.
+     * <br/> - For CEA-708 caption tracks, this holds the service number.
+     * <br/> - Otherwise, this is `undefined`.
+     */
+    readonly captionChannel?: number;
+    /**
+     * {@inheritDoc EventDispatcher.addEventListener}
+     */
+    addEventListener<TType extends StringKeyOf<TextTrackEventMap>>(type: TType | readonly TType[], listener: EventListener<TextTrackEventMap[TType]>): void;
+    /**
+     * {@inheritDoc EventDispatcher.removeEventListener}
+     */
+    removeEventListener<TType extends StringKeyOf<TextTrackEventMap>>(type: TType | readonly TType[], listener: EventListener<TextTrackEventMap[TType]>): void;
+}
+
+/**
+ * List of tracks.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface TrackList<TTrack extends Track> extends ReadonlyArray<TTrack>, EventDispatcher<TrackListEventMap> {
+    /**
+     * The number of tracks in the list.
+     */
+    readonly length: number;
+    /**
+     * Return the track at the requested index in the list.
+     *
+     * @param index - A `number` representing the index of a track in the list.
+     * @returns The track with index `index` in the list.
+     */
+    item(index: number): TTrack;
+    /**
+     * Index signature to get the track at the requested index in the list.
+     */
+    readonly [index: number]: TTrack;
+}
+
+/**
+ * List of text tracks.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+interface TextTracksList extends TrackList<TextTrack> {
+    /**
+     * The number of text tracks in the list.
+     */
+    readonly length: number;
+    /**
+     * Return the text track at the requested index in the list.
+     *
+     * @param index - A `number` representing the index of a text track in the list.
+     * @returns The text track with index `index` in the list.
+     */
+    item(index: number): TextTrack;
+    /**
+     * Index signature to get the text track at the requested index in the list.
+     */
+    readonly [index: number]: TextTrack;
+}
+
+/**
+ * The media error code, represented by a value from the following list:
+ * <br/> - `1` - ABORTED: The fetching of the associated resource was aborted by the user's request.
+ * <br/> - `2` - NETWORK: Some kind of network error occurred which prevented the media from being successfully fetched, despite having previously been available.
+ * <br/> - `3` - DECODE: Despite having previously been determined to be usable, an error occurred while trying to decode the media resource, resulting in an error.
+ * <br/> - `4` - SRC_NOT_SUPPORTED: The associated resource or media provider object (such as a MediaStream) has been found to be unsuitable.
+ * <br/> - `5` - ENCRYPTED: Some kind of digital rights management error occurred.
+ * <br/> - `6` - LICENSE_INVALID: The player's license was determined to be invalid.
+ * <br/> - `7` - ADVERTISEMENT_ERROR: Some kind of advertisement related error occurred.
+ *
+ * @category Errors
+ * @public
+ */
+type MediaErrorCode = 1 | 2 | 3 | 4 | 5 | 6 | 7;
+/**
+ * Thrown when a media error occurs.
+ *
+ * @category Errors
+ * @public
+ */
+interface MediaError extends Error {
+    /**
+     * The code of the error.
+     */
+    readonly code: MediaErrorCode;
+    /**
+     * The cause of the error, if any.
+     */
+    readonly cause?: string;
+    /**
+     * The key system specific error code, if any.
+     */
+    readonly systemCode?: number;
+}
+
+/**
+ * Fired when the ad has stalled playback to buffer.
+ *
+ * @category Ads
+ * @category Events
+ * @public
+ */
+interface AdBufferingEvent extends AdEvent<'adbuffering'> {
+    /**
+     * The ad which is buffered.
+     */
+    readonly ad: GoogleImaAd;
+}
+
+/**
+ * Fired when an ads list is loaded.
+ *
+ * @category Ads
+ * @category Events
+ * @public
+ */
+interface AdMetadataEvent extends Event<'admetadata'> {
+}
+
+/**
+ * The Google DAI API.
+ *
+ * @remarks
+ * <br/> - Available since v3.7.0.
+ *
+ * @category Ads
+ * @public
+ */
+interface GoogleDAI {
+    /**
+     * Returns the content time without ads for a given stream time. Returns the given stream time for live streams.
+     *
+     * @param time - The stream time with inserted ads (in seconds).
+     */
+    contentTimeForStreamTime(time: number): number;
+    /**
+     * Returns the stream time with ads for a given content time. Returns the given content time for live streams.
+     *
+     * @param time - The content time without any ads (in seconds).
+     */
+    streamTimeForContentTime(time: number): number;
+    /**
+     * Replaces all the ad tag parameters used for upcoming ad requests for a live stream.
+     *
+     * @param adTagParameters - The new ad tag parameters.
+     */
+    replaceAdTagParameters(adTagParameters?: Record<string, string>): void;
+    /**
+     * Whether snapback is enabled. When enabled and the user seeks over multiple ad breaks, the last ad break that was seeked past will be played.
+     */
+    snapback: boolean;
+    /**
+     * A source transformer which will receive the source as returned from Google DAI before loading it in the player. This capability can be useful
+     * if you need to add authentication tokens or signatures to the source URL as returned by Google.
+     */
+    sourceTransformer: (url: string) => string | Promise<string>;
+}
+
+/**
+ * A synchronous or asynchronous return type
+ *
+ * @public
+ */
+type MaybeAsync<T> = T | PromiseLike<T>;
 
 /**
  * A handler for a server-side ad integration.
@@ -2368,9 +3481,13 @@ interface DRMConfiguration {
      * `"fairplay"` alias for `"urn:uuid:94ce86fb-07bb-4b43-adb8-93d2fa968ca2"`
      * `"playready"` alias for `"urn:uuid:9a04f079-9840-4286-ab92-e65be0885f95"`
      *
-     * The first key system in this list which is supported on the given platform will be used for playback.
+     * When set, the first key system in this list which is supported on the given platform will be used for playback.
      *
-     * Default value is ['widevine', 'playready', 'fairplay'].
+     * When omitted or empty, the player decides:
+     * - For HLS, the configured key system that supports the most of the stream's codecs is used
+     *   (for example, on Windows Edge, PlayReady rather than Widevine for Dolby Vision content).
+     *   When several key systems support the same codecs, the order `['widevine', 'playready', 'fairplay']` decides.
+     * - For other streaming protocols, the key systems are tried in the order `['widevine', 'playready', 'fairplay']`.
      */
     preferredKeySystems?: Array<KeySystemId | (string & {})>;
     /**
@@ -3034,6 +4151,8 @@ interface PlayerConfiguration {
      * <br/> - When this option is set to true, the player may assume that mixed content is allowed on the current platform, and will not automatically convert HTTP URLs to HTTPS.
      *
      * @defaultValue `false`
+     *
+     * @deprecated Use {@link NetworkConfiguration.allowMixedContent} instead.
      */
     allowMixedContent?: boolean;
     /**
@@ -3155,6 +4274,18 @@ interface NetworkConfiguration {
      * @defaultValue `true`
      */
     useStreamingFetch?: boolean;
+    /**
+     * Whether mixed HTTP/HTTPS content is allowed.
+     *
+     * @remarks
+     * <br/> - Available since v11.12.0.
+     * <br/> - By default, the player assumes that it cannot load HTTP URLs when inside an HTTPS page because of {@link https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content | mixed content restrictions}. Therefore, the player will automatically convert HTTP URLs to HTTPS before loading them.
+     * <br/> - When this option is set to true, the player may assume that mixed content is allowed on the current platform, and will not automatically convert HTTP URLs to HTTPS.
+     * <br/> - When set, this option takes precedence over the deprecated {@link PlayerConfiguration.allowMixedContent}.
+     *
+     * @defaultValue `false`
+     */
+    allowMixedContent?: boolean;
 }
 /**
  * The muted autoplay policy of a player.
@@ -3750,1032 +4881,6 @@ interface HlsPlaybackConfiguration {
      * @defaultValue `false`
      */
     delaySubtitlePreload?: boolean;
-}
-
-/**
- * Fired when a text track cue is entered.
- *
- * @category Media and Text Tracks
- * @category Events
- * @public
- */
-interface TextTrackCueEnterEvent extends Event<'enter'> {
-    /**
-     * The text track cue that is entered.
-     */
-    readonly cue: TextTrackCue;
-}
-/**
- * Fired when a text track cue is exited.
- *
- * @category Media and Text Tracks
- * @category Events
- * @public
- */
-interface TextTrackCueExitEvent extends Event<'exit'> {
-    /**
-     * The text track cue that is exited.
-     */
-    readonly cue: TextTrackCue;
-}
-/**
- * Fired when a text track cue is updated.
- *
- * @category Media and Text Tracks
- * @category Events
- * @public
- */
-interface TextTrackCueUpdateEvent extends Event<'update'> {
-    /**
-     * The text track cue that is updated.
-     */
-    readonly cue: TextTrackCue;
-}
-/**
- * The events fired by the {@link TextTrackCue}.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface TextTrackCueEventMap {
-    /**
-     * Fired when the cue is entered.
-     */
-    enter: TextTrackCueEnterEvent;
-    /**
-     * Fired when the cue is exited.
-     */
-    exit: TextTrackCueExitEvent;
-    /**
-     * Fired when the cue is updated.
-     */
-    update: TextTrackCueUpdateEvent;
-}
-/**
- * Represents a cue of a text track.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface TextTrackCue extends EventDispatcher<TextTrackCueEventMap> {
-    /**
-     * The text track of the cue.
-     */
-    track: TextTrack;
-    /**
-     * The identifier of the cue.
-     */
-    id: string;
-    /**
-     * A unique identifier of the text track cue.
-     *
-     * @remarks
-     * <br/> - This identifier is unique across text track cues of a THEOplayer instance and can be used to distinguish between cues.
-     * <br/> - This identifier is a randomly generated number.
-     */
-    readonly uid: number;
-    /**
-     * The playback position at which the cue becomes active, in seconds.
-     */
-    startTime: number;
-    /**
-     * The playback position at which the cue becomes inactive, in seconds.
-     */
-    endTime: number;
-    /**
-     * The content of the cue.
-     *
-     * @remarks
-     * The content differs depending on the {@link TextTrackCue.track}'s {@link TextTrack."type" | type }:
-     * <br/> - `'emsg'`: Content is a Uint8Array representing the binary message data from the `emsg` box.
-     * <br/> - `'eventstream'`: Content is the value of the `messageData` attribute which was specified in the manifest.
-     * <br/> - `'ttml'`: Content is an intermediate TTML document’s body element. This is a view of a TTML document where all nodes in the document are active during the cue’s startTime and endTime. As a result, all begin, dur and end properties have been removed. TTML Styles, Regions and Metadata are stored in cue.styles, cue.regions, cue.metadata respectively. Combining those properties with the given content should suffice to render a TTML cue.
-     * <br/> - `'webvtt'`: Content is the cue text in raw unparsed form.
-     */
-    content: any;
-}
-
-/**
- * List of text track cues.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface TextTrackCueList extends ReadonlyArray<TextTrackCue> {
-    /**
-     * The number of text track cues in the list.
-     */
-    readonly length: number;
-    /**
-     * Return the text track cue at the requested index in the list.
-     *
-     * @param index - A `number` representing the index of a text track cue in the list.
-     * @returns The text track cue with index `index` in the list.
-     */
-    item(index: number): TextTrackCue;
-    /**
-     * Index signature to get the text track cue at the requested index in the list.
-     */
-    readonly [index: number]: TextTrackCue;
-}
-
-/**
- * Fired when a new track has been added to this list.
- *
- * @category Media and Text Tracks
- * @category Events
- * @public
- */
-interface AddTrackEvent extends Event<'addtrack'> {
-    /**
-     * The track that has been added.
-     */
-    readonly track: Track;
-}
-/**
- * Fired when a track has been removed to this list.
- *
- * @category Media and Text Tracks
- * @category Events
- * @public
- */
-interface RemoveTrackEvent extends Event<'removetrack'> {
-    /**
-     * The track that has been removed.
-     */
-    readonly track: Track;
-}
-/**
- * Fired when a track has been changed.
- *
- * @category Media and Text Tracks
- * @category Events
- * @public
- */
-interface TrackChangeEvent extends Event<'change'> {
-    /**
-     * The track that has changed.
-     */
-    readonly track: Track;
-}
-/**
- * The events fired by a {@link TrackList}.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface TrackListEventMap {
-    /**
-     * Fired when a track is added.
-     */
-    addtrack: AddTrackEvent;
-    /**
-     * Fired when a track is removed.
-     */
-    removetrack: RemoveTrackEvent;
-    /**
-     * Fired when a track is activated or deactivated.
-     */
-    change: TrackChangeEvent;
-}
-
-/**
- * Fired when one or more properties of a track have been updated.
- *
- * @category Media and Text Tracks
- * @category Events
- * @public
- */
-interface TrackUpdateEvent extends Event<'update'> {
-    /**
-     * The track that has been updated.
-     */
-    readonly track: Track;
-}
-/**
- * The events fired by a {@link Track}.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface TrackEventMap {
-    /**
-     * Fired when a media track's {@link MediaTrack.enabled | enabled} or a text track's {@link TextTrack.mode | mode} changes.
-     */
-    change: TrackChangeEvent;
-    /**
-     * Fired when the track updates.
-     *
-     * @remarks
-     * <br/> - A track might update because a change propagated from a remote player (e.g. Chromecast).
-     */
-    update: TrackUpdateEvent;
-}
-/**
- * Represents a track of a media resource.
- *
- * @remarks
- * <br/> - A specific track type (e.g. {@link TextTrack}) will always be used.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface Track extends EventDispatcher<TrackEventMap> {
-    /**
-     * The kind of the track.
-     *
-     * @remarks
-     * <br/> - The values for this property depend on the specific type of the track.
-     */
-    kind: string;
-    /**
-     * The identifier of the track.
-     *
-     * @remarks
-     * <br/> - This identifier can be used to distinguish between related tracks, e.g. tracks in the same list.
-     */
-    id: string;
-    /**
-     * A unique identifier of the track.
-     *
-     * @remarks
-     * <br/> - This identifier is unique across tracks of a THEOplayer instance and can be used to distinguish between tracks.
-     * <br/> - This identifier is a randomly generated number.
-     */
-    uid: number;
-    /**
-     * The label of the track.
-     */
-    label: string;
-    /**
-     * The language of the track.
-     */
-    language: string;
-    /**
-     * The accessibility settings of the track.
-     *
-     * @remarks
-     * <br/> - For DASH: the accessibility descriptors for the corresponding AdaptationSet.
-     * <br/> - For HLS: the CHARACTERISTICS for the corresponding #EXT-X-MEDIA tag.
-     */
-    readonly accessibility: AccessibilityRole[];
-}
-/**
- * Possible accessibility roles.
- *
- * @category Media and Text Tracks
- * @public
- */
-type AccessibilityRole = 'caption' | 'sign' | 'description' | 'enhanced audio intelligibility' | 'easy reader' | 'transcribes spoken dialog' | 'describes music and sound' | 'describes video';
-
-/**
- * An error that is thrown by THEOplayer.
- *
- * @category Errors
- * @public
- */
-interface THEOplayerError extends Error {
-    /**
-     * An {@link ErrorCode} that indicates the type of error that has occurred.
-     */
-    readonly code: ErrorCode;
-    /**
-     * An `ErrorCategory` that indicates the category of the error that has occurred.
-     *
-     * @remarks
-     * <br/> - Equivalent to `ErrorCategory.fromCode(error.code)`
-     */
-    readonly category: ErrorCategory;
-    /**
-     * The underlying cause of this error, if known.
-     */
-    readonly cause: Error | undefined;
-}
-
-/**
- * The events fired by a {@link Quality}.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface QualityEventMap {
-    /**
-     * {@inheritDoc UpdateQualityEvent}
-     */
-    update: UpdateQualityEvent;
-}
-/**
- * Fired when the quality updates.
- *
- * @category Media and Text Tracks
- * @category Events
- * @public
- */
-interface UpdateQualityEvent extends Event<'update'> {
-    /**
-     * The quality which has been updated.
-     */
-    readonly quality: Quality;
-}
-/**
- * Represents a quality of a media track.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface Quality extends EventDispatcher<QualityEventMap> {
-    /**
-     * The average bandwidth of the quality, in bits per second.
-     */
-    readonly averageBandwidth?: number;
-    /**
-     * The required bandwidth for the quality, in bits per second.
-     */
-    readonly bandwidth: number;
-    /**
-     * The codecs of the quality.
-     *
-     * @remarks
-     * <br/> - These are represented as a string containing the codecs as defined by the manifest.
-     */
-    readonly codecs: string;
-    /**
-     * The identifier for this quality. This identifier is tied to the stream's internal representation. It may be empty. For a unique id, use {@link Quality.uid}.
-     */
-    readonly id: string;
-    /**
-     * The unique identifier for this quality.
-     */
-    readonly uid: number;
-    /**
-     * The name of the quality.
-     */
-    readonly name: string;
-    /**
-     * The label of the quality.
-     */
-    label: string;
-    /**
-     * Whether the quality is available for selection.
-     *
-     * @remarks
-     * <ul>
-     * <li>A quality that is unavailable will be ignored during ABR selection
-     * and when setting {@link MediaTrack.targetQuality}.</li>
-     * <li>A quality can be unavailable due to a DRM restriction (e.g. HDCP).</li>
-     * <li>To prevent a quality from being selected for reasons outside the player,
-     * set {@link enabled} to `false`.</li>
-     * </ul>
-     */
-    readonly available: boolean;
-    /**
-     * Whether the quality is allowed to be selected.
-     *
-     * @remarks
-     * <ul>
-     * <li>A quality that is disabled will be ignored during ABR selection,
-     * and when setting {@link MediaTrack.targetQuality}.</li>
-     * <li>Setting this to `false` will cause {@link available} to become `false`.
-     * However, setting this to `true` **does not** guarantee that {@link available} will become `true`,
-     * since the player might not be able to select this quality for its own reasons.</li>
-     * <li>Available since v11.4.0.</li>
-     * </ul>
-     *
-     * @defaultValue true
-     */
-    enabled: boolean;
-    /**
-     * The HLS SCORE attribute.
-     *
-     * @remarks
-     * <br/> - Available since v6.8.0.
-     * <br/> - Only for HLS streams.
-     */
-    readonly score: number | undefined;
-}
-/**
- * Represents a quality of a video track.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface VideoQuality extends Quality {
-    /**
-     * The video height of the video quality, in pixels.
-     */
-    readonly height: number;
-    /**
-     * The video width of the video quality, in pixels.
-     */
-    readonly width: number;
-    /**
-     * The framerate of the video quality.
-     */
-    readonly frameRate: number;
-    /**
-     * The timestamp of the first frame of the video quality, in seconds.
-     */
-    readonly firstFrame: number;
-}
-/**
- * Represents a quality of an audio track.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface AudioQuality extends Quality {
-    /**
-     * The sampling rate of the audio quality.
-     */
-    readonly audioSamplingRate: number | [number, number];
-}
-
-/**
- * List of qualities.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface QualityList extends Array<Quality> {
-    /**
-     * Index signature to get the quality at the requested index in the list.
-     */
-    [index: number]: Quality;
-    /**
-     * Return the quality at the requested index in the list.
-     *
-     * @param index - A `number` representing the index of a quality in the list.
-     * @returns The quality with index `index` in the list.
-     */
-    item(index: number): Quality;
-}
-
-/**
- * The type of a media track, represented by a value from the following list:
- * <br/> - `'audio'`
- * <br/> - `'video'`
- * <br/> - `'text'`
- * <br/> - `'image'`
- * <br/> - `'unknown'`
- *
- * @category Media and Text Tracks
- * @public
- */
-type MediaTrackType = 'audio' | 'video' | 'text' | 'image' | 'unknown';
-/**
- * A quality-related event fired by a {@link MediaTrack}.
- *
- * @category Media and Text Tracks
- * @category Events
- * @public
- */
-interface QualityEvent<TType extends string> extends Event<TType> {
-    /**
-     * The quality.
-     */
-    readonly quality: Quality;
-}
-/**
- * Fired when the media track's {@link MediaTrack.targetQuality | target quality} changes.
- *
- * @category Media and Text Tracks
- * @category Events
- * @public
- */
-interface TargetQualityChangedEvent extends Event<'targetqualitychanged'> {
-    /**
-     * The new target quality.
-     */
-    readonly quality: Quality | undefined;
-    /**
-     * The new target qualities.
-     */
-    readonly qualities: Quality[];
-}
-/**
- * The events fired by a {@link MediaTrack}.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface MediaTrackEventMap extends TrackEventMap {
-    /**
-     * Fired when the media track's {@link MediaTrack.activeQuality | active quality} changes.
-     */
-    activequalitychanged: QualityEvent<'activequalitychanged'>;
-    /**
-     * Fired when the media track's {@link MediaTrack.targetQuality | target quality} changes.
-     */
-    targetqualitychanged: TargetQualityChangedEvent;
-    /**
-     * Fired when a quality of the track becomes unavailable.
-     *
-     * @remarks
-     * <br/> - A quality can become unavailable due to a DRM restriction (e.g. HDCP).
-     */
-    qualityunavailable: QualityEvent<'qualityunavailable'>;
-    /**
-     * Fired when a quality of the track becomes available again.
-     *
-     * @remarks
-     * <br/> - A quality can become unavailable due to a DRM restriction (e.g. HDCP).
-     */
-    qualityavailable: QualityEvent<'qualityavailable'>;
-}
-/**
- * Represents a media track (audio or video) of a media resource.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface MediaTrack extends Track, EventDispatcher<MediaTrackEventMap> {
-    /**
-     * Whether the track is enabled.
-     *
-     * @remarks
-     * <br/> - Only one track of the same type (e.g. video) can be enabled at the same time.
-     * <br/> - Enabling a track will disable all other tracks of the same type.
-     * <br/> - Disabling a track will not enable a different track of the same type.
-     */
-    enabled: boolean;
-    /**
-     * The identifier of the media track.
-     *
-     * @remarks
-     * <br/> - This identifier can be used to distinguish between related tracks, e.g. tracks in the same list.
-     */
-    readonly id: string;
-    /**
-     * A unique identifier of the media track.
-     *
-     * @remarks
-     * <br/> - This identifier is unique across tracks of a THEOplayer instance and can be used to distinguish between tracks.
-     * <br/> - This identifier is a randomly generated number.
-     */
-    readonly uid: number;
-    /**
-     * The kind of the media track, represented by a value from the following list:
-     * <br/> - `'main'`: The track is the default track for playback
-     * <br/> - `'alternative'`: The track is not the default track for playback
-     */
-    readonly kind: string;
-    /**
-     * The label of the media track.
-     */
-    label: string;
-    /**
-     * The language of the media track.
-     */
-    readonly language: string;
-    /**
-     * The active quality of the media track, i.e. the quality that is currently being played.
-     */
-    readonly activeQuality: Quality | undefined;
-    /**
-     * The qualities of the media track.
-     */
-    readonly qualities: QualityList;
-    /**
-     * One or more desired qualities of the media track.
-     *
-     * @remarks
-     * <br/> - If desired qualities are present, the Adaptive Bitrate mechanism of the player will limit itself to these qualities.
-     * <br/> - If one desired quality is present, the Adaptive Bitrate mechanism of the player will be disabled and the desired quality will be played back.
-     */
-    targetQuality: Quality | Quality[] | undefined;
-    /**
-     * {@inheritDoc EventDispatcher.addEventListener}
-     */
-    addEventListener<TType extends StringKeyOf<MediaTrackEventMap>>(type: TType | readonly TType[], listener: EventListener<MediaTrackEventMap[TType]>): void;
-    /**
-     * {@inheritDoc EventDispatcher.removeEventListener}
-     */
-    removeEventListener<TType extends StringKeyOf<MediaTrackEventMap>>(type: TType | readonly TType[], listener: EventListener<MediaTrackEventMap[TType]>): void;
-}
-
-/**
- * Fired when an error occurs.
- *
- * @category Errors
- * @category Events
- * @public
- */
-interface ErrorEvent extends Event<'error'> {
-    /**
-     * The error that occurred.
-     *
-     * @deprecated use {@link ErrorEvent.errorObject | errorObject.message} instead
-     */
-    error: string;
-    /**
-     * An error object containing additional information about the error.
-     */
-    errorObject: THEOplayerError;
-}
-/**
- * Fired when a manifest cannot be loaded.
- *
- * @category Errors
- * @category Events
- * @public
- */
-interface ManifestErrorEvent extends Event<'manifesterror'> {
-    /**
-     * The number of times the loading of a manifest has been tried.
-     */
-    retryCount: number;
-    /**
-     * The HTTP status code corresponding to the network error returned by the network request.
-     */
-    statusCode: number | undefined;
-    /**
-     * The network status message describing the error that occurred while requesting the manifest.
-     */
-    statusMessage: string | undefined;
-    /**
-     * The service location from which the manifest was requested, if available.
-     */
-    serviceLocation: string | undefined;
-}
-/**
- * Fired when a segment cannot be loaded.
- *
- * @category Errors
- * @category Events
- * @public
- */
-interface SegmentErrorEvent extends Event<'segmenterror'> {
-    /**
-     * The general error message describing the error that occurred while requesting the manifest.
-     */
-    error: string;
-    /**
-     * The quality of the track that this segment belongs to, if available.
-     */
-    quality: Quality | undefined;
-    /**
-     * The number of times the loading of a manifest has been tried.
-     */
-    retryCount: number;
-    /**
-     * The time the segment starts in the stream, in seconds.
-     */
-    segmentStartTime: number;
-    /**
-     * The HTTP status code corresponding to the network error returned by the network request.
-     */
-    statusCode: number | undefined;
-    /**
-     * The network status message describing the error that occurred while requesting the manifest.
-     */
-    statusMessage: string | undefined;
-    /**
-     * The track that this segment belongs to, if available.
-     */
-    track: Track | undefined;
-    /**
-     * The type of track that this segment belongs to/
-     */
-    trackType: MediaTrackType;
-    /**
-     * The service location from which the segment was requested, if available.
-     */
-    serviceLocation: string | undefined;
-}
-
-/**
- * An error code whose category is `ErrorCategory.SUBTITLE`.
- *
- * @category Media and Text Tracks
- * @category Errors
- * @public
- */
-type TextTrackErrorCode = ErrorCode.SUBTITLE_LOAD_ERROR | ErrorCode.SUBTITLE_CORS_ERROR | ErrorCode.SUBTITLE_PARSE_ERROR;
-/**
- * An error thrown by a text track.
- *
- * @category Media and Text Tracks
- * @category Errors
- * @public
- */
-interface TextTrackError extends THEOplayerError {
-    /**
-     * {@inheritDoc THEOplayerError.code}
-     */
-    readonly code: TextTrackErrorCode;
-    /**
-     * The URL of the (sideloaded) text track.
-     */
-    readonly url: string;
-    /**
-     * The status code from the HTTP response.
-     */
-    readonly status: number;
-}
-
-/**
- * The content type of a text track, represented by a value from the following list:
- * <br/> - `'srt'`: The track contains SRT (SubRip Text) content.
- * <br/> - `'ttml'`: The track contains TTML (Timed Text Markup Language) content.
- * <br/> - `'webvtt'`: The track contains WebVTT (Web Video Text Tracks) content.
- * <br/> - `'emsg'`: The track contains emsg (Event Message) content.
- * <br/> - `'eventstream'`: The track contains Event Stream content.
- * <br/> - `'id3'`: The track contains ID3 content.
- * <br/> - `'cea608'`: The track contains CEA608 content.
- * <br/> - `'daterange'`: The track contains HLS EXT-X-DATERANGE content.
- * <br/> - `'millicast'`: The track contains Millicast metadata content.
- * <br/> - `''`: The type of the track contents is unknown.
- *
- * @category Media and Text Tracks
- * @public
- */
-type TextTrackType = 'srt' | 'ttml' | 'webvtt' | 'emsg' | 'eventstream' | 'id3' | 'cea608' | 'daterange' | 'millicast' | '';
-/**
- * The ready state of a text track, represented by a value from the following list:
- * <br/> - `0`: Indicates that the text track's cues have not been obtained.
- * <br/> - `1`: The text track is loading. Further cues might still be added to the track by the parser.
- * <br/> - `2`: The text track has been loaded with no fatal errors.
- * <br/> - `3`: An error occurred obtaining the cues for the track. Some or all of the cues are likely missing and will not be obtained.
- *
- * @category Media and Text Tracks
- * @public
- */
-type TextTrackReadyState = 0 | 1 | 2 | 3;
-/**
- * An error event fired by a {@link TextTrack}.
- *
- * @category Media and Text Tracks
- * @category Errors
- * @category Events
- * @public
- */
-interface TextTrackErrorEvent extends ErrorEvent {
-    /**
-     * {@inheritDoc ErrorEvent.errorObject}
-     */
-    readonly errorObject: TextTrackError;
-}
-/**
- * Fired when a cue is added to the text track.
- *
- * @category Media and Text Tracks
- * @category Events
- * @public
- */
-interface TextTrackAddCueEvent extends Event<'addcue'> {
-    /**
-     * The cue that is added to the text track.
-     */
-    readonly cue: TextTrackCue;
-}
-/**
- * Fired when a cue is removed from the text track.
- *
- * @category Media and Text Tracks
- * @category Events
- * @public
- */
-interface TextTrackRemoveCueEvent extends Event<'removecue'> {
-    /**
-     * The cue that is removed from the text track.
-     */
-    readonly cue: TextTrackCue;
-}
-/**
- * Fired when a cue from the text track is updated.
- *
- * @category Media and Text Tracks
- * @category Events
- * @public
- */
-interface TextTrackUpdateCueEvent extends Event<'updatecue'> {
-    /**
-     * The cue from the text track that is updated.
-     */
-    readonly cue: TextTrackCue;
-}
-/**
- * Fired when a cue of the text track has entered.
- *
- * @category Media and Text Tracks
- * @category Events
- * @public
- */
-interface TextTrackEnterCueEvent extends Event<'entercue'> {
-    /**
-     * The cue from the text track that has entered.
-     */
-    readonly cue: TextTrackCue;
-}
-/**
- * Fired when a cue of the text track has exited.
- *
- * @category Media and Text Tracks
- * @category Events
- * @public
- */
-interface TextTrackExitCueEvent extends Event<'exitcue'> {
-    /**
-     * The cue from the text track that has exited.
-     */
-    readonly cue: TextTrackCue;
-}
-/**
- * Fired when the displaying cues of the text track has changed.
- *
- * @category Media and Text Tracks
- * @category Events
- * @public
- */
-interface TextTrackCueChangeEvent extends Event<'cuechange'> {
-    /**
-     * The text track which displaying cues has changed.
-     */
-    readonly track: TextTrack;
-}
-/**
- * Fired when the {@link TextTrack.readyState | ready state} of the text track has changed.
- *
- * @category Media and Text Tracks
- * @category Events
- * @public
- */
-interface TextTrackReadyStateChangeEvent extends Event<'readystatechange'> {
-    /**
-     * The text track which ready state has changed.
-     */
-    readonly track: TextTrack;
-    /**
-     * The new {@link TextTrack.readyState | ready state} of the text track.
-     */
-    readonly readyState: TextTrackReadyState;
-}
-/**
- * Fired when the {@link TextTrack."type" | type} of the text track has changed.
- *
- * @category Media and Text Tracks
- * @category Events
- * @public
- */
-interface TextTrackTypeChangeEvent extends Event<'typechange'> {
-    /**
-     * The text track which type has changed.
-     */
-    readonly track: TextTrack;
-}
-/**
- * The events fired by a {@link TextTrack}.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface TextTrackEventMap extends TrackEventMap {
-    /**
-     * Fired when a cue is added to the track.
-     */
-    addcue: TextTrackAddCueEvent;
-    /**
-     * Fired when a cue of the track is removed.
-     */
-    removecue: TextTrackRemoveCueEvent;
-    /**
-     * Fired when a cue of the track is updated.
-     */
-    updatecue: TextTrackUpdateCueEvent;
-    /**
-     * Fired when a cue of the track enters.
-     */
-    entercue: TextTrackEnterCueEvent;
-    /**
-     * Fired when a cue of the track exits.
-     */
-    exitcue: TextTrackExitCueEvent;
-    /**
-     * Fired when the displaying cues of the text track changes.
-     */
-    cuechange: TextTrackCueChangeEvent;
-    /**
-     * Fired when the text track's {@link TextTrack.readyState | ready state} changes.
-     */
-    readystatechange: TextTrackReadyStateChangeEvent;
-    /**
-     * Fired when the text track's {@link TextTrack."type" | type} changes.
-     */
-    typechange: TextTrackTypeChangeEvent;
-    /**
-     * Fired when an error occurred while loading or parsing the track.
-     */
-    error: TextTrackErrorEvent;
-}
-/**
- * Represents a text track of a media resource.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface TextTrack extends Track, EventDispatcher<TextTrackEventMap> {
-    /**
-     * The kind of the text track, represented by a value from the following list:
-     * <br/> - `'subtitles'`: The track contains subtitles.
-     * <br/> - `'captions'`: The track contains closed captions, a translation of dialogue and sound effects.
-     * <br/> - `'descriptions'`: The track contains descriptions, a textual description of the video.
-     * <br/> - `'chapters'`: The track contains chapter titles.
-     * <br/> - `'metadata'`: The track contains metadata. This track will not serve display purposes.
-     */
-    readonly kind: string;
-    /**
-     * The label of the text track.
-     */
-    label: string;
-    /**
-     * The language of the text track.
-     */
-    readonly language: string;
-    /**
-     * The identifier of the text track.
-     *
-     * @remarks
-     * <br/> - This identifier can be used to distinguish between related tracks, e.g. tracks in the same list.
-     * <br/> - For a text track embedded within an MPEG-DASH stream, this returns the Representation’d id attribute.
-     * <br/> - For MPEG-DASH streams a Representation's ID is preferred over the AdaptationSet's ID.
-     */
-    readonly id: string;
-    /**
-     * A unique identifier of the text track.
-     *
-     * @remarks
-     * <br/> - This identifier is unique across tracks of a THEOplayer instance and can be used to distinguish between tracks.
-     * <br/> - This identifier is a randomly generated number.
-     */
-    readonly uid: number;
-    /**
-     * The in-band metadata track dispatch type of the text track.
-     */
-    readonly inBandMetadataTrackDispatchType: string;
-    /**
-     * The mode of the text track, represented by a value from the following list:
-     * <br/> - `'disabled'`: The track is disabled.
-     * <br/> - `'hidden'`: The track is hidden.
-     * <br/> - `'showing'`: The track is showing.
-     *
-     * @remarks
-     * <br/> - A disabled track is not displayed and exposes no active cues, nor fires cue events.
-     * <br/> - A hidden track is not displayed but exposes active cues and fires cue events.
-     * <br/> - A showing track is displayed, exposes active cues and fires cue events.
-     */
-    mode: string;
-    /**
-     * The ready state of the text track.
-     */
-    readonly readyState: TextTrackReadyState;
-    /**
-     * The content type of the text track.
-     */
-    readonly type: TextTrackType;
-    /**
-     * The list of cues of the track.
-     *
-     * @remarks
-     * <br/> - If the {@link TextTrack.mode} is `'disabled'`, this property is `null`.
-     */
-    readonly cues: TextTrackCueList | null;
-    /**
-     * The list of active cues of the track.
-     *
-     * @remarks
-     * <br/> - A cue is active if the current playback position falls within the time bounds of the cue.
-     * <br/> - This list dynamically updates based on the current playback position.
-     * <br/> - If the {@link TextTrack.mode} is `'disabled'`, this property is `null`.
-     */
-    readonly activeCues: TextTrackCueList | null;
-    /**
-     * The source of the text track.
-     */
-    readonly src: string;
-    /**
-     * Indicates whether the track contains Forced Narrative cues.
-     * This may only be true for subtitle tracks where
-     * <br/> - For DASH: the corresponding AdaptationSet contains a child Role with its value attribute equal to `'forced_subtitle'`
-     * <br/> - For HLS: the corresponding #EXT-X-MEDIA tag contains the attributes TYPE=SUBTITLES and FORCED=YES (not supported yet)
-     */
-    readonly forced: boolean;
-    /**
-     * The closed caption service number of the text track.
-     *
-     * @remarks
-     * <br/> - For CEA-608 caption tracks, this holds the channel number.
-     * <br/> - For CEA-708 caption tracks, this holds the service number.
-     * <br/> - Otherwise, this is `undefined`.
-     */
-    readonly captionChannel?: number;
-    /**
-     * {@inheritDoc EventDispatcher.addEventListener}
-     */
-    addEventListener<TType extends StringKeyOf<TextTrackEventMap>>(type: TType | readonly TType[], listener: EventListener<TextTrackEventMap[TType]>): void;
-    /**
-     * {@inheritDoc EventDispatcher.removeEventListener}
-     */
-    removeEventListener<TType extends StringKeyOf<TextTrackEventMap>>(type: TType | readonly TType[], listener: EventListener<TextTrackEventMap[TType]>): void;
 }
 
 /**
@@ -5480,250 +5585,6 @@ interface AnalyticsDescription {
      * The identifier of the analytics integration.
      */
     integration: AnalyticsIntegrationID;
-}
-
-/**
- * Fired when {@link RelatedContent.sources} changes.
- *
- * @category UI
- * @category Events
- * @public
- */
-type RelatedChangeEvent = Event<'relatedchange'>;
-/**
- * Fired when the related content panel is shown.
- *
- * @category UI
- * @category Events
- * @public
- */
-type RelatedShowEvent = Event<'show'>;
-/**
- * Fired when the related content panel is hidden.
- *
- * @category UI
- * @category Events
- * @public
- */
-type RelatedHideEvent = Event<'hide'>;
-/**
- * The events fired by the {@link RelatedContent | related content API}.
- *
- * @category UI
- * @public
- */
-interface RelatedContentEventMap {
-    /**
-     * {@inheritDoc RelatedChangeEvent}
-     */
-    relatedchange: RelatedChangeEvent;
-}
-/**
- * The related content API.
- *
- * @remarks
- * <br/> - Available since v2.14.2.
- *
- * @category UI
- * @public
- */
-interface RelatedContent extends EventDispatcher<RelatedContentEventMap> {
-    /**
-     * List of related content sources.
-     */
-    sources: RelatedContentSource[];
-}
-/**
- * The events fired by the {@link UIRelatedContent | related content API (with ui)}.
- *
- * @category UI
- * @public
- */
-interface UIRelatedContentEventMap extends RelatedContentEventMap {
-    /**
-     * {@inheritDoc RelatedShowEvent}
-     */
-    show: RelatedShowEvent;
-    /**
-     * {@inheritDoc RelatedHideEvent}
-     */
-    hide: RelatedHideEvent;
-}
-/**
- * The related content UI API which can be used to toggle UI components.
- *
- * @remarks
- * <br/> - Available since v2.14.2.
- *
- * @category UI
- * @public
- */
-interface UIRelatedContent extends RelatedContent, EventDispatcher<UIRelatedContentEventMap> {
-    /**
-     * Whether the related content menu is showing.
-     */
-    showing: boolean;
-    /**
-     * Show the related content menu.
-     */
-    show(): void;
-    /**
-     * Hides the related content menu.
-     */
-    hide(): void;
-    /**
-     * {@inheritDoc EventDispatcher.addEventListener}
-     */
-    addEventListener<TType extends StringKeyOf<UIRelatedContentEventMap>>(type: TType | readonly TType[], listener: EventListener<UIRelatedContentEventMap[TType]>): void;
-    /**
-     * {@inheritDoc EventDispatcher.removeEventListener}
-     */
-    removeEventListener<TType extends StringKeyOf<UIRelatedContentEventMap>>(type: TType | readonly TType[], listener: EventListener<UIRelatedContentEventMap[TType]>): void;
-}
-/**
- * Represents a related content source.
- *
- * @remarks
- * <br/> - Available since v2.14.2.
- *
- * @category UI
- * @public
- */
-interface RelatedContentSource {
-    /**
-     * The duration of the related content source.
-     */
-    duration?: string;
-    /**
-     * The image of the related content source.
-     */
-    image: string;
-    /**
-     * The target URL for the related content source.
-     *
-     * @remarks
-     * <br/> - Mutually exclusive with {@link RelatedContentSource.source}.
-     * <br/> - Required if {@link RelatedContentSource.source} is not present.
-     */
-    link?: string;
-    /**
-     * The source description of the related content source.
-     *
-     * @remarks
-     * <br/> - Mutually exclusive with {@link RelatedContentSource.link}.
-     * <br/> - Required if {@link RelatedContentSource.link} is not present.
-     */
-    source?: SourceDescription;
-    /**
-     * The title of the related content source.
-     */
-    title?: string;
-}
-
-/**
- * The bundled Video.js library, based on version 5.x.
- *
- * @remarks
- * <br/> - See {@link https://docs.videojs.com/ | documentation}.
- *
- * @category API
- * @category UI
- * @public
- */
-declare namespace videojs {
-    /**
-     * An instance of a player UI.
-     *
-     * @remarks
-     * <br/> - See {@link https://docs.videojs.com/player | documentation}.
-     *
-     * @public
-     */
-    interface Player {
-    }
-}
-
-/**
- * List of tracks.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface TrackList<TTrack extends Track> extends ReadonlyArray<TTrack>, EventDispatcher<TrackListEventMap> {
-    /**
-     * The number of tracks in the list.
-     */
-    readonly length: number;
-    /**
-     * Return the track at the requested index in the list.
-     *
-     * @param index - A `number` representing the index of a track in the list.
-     * @returns The track with index `index` in the list.
-     */
-    item(index: number): TTrack;
-    /**
-     * Index signature to get the track at the requested index in the list.
-     */
-    readonly [index: number]: TTrack;
-}
-
-/**
- * List of text tracks.
- *
- * @category Media and Text Tracks
- * @public
- */
-interface TextTracksList extends TrackList<TextTrack> {
-    /**
-     * The number of text tracks in the list.
-     */
-    readonly length: number;
-    /**
-     * Return the text track at the requested index in the list.
-     *
-     * @param index - A `number` representing the index of a text track in the list.
-     * @returns The text track with index `index` in the list.
-     */
-    item(index: number): TextTrack;
-    /**
-     * Index signature to get the text track at the requested index in the list.
-     */
-    readonly [index: number]: TextTrack;
-}
-
-/**
- * The media error code, represented by a value from the following list:
- * <br/> - `1` - ABORTED: The fetching of the associated resource was aborted by the user's request.
- * <br/> - `2` - NETWORK: Some kind of network error occurred which prevented the media from being successfully fetched, despite having previously been available.
- * <br/> - `3` - DECODE: Despite having previously been determined to be usable, an error occurred while trying to decode the media resource, resulting in an error.
- * <br/> - `4` - SRC_NOT_SUPPORTED: The associated resource or media provider object (such as a MediaStream) has been found to be unsuitable.
- * <br/> - `5` - ENCRYPTED: Some kind of digital rights management error occurred.
- * <br/> - `6` - LICENSE_INVALID: The player's license was determined to be invalid.
- * <br/> - `7` - ADVERTISEMENT_ERROR: Some kind of advertisement related error occurred.
- *
- * @category Errors
- * @public
- */
-type MediaErrorCode = 1 | 2 | 3 | 4 | 5 | 6 | 7;
-/**
- * Thrown when a media error occurs.
- *
- * @category Errors
- * @public
- */
-interface MediaError extends Error {
-    /**
-     * The code of the error.
-     */
-    readonly code: MediaErrorCode;
-    /**
-     * The cause of the error, if any.
-     */
-    readonly cause?: string;
-    /**
-     * The key system specific error code, if any.
-     */
-    readonly systemCode?: number;
 }
 
 /**
@@ -10866,7 +10727,7 @@ interface PlayoutDelay {
  */
 interface ChannelDrmConfigResponse {
     integration: string;
-    widevine?: ChannelDrmKeySystemResponse;
+    widevine?: WidevineChannelDrmKeySystemResponse;
     playready?: ChannelDrmKeySystemResponse;
     fairplay?: FairPlayChannelDrmKeySystemResponse;
 }
@@ -10883,6 +10744,21 @@ interface ChannelDrmKeySystemResponse {
     } | undefined;
 }
 /**
+ * The Widevine key system configuration of a THEOlive endpoint.
+ *
+ * @category THEOlive
+ * @public
+ */
+interface WidevineChannelDrmKeySystemResponse extends ChannelDrmKeySystemResponse {
+    /**
+     * The Widevine service certificate, as a base64-encoded `SignedDrmCertificate`.
+     *
+     * @remarks
+     * <br/> - When set, the player passes it to the CDM up front instead of requesting it from the license server.
+     */
+    certificate?: string;
+}
+/**
  * The FairPlay key system configuration of a THEOlive endpoint.
  *
  * @category THEOlive
@@ -10890,6 +10766,13 @@ interface ChannelDrmKeySystemResponse {
  */
 interface FairPlayChannelDrmKeySystemResponse extends ChannelDrmKeySystemResponse {
     certificateUrl: string;
+    /**
+     * The FairPlay certificate, base64-encoded.
+     *
+     * @remarks
+     * <br/> - When set, the player uses it instead of downloading it from {@link certificateUrl}.
+     */
+    certificate?: string;
 }
 
 /**
@@ -11717,6 +11600,29 @@ interface Clip extends EventDispatcher<ClipEventMap> {
      * The end time of the clip's window, in seconds.
      */
     endTime: number;
+}
+
+/**
+ * The bundled Video.js library, based on version 5.x.
+ *
+ * @remarks
+ * <br/> - See {@link https://docs.videojs.com/ | documentation}.
+ *
+ * @category API
+ * @category UI
+ * @public
+ */
+declare namespace videojs {
+    /**
+     * An instance of a player UI.
+     *
+     * @remarks
+     * <br/> - See {@link https://docs.videojs.com/player | documentation}.
+     *
+     * @public
+     */
+    interface Player {
+    }
 }
 
 /**
@@ -13483,27 +13389,6 @@ interface CommonUtils {
 }
 
 /**
- * List of players.
- *
- * @category Player
- * @public
- */
-interface PlayerList extends Array<ChromelessPlayer> {
-    /**
-     * Length of the list.
-     */
-    length: number;
-    [index: number]: ChromelessPlayer;
-    /**
-     * Return the player with corresponding UID, if any.
-     *
-     * @param UID - The UID of the requested player.
-     * @returns The player with the given `UID`, if any.
-     */
-    getPlayerByUID(UID: number): ChromelessPlayer | undefined;
-}
-
-/**
  * The preload type of the player, represented by a value from the following list:
  * <br/> - `'none'`: The player will not load anything on source change.
  * <br/> - `'metadata'`: The player will immediately load metadata on source change.
@@ -13758,6 +13643,144 @@ interface GlobalCast {
      * <br/> - Only available with the feature `'chromecast'`.
      */
     chromecast?: GlobalChromecast;
+}
+
+/**
+ * Fired when {@link RelatedContent.sources} changes.
+ *
+ * @category UI
+ * @category Events
+ * @public
+ */
+type RelatedChangeEvent = Event<'relatedchange'>;
+/**
+ * Fired when the related content panel is shown.
+ *
+ * @category UI
+ * @category Events
+ * @public
+ */
+type RelatedShowEvent = Event<'show'>;
+/**
+ * Fired when the related content panel is hidden.
+ *
+ * @category UI
+ * @category Events
+ * @public
+ */
+type RelatedHideEvent = Event<'hide'>;
+/**
+ * The events fired by the {@link RelatedContent | related content API}.
+ *
+ * @category UI
+ * @public
+ */
+interface RelatedContentEventMap {
+    /**
+     * {@inheritDoc RelatedChangeEvent}
+     */
+    relatedchange: RelatedChangeEvent;
+}
+/**
+ * The related content API.
+ *
+ * @remarks
+ * <br/> - Available since v2.14.2.
+ *
+ * @category UI
+ * @public
+ */
+interface RelatedContent extends EventDispatcher<RelatedContentEventMap> {
+    /**
+     * List of related content sources.
+     */
+    sources: RelatedContentSource[];
+}
+/**
+ * The events fired by the {@link UIRelatedContent | related content API (with ui)}.
+ *
+ * @category UI
+ * @public
+ */
+interface UIRelatedContentEventMap extends RelatedContentEventMap {
+    /**
+     * {@inheritDoc RelatedShowEvent}
+     */
+    show: RelatedShowEvent;
+    /**
+     * {@inheritDoc RelatedHideEvent}
+     */
+    hide: RelatedHideEvent;
+}
+/**
+ * The related content UI API which can be used to toggle UI components.
+ *
+ * @remarks
+ * <br/> - Available since v2.14.2.
+ *
+ * @category UI
+ * @public
+ */
+interface UIRelatedContent extends RelatedContent, EventDispatcher<UIRelatedContentEventMap> {
+    /**
+     * Whether the related content menu is showing.
+     */
+    showing: boolean;
+    /**
+     * Show the related content menu.
+     */
+    show(): void;
+    /**
+     * Hides the related content menu.
+     */
+    hide(): void;
+    /**
+     * {@inheritDoc EventDispatcher.addEventListener}
+     */
+    addEventListener<TType extends StringKeyOf<UIRelatedContentEventMap>>(type: TType | readonly TType[], listener: EventListener<UIRelatedContentEventMap[TType]>): void;
+    /**
+     * {@inheritDoc EventDispatcher.removeEventListener}
+     */
+    removeEventListener<TType extends StringKeyOf<UIRelatedContentEventMap>>(type: TType | readonly TType[], listener: EventListener<UIRelatedContentEventMap[TType]>): void;
+}
+/**
+ * Represents a related content source.
+ *
+ * @remarks
+ * <br/> - Available since v2.14.2.
+ *
+ * @category UI
+ * @public
+ */
+interface RelatedContentSource {
+    /**
+     * The duration of the related content source.
+     */
+    duration?: string;
+    /**
+     * The image of the related content source.
+     */
+    image: string;
+    /**
+     * The target URL for the related content source.
+     *
+     * @remarks
+     * <br/> - Mutually exclusive with {@link RelatedContentSource.source}.
+     * <br/> - Required if {@link RelatedContentSource.source} is not present.
+     */
+    link?: string;
+    /**
+     * The source description of the related content source.
+     *
+     * @remarks
+     * <br/> - Mutually exclusive with {@link RelatedContentSource.link}.
+     * <br/> - Required if {@link RelatedContentSource.link} is not present.
+     */
+    source?: SourceDescription;
+    /**
+     * The title of the related content source.
+     */
+    title?: string;
 }
 
 /**
@@ -14264,9 +14287,6 @@ declare class ChromelessPlayer implements EventDispatcher<PlayerEventMap> {
     addTextTrack<TOptions extends CustomTextTrackOptions>(options: TOptions): CustomTextTrackMap[TOptions['type']];
     /**
      * The web audio API.
-     *
-     * @remarks
-     * <br/> - Only available with the feature `'webaudio'`.
      */
     readonly audio?: WebAudio;
     /**
@@ -14326,6 +14346,27 @@ declare class ChromelessPlayer implements EventDispatcher<PlayerEventMap> {
      * The Millicast API.
      */
     readonly millicast: Millicast;
+}
+
+/**
+ * List of players.
+ *
+ * @category Player
+ * @public
+ */
+interface PlayerList extends Array<ChromelessPlayer> {
+    /**
+     * Length of the list.
+     */
+    length: number;
+    [index: number]: ChromelessPlayer;
+    /**
+     * Return the player with corresponding UID, if any.
+     *
+     * @param UID - The UID of the requested player.
+     * @returns The player with the given `UID`, if any.
+     */
+    getPlayerByUID(UID: number): ChromelessPlayer | undefined;
 }
 
 /**
@@ -14394,4 +14435,4 @@ declare function registerContentProtectionIntegration(integrationId: string, key
 declare const utils: CommonUtils;
 
 export { ChromelessPlayer, ErrorCategory, ErrorCode, MultiViewPlayer, cache, cast, features, players, registerContentProtectionIntegration, utils, version, videojs };
-export type { ABRConfiguration, ABRMetadata, ABRStrategy, ABRStrategyConfiguration, ABRStrategyType, AES128KeySystemConfiguration, AccessibilityRole, Ad, AdBreak, AdBreakEvent, AdBreakInit, AdBreakInterstitial, AdBufferingEvent, AdDescription, AdEvent, AdInit, AdIntegrationKind, AdMetadataEvent, AdPreloadType, AdReadyState, AdSkipEvent, AdSource, AdSourceType, AdType, AddCachingTaskEvent, AddTrackEvent, AddViewEvent, Ads, AdsConfiguration, AdsEventMap, AdsManagerLoadedEvent, AgamaAnalyticsIntegrationID, AgamaConfiguration, AgamaLogLevelType, AgamaPlayerConfiguration, AgamaServiceName, AgamaSourceConfiguration, AgamaStreamType, AirPlay, AnalyticsDescription, AnalyticsIntegrationID, AudioQuality, AutoplayCapability, AxinomDRMConfiguration, AxinomIntegrationID, AzureDRMConfiguration, AzureIntegrationID, Base64Util, BaseSource, Boundary, BoundaryC3, BoundaryC7, BoundaryHalftime, BoundaryInfo, BufferSource, BufferedSegments, C2PAMediaType, C2PAMetadataEvent, C2PASegmentType, Cache, CacheEventMap, CacheStatus, CacheTaskStatus, CachingTask, CachingTaskEventMap, CachingTaskLicense, CachingTaskList, CachingTaskListEventMap, CachingTaskParameters, CanPlayEvent, CanPlayThroughEvent, Canvas, Cast, CastConfiguration, CastEventMap, CastState, CastStateChangeEvent, CertificateRequest, CertificateResponse, ChannelDrmConfigResponse, ChannelDrmKeySystemResponse, ChannelMillicastSource, Chromecast, ChromecastConfiguration, ChromecastConnectionCallback, ChromecastError, ChromecastErrorCode, ChromecastErrorEvent, ChromecastEventMap, ChromecastMetadataDescription, ChromecastMetadataImage, ChromecastMetadataType, ClearkeyDecryptionKey, ClearkeyKeySystemConfiguration, Clip, ClipEventMap, ClosedCaptionFile, CmcdConfiguration, CmcdEndpointConfiguration, CmcdSourceConfiguration, ComcastDRMConfiguration, ComcastIntegrationID, CommonUtils, CompanionAd, ConaxDRMConfiguration, ConaxIntegrationID, ContentProtectionError, ContentProtectionErrorCode, ContentProtectionErrorEvent, ContentProtectionIntegration, ContentProtectionIntegrationFactory, ContentProtectionRequest, ContentProtectionRequestSubType, ContentProtectionResponse, ContentSteeringErrorEvent, ContentSteeringLocationChangeEvent, ContentSteeringStartEvent, ContentSteeringStopEvent, ContentSteeringUpdateEvent, CrossOriginSetting, CsaiAdDescription, CsaiConfiguration, CurrentSourceChangeEvent, CustomAdIntegrationKind, CustomTextTrackMap, CustomTextTrackOptions, CustomWebVTTTextTrack, DAIAvailabilityType, DRMConfiguration, DRMTodayDRMConfiguration, DRMTodayIntegrationID, DashPlaybackConfiguration, DateRangeCue, DeliveryType, DeviceBasedTitaniumDRMConfiguration, DimensionChangeEvent, DirectionChangeEvent, Distribution, DistributionLoadStartEvent, DistributionLoadedEvent, DistributionOfflineEvent, DurationChangeEvent, EdgeStyle, EmptiedEvent, EmsgCue, EncryptedEvent, EndedEvent, Endpoint, EndpointLoadedEvent, EnterBadNetworkModeEvent, ErrorEvent, Event, EventDispatcher, EventListener, EventMap, EventStreamCue, EventedList, ExitBadNetworkModeEvent, ExpressPlayDRMConfiguration, ExpressPlayIntegrationID, EzdrmDRMConfiguration, EzdrmIntegrationID, FairPlayChannelDrmKeySystemResponse, FairPlayKeySystemConfiguration, FreeWheelAdDescription, FreeWheelAdUnitType, FreeWheelCue, FullscreenOptions$1 as FullscreenOptions, Geo, GlobalCast, GlobalChromecast, GoogleDAI, GoogleDAIConfiguration, GoogleDAILiveConfiguration, GoogleDAISSAIIntegrationID, GoogleDAITypedSource, GoogleDAIVodConfiguration, GoogleImaAd, GoogleImaConfiguration, HTTPHeaders, HTTPHeadersInit, HespApi, HespApiEventMap, HespMediaType, HespSourceConfiguration, HespTypedSource, HlsDiscontinuityAlignment, HlsPlaybackConfiguration, ID3AttachedPicture, ID3BaseFrame, ID3Comments, ID3CommercialFrame, ID3Cue, ID3Frame, ID3GenericEncapsulatedObject, ID3InvolvedPeopleList, ID3PositionSynchronisationFrame, ID3PrivateFrame, ID3SynchronizedLyricsText, ID3TermsOfUse, ID3Text, ID3UniqueFileIdentifier, ID3Unknown, ID3UnsynchronisedLyricsTextTranscription, ID3UrlLink, ID3UserDefinedText, ID3UserDefinedUrlLink, ID3Yospace, IMAAdDescription, IntentToFallbackEvent, InterceptableRequest, InterceptableResponse, Interstitial, InterstitialEvent, InterstitialType, IrdetoDRMConfiguration, IrdetoIntegrationID, JoinStrategy, KeyOSDRMConfiguration, KeyOSFairplayKeySystemConfiguration, KeyOSIntegrationID, KeyOSKeySystemConfiguration, KeySystemConfiguration, KeySystemId, LatencyConfiguration, LatencyManager, LayoutChangeEvent, LicenseRequest, LicenseResponse, LicenseType, LinearAd, List, LoadedDataEvent, LoadedMetadataEvent, ManifestErrorEvent, MaybeAsync, MeasurableNetworkEstimator, MediaError, MediaErrorCode, MediaFile, MediaMelonConfiguration, MediaTailorSource, MediaTrack, MediaTrackEventMap, MediaTrackList, MediaTrackType, MediaType, MetadataDescription, Metrics, Millicast, MillicastEventMap, MillicastMetadataCue, MillicastSource, MillicastStatsEvent, MoatAnalyticsIntegrationID, MoatConfiguration, MultiViewPlayerEventMap, MultiViewPlayerLayout, MutedAutoplayConfiguration, Network, NetworkConfiguration, NetworkEstimator, NetworkEstimatorController, NetworkEventMap, NetworkInterceptorController, NodeStyleVoidCallback, NonLinearAd, OverlayInterstitial, OverlayPosition, OverlaySize, PauseEvent, PiPConfiguration, PiPPosition, PlayEvent, PlayReadyKeySystemConfiguration, PlayStation5Configuration, PlayStation5PlayMode, PlayerConfiguration, PlayerEventMap, PlayerList, PlayingEvent, PlayoutDelay, PreloadType, Presentation, PresentationEventMap, PresentationMode, PresentationModeChangeEvent, ProgressEvent, Quality, QualityEvent, QualityEventMap, QualityList, RateChangeEvent, ReadyStateChangeEvent, RelatedChangeEvent, RelatedContent, RelatedContentEventMap, RelatedContentSource, RelatedHideEvent, RelatedShowEvent, RemoveCachingTaskEvent, RemoveTrackEvent, RemoveViewEvent, Representation, RepresentationChangeEvent, Request, RequestBody, RequestInit, RequestInterceptor, RequestLike, RequestMeasurer, RequestMethod, RequestSubType, RequestType, ResponseBody, ResponseInit, ResponseInterceptor, ResponseLike, ResponseType, RetryConfiguration, SSAIIntegrationId, SeamlessPeriodSwitchStrategy, SeamlessSwitchStrategy, SeekedEvent, SeekingEvent, SegmentErrorEvent, ServerSideAdInsertionConfiguration, ServerSideAdIntegrationController, ServerSideAdIntegrationFactory, ServerSideAdIntegrationHandler, SkippedAdStrategy, SmartSightConfiguration, SmartSightIntegrationID, Source, SourceAbrConfiguration, SourceChangeEvent, SourceConfiguration, SourceDescription, SourceIntegrationId, SourceLatencyConfiguration, Sources, SpotXAdDescription, SpotxData, SpotxQueryParameter, StateChangeEvent, StereoChangeEvent, StreamOneAnalyticsIntegrationID, StreamOneConfiguration, StreamType, StringKeyOf, StylePropertyRecord, SupportedCustomTextTrackCueTypes, THEOplayerError, TTMLCue, TTMLExtent, TargetQualityChangedEvent, TextTrack, TextTrackAddCueEvent, TextTrackCue, TextTrackCueChangeEvent, TextTrackCueEnterEvent, TextTrackCueEventMap, TextTrackCueExitEvent, TextTrackCueList, TextTrackCueUpdateEvent, TextTrackDescription, TextTrackEnterCueEvent, TextTrackError, TextTrackErrorCode, TextTrackErrorEvent, TextTrackEventMap, TextTrackExitCueEvent, TextTrackReadyState, TextTrackReadyStateChangeEvent, TextTrackRemoveCueEvent, TextTrackStyle, TextTrackStyleEventMap, TextTrackType, TextTrackTypeChangeEvent, TextTrackUpdateCueEvent, TextTracksList, TheoAdDescription, TheoAds, TheoAdsEventsMap, TheoAdsLayout, TheoAdsLayoutOverride, TheoLiveApi, TheoLiveApiEventMap, TheoLiveConfiguration, TheoLivePublication, TheoLiveSource, ThumbnailResolution, TimeRanges, TimeUpdateEvent, TitaniumDRMConfiguration, TitaniumIntegrationID, TokenBasedTitaniumDRMConfiguration, Track, TrackChangeEvent, TrackEventMap, TrackList, TrackListEventMap, TrackUpdateEvent, TypedSource, UIConfiguration, UILanguage, UIPlayerConfiguration, UIRelatedContent, UIRelatedContentEventMap, UniversalAdId, UpdateQualityEvent, Uplynk, UplynkAd, UplynkAdBeginEvent, UplynkAdBreak, UplynkAdBreakBeginEvent, UplynkAdBreakEndEvent, UplynkAdBreakEventMap, UplynkAdBreakList, UplynkAdBreakListEventMap, UplynkAdBreakSkipEvent, UplynkAdCompleteEvent, UplynkAdEndEvent, UplynkAdEventMap, UplynkAdFirstQuartileEvent, UplynkAdList, UplynkAdListEventMap, UplynkAdMidpointEvent, UplynkAdThirdQuartileEvent, UplynkAddAdBreakEvent, UplynkAddAssetEvent, UplynkAds, UplynkAsset, UplynkAssetEventMap, UplynkAssetId, UplynkAssetInfoResponse, UplynkAssetInfoResponseEvent, UplynkAssetList, UplynkAssetMovieRating, UplynkAssetTvRating, UplynkAssetType, UplynkConfiguration, UplynkDRMConfiguration, UplynkEventMap, UplynkExternalId, UplynkIntegrationID, UplynkPingConfiguration, UplynkPingErrorEvent, UplynkPingResponse, UplynkPingResponseEvent, UplynkPreplayBaseResponse, UplynkPreplayLiveResponse, UplynkPreplayResponse, UplynkPreplayResponseEvent, UplynkPreplayResponseType, UplynkPreplayVodResponse, UplynkRemoveAdBreakEvent, UplynkRemoveAdEvent, UplynkRemoveAssetEvent, UplynkResponseDrm, UplynkResponseLiveAd, UplynkResponseLiveAdBreak, UplynkResponseLiveAds, UplynkResponseVodAd, UplynkResponseVodAdBreak, UplynkResponseVodAdBreakOffset, UplynkResponseVodAdPlaceholder, UplynkResponseVodAds, UplynkSource, UplynkUiConfiguration, UplynkUpdateAdBreakEvent, UserActions, VPAIDMode, VR, VRConfiguration, VRDirection, VREventMap, VRPanoramaMode, VRState, VRStereoMode, VTTAlignSetting, VTTDirectionSetting, VTTLine, VTTLineAlignSetting, VTTPosition, VTTPositionAlignSetting, VTTScrollSetting, VastExtension, VendorCast, VendorCastEventMap, VerimatrixDRMConfiguration, VerimatrixIntegrationID, VideoFrameCallbackMetadata, VideoFrameRequestCallback, VideoQuality, View, ViewChangeEvent, ViewPositionChangeEvent, VimondDRMConfiguration, VimondIntegrationID, Visibility, VisibilityObserver, VisibilityObserverCallback, VoidPromiseCallback, VolumeChangeEvent, VudrmDRMConfiguration, VudrmIntegrationID, WaitUntilCallback, WaitingEvent, WebAudio, WebRTCOptions, WebVTTCue, WebVTTRegion, WidevineKeySystemConfiguration, XstreamDRMConfiguration, XstreamIntegrationID, YospaceId, YouboraAnalyticsIntegrationID, YouboraOptions };
+export type { ABRConfiguration, ABRMetadata, ABRStrategy, ABRStrategyConfiguration, ABRStrategyType, AES128KeySystemConfiguration, AccessibilityRole, Ad, AdBreak, AdBreakEvent, AdBreakInit, AdBreakInterstitial, AdBufferingEvent, AdDescription, AdEvent, AdInit, AdIntegrationKind, AdMetadataEvent, AdPreloadType, AdReadyState, AdSkipEvent, AdSource, AdSourceType, AdType, AddCachingTaskEvent, AddTrackEvent, AddViewEvent, Ads, AdsConfiguration, AdsEventMap, AdsManagerLoadedEvent, AgamaAnalyticsIntegrationID, AgamaConfiguration, AgamaLogLevelType, AgamaPlayerConfiguration, AgamaServiceName, AgamaSourceConfiguration, AgamaStreamType, AirPlay, AnalyticsDescription, AnalyticsIntegrationID, AudioQuality, AutoplayCapability, AxinomDRMConfiguration, AxinomIntegrationID, AzureDRMConfiguration, AzureIntegrationID, Base64Util, BaseSource, Boundary, BoundaryC3, BoundaryC7, BoundaryHalftime, BoundaryInfo, BufferSource, BufferedSegments, C2PAMediaType, C2PAMetadataEvent, C2PASegmentType, Cache, CacheEventMap, CacheStatus, CacheTaskStatus, CachingTask, CachingTaskEventMap, CachingTaskLicense, CachingTaskList, CachingTaskListEventMap, CachingTaskParameters, CanPlayEvent, CanPlayThroughEvent, Canvas, Cast, CastConfiguration, CastEventMap, CastState, CastStateChangeEvent, CertificateRequest, CertificateResponse, ChannelDrmConfigResponse, ChannelDrmKeySystemResponse, ChannelMillicastSource, Chromecast, ChromecastConfiguration, ChromecastConnectionCallback, ChromecastError, ChromecastErrorCode, ChromecastErrorEvent, ChromecastEventMap, ChromecastMetadataDescription, ChromecastMetadataImage, ChromecastMetadataType, ClearkeyDecryptionKey, ClearkeyKeySystemConfiguration, Clip, ClipEventMap, ClosedCaptionFile, CmcdConfiguration, CmcdEndpointConfiguration, CmcdSourceConfiguration, ComcastDRMConfiguration, ComcastIntegrationID, CommonUtils, CompanionAd, ConaxDRMConfiguration, ConaxIntegrationID, ContentProtectionError, ContentProtectionErrorCode, ContentProtectionErrorEvent, ContentProtectionIntegration, ContentProtectionIntegrationFactory, ContentProtectionRequest, ContentProtectionRequestSubType, ContentProtectionResponse, ContentSteeringErrorEvent, ContentSteeringLocationChangeEvent, ContentSteeringStartEvent, ContentSteeringStopEvent, ContentSteeringUpdateEvent, CrossOriginSetting, CsaiAdDescription, CsaiConfiguration, CurrentSourceChangeEvent, CustomAdIntegrationKind, CustomTextTrackMap, CustomTextTrackOptions, CustomWebVTTTextTrack, DAIAvailabilityType, DRMConfiguration, DRMTodayDRMConfiguration, DRMTodayIntegrationID, DashPlaybackConfiguration, DateRangeCue, DeliveryType, DeviceBasedTitaniumDRMConfiguration, DimensionChangeEvent, DirectionChangeEvent, Distribution, DistributionLoadStartEvent, DistributionLoadedEvent, DistributionOfflineEvent, DurationChangeEvent, EdgeStyle, EmptiedEvent, EmsgCue, EncryptedEvent, EndedEvent, Endpoint, EndpointLoadedEvent, EnterBadNetworkModeEvent, ErrorEvent, Event, EventDispatcher, EventListener, EventMap, EventStreamCue, EventedList, ExitBadNetworkModeEvent, ExpressPlayDRMConfiguration, ExpressPlayIntegrationID, EzdrmDRMConfiguration, EzdrmIntegrationID, FairPlayChannelDrmKeySystemResponse, FairPlayKeySystemConfiguration, FreeWheelAdDescription, FreeWheelAdUnitType, FreeWheelCue, FullscreenOptions$1 as FullscreenOptions, Geo, GlobalCast, GlobalChromecast, GoogleDAI, GoogleDAIConfiguration, GoogleDAILiveConfiguration, GoogleDAISSAIIntegrationID, GoogleDAITypedSource, GoogleDAIVodConfiguration, GoogleImaAd, GoogleImaConfiguration, HTTPHeaders, HTTPHeadersInit, HespApi, HespApiEventMap, HespMediaType, HespSourceConfiguration, HespTypedSource, HlsDiscontinuityAlignment, HlsPlaybackConfiguration, ID3AttachedPicture, ID3BaseFrame, ID3Comments, ID3CommercialFrame, ID3Cue, ID3Frame, ID3GenericEncapsulatedObject, ID3InvolvedPeopleList, ID3PositionSynchronisationFrame, ID3PrivateFrame, ID3SynchronizedLyricsText, ID3TermsOfUse, ID3Text, ID3UniqueFileIdentifier, ID3Unknown, ID3UnsynchronisedLyricsTextTranscription, ID3UrlLink, ID3UserDefinedText, ID3UserDefinedUrlLink, ID3Yospace, IMAAdDescription, IntentToFallbackEvent, InterceptableRequest, InterceptableResponse, Interstitial, InterstitialEvent, InterstitialType, IrdetoDRMConfiguration, IrdetoIntegrationID, JoinStrategy, KeyOSDRMConfiguration, KeyOSFairplayKeySystemConfiguration, KeyOSIntegrationID, KeyOSKeySystemConfiguration, KeySystemConfiguration, KeySystemId, LatencyConfiguration, LatencyManager, LayoutChangeEvent, LicenseRequest, LicenseResponse, LicenseType, LinearAd, List, LoadedDataEvent, LoadedMetadataEvent, ManifestErrorEvent, MaybeAsync, MeasurableNetworkEstimator, MediaError, MediaErrorCode, MediaFile, MediaMelonConfiguration, MediaTailorSource, MediaTrack, MediaTrackEventMap, MediaTrackList, MediaTrackType, MediaType, MetadataDescription, Metrics, Millicast, MillicastEventMap, MillicastMetadataCue, MillicastSource, MillicastStatsEvent, MoatAnalyticsIntegrationID, MoatConfiguration, MultiViewPlayerEventMap, MultiViewPlayerLayout, MutedAutoplayConfiguration, Network, NetworkConfiguration, NetworkEstimator, NetworkEstimatorController, NetworkEventMap, NetworkInterceptorController, NodeStyleVoidCallback, NonLinearAd, OverlayInterstitial, OverlayPosition, OverlaySize, PauseEvent, PiPConfiguration, PiPPosition, PlayEvent, PlayReadyKeySystemConfiguration, PlayStation5Configuration, PlayStation5PlayMode, PlayerConfiguration, PlayerEventMap, PlayerList, PlayingEvent, PlayoutDelay, PreloadType, Presentation, PresentationEventMap, PresentationMode, PresentationModeChangeEvent, ProgressEvent, Quality, QualityEvent, QualityEventMap, QualityList, RateChangeEvent, ReadyStateChangeEvent, RelatedChangeEvent, RelatedContent, RelatedContentEventMap, RelatedContentSource, RelatedHideEvent, RelatedShowEvent, RemoveCachingTaskEvent, RemoveTrackEvent, RemoveViewEvent, Representation, RepresentationChangeEvent, Request, RequestBody, RequestInit, RequestInterceptor, RequestLike, RequestMeasurer, RequestMethod, RequestSubType, RequestType, ResponseBody, ResponseInit, ResponseInterceptor, ResponseLike, ResponseType, RetryConfiguration, SSAIIntegrationId, SeamlessPeriodSwitchStrategy, SeamlessSwitchStrategy, SeekedEvent, SeekingEvent, SegmentErrorEvent, ServerSideAdInsertionConfiguration, ServerSideAdIntegrationController, ServerSideAdIntegrationFactory, ServerSideAdIntegrationHandler, SkippedAdStrategy, SmartSightConfiguration, SmartSightIntegrationID, Source, SourceAbrConfiguration, SourceChangeEvent, SourceConfiguration, SourceDescription, SourceIntegrationId, SourceLatencyConfiguration, Sources, SpotXAdDescription, SpotxData, SpotxQueryParameter, StateChangeEvent, StereoChangeEvent, StreamOneAnalyticsIntegrationID, StreamOneConfiguration, StreamType, StringKeyOf, StylePropertyRecord, SupportedCustomTextTrackCueTypes, THEOplayerError, TTMLCue, TTMLExtent, TargetQualityChangedEvent, TextTrack, TextTrackAddCueEvent, TextTrackCue, TextTrackCueChangeEvent, TextTrackCueEnterEvent, TextTrackCueEventMap, TextTrackCueExitEvent, TextTrackCueList, TextTrackCueUpdateEvent, TextTrackDescription, TextTrackEnterCueEvent, TextTrackError, TextTrackErrorCode, TextTrackErrorEvent, TextTrackEventMap, TextTrackExitCueEvent, TextTrackReadyState, TextTrackReadyStateChangeEvent, TextTrackRemoveCueEvent, TextTrackStyle, TextTrackStyleEventMap, TextTrackType, TextTrackTypeChangeEvent, TextTrackUpdateCueEvent, TextTracksList, TheoAdDescription, TheoAds, TheoAdsEventsMap, TheoAdsLayout, TheoAdsLayoutOverride, TheoLiveApi, TheoLiveApiEventMap, TheoLiveConfiguration, TheoLivePublication, TheoLiveSource, ThumbnailResolution, TimeRanges, TimeUpdateEvent, TitaniumDRMConfiguration, TitaniumIntegrationID, TokenBasedTitaniumDRMConfiguration, Track, TrackChangeEvent, TrackEventMap, TrackList, TrackListEventMap, TrackUpdateEvent, TypedSource, UIConfiguration, UILanguage, UIPlayerConfiguration, UIRelatedContent, UIRelatedContentEventMap, UniversalAdId, UpdateQualityEvent, Uplynk, UplynkAd, UplynkAdBeginEvent, UplynkAdBreak, UplynkAdBreakBeginEvent, UplynkAdBreakEndEvent, UplynkAdBreakEventMap, UplynkAdBreakList, UplynkAdBreakListEventMap, UplynkAdBreakSkipEvent, UplynkAdCompleteEvent, UplynkAdEndEvent, UplynkAdEventMap, UplynkAdFirstQuartileEvent, UplynkAdList, UplynkAdListEventMap, UplynkAdMidpointEvent, UplynkAdThirdQuartileEvent, UplynkAddAdBreakEvent, UplynkAddAssetEvent, UplynkAds, UplynkAsset, UplynkAssetEventMap, UplynkAssetId, UplynkAssetInfoResponse, UplynkAssetInfoResponseEvent, UplynkAssetList, UplynkAssetMovieRating, UplynkAssetTvRating, UplynkAssetType, UplynkConfiguration, UplynkDRMConfiguration, UplynkEventMap, UplynkExternalId, UplynkIntegrationID, UplynkPingConfiguration, UplynkPingErrorEvent, UplynkPingResponse, UplynkPingResponseEvent, UplynkPreplayBaseResponse, UplynkPreplayLiveResponse, UplynkPreplayResponse, UplynkPreplayResponseEvent, UplynkPreplayResponseType, UplynkPreplayVodResponse, UplynkRemoveAdBreakEvent, UplynkRemoveAdEvent, UplynkRemoveAssetEvent, UplynkResponseDrm, UplynkResponseLiveAd, UplynkResponseLiveAdBreak, UplynkResponseLiveAds, UplynkResponseVodAd, UplynkResponseVodAdBreak, UplynkResponseVodAdBreakOffset, UplynkResponseVodAdPlaceholder, UplynkResponseVodAds, UplynkSource, UplynkUiConfiguration, UplynkUpdateAdBreakEvent, UserActions, VPAIDMode, VR, VRConfiguration, VRDirection, VREventMap, VRPanoramaMode, VRState, VRStereoMode, VTTAlignSetting, VTTDirectionSetting, VTTLine, VTTLineAlignSetting, VTTPosition, VTTPositionAlignSetting, VTTScrollSetting, VastExtension, VendorCast, VendorCastEventMap, VerimatrixDRMConfiguration, VerimatrixIntegrationID, VideoFrameCallbackMetadata, VideoFrameRequestCallback, VideoQuality, View, ViewChangeEvent, ViewPositionChangeEvent, VimondDRMConfiguration, VimondIntegrationID, Visibility, VisibilityObserver, VisibilityObserverCallback, VoidPromiseCallback, VolumeChangeEvent, VudrmDRMConfiguration, VudrmIntegrationID, WaitUntilCallback, WaitingEvent, WebAudio, WebRTCOptions, WebVTTCue, WebVTTRegion, WidevineChannelDrmKeySystemResponse, WidevineKeySystemConfiguration, XstreamDRMConfiguration, XstreamIntegrationID, YospaceId, YouboraAnalyticsIntegrationID, YouboraOptions };
