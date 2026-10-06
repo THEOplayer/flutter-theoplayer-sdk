@@ -1,3 +1,12 @@
+## 11.12.0
+
+* Updated THEOplayer to 11.12.0.
+
+* Added source-level live latency configuration through `TypedSource.latencyConfiguration` (`SourceLatencyConfiguration`), including OptiView Live (THEOlive) sources.
+  - iOS: only `targetOffset` is supported, the other offsets and the playback-rate bounds are ignored.
+* Added `TypedSource.lowLatency` to enable the player's low-latency mode, required for Low-Latency CMAF with ABR.
+  - Supported only on Web.
+
 ## 11.10.2
 
 * Updated THEOplayer to 11.10.2.

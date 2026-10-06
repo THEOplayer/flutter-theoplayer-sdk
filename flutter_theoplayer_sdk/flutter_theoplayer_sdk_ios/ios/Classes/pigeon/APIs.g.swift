@@ -177,6 +177,8 @@ struct TypedSourcePigeon {
   var integration: SourceIntegrationId? = nil
   var headers: [String?: String?]? = nil
   var hlsDateRange: Bool? = nil
+  var lowLatency: Bool? = nil
+  var latencyConfiguration: SourceLatencyConfiguration? = nil
 
 
   // swift-format-ignore: AlwaysUseLowerCamelCase
@@ -187,6 +189,8 @@ struct TypedSourcePigeon {
     let integration: SourceIntegrationId? = nilOrValue(pigeonVar_list[3])
     let headers: [String?: String?]? = nilOrValue(pigeonVar_list[4])
     let hlsDateRange: Bool? = nilOrValue(pigeonVar_list[5])
+    let lowLatency: Bool? = nilOrValue(pigeonVar_list[6])
+    let latencyConfiguration: SourceLatencyConfiguration? = nilOrValue(pigeonVar_list[7])
 
     return TypedSourcePigeon(
       src: src,
@@ -194,7 +198,9 @@ struct TypedSourcePigeon {
       drm: drm,
       integration: integration,
       headers: headers,
-      hlsDateRange: hlsDateRange
+      hlsDateRange: hlsDateRange,
+      lowLatency: lowLatency,
+      latencyConfiguration: latencyConfiguration
     )
   }
   func toList() -> [Any?] {
@@ -205,6 +211,68 @@ struct TypedSourcePigeon {
       integration,
       headers,
       hlsDateRange,
+      lowLatency,
+      latencyConfiguration,
+    ]
+  }
+}
+
+/// The source-level latency configuration for live playback.
+///
+/// All offsets are expressed in seconds. On iOS, only [targetOffset] is supported.
+///
+/// Generated class from Pigeon that represents data sent in messages.
+struct SourceLatencyConfiguration {
+  /// The live offset that the player aims for.
+  var targetOffset: Double
+  /// The offset below which the player slows down.
+  ///
+  /// Defaults to 0.66 times [targetOffset].
+  var minimumOffset: Double? = nil
+  /// The offset above which the player speeds up.
+  ///
+  /// Defaults to 1.5 times [targetOffset].
+  var maximumOffset: Double? = nil
+  /// The offset above which the player seeks to live.
+  ///
+  /// Defaults to 3 times [targetOffset].
+  var forceSeekOffset: Double? = nil
+  /// The minimum playback rate used to increase latency.
+  ///
+  /// Defaults to 0.92.
+  var minimumPlaybackRate: Double? = nil
+  /// The maximum playback rate used to decrease latency.
+  ///
+  /// Defaults to 1.08.
+  var maximumPlaybackRate: Double? = nil
+
+
+  // swift-format-ignore: AlwaysUseLowerCamelCase
+  static func fromList(_ pigeonVar_list: [Any?]) -> SourceLatencyConfiguration? {
+    let targetOffset = pigeonVar_list[0] as! Double
+    let minimumOffset: Double? = nilOrValue(pigeonVar_list[1])
+    let maximumOffset: Double? = nilOrValue(pigeonVar_list[2])
+    let forceSeekOffset: Double? = nilOrValue(pigeonVar_list[3])
+    let minimumPlaybackRate: Double? = nilOrValue(pigeonVar_list[4])
+    let maximumPlaybackRate: Double? = nilOrValue(pigeonVar_list[5])
+
+    return SourceLatencyConfiguration(
+      targetOffset: targetOffset,
+      minimumOffset: minimumOffset,
+      maximumOffset: maximumOffset,
+      forceSeekOffset: forceSeekOffset,
+      minimumPlaybackRate: minimumPlaybackRate,
+      maximumPlaybackRate: maximumPlaybackRate
+    )
+  }
+  func toList() -> [Any?] {
+    return [
+      targetOffset,
+      minimumOffset,
+      maximumOffset,
+      forceSeekOffset,
+      minimumPlaybackRate,
+      maximumPlaybackRate,
     ]
   }
 }
@@ -499,20 +567,22 @@ private class APIsPigeonCodecReader: FlutterStandardReader {
     case 138:
       return TypedSourcePigeon.fromList(self.readValue() as! [Any?])
     case 139:
-      return DRMConfiguration.fromList(self.readValue() as! [Any?])
+      return SourceLatencyConfiguration.fromList(self.readValue() as! [Any?])
     case 140:
-      return WidevineDRMConfiguration.fromList(self.readValue() as! [Any?])
+      return DRMConfiguration.fromList(self.readValue() as! [Any?])
     case 141:
-      return FairPlayDRMConfiguration.fromList(self.readValue() as! [Any?])
+      return WidevineDRMConfiguration.fromList(self.readValue() as! [Any?])
     case 142:
-      return HespLatencies.fromList(self.readValue() as! [Any?])
+      return FairPlayDRMConfiguration.fromList(self.readValue() as! [Any?])
     case 143:
-      return Endpoint.fromList(self.readValue() as! [Any?])
+      return HespLatencies.fromList(self.readValue() as! [Any?])
     case 144:
-      return AbrStrategyMetadataPigeon.fromList(self.readValue() as! [Any?])
+      return Endpoint.fromList(self.readValue() as! [Any?])
     case 145:
-      return AbrStrategyConfigurationPigeon.fromList(self.readValue() as! [Any?])
+      return AbrStrategyMetadataPigeon.fromList(self.readValue() as! [Any?])
     case 146:
+      return AbrStrategyConfigurationPigeon.fromList(self.readValue() as! [Any?])
+    case 147:
       return DebugFlagPigeon.fromList(self.readValue() as! [Any?])
     default:
       return super.readValue(ofType: type)
@@ -552,29 +622,32 @@ private class APIsPigeonCodecWriter: FlutterStandardWriter {
     } else if let value = value as? TypedSourcePigeon {
       super.writeByte(138)
       super.writeValue(value.toList())
-    } else if let value = value as? DRMConfiguration {
+    } else if let value = value as? SourceLatencyConfiguration {
       super.writeByte(139)
       super.writeValue(value.toList())
-    } else if let value = value as? WidevineDRMConfiguration {
+    } else if let value = value as? DRMConfiguration {
       super.writeByte(140)
       super.writeValue(value.toList())
-    } else if let value = value as? FairPlayDRMConfiguration {
+    } else if let value = value as? WidevineDRMConfiguration {
       super.writeByte(141)
       super.writeValue(value.toList())
-    } else if let value = value as? HespLatencies {
+    } else if let value = value as? FairPlayDRMConfiguration {
       super.writeByte(142)
       super.writeValue(value.toList())
-    } else if let value = value as? Endpoint {
+    } else if let value = value as? HespLatencies {
       super.writeByte(143)
       super.writeValue(value.toList())
-    } else if let value = value as? AbrStrategyMetadataPigeon {
+    } else if let value = value as? Endpoint {
       super.writeByte(144)
       super.writeValue(value.toList())
-    } else if let value = value as? AbrStrategyConfigurationPigeon {
+    } else if let value = value as? AbrStrategyMetadataPigeon {
       super.writeByte(145)
       super.writeValue(value.toList())
-    } else if let value = value as? DebugFlagPigeon {
+    } else if let value = value as? AbrStrategyConfigurationPigeon {
       super.writeByte(146)
+      super.writeValue(value.toList())
+    } else if let value = value as? DebugFlagPigeon {
+      super.writeByte(147)
       super.writeValue(value.toList())
     } else {
       super.writeValue(value)

@@ -36,13 +36,60 @@ class TypedSource extends TypedSourcePigeon {
 
   final bool? hlsDateRange;
 
-  TypedSource({required String src, this.type, DRMConfiguration? drm, SourceIntegrationId? integration, this.androidSourceConfiguration, this.headers, this.hlsDateRange})
-      : super(src: src, type: type, drm: drm, integration: integration, headers: headers, hlsDateRange: hlsDateRange);
+  /// Whether the source should be played in the low-latency mode of the player.
+  ///
+  /// This option is supported on Web. It must be `true` when using Low-Latency CMAF with ABR.
+  final bool? lowLatency;
+
+  /// The source-level latency configuration for live playback.
+  ///
+  /// Ignored for VOD playback. Android and Web support every field. iOS supports only [SourceLatencyConfiguration.targetOffset].
+  ///
+  /// On iOS, [latencyConfiguration] is applied when setting the source, but is `null` in source getters and source-change event payloads for sources other than
+  /// [TheoLiveSource].
+  final SourceLatencyConfiguration? latencyConfiguration;
+
+  TypedSource({
+    required String src,
+    this.type,
+    DRMConfiguration? drm,
+    SourceIntegrationId? integration,
+    this.androidSourceConfiguration,
+    this.headers,
+    this.hlsDateRange,
+    this.lowLatency,
+    this.latencyConfiguration,
+  }) : super(
+          src: src,
+          type: type,
+          drm: drm,
+          integration: integration,
+          headers: headers,
+          hlsDateRange: hlsDateRange,
+          lowLatency: lowLatency,
+          latencyConfiguration: latencyConfiguration,
+        );
 }
 
 /// THEOlive TypedSource
 class TheoLiveSource extends TypedSource {
-  TheoLiveSource(
-      {required String src, String? type, DRMConfiguration? drm, SourceIntegrationId? integration = SourceIntegrationId.theolive, AndroidTypedSourceConfiguration? androidSourceConfiguration})
-      : super(src: src, type: type, drm: drm, integration: integration, androidSourceConfiguration: androidSourceConfiguration);
+  TheoLiveSource({
+    required String src,
+    String? type,
+    DRMConfiguration? drm,
+    SourceIntegrationId? integration = SourceIntegrationId.theolive,
+    AndroidTypedSourceConfiguration? androidSourceConfiguration,
+    Map<String, String>? headers,
+    bool? lowLatency,
+    SourceLatencyConfiguration? latencyConfiguration,
+  }) : super(
+          src: src,
+          type: type,
+          drm: drm,
+          integration: integration,
+          androidSourceConfiguration: androidSourceConfiguration,
+          headers: headers,
+          lowLatency: lowLatency,
+          latencyConfiguration: latencyConfiguration,
+        );
 }

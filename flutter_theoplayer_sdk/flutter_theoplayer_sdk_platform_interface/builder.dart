@@ -25,11 +25,19 @@ class MergerBuilder extends Builder {
     await appendApis(buildStep, output);
 
     // write to single output file
-    await buildStep.writeAsString(AssetId(buildStep.inputId.package, outputFile), output.toString());
+    final mergedPigeons = output.toString();
+    await buildStep.writeAsString(AssetId(buildStep.inputId.package, outputFile), mergedPigeons);
 
     // run pigeon command to generate platform specific files
     print('MergerBuilder - generating pigeons');
-    await pigeon_cl.runCommandLine(['--input', outputFile]);
+    final temporaryDirectory = await Directory.systemTemp.createTemp('theoplayer_pigeons_');
+    final temporaryInput = File('${temporaryDirectory.path}/pigeons_merged.dart');
+    try {
+      await temporaryInput.writeAsString(mergedPigeons);
+      await pigeon_cl.runCommandLine(['--input', temporaryInput.path]);
+    } finally {
+      await temporaryDirectory.delete(recursive: true);
+    }
 
     print('MergerBuilder - build completed');
   }

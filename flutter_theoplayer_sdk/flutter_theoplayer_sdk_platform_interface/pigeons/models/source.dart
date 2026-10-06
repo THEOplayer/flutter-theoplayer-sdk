@@ -16,8 +16,52 @@ class TypedSourcePigeon {
   final SourceIntegrationId? integration;
   final Map<String?, String?>? headers;
   final bool? hlsDateRange;
+  final bool? lowLatency;
+  final SourceLatencyConfiguration? latencyConfiguration;
 
-  TypedSourcePigeon({required this.src, this.type, this.drm, this.integration, this.headers, this.hlsDateRange});
+  TypedSourcePigeon({required this.src, this.type, this.drm, this.integration, this.headers, this.hlsDateRange, this.lowLatency, this.latencyConfiguration});
+}
+
+/// The source-level latency configuration for live playback.
+///
+/// All offsets are expressed in seconds. On iOS, only [targetOffset] is supported.
+class SourceLatencyConfiguration {
+  /// The live offset that the player aims for.
+  final double targetOffset;
+
+  /// The offset below which the player slows down.
+  ///
+  /// Defaults to 0.66 times [targetOffset].
+  final double? minimumOffset;
+
+  /// The offset above which the player speeds up.
+  ///
+  /// Defaults to 1.5 times [targetOffset].
+  final double? maximumOffset;
+
+  /// The offset above which the player seeks to live.
+  ///
+  /// Defaults to 3 times [targetOffset].
+  final double? forceSeekOffset;
+
+  /// The minimum playback rate used to increase latency.
+  ///
+  /// Defaults to 0.92.
+  final double? minimumPlaybackRate;
+
+  /// The maximum playback rate used to decrease latency.
+  ///
+  /// Defaults to 1.08.
+  final double? maximumPlaybackRate;
+
+  SourceLatencyConfiguration({
+    required this.targetOffset,
+    this.minimumOffset,
+    this.maximumOffset,
+    this.forceSeekOffset,
+    this.minimumPlaybackRate,
+    this.maximumPlaybackRate,
+  });
 }
 
 enum SourceIntegrationId {
