@@ -45,8 +45,8 @@ class TypedSource extends TypedSourcePigeon {
   ///
   /// Ignored for VOD playback. Android and Web support every field. iOS supports only [SourceLatencyConfiguration.targetOffset].
   ///
-  /// On iOS, the configuration is applied when setting the source. For sources other than [TheoLiveSource], the configured value is not available when the native
-  /// source is converted back to Flutter. Consequently, [latencyConfiguration] is `null` in source getters and source-change event payloads for those sources.
+  /// On iOS, [latencyConfiguration] is applied when setting the source, but is `null` in source getters and source-change event payloads for sources other than
+  /// [TheoLiveSource].
   final SourceLatencyConfiguration? latencyConfiguration;
 
   TypedSource({
