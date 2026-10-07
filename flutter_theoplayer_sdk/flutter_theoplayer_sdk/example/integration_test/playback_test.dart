@@ -38,8 +38,12 @@ void main() {
 
   //disabled for now only on WEB, we need to figure out the license
   if (!kIsWeb) {
-    // Latency tests are iOS-only for now: Android native SDK doesn't expose latency properties yet.
     if (defaultTargetPlatform == TargetPlatform.iOS) {
+      testWidgets('Test iOS source latency readback', (WidgetTester tester) async {
+        await runSourceLatencyReadbackTest(tester);
+      });
+
+      // Latency tests are iOS-only for now: Android native SDK doesn't expose latency properties yet.
       testWidgets('Test latencies with HYBRID_COMPOSITION', (WidgetTester tester) async {
         await runLatenciesTest(tester, AndroidViewComposition.HYBRID_COMPOSITION);
       });
@@ -480,6 +484,41 @@ Future<void> runQualityPropertiesTest(WidgetTester tester, AndroidViewCompositio
       }
     }
   }
+}
+
+Future<void> runSourceLatencyReadbackTest(WidgetTester tester) async {
+  final app = TestApp(androidViewComposition: AndroidViewComposition.HYBRID_COMPOSITION);
+  await tester.pumpWidget(app);
+
+  final playerView = find.byKey(const Key('testChromelessPlayer'));
+  await tester.ensureVisible(playerView);
+  final player = (tester.firstElement(playerView).widget as ChromelessPlayerView).player;
+  await tester.pumpAndSettle();
+  await app.waitForPlayerReady();
+
+  final firstSourceChange = Completer<SourceChangeEvent>();
+  final secondSourceChange = Completer<SourceChangeEvent>();
+  player.addEventListener(PlayerEventTypes.SOURCECHANGE, (event) {
+    if (!firstSourceChange.isCompleted) {
+      firstSourceChange.complete(event as SourceChangeEvent);
+    } else if (!secondSourceChange.isCompleted) {
+      secondSourceChange.complete(event as SourceChangeEvent);
+    }
+  });
+  const liveStream = 'https://ll-hls-test.cdn-apple.com/llhls4/ll-hls-test-04/multi.m3u8';
+  player.source = SourceDescription(
+    sources: [TypedSource(src: liveStream, latencyConfiguration: SourceLatencyConfiguration(targetOffset: 3.0))],
+  );
+  final configuredEvent = await tester.runAsync(() => firstSourceChange.future.timeout(const Duration(seconds: 10)));
+
+  expect(configuredEvent?.source?.sources.first?.latencyConfiguration?.targetOffset, 3.0);
+  expect(player.source?.sources.first?.latencyConfiguration?.targetOffset, 3.0);
+
+  player.source = SourceDescription(sources: [TypedSource(src: liveStream)]);
+  final unconfiguredEvent = await tester.runAsync(() => secondSourceChange.future.timeout(const Duration(seconds: 10)));
+
+  expect(unconfiguredEvent?.source?.sources.first?.latencyConfiguration, isNull);
+  expect(player.source?.sources.first?.latencyConfiguration, isNull);
 }
 
 Future<void> runLatenciesTest(WidgetTester tester, AndroidViewComposition androidViewComposition) async {
