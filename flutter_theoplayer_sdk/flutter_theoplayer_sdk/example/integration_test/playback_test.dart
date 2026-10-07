@@ -136,7 +136,11 @@ Future<void> runBasicPlaybackTest(WidgetTester tester, AndroidViewComposition an
     TypedSource(src: "https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8"),
   ]);
 
-  await tester.pumpAndSettle(const Duration(seconds: 10));
+  // Flutter frames can settle before native playback reaches five seconds, so poll the player's time with a deadline.
+  final deadline = DateTime.now().add(const Duration(seconds: 30));
+  while (player.currentTime < 5 && DateTime.now().isBefore(deadline)) {
+    await tester.pump(const Duration(milliseconds: 500));
+  }
 
   testLog("Testing playback duration():  ${player.duration}");
   expect(player.duration >= 0, isTrue);
@@ -171,14 +175,20 @@ Future<void> runPlaybackRateTest(WidgetTester tester, AndroidViewComposition and
     TypedSource(src: "https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8"),
   ]);
 
-  await tester.pumpAndSettle(const Duration(seconds: 10));
+  final playbackDeadline = DateTime.now().add(const Duration(seconds: 30));
+  while (player.currentTime <= 0 && DateTime.now().isBefore(playbackDeadline)) {
+    await tester.pump(const Duration(milliseconds: 500));
+  }
 
   testLog("Testing playbackRate while playing at default speed: ${player.playbackRate} (ratechange events: $rateChanges)");
   expect(player.currentTime, greaterThan(0));
   expect(player.playbackRate, equals(1.0));
 
   player.playbackRate = 1.5;
-  await tester.pumpAndSettle(const Duration(seconds: 3));
+  final rateChangeDeadline = DateTime.now().add(const Duration(seconds: 10));
+  while ((player.playbackRate != 1.5 || !rateChanges.contains(1.5)) && DateTime.now().isBefore(rateChangeDeadline)) {
+    await tester.pump(const Duration(milliseconds: 100));
+  }
 
   testLog("Testing playbackRate after setting 1.5: ${player.playbackRate} (ratechange events: $rateChanges)");
   expect(player.playbackRate, equals(1.5));
@@ -493,12 +503,19 @@ Future<void> runLatenciesTest(WidgetTester tester, AndroidViewComposition androi
     TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
   ]);
 
-  await tester.pumpAndSettle(const Duration(seconds: 10));
-
   // Test latencies
   expect(player.theoLive, isNotNull);
 
-  final latencies = await player.theoLive!.latencies;
+  final theoLive = player.theoLive!;
+  final deadline = DateTime.now().add(const Duration(seconds: 30));
+  HespLatencies? latencies;
+  double? currentLatency;
+  do {
+    latencies = await theoLive.latencies;
+    currentLatency = await theoLive.currentLatency;
+    if ((latencies?.theoliveLatency ?? 0) > 0 && (currentLatency ?? 0) > 0) break;
+    await tester.pump(const Duration(seconds: 1));
+  } while (DateTime.now().isBefore(deadline));
   testLog(
       "Latencies: engineLatency=${latencies?.engineLatency}, distributionLatency=${latencies?.distributionLatency}, playerLatency=${latencies?.playerLatency}, theoliveLatency=${latencies?.theoliveLatency}");
 
@@ -507,7 +524,6 @@ Future<void> runLatenciesTest(WidgetTester tester, AndroidViewComposition androi
   expect(latencies.theoliveLatency!, greaterThan(0));
 
   // Test currentLatency
-  final currentLatency = await player.theoLive!.currentLatency;
   testLog("Current latency: $currentLatency");
   expect(currentLatency, isNotNull);
   expect(currentLatency!, greaterThan(0));
