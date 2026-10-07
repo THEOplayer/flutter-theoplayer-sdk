@@ -493,12 +493,19 @@ Future<void> runLatenciesTest(WidgetTester tester, AndroidViewComposition androi
     TheoLiveSource(src: "38yyniscxeglzr8n0lbku57b0"),
   ]);
 
-  await tester.pumpAndSettle(const Duration(seconds: 10));
-
   // Test latencies
   expect(player.theoLive, isNotNull);
 
-  final latencies = await player.theoLive!.latencies;
+  final theoLive = player.theoLive!;
+  final deadline = DateTime.now().add(const Duration(seconds: 30));
+  HespLatencies? latencies;
+  double? currentLatency;
+  do {
+    latencies = await theoLive.latencies;
+    currentLatency = await theoLive.currentLatency;
+    if ((latencies?.theoliveLatency ?? 0) > 0 && (currentLatency ?? 0) > 0) break;
+    await tester.pump(const Duration(seconds: 1));
+  } while (DateTime.now().isBefore(deadline));
   testLog(
       "Latencies: engineLatency=${latencies?.engineLatency}, distributionLatency=${latencies?.distributionLatency}, playerLatency=${latencies?.playerLatency}, theoliveLatency=${latencies?.theoliveLatency}");
 
@@ -507,7 +514,6 @@ Future<void> runLatenciesTest(WidgetTester tester, AndroidViewComposition androi
   expect(latencies.theoliveLatency!, greaterThan(0));
 
   // Test currentLatency
-  final currentLatency = await player.theoLive!.currentLatency;
   testLog("Current latency: $currentLatency");
   expect(currentLatency, isNotNull);
   expect(currentLatency!, greaterThan(0));

@@ -44,6 +44,9 @@ class TypedSource extends TypedSourcePigeon {
   /// The source-level latency configuration for live playback.
   ///
   /// Ignored for VOD playback. Android and Web support every field. iOS supports only [SourceLatencyConfiguration.targetOffset].
+  ///
+  /// On iOS, [latencyConfiguration] is applied when setting the source, but is `null` in source getters and source-change event payloads for sources other than
+  /// [TheoLiveSource].
   final SourceLatencyConfiguration? latencyConfiguration;
 
   TypedSource({
