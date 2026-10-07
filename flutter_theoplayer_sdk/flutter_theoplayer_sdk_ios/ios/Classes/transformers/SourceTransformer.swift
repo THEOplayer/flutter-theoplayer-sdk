@@ -34,9 +34,8 @@ struct SourceTransformer {
         
         let theoLiveSource = typedSource as? TheoLiveSource
         let integration: SourceIntegrationId? = theoLiveSource == nil ? nil : .theolive
-        // The iOS SDK applies latencyConfiguration to regular sources but does not expose it for readback; only TheoLiveSource exposes targetLatency.
-        // TODO: Restore latencyConfiguration for regular sources if the iOS SDK exposes the configured value.
-        let latencyConfiguration = theoLiveSource?.targetLatency.map { SourceLatencyConfiguration(targetOffset: $0) }
+        let targetOffset = theoLiveSource == nil ? typedSource.latencyConfiguration?.targetOffset : theoLiveSource?.targetLatency
+        let latencyConfiguration = targetOffset.map { SourceLatencyConfiguration(targetOffset: $0) }
 
         return TypedSourcePigeon(
             src: typedSource.src,
