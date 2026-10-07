@@ -136,7 +136,11 @@ Future<void> runBasicPlaybackTest(WidgetTester tester, AndroidViewComposition an
     TypedSource(src: "https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8"),
   ]);
 
-  await tester.pumpAndSettle(const Duration(seconds: 10));
+  // Flutter frames can settle before native playback reaches five seconds, so poll the player's time with a deadline.
+  final deadline = DateTime.now().add(const Duration(seconds: 30));
+  while (player.currentTime < 5 && DateTime.now().isBefore(deadline)) {
+    await tester.pump(const Duration(milliseconds: 500));
+  }
 
   testLog("Testing playback duration():  ${player.duration}");
   expect(player.duration >= 0, isTrue);
