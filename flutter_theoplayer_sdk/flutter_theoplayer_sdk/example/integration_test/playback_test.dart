@@ -175,14 +175,20 @@ Future<void> runPlaybackRateTest(WidgetTester tester, AndroidViewComposition and
     TypedSource(src: "https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8"),
   ]);
 
-  await tester.pumpAndSettle(const Duration(seconds: 10));
+  final playbackDeadline = DateTime.now().add(const Duration(seconds: 30));
+  while (player.currentTime <= 0 && DateTime.now().isBefore(playbackDeadline)) {
+    await tester.pump(const Duration(milliseconds: 500));
+  }
 
   testLog("Testing playbackRate while playing at default speed: ${player.playbackRate} (ratechange events: $rateChanges)");
   expect(player.currentTime, greaterThan(0));
   expect(player.playbackRate, equals(1.0));
 
   player.playbackRate = 1.5;
-  await tester.pumpAndSettle(const Duration(seconds: 3));
+  final rateChangeDeadline = DateTime.now().add(const Duration(seconds: 10));
+  while ((player.playbackRate != 1.5 || !rateChanges.contains(1.5)) && DateTime.now().isBefore(rateChangeDeadline)) {
+    await tester.pump(const Duration(milliseconds: 100));
+  }
 
   testLog("Testing playbackRate after setting 1.5: ${player.playbackRate} (ratechange events: $rateChanges)");
   expect(player.playbackRate, equals(1.5));
