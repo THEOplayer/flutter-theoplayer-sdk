@@ -21,6 +21,7 @@ import com.theoplayer.android.api.player.Player
 import com.theoplayer.android.api.player.track.texttrack.TextTrack
 import com.theoplayer.android.api.player.track.texttrack.cue.DateRangeCue
 import com.theoplayer.android.api.player.track.texttrack.cue.TextTrackCue
+import com.theoplayer.android.api.player.track.texttrack.id3.ID3Cue
 import com.theoplayer.flutter.pigeon.THEOplayerFlutterTextTracksAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeTextTracksAPI
 import com.theoplayer.flutter.pigeon.THEOplayerNativeTextTracksAPI.Companion.setUp
@@ -93,10 +94,13 @@ class TextTrackBridge(
                 emptyCallback
             )
         } else {
-            flutterTextTracksAPI.onTextTrackAddCue(it.track.uid.toLong(), cue.id, cue.uid, cue.startTime, cue.endTime, cue.content.toString(), emptyCallback)
+            flutterTextTracksAPI.onTextTrackAddCue(it.track.uid.toLong(), cue.id, cue.uid, cue.startTime, cue.endTime, toCueContent(cue), emptyCallback)
         }
         attachCueListeners(it.track, cue)
     }
+
+    private fun toCueContent(cue: TextTrackCue): String =
+        serializeTextTrackCueContent(cue.content, (cue as? ID3Cue)?.frame, base64Encoder)
 
     private fun toCustomAttributesJson(customAttributes: DateRangeCue.CustomAttributes): String? {
         val attributes = customAttributes.asMap() ?: return null
@@ -147,7 +151,7 @@ class TextTrackBridge(
     }
 
     private fun cueUpdateListener(track: TextTrack) = EventListener<UpdateEvent> {
-        flutterTextTracksAPI.onCueUpdate(track.uid.toLong(), it.cue.uid, it.cue.endTime, it.cue.content.toString(), emptyCallback)
+        flutterTextTracksAPI.onCueUpdate(track.uid.toLong(), it.cue.uid, it.cue.endTime, toCueContent(it.cue), emptyCallback)
     }
 
     private fun dateRangeCueUpdateListener(track: TextTrack) = EventListener<UpdateEvent> {
