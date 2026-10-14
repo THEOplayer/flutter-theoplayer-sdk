@@ -1,3 +1,7 @@
+## Unreleased
+
+* Fixed Android text-track cue delivery crashing when native cue content is null, and preserved ID3 PRIV owners and payload bytes through cue add/update events.
+
 ## 11.12.0
 
 * Updated THEOplayer to 11.12.0.
