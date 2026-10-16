@@ -10,7 +10,7 @@ import 'package:theoplayer_web/theolive/theolive_controller_web.dart';
 import 'package:theoplayer_web/theoplayer_api_web.dart';
 
 void main() {
-  test('forwards numeric, string and missing fallback reason codes', () {
+  test('forwards numeric and missing fallback reason codes', () {
     final listeners = <String, JSFunction>{};
     final jsApi = <String, Object?>{}.jsify() as JSObject;
     jsApi['addEventListener'] = ((JSString type, JSFunction listener) {
@@ -26,7 +26,7 @@ void main() {
     controller.addEventListener(THEOliveApiEventTypes.INTENTTOFALLBACK, (event) => events.add(event as IntentToFallbackEvent));
     controller.addEventListener(THEOliveApiEventTypes.ENDPOINTLOADED, (event) => endpoints.add(event as EndpointLoadedEvent));
 
-    for (final code in [13000, '6000', null]) {
+    for (final code in [13000, 6000, null]) {
       final event = {
         'reason': {'code': code, 'message': 'failover'},
       }.jsify() as JSObject;
