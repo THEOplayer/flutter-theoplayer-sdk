@@ -43,7 +43,7 @@ class THEOliveControllerWeb extends THEOliveInternalInterface {
 
     intentToFallbackEventListener = (IntentToFallbackEventJS event) {
       final jsReason = event.reason;
-      final reason = jsReason != null ? PlayerError(errorCode: jsReason.code ?? '', errorMessage: jsReason.message ?? '') : null;
+      final reason = jsReason != null ? PlayerError(errorCode: jsReason.code?.toString() ?? '', errorMessage: jsReason.message ?? '') : null;
       _eventManager.dispatchEvent(IntentToFallbackEvent(reason: reason));
     }.toJS;
 

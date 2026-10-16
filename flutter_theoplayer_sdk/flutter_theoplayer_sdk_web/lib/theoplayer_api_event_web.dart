@@ -521,7 +521,7 @@ extension IntentToFallbackEventJSExtension on IntentToFallbackEventJS {
 class IntentToFallbackReasonJS {}
 
 extension IntentToFallbackReasonJSExtension on IntentToFallbackReasonJS {
-  external String? get code;
+  external int? get code;
   external String? get message;
 }
 

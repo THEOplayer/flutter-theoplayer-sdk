@@ -52,6 +52,12 @@ jobs:
         echo Installed chromium version: ${{ steps.setup-chrome.outputs.chrome-version }}
         ${{ steps.setup-chrome.outputs.chrome-path }} --version
 
+    - name: Run Web package browser tests
+      run: flutter test --platform chrome test
+      working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk_web
+      env:
+        CHROME_EXECUTABLE: ${{ steps.setup-chrome.outputs.chrome-path }}
+
     - name: Install Chromedriver
       uses: nanasess/setup-chromedriver@v2
       with:
