@@ -18,6 +18,9 @@ dart pub global activate melos
 melos bootstrap   # creates pubspec_overrides.yaml linking local packages
 ```
 
+The example app requires Flutter 3.35 or newer for its project-level
+CocoaPods configuration; the SDK packages retain their Flutter 3.19 minimum.
+
 ## Hard rules
 
 1. **Never hand-edit generated files**: `lib/pigeon/apis.g.dart`, `APIs.g.kt`,
@@ -36,9 +39,18 @@ melos bootstrap   # creates pubspec_overrides.yaml linking local packages
    packages (`theoplayer_android`, `theoplayer_ios`, `theoplayer_web`) must change
    together, and it is strictly a breaking change for `theoplayer_platform_interface`
    consumers outside this monorepo.
-4. **Never bump package versions manually.** The 5 packages version in lockstep via
+4. **For SDK version bumps, use the all-platform updater first** (from the repository
+   root; requires Melos and CocoaPods):
+   ```bash
+   melos run update:theoplayer:native -- --all 11.14.0
+   ```
+   Replace `11.14.0` with the target version. Despite the script name, `--all`
+   updates the Android and iOS pins (including the example iOS Podfile.lock)
+   **and the bundled Web SDK**. Do not update only Android/iOS unless the
+   request explicitly excludes Web.
+5. **Never bump package versions manually.** The 5 packages version in lockstep via
    `VERSION=x.y.z melos run update:theoplayer:flutter`.
-5. **Cross-platform parity**: a feature is not done until it works on Android + iOS
+6. **Cross-platform parity**: a feature is not done until it works on Android + iOS
    (pigeon bridges) **and** web (`dart:js_interop` — web bypasses pigeon entirely).
    Follow the step-by-step recipe in [CONTRIBUTING.md](CONTRIBUTING.md).
 

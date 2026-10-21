@@ -9,7 +9,8 @@
 3. [How to use these guides](#how-to-use-these-guides)
 4. [Features](#features)
 5. [Getting Started](#getting-started)
-6. [Contributing](#contributing)
+6. [Updating SDK versions](#updating-sdk-versions)
+7. [Contributing](#contributing)
 
 ## Overview
 
@@ -32,9 +33,10 @@ For each platform, a dependency to the corresponding THEOplayer SDK is included 
 
 - Gradle & Maven for Android
 - Cocoapods for iOS
-- npm for Web *
+- Bundled JavaScript files for Web *
 
-*_the initial version of the SDK relies on a local copy of `THEOplayer.chromeless.js` (and additional modules), so adding it manually is required!_
+*Web apps must provide `THEOplayer.chromeless.js` and its additional modules.
+The example app bundles them; maintainers update that copy using the all-platform command below.*
 
 In order to use one of these THEOplayer SDKs, it is necessary to obtain a valid THEOplayer license for that specific platform,
 i.e. HTML5, Android, and/or iOS. You can sign up for a THEOplayer SDK license through [our portal](https://portal.theoplayer.com/).
@@ -143,6 +145,23 @@ and discussed in the next section. Finally, an overview of features, limitations
   - [HLS date ranges (EXT-X-DATERANGE)](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/daterange.md)
   - [Debug Flags](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/debug-flags.md)
   - [Custom branches](https://github.com/THEOplayer/flutter-theoplayer-sdk/blob/main/doc/custom-branches.md): custom forks to expose native functionality 
+
+## Updating SDK versions
+
+From the repository root, use the existing all-platform updater to keep the
+Android and iOS dependencies and the example app's bundled Web SDK in sync:
+
+```bash
+melos run update:theoplayer:native -- --all 11.14.0
+```
+
+Replace `11.14.0` with the target version. This command requires Melos and
+CocoaPods and updates the example iOS Podfile.lock. To release matching Flutter
+package versions, run `VERSION=x.y.z melos run update:theoplayer:flutter`
+separately; that command creates a commit.
+
+The example app requires Flutter 3.35 or newer for its iOS CocoaPods setup;
+the SDK packages still support Flutter 3.19 and newer.
 
 ## Contributing
 

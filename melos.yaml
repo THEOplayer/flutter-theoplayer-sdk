@@ -9,10 +9,6 @@ packages:
   - flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
 
 command:
-  bootstrap:
-    environment:
-      sdk: ^3.3.0
-      flutter: ">=3.19.0"
   version:
     includeScopes: false
     workspaceChangelog: false
@@ -45,7 +41,6 @@ scripts:
       -V theoplayer:$VERSION
   update:theoplayer:native:
     description: |
-      Updates the versions of all the THEOplayer packages to the passed `VERSION` env, also committing the changes to the branch. 
-      To run the script set the version env before the command. Example:
-      `melos update:theoplayer:native -- --all 6.10.1`
+      Updates the pinned Android, iOS, and bundled Web SDK versions.
+      Example: `melos run update:theoplayer:native -- --all 11.14.0`
     run: ./scripts/update_theoplayer_native.sh
