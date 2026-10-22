@@ -505,16 +505,16 @@ Future<void> runSourceLatencyReadbackTest(WidgetTester tester) async {
       secondSourceChange.complete(event as SourceChangeEvent);
     }
   });
-  const liveStream = 'https://ll-hls-test.cdn-apple.com/llhls4/ll-hls-test-04/multi.m3u8';
+  const sourceUrl = 'https://cdn.theoplayer.com/video/big_buck_bunny/big_buck_bunny.m3u8';
   player.source = SourceDescription(
-    sources: [TypedSource(src: liveStream, latencyConfiguration: SourceLatencyConfiguration(targetOffset: 3.0))],
+    sources: [TypedSource(src: sourceUrl, latencyConfiguration: SourceLatencyConfiguration(targetOffset: 3.0))],
   );
   final configuredEvent = await tester.runAsync(() => firstSourceChange.future.timeout(const Duration(seconds: 10)));
 
   expect(configuredEvent?.source?.sources.first?.latencyConfiguration?.targetOffset, 3.0);
   expect(player.source?.sources.first?.latencyConfiguration?.targetOffset, 3.0);
 
-  player.source = SourceDescription(sources: [TypedSource(src: liveStream)]);
+  player.source = SourceDescription(sources: [TypedSource(src: sourceUrl)]);
   final unconfiguredEvent = await tester.runAsync(() => secondSourceChange.future.timeout(const Duration(seconds: 10)));
 
   expect(unconfiguredEvent?.source?.sources.first?.latencyConfiguration, isNull);
