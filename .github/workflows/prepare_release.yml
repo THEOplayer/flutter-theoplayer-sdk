@@ -1,0 +1,324 @@
+name: Prepare release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Exact THEOplayer SDK version to release (x.y.z)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: prepare-flutter-release
+  cancel-in-progress: false
+
+env:
+  RELEASE_VERSION: ${{ inputs.version }}
+  RELEASE_BRANCH: release/${{ inputs.version }}
+
+jobs:
+  preflight:
+    name: Validate release ${{ inputs.version }}
+    runs-on: ubuntu-latest
+    outputs:
+      source_sha: ${{ steps.release.outputs.source_sha }}
+      version: ${{ steps.release.outputs.version }}
+    steps:
+      - name: Require develop
+        run: |
+          if [[ "$GITHUB_REF" != "refs/heads/develop" ]]; then
+            echo "::error::Run this workflow from develop, not ${GITHUB_REF#refs/heads/}."
+            exit 1
+          fi
+
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Validate repository state
+        id: release
+        run: |
+          git fetch origin --prune --tags
+          source_sha=$(git rev-parse HEAD)
+          develop_sha=$(git rev-parse origin/develop)
+          if [[ "$source_sha" != "$develop_sha" ]]; then
+            echo "::error::develop changed after this workflow was started. Run it again from the latest develop."
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor origin/main HEAD; then
+            echo "::error::main must be merged back into develop before preparing a release."
+            exit 1
+          fi
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "::error::The release checkout is not clean."
+            exit 1
+          fi
+          dart run scripts/theoplayer_release.dart preflight "$RELEASE_VERSION"
+          echo "source_sha=$source_sha" >> "$GITHUB_OUTPUT"
+          echo "version=$RELEASE_VERSION" >> "$GITHUB_OUTPUT"
+
+      - name: Check upstream SDK availability
+        run: dart run scripts/theoplayer_release.dart check-upstream "$RELEASE_VERSION"
+
+      - name: Check Flutter package availability
+        run: dart run scripts/theoplayer_release.dart check-unpublished "$RELEASE_VERSION"
+
+      - name: Check branch, tag, and pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git ls-remote --exit-code --heads origin "refs/heads/$RELEASE_BRANCH" >/dev/null 2>&1; then
+            echo "::error::Branch $RELEASE_BRANCH already exists."
+            exit 1
+          fi
+          if git show-ref --verify --quiet "refs/tags/$RELEASE_VERSION"; then
+            echo "::error::Tag $RELEASE_VERSION already exists."
+            exit 1
+          fi
+          existing_prs=$(gh pr list --state all --head "$RELEASE_BRANCH" --json number --jq 'length')
+          if [[ "$existing_prs" != "0" ]]; then
+            echo "::error::A pull request already exists for $RELEASE_BRANCH."
+            exit 1
+          fi
+
+      - name: Verify GitHub App credentials
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.RELEASE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
+      - name: Summarize preflight
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<EOF
+          ## Release preparation
+
+          - Source: \`develop\` at \`${{ steps.release.outputs.source_sha }}\`
+          - Requested version: \`$RELEASE_VERSION\`
+          - Release branch: \`$RELEASE_BRANCH\`
+          - Target: \`main\`
+
+          The exact SDK version is available for Android, iOS core, iOS THEOlive, and Web, and is documented in the official changelog.
+          EOF
+
+  prepare:
+    name: Prepare release ${{ needs.preflight.outputs.version }}
+    needs: preflight
+    runs-on: macos-26
+    timeout-minutes: 90
+    steps:
+      - name: Checkout release source
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.preflight.outputs.source_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: zulu
+          java-version: 17
+
+      - name: Select Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: '26.3'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Setup Melos
+        uses: bluefireteam/melos-action@v3
+        with:
+          run-bootstrap: false
+
+      - name: Revalidate release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git fetch origin --prune --tags
+          if [[ "$(git rev-parse HEAD)" != "$(git rev-parse origin/develop)" ]]; then
+            echo "::error::develop changed while preflight was running. Run the workflow again."
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor origin/main HEAD; then
+            echo "::error::main is no longer an ancestor of develop."
+            exit 1
+          fi
+          if git ls-remote --exit-code --heads origin "refs/heads/$RELEASE_BRANCH" >/dev/null 2>&1; then
+            echo "::error::Branch $RELEASE_BRANCH was created while preflight was running."
+            exit 1
+          fi
+          if git show-ref --verify --quiet "refs/tags/$RELEASE_VERSION"; then
+            echo "::error::Tag $RELEASE_VERSION was created while preflight was running."
+            exit 1
+          fi
+          existing_prs=$(gh pr list --state all --head "$RELEASE_BRANCH" --json number --jq 'length')
+          if [[ "$existing_prs" != "0" ]]; then
+            echo "::error::A pull request was created for $RELEASE_BRANCH while preflight was running."
+            exit 1
+          fi
+          dart run scripts/theoplayer_release.dart preflight "$RELEASE_VERSION"
+          dart run scripts/theoplayer_release.dart check-upstream "$RELEASE_VERSION"
+          dart run scripts/theoplayer_release.dart check-unpublished "$RELEASE_VERSION"
+
+      - name: Create local release branch
+        run: git switch -c "$RELEASE_BRANCH"
+
+      - name: Bootstrap workspace
+        env:
+          SOURCE_SHA: ${{ needs.preflight.outputs.source_sha }}
+        run: |
+          melos bootstrap
+          git restore --source "$SOURCE_SHA" --worktree -- \
+            flutter_theoplayer_sdk/flutter_theoplayer_sdk/analysis_options.yaml \
+            flutter_theoplayer_sdk/flutter_theoplayer_sdk_web/pubspec.yaml
+          if [[ -n "$(git status --porcelain --untracked-files=no)" ]]; then
+            echo "::error::Bootstrap changed unexpected tracked files."
+            git status --short
+            exit 1
+          fi
+
+      - name: Update native SDKs
+        run: melos run update:theoplayer:native -- --all "$RELEASE_VERSION"
+
+      - name: Update Flutter packages
+        run: VERSION="$RELEASE_VERSION" melos run update:theoplayer:flutter -- --no-git-commit-version
+
+      - name: Update changelogs
+        run: dart run scripts/theoplayer_release.dart update-changelogs "$RELEASE_VERSION"
+
+      - name: Verify release metadata
+        run: dart run scripts/theoplayer_release.dart verify "$RELEASE_VERSION"
+
+      - name: Validate release diff
+        run: bash scripts/check_release_diff.sh "${{ needs.preflight.outputs.source_sha }}"
+
+      - name: Check formatting
+        run: git ls-files -z '*.dart' ':!:flutter_theoplayer_sdk/flutter_theoplayer_sdk_platform_interface/pigeons/pigeon_config.dart' | xargs -0 dart format --output=none --set-exit-if-changed -l 200
+
+      - name: Analyze
+        run: |
+          dart analyze scripts/theoplayer_release.dart
+          melos run analyze
+
+      - name: Run unit tests
+        run: melos exec --dir-exists=test --no-private -- flutter test
+
+      - name: Build Android example
+        run: flutter build apk
+        working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
+
+      - name: Build iOS example
+        run: flutter build ios --release --no-codesign
+        working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
+
+      - name: Build Web example
+        run: flutter build web
+        working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
+
+      - name: Recheck generated release
+        env:
+          SOURCE_SHA: ${{ needs.preflight.outputs.source_sha }}
+        run: |
+          git restore --source "$SOURCE_SHA" --worktree -- flutter_theoplayer_sdk/flutter_theoplayer_sdk/analysis_options.yaml
+          dart run scripts/theoplayer_release.dart verify "$RELEASE_VERSION"
+          bash scripts/check_release_diff.sh "$SOURCE_SHA"
+
+      - name: Recheck release destination
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SOURCE_SHA: ${{ needs.preflight.outputs.source_sha }}
+        run: |
+          git fetch origin --prune --tags
+          if [[ "$SOURCE_SHA" != "$(git rev-parse origin/develop)" ]]; then
+            echo "::error::develop changed while validation was running. Run the workflow again."
+            exit 1
+          fi
+          if ! git merge-base --is-ancestor origin/main "$SOURCE_SHA"; then
+            echo "::error::main changed while validation was running and must be merged back into develop."
+            exit 1
+          fi
+          if git ls-remote --exit-code --heads origin "refs/heads/$RELEASE_BRANCH" >/dev/null 2>&1; then
+            echo "::error::Branch $RELEASE_BRANCH was created while validation was running."
+            exit 1
+          fi
+          if git show-ref --verify --quiet "refs/tags/$RELEASE_VERSION"; then
+            echo "::error::Tag $RELEASE_VERSION was created while validation was running."
+            exit 1
+          fi
+          existing_prs=$(gh pr list --state all --head "$RELEASE_BRANCH" --json number --jq 'length')
+          if [[ "$existing_prs" != "0" ]]; then
+            echo "::error::A pull request was created for $RELEASE_BRANCH while validation was running."
+            exit 1
+          fi
+          dart run scripts/theoplayer_release.dart check-unpublished "$RELEASE_VERSION"
+
+      - name: Create GitHub App token
+        id: app-token
+        uses: actions/create-github-app-token@v3
+        with:
+          client-id: ${{ vars.RELEASE_APP_CLIENT_ID }}
+          private-key: ${{ secrets.RELEASE_APP_PRIVATE_KEY }}
+
+      - name: Commit release preparation
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          APP_SLUG: ${{ steps.app-token.outputs.app-slug }}
+        run: |
+          bot_id=$(gh api "/users/${APP_SLUG}[bot]" --jq .id)
+          git config user.name "${APP_SLUG}[bot]"
+          git config user.email "${bot_id}+${APP_SLUG}[bot]@users.noreply.github.com"
+          git commit -m "Prepare release $RELEASE_VERSION"
+          gh auth setup-git
+          git push --set-upstream origin "$RELEASE_BRANCH"
+
+      - name: Open release pull request
+        id: pull-request
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          cat > /tmp/release-pr.md <<EOF
+          ## Summary
+          - update Android, iOS, and Web THEOplayer SDKs to $RELEASE_VERSION
+          - update all five Flutter packages in lockstep
+          - publish existing Unreleased changelog entries as $RELEASE_VERSION
+
+          #### Test plan
+          - [x] formatting check
+          - [x] analysis
+          - [x] unit tests
+          - [x] Android release build
+          - [x] iOS release build
+          - [x] Web release build
+          - [ ] Android, iOS, and Web PR integration workflows
+          - [ ] review native SDK compatibility and confirm no Flutter API or Pigeon changes are needed
+          EOF
+          pr_url=$(gh pr create --base main --head "$RELEASE_BRANCH" --title "Release $RELEASE_VERSION" --body-file /tmp/release-pr.md)
+          echo "url=$pr_url" >> "$GITHUB_OUTPUT"
+
+      - name: Summarize release pull request
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<EOF
+          ## Release pull request created
+
+          - Version: \`$RELEASE_VERSION\`
+          - Branch: \`$RELEASE_BRANCH\`
+          - Commit: \`$(git rev-parse HEAD)\`
+          - Pull request: ${{ steps.pull-request.outputs.url }}
+          EOF
