@@ -11,7 +11,7 @@ let package = Package(
         .library(name: "theoplayer-ios", targets: ["theoplayer_ios"])
     ],
     dependencies: [
-        .package(url: "https://github.com/THEOplayer/theoplayer-sdk-apple", exact: "11.10.2"),
+        .package(url: "https://github.com/THEOplayer/theoplayer-sdk-apple", exact: "11.14.0"),
         .package(name: "FlutterFramework", path: "../FlutterFramework")
     ],
     targets: [
