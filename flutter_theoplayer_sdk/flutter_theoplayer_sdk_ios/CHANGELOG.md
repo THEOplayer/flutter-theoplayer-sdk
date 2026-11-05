@@ -1,6 +1,6 @@
 ## Unreleased
 
-* Added Swift Package Manager support.
+* Added Swift Package Manager support for iOS.
 
 ## 11.12.0
 
