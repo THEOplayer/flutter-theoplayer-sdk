@@ -31,7 +31,7 @@ a list of features and known limitations.
 For each platform, a dependency to the corresponding THEOplayer SDK is included through a dependency manager:
 
 - Gradle & Maven for Android
-- Cocoapods for iOS
+- Swift Package Manager or CocoaPods for iOS
 - npm for Web *
 
 *_the initial version of the SDK relies on a local copy of `THEOplayer.chromeless.js` (and additional modules), so adding it manually is required!_

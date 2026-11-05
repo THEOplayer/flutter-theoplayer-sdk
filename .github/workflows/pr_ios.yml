@@ -45,7 +45,7 @@ jobs:
     - name: Select Xcode ${{ matrix.xcode_version }}
       uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: ${{ matrix.xcode_version }} # Check versions: https://github.com/actions/runner-images/blob/main/images/macos/macos-14-Readme.md
+        xcode-version: ${{ matrix.xcode_version }} # Check versions: https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md
 
     - name: Setup Flutter (${{ matrix.flutter_version }} channel)
       uses: subosito/flutter-action@v2
