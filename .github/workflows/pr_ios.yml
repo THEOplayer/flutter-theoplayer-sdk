@@ -82,10 +82,18 @@ jobs:
     - name: Run integration tests
       # `flutter test` sometimes never gets past app launch on the simulator and produces no output.
       timeout-minutes: 25
-      run: flutter test integration_test_single_entrypoint/entrypoint.dart
+      run: "$GITHUB_WORKSPACE/.github/scripts/ios_integration_test.sh"
       working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
       env:
         TEST_LICENSE: ${{ secrets.TEST_LICENSE }}
+
+    - name: Upload iOS integration test logs
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-integration-logs-${{ matrix.flutter_version }}
+        path: ${{ runner.temp }}/ios-integration-logs
+        if-no-files-found: ignore
 
     - name: Dump simulator state on failure
       if: failure()
@@ -99,5 +107,4 @@ jobs:
     - name: Build iOS
       run: flutter build ios --release --no-codesign
       working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
-
 
