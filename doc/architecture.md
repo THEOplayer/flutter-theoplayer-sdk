@@ -11,7 +11,7 @@ The THEOplayer Flutter SDK is a **federated Flutter plugin** that wraps the nati
 | Platform | Native SDK source |
 |----------|-------------------|
 | Android | `com.theoplayer.theoplayer-sdk-android:core` (Maven: `https://maven.theoplayer.com/releases`) |
-| iOS | `THEOplayerSDK-core` + `THEOplayer-Integration-THEOlive` (CocoaPods) |
+| iOS | `THEOplayerSDK` + `THEOplayerTHEOliveIntegration` (SwiftPM) or `THEOplayerSDK-core` + `THEOplayer-Integration-THEOlive` (CocoaPods) |
 | Web | `THEOplayer.chromeless.js` (shipped manually in your app's `web/` folder) |
 
 The Flutter SDK version is **locked to the native player version** (e.g. Flutter SDK `10.12.3` uses native SDKs `10.12.3` on all platforms).
@@ -64,7 +64,7 @@ THEOplayerViewController (per-player; Mobile impl shared by Android+iOS, Web sep
 | Pigeon definitions (source of truth) | `..._platform_interface/pigeons/` |
 | Android native entry | `..._android/android/src/main/kotlin/com/theoplayer/flutter/TheoplayerPlugin.kt` |
 | Android player wrapper | `..._android/.../THEOplayerViewNative.kt` |
-| iOS native entry | `..._ios/ios/Classes/TheoplayerPlugin.swift` |
+| iOS native entry | `..._ios/ios/theoplayer_ios/Sources/theoplayer_ios/TheoplayerPlugin.swift` |
 | Web JS interop bindings | `..._web/lib/theoplayer_api_web.dart` |
 
 ## Dart ⇄ native communication
