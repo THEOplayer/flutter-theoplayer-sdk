@@ -62,7 +62,7 @@ diagnostics() {
     END {
       if (!launch) print "No simctl launch line found"
       if (!stream) print "No log stream line found"
-      if (launch && stream) print launch < stream ? "simctl launch came first (#181771 signature)" : "log stream came first"
+      if (launch && stream) print (launch < stream ? "simctl launch came first (#181771 signature)" : "log stream came first")
     }
   ' "$log_file" || true
   echo '::endgroup::'
