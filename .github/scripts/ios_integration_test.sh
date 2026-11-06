@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-STALL_SECONDS=${STALL_SECONDS:-180}
+STALL_SECONDS=${STALL_SECONDS:-30}
 MAX_ATTEMPTS=${MAX_ATTEMPTS:-2}
 for value in "$STALL_SECONDS" "$MAX_ATTEMPTS"; do
   if [[ ! $value =~ ^[1-9][0-9]*$ ]]; then
