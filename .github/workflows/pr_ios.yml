@@ -11,7 +11,7 @@ concurrency:
 jobs:
   build_ios:
     # A healthy run takes ~20 min. Without this cap a hung job runs until GitHub's 6 h limit.
-    timeout-minutes: 45
+    timeout-minutes: 60
 
     strategy:
       fail-fast: false
@@ -61,11 +61,19 @@ jobs:
 
     - name: Run integration tests
       # `flutter test` sometimes never gets past app launch on the simulator and produces no output.
-      timeout-minutes: 25
-      run: flutter test integration_test_single_entrypoint/entrypoint.dart
+      timeout-minutes: 35
+      run: "$GITHUB_WORKSPACE/.github/scripts/ios_integration_test.sh"
       working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
       env:
         TEST_LICENSE: ${{ secrets.TEST_LICENSE }}
+
+    - name: Upload iOS integration test logs
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-integration-logs-${{ matrix.flutter_version }}
+        path: ${{ runner.temp }}/ios-integration-logs
+        if-no-files-found: ignore
 
     - name: Dump simulator state on failure
       if: failure()
