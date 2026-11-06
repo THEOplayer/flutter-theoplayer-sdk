@@ -15,6 +15,8 @@ flutter_pid=
 logger_pid=
 fifo=
 
+# Recursively freezes (SIGSTOP) a process and its descendants, collecting their PIDs
+# in the caller's tree_pids array so cleanup() can kill the whole tree at once.
 stop_tree() {
   local pid=$1 child
   kill -STOP "$pid" 2>/dev/null || return 0
