@@ -1,14 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-STALL_SECONDS=${STALL_SECONDS:-30}
-MAX_ATTEMPTS=${MAX_ATTEMPTS:-5}
-for value in "$STALL_SECONDS" "$MAX_ATTEMPTS"; do
-  if [[ ! $value =~ ^[1-9][0-9]*$ ]]; then
-    echo 'STALL_SECONDS and MAX_ATTEMPTS must be positive integers' >&2
-    exit 2
-  fi
-done
+STALL_SECONDS=30
+MAX_ATTEMPTS=5
 log_dir="${RUNNER_TEMP:-$PWD}/ios-integration-logs"
 mkdir -p "$log_dir"
 flutter_pid=
