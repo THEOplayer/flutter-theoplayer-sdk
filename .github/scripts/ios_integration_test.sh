@@ -6,8 +6,6 @@ MAX_ATTEMPTS=5
 log_dir="${RUNNER_TEMP:-$PWD}/ios-integration-logs"
 mkdir -p "$log_dir"
 flutter_pid=
-logger_pid=
-fifo=
 
 # Recursively freezes (SIGSTOP) a process and its descendants, collecting their PIDs
 # in the caller's tree_pids array so cleanup() can kill the whole tree at once.
@@ -34,11 +32,6 @@ cleanup() {
     wait "$flutter_pid" 2>/dev/null || true
     flutter_pid=
   fi
-  if [[ -n $logger_pid ]]; then
-    wait "$logger_pid" 2>/dev/null || true
-    logger_pid=
-  fi
-  [[ -z $fifo ]] || rm -f "$fifo"
 }
 trap cleanup EXIT
 trap 'exit 130' INT
@@ -69,18 +62,7 @@ for ((attempt=1; attempt<=MAX_ATTEMPTS; attempt++)); do
   echo "Starting iOS integration test attempt $attempt/$MAX_ATTEMPTS"
   log_file="$log_dir/attempt-$attempt.log"
   : > "$log_file"
-  fifo="$log_dir/attempt-$attempt.fifo"
-  mkfifo "$fifo"
-  started=$SECONDS
-  (
-    while IFS= read -r line || [[ -n $line ]]; do
-      printf -v stamped '[%s +%ss] %s' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')" "$((SECONDS-started))" "$line"
-      printf '%s\n' "$stamped"
-      printf '%s\n' "$stamped" >> "$log_file"
-    done < "$fifo"
-  ) &
-  logger_pid=$!
-  flutter test -v integration_test_single_entrypoint/entrypoint.dart "$@" > "$fifo" 2>&1 &
+  flutter test -v integration_test_single_entrypoint/entrypoint.dart "$@" > >(tee "$log_file") 2>&1 &
   flutter_pid=$!
   waiting_since=-1
   stalled=false
@@ -111,10 +93,6 @@ for ((attempt=1; attempt<=MAX_ATTEMPTS; attempt++)); do
   status=0
   wait "$flutter_pid" || status=$?
   flutter_pid=
-  wait "$logger_pid" || true
-  logger_pid=
-  rm -f "$fifo"
-  fifo=
   if (( status == 0 )) && [[ $had_stall == true ]]; then
     echo '::warning::iOS integration tests passed on retry after a VM Service stall (flutter/flutter#181771).'
   fi
