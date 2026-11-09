@@ -62,7 +62,7 @@ for ((attempt=1; attempt<=MAX_ATTEMPTS; attempt++)); do
   echo "Starting iOS integration test attempt $attempt/$MAX_ATTEMPTS"
   log_file="$log_dir/attempt-$attempt.log"
   : > "$log_file"
-  flutter test -v integration_test_single_entrypoint/entrypoint.dart "$@" > >(tee "$log_file") 2>&1 &
+  flutter test -v integration_test_single_entrypoint/entrypoint.dart > >(tee "$log_file") 2>&1 &
   flutter_pid=$!
   waiting_since=-1
   stalled=false
