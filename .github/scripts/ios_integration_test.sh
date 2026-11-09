@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
+# Run background jobs in their own process group so cleanup() can kill flutter test's whole tree at once.
+set -m
 
 STALL_SECONDS=30
 MAX_ATTEMPTS=5
@@ -7,28 +9,11 @@ log_dir="${RUNNER_TEMP:-$PWD}/ios-integration-logs"
 mkdir -p "$log_dir"
 flutter_pid=
 
-# Recursively freezes (SIGSTOP) a process and its descendants, collecting their PIDs
-# in the caller's tree_pids array so cleanup() can kill the whole tree at once.
-stop_tree() {
-  local pid=$1 child
-  kill -STOP "$pid" 2>/dev/null || return 0
-  tree_pids+=("$pid")
-  for child in $(pgrep -P "$pid" || true); do
-    stop_tree "$child"
-  done
-}
-
 cleanup() {
-  local tree_pids=()
   if [[ -n $flutter_pid ]]; then
-    # Freeze parents before discovering children so they cannot spawn more.
-    stop_tree "$flutter_pid"
-    if (( ${#tree_pids[@]} > 0 )); then
-      kill -TERM "${tree_pids[@]}" 2>/dev/null || true
-      kill -CONT "${tree_pids[@]}" 2>/dev/null || true
-      sleep 1
-      kill -KILL "${tree_pids[@]}" 2>/dev/null || true
-    fi
+    kill -TERM -- -"$flutter_pid" 2>/dev/null || true
+    sleep 1
+    kill -KILL -- -"$flutter_pid" 2>/dev/null || true
     wait "$flutter_pid" 2>/dev/null || true
     flutter_pid=
   fi
