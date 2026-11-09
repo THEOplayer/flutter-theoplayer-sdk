@@ -42,7 +42,6 @@ for ((attempt=1; attempt<=MAX_ATTEMPTS; attempt++)); do
   stalled=false
   while kill -0 "$flutter_pid" 2>/dev/null; do
     if grep -q 'VM Service URL on device' "$log_file"; then
-      waiting_since=-1
       break
     fi
     if (( waiting_since < 0 )) && grep -q 'Waiting for VM Service port to be available' "$log_file"; then
