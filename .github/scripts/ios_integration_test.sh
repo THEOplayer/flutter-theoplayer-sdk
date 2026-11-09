@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# TODO: remove this workaround once https://github.com/flutter/flutter/pull/193142 reaches Flutter stable and beta.
 set -euo pipefail
 # Run background jobs in their own process group so cleanup() can kill flutter test's whole tree at once.
 set -m
@@ -50,6 +51,7 @@ for ((attempt=1; attempt<=MAX_ATTEMPTS; attempt++)); do
     if (( waiting_since >= 0 && SECONDS-waiting_since >= STALL_SECONDS )); then
       stalled=true
       had_stall=true
+      [[ -z ${GITHUB_OUTPUT:-} ]] || echo 'stalled=true' >> "$GITHUB_OUTPUT"
       diagnostics
       cleanup
       break

@@ -80,6 +80,7 @@ jobs:
         os_version: '>=18.5'
 
     - name: Run integration tests
+      id: integration_tests
       # `flutter test` sometimes never gets past app launch on the simulator and produces no output.
       timeout-minutes: 35
       run: "$GITHUB_WORKSPACE/.github/scripts/ios_integration_test.sh"
@@ -87,8 +88,9 @@ jobs:
       env:
         TEST_LICENSE: ${{ secrets.TEST_LICENSE }}
 
-    - name: Upload iOS integration test logs
-      if: always()
+    # TODO: remove once https://github.com/flutter/flutter/pull/193142 reaches Flutter stable and beta.
+    - name: Upload iOS integration test logs after a VM Service stall
+      if: always() && steps.integration_tests.outputs.stalled == 'true'
       uses: actions/upload-artifact@v4
       with:
         name: ios-integration-logs-${{ matrix.flutter_version }}
