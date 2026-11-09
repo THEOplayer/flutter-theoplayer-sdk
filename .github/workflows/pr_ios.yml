@@ -93,7 +93,7 @@ jobs:
       if: always() && steps.integration_tests.outputs.stalled == 'true'
       uses: actions/upload-artifact@v4
       with:
-        name: ios-integration-logs-${{ matrix.flutter_version }}
+        name: ios-integration-logs-${{ matrix.flutter_version }}-${{ matrix.dependency_manager.name }}
         path: ${{ runner.temp }}/ios-integration-logs
         if-no-files-found: ignore
 
