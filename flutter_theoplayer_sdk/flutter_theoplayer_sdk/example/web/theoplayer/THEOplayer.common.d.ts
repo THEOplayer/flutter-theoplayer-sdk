@@ -1450,376 +1450,6 @@ export interface MediaError extends Error {
   readonly systemCode?: number;
 }
 /**
- * Fired when the ad has stalled playback to buffer.
- *
- * @category Ads
- * @category Events
- * @public
- */
-export interface AdBufferingEvent extends AdEvent<'adbuffering'> {
-  /**
-   * The ad which is buffered.
-   */
-  readonly ad: GoogleImaAd;
-}
-/**
- * Fired when an ads list is loaded.
- *
- * @category Ads
- * @category Events
- * @public
- */
-export interface AdMetadataEvent extends Event<'admetadata'> {}
-/**
- * The Google DAI API.
- *
- * @remarks
- * <br/> - Available since v3.7.0.
- *
- * @category Ads
- * @public
- */
-export interface GoogleDAI {
-  /**
-   * Returns the content time without ads for a given stream time. Returns the given stream time for live streams.
-   *
-   * @param time - The stream time with inserted ads (in seconds).
-   */
-  contentTimeForStreamTime(time: number): number;
-  /**
-   * Returns the stream time with ads for a given content time. Returns the given content time for live streams.
-   *
-   * @param time - The content time without any ads (in seconds).
-   */
-  streamTimeForContentTime(time: number): number;
-  /**
-   * Replaces all the ad tag parameters used for upcoming ad requests for a live stream.
-   *
-   * @param adTagParameters - The new ad tag parameters.
-   */
-  replaceAdTagParameters(adTagParameters?: Record<string, string>): void;
-  /**
-   * Whether snapback is enabled. When enabled and the user seeks over multiple ad breaks, the last ad break that was seeked past will be played.
-   */
-  snapback: boolean;
-  /**
-   * A source transformer which will receive the source as returned from Google DAI before loading it in the player. This capability can be useful
-   * if you need to add authentication tokens or signatures to the source URL as returned by Google.
-   */
-  sourceTransformer: (url: string) => string | Promise<string>;
-}
-/**
- * A synchronous or asynchronous return type
- *
- * @public
- */
-export type MaybeAsync<T> = T | PromiseLike<T>;
-/**
- * A handler for a server-side ad integration.
- *
- * You can implement one or more of these methods to hook into various parts
- * of the player's lifecycle and perform your integration-specific ad handling.
- *
- * Use the {@link ServerSideAdIntegrationController} provided by {@link ServerSideAdIntegrationFactory}
- * to update the state of your integration.
- *
- * @see {@link Ads.registerServerSideIntegration}
- *
- * @category Ads
- */
-export interface ServerSideAdIntegrationHandler {
-  /**
-   * Handler which will be called when a new source is loaded into the player.
-   *
-   * This allows the integration to transform the source description,
-   * e.g. by calling an external service to replace {@link TypedSource.src | the content URL},
-   * or by adding a fixed pre-roll linear ad to {@link SourceDescription.ads | the list of ads}.
-   *
-   * @remarks
-   * - If this handler throws an error, the player fires a fatal {@link PlayerEventMap.error | `error`} event
-   *   (as if by calling {@link ServerSideAdIntegrationController.fatalError}).
-   *
-   * @param source
-   */
-  setSource?(source: SourceDescription): MaybeAsync<SourceDescription>;
-  /**
-   * Handler which will be called when an ad is requested to be skipped.
-   *
-   * To skip the ad, the handler should call {@link ServerSideAdIntegrationController.skipAd}.
-   *
-   * @remarks
-   * - This is only called for ads whose {@link Ad.integration}
-   *   matches {@link ServerSideAdIntegrationController.integration}.
-   * - If this handler is missing, the player will always skip the ad
-   *   by calling {@link ServerSideAdIntegrationController.skipAd}.
-   * - If this handler throws an error, the player fires a non-fatal {@link AdsEventMap.aderror | `aderror`} event
-   *   (as if by calling {@link ServerSideAdIntegrationController.error}).
-   *
-   * @param ad
-   */
-  skipAd?(ad: Ad): void;
-  /**
-   * Handler which will be called before a new source is loaded into the player,
-   * or before the player is destroyed.
-   *
-   * This allows the integration to clean up any source-specific resources,
-   * such as scheduled ads or pending HTTP requests.
-   *
-   * @remarks
-   * - If this handler is missing, the player will remove all remaining ads
-   *   by calling {@link ServerSideAdIntegrationController.removeAllAds}.
-   * - If this handler throws an error, the player fires a fatal {@link PlayerEventMap.error | `error`} event
-   *   (as if by calling {@link ServerSideAdIntegrationController.fatalError}).
-   */
-  resetSource?(): MaybeAsync<void>;
-  /**
-   * Handler which will be called when the player is {@link ChromelessPlayer.destroy | destroyed}.
-   *
-   * This allows the integration to clean up any resources, such as DOM elements or event listeners.
-   */
-  destroy?(): MaybeAsync<void>;
-}
-/**
- * A controller to be used by your {@link ServerSideAdIntegrationHandler}
- * to update the state of your custom server-side ad integration.
- *
- * @see {@link Ads.registerServerSideIntegration}
- *
- * @category Ads
- */
-export interface ServerSideAdIntegrationController {
-  /**
-   * The identifier for this integration, as it was passed to {@link Ads.registerServerSideIntegration}.
-   */
-  readonly integration: CustomAdIntegrationKind;
-  /**
-   * The scheduled ads managed by this integration.
-   *
-   * @remarks
-   * Use {@link ServerSideAdIntegrationController.createAd} and {@link ServerSideAdIntegrationController.removeAd} to add or remove ads.
-   */
-  readonly ads: readonly Ad[];
-  /**
-   * The scheduled ad breaks managed by this integration.
-   *
-   * @remarks
-   * Use {@link ServerSideAdIntegrationController.createAdBreak} and {@link ServerSideAdIntegrationController.removeAdBreak} to add or remove ad breaks.
-   */
-  readonly adBreaks: readonly AdBreak[];
-  /**
-   * Create a new ad.
-   *
-   * @remarks
-   * - The ad will be added to {@link Ads.scheduledAds}.
-   *
-   * @param init
-   *   The initial properties to be set on the created ad.
-   * @param [adBreak]
-   *   If given, appends the ad to the given existing {@link AdBreak}.
-   *   Otherwise, appends the ad to a new or existing {@link AdBreak} with the configured {@link AdInit.timeOffset}.
-   */
-  createAd(init: AdInit, adBreak?: AdBreak): Ad;
-  /**
-   * Update the given ad.
-   *
-   * @param ad
-   *   The ad to be updated.
-   * @param init
-   *   The properties to be updated on the ad.
-   */
-  updateAd(ad: Ad, init: Partial<AdInit>): void;
-  /**
-   * Update the playback progression of the given ad.
-   *
-   * @remarks
-   * - The player will fire progression events such as {@link AdsEventMap.adfirstquartile},
-   *   {@link AdsEventMap.admidpoint} and {@link AdsEventMap.adthirdquartile}.
-   *
-   * @param ad
-   *   The ad to be updated.
-   * @param progress
-   *   The playback progress, as a number between 0 (at the start of the ad) and 1 (at the end of the ad).
-   * @throws Error
-   *   If the ad is not {@link ServerSideAdIntegrationController.beginAd | started}.
-   */
-  updateAdProgress(ad: Ad, progress: number): void;
-  /**
-   * Begin the given ad.
-   *
-   * @remarks
-   * - The ad will be added to {@link Ads.currentAds}.
-   * - An {@link AdsEventMap.adbegin} event will be fired.
-   *
-   * @param ad
-   */
-  beginAd(ad: Ad): void;
-  /**
-   * End the given ad.
-   *
-   * @remarks
-   * - The ad will be removed from {@link Ads.currentAds}.
-   * - If the ad was currently playing, an {@link AdsEventMap.adend} event will be fired.
-   *
-   * @param ad
-   */
-  endAd(ad: Ad): void;
-  /**
-   * Skip the given ad.
-   *
-   * @remarks
-   * - The ad will be removed from {@link Ads.currentAds}.
-   * - If the ad was currently playing, an {@link AdsEventMap.adskip} event will be fired.
-   *
-   * @param ad
-   */
-  skipAd(ad: Ad): void;
-  /**
-   * Remove the given ad.
-   *
-   * @remarks
-   * - The ad will be removed from {@link Ads.currentAds} and {@link Ads.scheduledAds}.
-   * - If the ad was currently playing, it will first be {@link ServerSideAdIntegrationController.endAd | ended}.
-   *
-   * @param ad
-   */
-  removeAd(ad: Ad): void;
-  /**
-   * Create a new ad break.
-   *
-   * This can be used to indicate where ad breaks can be expected in advance,
-   * before populating those ad breaks with ads.
-   *
-   * @remarks
-   * - The ad break will be added to {@link ServerSideAdIntegrationController.adBreaks} and {@link Ads.scheduledAdBreaks}.
-   *
-   * @param init
-   *   The initial properties to be set on the created ad break.
-   * @throws Error
-   *   If there is already an existing ad break with the given {@link AdBreakInit.timeOffset}.
-   */
-  createAdBreak(init: AdBreakInit): AdBreak;
-  /**
-   * Update the given ad break.
-   *
-   * @param adBreak
-   *   The ad break to be updated.
-   * @param init
-   *   The properties to be updated on the ad break.
-   */
-  updateAdBreak(adBreak: AdBreak, init: Partial<AdBreakInit>): void;
-  /**
-   * Remove the given ad break and all of its ads.
-   *
-   * @remarks
-   * - The ad break will be removed from {@link ServerSideAdIntegrationController.adBreaks} and {@link Ads.scheduledAdBreaks}.
-   * - Any remaining ads in the ad break will be {@link ServerSideAdIntegrationController.removeAd | removed}.
-   *
-   * @param adBreak
-   *   The ad break to be removed.
-   */
-  removeAdBreak(adBreak: AdBreak): void;
-  /**
-   * Remove all ads and ad breaks.
-   *
-   * @remarks
-   * - This is a shorthand for calling {@link ServerSideAdIntegrationController.removeAdBreak}
-   *   on all ad breaks in {@link ServerSideAdIntegrationController.adBreaks}.
-   */
-  removeAllAds(): void;
-  /**
-   * Fire an {@link AdsEventMap.aderror | `aderror`} event on the player.
-   *
-   * This does not stop playback.
-   *
-   * @param error - The error.
-   */
-  error(error: Error): void;
-  /**
-   * Fire a fatal {@link PlayerEventMap.error | `error`} event on the player.
-   *
-   * This stops playback immediately. Use {@link ChromelessPlayer.source} to load a new source.
-   *
-   * @param error
-   *   The error.
-   * @param [code]
-   *   The error code. By default, this is set to {@link ErrorCode.AD_ERROR}.
-   */
-  fatalError(error: Error, code?: ErrorCode): void;
-}
-/**
- * An initializer for a custom {@link Ad}.
- *
- * @see {@link ServerSideAdIntegrationController.createAd}
- * @see {@link ServerSideAdIntegrationController.updateAd}
- *
- * @category Ads
- */
-export interface AdInit extends Omit<Partial<Ad>, 'integration' | 'adBreak'> {
-  /**
-   * The type of the ad.
-   */
-  type: AdType;
-  /**
-   * The time offset at which content will be paused to play the ad, in seconds.
-   */
-  timeOffset?: number;
-  /**
-   * Additional integration-specific data associated with this ad.
-   */
-  customData?: unknown;
-}
-/**
- * An initializer for a custom {@link AdBreak}.
- *
- * @see {@link ServerSideAdIntegrationController.createAdBreak}
- * @see {@link ServerSideAdIntegrationController.updateAdBreak}
- *
- * @category Ads
- */
-export interface AdBreakInit {
-  /**
-   * The identifier of the ad break.
-   */
-  id?: string | undefined;
-  /**
-   * The time offset at which content will be paused to play the ad break, in seconds.
-   */
-  timeOffset: number;
-  /**
-   * The duration of the ad break, in seconds.
-   */
-  maxDuration?: number | undefined;
-  /**
-   * Additional integration-specific data associated with this ad break.
-   */
-  customData?: unknown;
-}
-/**
- * Factory to create an {@link ServerSideAdIntegrationHandler}.
- *
- * @param controller
- *   The controller to use.
- * @return The new server-side ad integration handler.
- *
- * @see {@link Ads.registerServerSideIntegration}
- *
- * @category Ads
- */
-export type ServerSideAdIntegrationFactory = (controller: ServerSideAdIntegrationController) => ServerSideAdIntegrationHandler;
-/**
- * Fired when the {@link https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/reference/js/google.ima.AdsManager | google.ima.AdsManager} is created.
- *
- * @category Ads
- * @category Events
- * @public
- */
-export interface AdsManagerLoadedEvent extends Event<'adsmanagerloaded'> {
-  /**
-   * The {@link https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/reference/js/google.ima.AdsManager | google.ima.AdsManager}
-   */
-  readonly adsManager: any;
-}
-/**
  * Represents a VAST creative. It is either a linear or non-linear ad.
  *
  * @category Ads
@@ -2563,125 +2193,6 @@ export interface CompanionAd {
   width: number;
 }
 /**
- * The events fired by the {@link Ads | ads API}.
- *
- * @category Ads
- * @public
- */
-export interface AdsEventMap {
-  /**
-   * Fired when an ad break is added.
-   *
-   * @remarks
-   * <br/> - Available since v2.60.0.
-   */
-  addadbreak: AdBreakEvent<'addadbreak'>;
-  /**
-   * Fired when an ad break is removed.
-   *
-   * @remarks
-   * <br/> - Available since v2.60.0.
-   */
-  removeadbreak: AdBreakEvent<'removeadbreak'>;
-  /**
-   * Fired when an ad break begins.
-   */
-  adbreakbegin: AdBreakEvent<'adbreakbegin'>;
-  /**
-   * Fired when an ad break ends.
-   */
-  adbreakend: AdBreakEvent<'adbreakend'>;
-  /**
-   * Fired when an ad break changes.
-   */
-  adbreakchange: AdBreakEvent<'adbreakchange'>;
-  /**
-   * Fired when an ad is added.
-   *
-   * @remarks
-   * <br/> - Available since v2.60.0.
-   */
-  addad: AdEvent<'addad'>;
-  /**
-   * Fired when an ad is updated.
-   *
-   * @remarks
-   * <br/> - Available since v2.60.0.
-   */
-  updatead: AdEvent<'updatead'>;
-  /**
-   * Fired when an AdBreak is updated.
-   *
-   * @remarks
-   * <br/> - Available since v2.66.0.
-   */
-  updateadbreak: AdBreakEvent<'updateadbreak'>;
-  /**
-   * Fired when an ad is loaded.
-   */
-  adloaded: Event<'adloaded'>;
-  /**
-   * Fired when an ad begins.
-   */
-  adbegin: AdEvent<'adbegin'>;
-  /**
-   * Fired when an ad ends.
-   */
-  adend: AdEvent<'adend'>;
-  /**
-   * Fired when an ad is skipped.
-   */
-  adskip: AdSkipEvent;
-  /**
-   * Fired when an ad errors.
-   */
-  aderror: Event<'aderror'>;
-  /**
-   * Fired when an ad counts as an impression.
-   */
-  adimpression: AdEvent<'adimpression'>;
-  /**
-   * Fired when an ad reaches the first quartile.
-   */
-  adfirstquartile: AdEvent<'adfirstquartile'>;
-  /**
-   * Fired when an ad reaches the mid point.
-   */
-  admidpoint: AdEvent<'admidpoint'>;
-  /**
-   * Fired when an ad reaches the third quartile.
-   */
-  adthirdquartile: AdEvent<'adthirdquartile'>;
-  /**
-   * Fired when the ad has stalled playback to buffer.
-   *
-   * @remarks
-   * <br/> - only available in the Google IMA integration.
-   */
-  adbuffering: AdBufferingEvent;
-  /**
-   * Fired when an ads list is loaded.
-   *
-   * @remarks
-   * <br/> - only available in the Google IMA integration.
-   */
-  admetadata: AdMetadataEvent;
-  /**
-   * Fired when the {@link https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/reference/js/google.ima.AdsManager | google.ima.AdsManager} is created.
-   *
-   * @remarks
-   * <br/> - only available in the Google IMA integration.
-   */
-  adsmanagerloaded: AdsManagerLoadedEvent;
-  /**
-   * Fired when the user clicks on an ad's clickthrough element.
-   *
-   * @remarks
-   * <br/> - Available since v11.9.0.
-   */
-  adclicked: AdEvent<'adclicked'>;
-}
-/**
  * Base type for events related to a single ad.
  *
  * @category Ads
@@ -2708,6 +2219,34 @@ export interface AdSkipEvent extends AdEvent<'adskip'> {
   readonly playedPercentage: number;
 }
 /**
+ * Fired when an ad errors.
+ *
+ * @category Ads
+ * @category Events
+ * @public
+ */
+export interface AdErrorEvent extends Event<'aderror'> {
+  /**
+   * The ad that caused the error, if available.
+   *
+   * @remarks
+   * <br/> - This is `undefined` when the erroring ad cannot be identified (e.g. a VAST request failure).
+   */
+  readonly ad: Ad | undefined;
+  /**
+   * A human-readable message describing the error.
+   */
+  readonly message: string;
+  /**
+   * The error code.
+   *
+   * @remarks
+   * <br/> - Follows the VAST error codes, see {@link https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/reference/js/google.ima.AdError.ErrorCode | the Google IMA error code reference}.
+   * <br/> - This is `900` (undefined error) when the ad integration does not provide a specific error code.
+   */
+  readonly errorCode: number;
+}
+/**
  * Base type for events related to an ad break.
  *
  * @category Ads
@@ -2719,82 +2258,6 @@ export interface AdBreakEvent<TType extends string> extends Event<TType> {
    * The ad break.
    */
   readonly adBreak: AdBreak;
-}
-/**
- * The API for advertisements.
- *
- * @remarks
- * <br/> - Integrates with `'csai'`, `'google-ima'`, `'google-dai'`, `'freewheel'` or `'theoads'`.
- *
- * @category Ads
- * @public
- */
-export interface Ads extends EventDispatcher<AdsEventMap> {
-  /**
-   * Whether a linear ad is currently playing.
-   */
-  playing: boolean;
-  /**
-   * The currently playing ad break.
-   */
-  readonly currentAdBreak: AdBreak | null;
-  /**
-   * List of currently playing ads.
-   */
-  readonly currentAds: Ad[];
-  /**
-   * List of ad breaks which still need to be played.
-   */
-  readonly scheduledAdBreaks: AdBreak[];
-  /**
-   * List of ads which still need to be played.
-   */
-  readonly scheduledAds: Ad[];
-  /**
-   * The Google DAI API.
-   *
-   * @remarks
-   * <br/> - Only available with the feature `'google-dai'`.
-   */
-  readonly dai?: GoogleDAI;
-  /**
-   * Add an ad break request.
-   *
-   * @remarks
-   * <br/> - Available since v2.18.0.
-   * <br/> - Prefer scheduling ad breaks up front through {@link SourceConfiguration.ads}.
-   *
-   * @param adDescription - Describes the ad break to be scheduled.
-   */
-  schedule(adDescription: AdDescription): void;
-  /**
-   * Skip the current linear ad.
-   *
-   * @remarks
-   * <br/> - This will have no effect when the current linear ad is (not yet) skippable.
-   */
-  skip(): void;
-  /**
-   * Seek to a point in the main content timeline.
-   *
-   * @remarks
-   * <br/> - Available since v9.4.0.
-   * <br/> - Only supported for the `csai` integration.
-   * <br/> - This will have no effect when `allowSkipAdBreak` is not set to `true` in the `AdsConfiguration`.
-   */
-  skipAdBreak(target?: number): void;
-  /**
-   * Register a custom advertisement integration.
-   *
-   * This allows you to integrate with third-party advertisement providers,
-   * and have them report their ads and ad-related events through the THEOplayer {@link Ads} API.
-   *
-   * @param integrationId
-   *   An identifier of the integration.
-   * @param integrationFactory
-   *   Factory that will construct an {@link ServerSideAdIntegrationHandler} for this integration.
-   */
-  registerServerSideIntegration(integrationId: CustomAdIntegrationKind, integrationFactory: ServerSideAdIntegrationFactory): void;
 }
 /**
  * The type of ad source:
@@ -4909,8 +4372,8 @@ export interface TheoLiveSource extends TypedSource {
    *
    * @remarks
    * - `events` controls which Millicast broadcast events are subscribed to, in the same way as
-   *   {@link MillicastSource.connectOptions}: the player always subscribes to the events it needs,
-   *   and optional events such as `'viewercount'` must be added explicitly (e.g. `webrtc: { events: ['viewercount'] }`).
+   *   {@link MillicastSource.connectOptions}: all events when not set, otherwise the listed events plus the ones
+   *   the player always needs (e.g. `webrtc: { events: [] }` opts out of `'viewercount'`).
    */
   webrtc?: Record<string, any>;
 }
@@ -4953,9 +4416,10 @@ export interface MillicastSource extends TypedSource {
    *
    * @remarks
    * - The available options are listed in the link below.
-   * - `events`: the player always subscribes to the events it needs (`active`, `inactive`, `stopped`, `layers` and `migrate`).
-   *   Optional events such as `'viewercount'` are not subscribed by default and must be added explicitly,
-   *   e.g. `connectOptions: { events: ['viewercount'] }`.
+   * - `events`: the broadcast events to subscribe to. When not set, all events are subscribed (default).
+   *   When set, the listed events are subscribed together with the events the player always needs
+   *   (`active`, `inactive`, `stopped`, `layers` and `migrate`), so `connectOptions: { events: [] }`
+   *   opts out of optional events such as `'viewercount'` and `'vad'`.
    *
    * @see https://millicast.github.io/millicast-sdk/view/#connect
    */
@@ -5590,90 +5054,76 @@ export interface AnalyticsDescription {
   integration: AnalyticsIntegrationID;
 }
 /**
- * List of media tracks.
+ * Fired when the ad has stalled playback to buffer.
  *
- * @category Media and Text Tracks
- * @public
- */
-export interface MediaTrackList extends TrackList<MediaTrack> {
-  /**
-   * The number of media tracks in the list.
-   */
-  readonly length: number;
-  /**
-   * Return the media track at the requested index in the list.
-   *
-   * @param index - A `number` representing the index of a media track in the list.
-   * @returns The media track with index `index` in the list.
-   */
-  item(index: number): MediaTrack;
-  /**
-   * Index signature to get the media track at the requested index in the list.
-   */
-  readonly [index: number]: MediaTrack;
-}
-/**
- * Fires when the cast state changes.
- *
- * @category Casting
+ * @category Ads
  * @category Events
  * @public
  */
-export interface CastStateChangeEvent extends Event<'statechange'> {
+export interface AdBufferingEvent extends AdEvent<'adbuffering'> {
   /**
-   * The new cast state.
+   * The ad which is buffered.
    */
-  readonly state: CastState;
+  readonly ad: GoogleImaAd;
 }
 /**
- * The state of a casting process, represented by a value from the following list:
- * <br/> - `'unavailable'`: No available cast devices.
- * <br/> - `'available'`: Cast device available, but the player is not connected.
- * <br/> - `'connecting'`: Cast device available and the player is connecting.
- * <br/> - `'connected'`: Cast device available and the player is connected.
+ * Fired when an ads list is loaded.
  *
- * @category Casting
+ * @category Ads
+ * @category Events
  * @public
  */
-export type CastState = 'unavailable' | 'available' | 'connecting' | 'connected';
+export interface AdMetadataEvent extends Event<'admetadata'> {}
 /**
- * The events fired by the common vendor APIs.
+ * Fired when the {@link https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/reference/js/google.ima.AdsManager | google.ima.AdsManager} is created.
  *
- * @category Casting
+ * @category Ads
+ * @category Events
  * @public
  */
-export interface VendorCastEventMap {
+export interface AdsManagerLoadedEvent extends Event<'adsmanagerloaded'> {
   /**
-   * Fired when the {@link VendorCast.state | state} changes.
+   * The {@link https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/reference/js/google.ima.AdsManager | google.ima.AdsManager}
    */
-  statechange: CastStateChangeEvent;
+  readonly adsManager: any;
 }
 /**
- * Common API for all cast integrations.
+ * The Google DAI API.
  *
- * @category Casting
+ * @remarks
+ * <br/> - Available since v3.7.0.
+ *
+ * @category Ads
  * @public
  */
-export interface VendorCast extends EventDispatcher<VendorCastEventMap> {
+export interface GoogleDAI {
   /**
-   * Whether the player is casting.
-   */
-  casting: boolean;
-  /**
-   * The state of the casting process.
-   */
-  state: CastState;
-  /**
-   * Start a casting session with the player's source.
+   * Returns the content time without ads for a given stream time. Returns the given stream time for live streams.
    *
-   * @remarks
-   * <br/> - A native browser pop-up will prompt to choose a casting target device.
+   * @param time - The stream time with inserted ads (in seconds).
    */
-  start(): void;
+  contentTimeForStreamTime(time: number): number;
   /**
-   * Stop the active casting session.
+   * Returns the stream time with ads for a given content time. Returns the given content time for live streams.
+   *
+   * @param time - The content time without any ads (in seconds).
    */
-  stop(): void;
+  streamTimeForContentTime(time: number): number;
+  /**
+   * Replaces all the ad tag parameters used for upcoming ad requests for a live stream.
+   *
+   * @param adTagParameters - The new ad tag parameters.
+   */
+  replaceAdTagParameters(adTagParameters?: Record<string, string>): void;
+  /**
+   * Whether snapback is enabled. When enabled and the user seeks over multiple ad breaks, the last ad break that was seeked past will be played.
+   */
+  snapback: boolean;
+  /**
+   * A source transformer which will receive the source as returned from Google DAI before loading it in the player. This capability can be useful
+   * if you need to add authentication tokens or signatures to the source URL as returned by Google.
+   */
+  sourceTransformer: (url: string) => string | Promise<string>;
 }
 /**
  * Represents a DASH representation.
@@ -5718,102 +5168,6 @@ export interface Representation {
    * <br/> - Either a single value or a list of two values corresponding to the minimum and maximum sampling rate.
    */
   audioSamplingRate: number | [number, number];
-}
-/**
- * An error code whose category is `ErrorCategory.CONTENT_PROTECTION`.
- *
- * @category Content Protection
- * @category Errors
- * @public
- */
-export type ContentProtectionErrorCode = ErrorCode.CONTENT_PROTECTION_ERROR | ErrorCode.CONTENT_PROTECTION_NOT_SUPPORTED | ErrorCode.CONTENT_PROTECTION_CONFIGURATION_MISSING | ErrorCode.CONTENT_PROTECTION_CONFIGURATION_INVALID | ErrorCode.CONTENT_PROTECTION_INITIALIZATION_INVALID | ErrorCode.CONTENT_PROTECTION_CERTIFICATE_ERROR | ErrorCode.CONTENT_PROTECTION_CERTIFICATE_INVALID | ErrorCode.CONTENT_PROTECTION_LICENSE_ERROR | ErrorCode.CONTENT_PROTECTION_LICENSE_INVALID | ErrorCode.CONTENT_PROTECTION_KEY_EXPIRED | ErrorCode.CONTENT_PROTECTION_KEY_MISSING | ErrorCode.CONTENT_PROTECTION_OUTPUT_RESTRICTED | ErrorCode.CONTENT_PROTECTION_INTERNAL_ERROR | ErrorCode.CONTENT_PROTECTION_DEVICE_REVOKED;
-/**
- * An error related to content protection.
- *
- * @category Content Protection
- * @category Errors
- * @public
- */
-export interface ContentProtectionError extends THEOplayerError {
-  /**
-   * {@inheritDoc THEOplayerError.code}
-   */
-  readonly code: ContentProtectionErrorCode;
-  /**
-   * The URL that was used in the request.
-   *
-   * @remarks
-   * <br/> - Only available when {@link ContentProtectionError.code} is {@link ErrorCode.CONTENT_PROTECTION_CERTIFICATE_ERROR}, {@link ErrorCode.CONTENT_PROTECTION_LICENSE_ERROR} or {@link ErrorCode.CONTENT_PROTECTION_DEVICE_REVOKED}.
-   */
-  readonly url?: string;
-  /**
-   * The status code from the HTTP response.
-   *
-   * @remarks
-   * <br/> - Only available when {@link ContentProtectionError.code} is {@link ErrorCode.CONTENT_PROTECTION_CERTIFICATE_ERROR}, {@link ErrorCode.CONTENT_PROTECTION_LICENSE_ERROR} or {@link ErrorCode.CONTENT_PROTECTION_DEVICE_REVOKED}.
-   */
-  readonly status?: number;
-  /**
-   * The status text from the HTTP response.
-   *
-   * @remarks
-   * <br/> - Only available when {@link ContentProtectionError.code} is {@link ErrorCode.CONTENT_PROTECTION_CERTIFICATE_ERROR}, {@link ErrorCode.CONTENT_PROTECTION_LICENSE_ERROR} or {@link ErrorCode.CONTENT_PROTECTION_DEVICE_REVOKED}.
-   */
-  readonly statusText?: string;
-  /**
-   * The body contained in the HTTP response.
-   *
-   * @remarks
-   * <br/> - Only available when {@link ContentProtectionError.code} is {@link ErrorCode.CONTENT_PROTECTION_CERTIFICATE_ERROR}, {@link ErrorCode.CONTENT_PROTECTION_LICENSE_ERROR} or {@link ErrorCode.CONTENT_PROTECTION_DEVICE_REVOKED}.
-   */
-  readonly response?: string;
-  /**
-   * The internal error code from the CDM.
-   *
-   * @remarks
-   * <br/> - Only available when {@link ContentProtectionError.code} is {@link ErrorCode.CONTENT_PROTECTION_INTERNAL_ERROR}.
-   */
-  readonly systemCode?: number;
-}
-/**
- * Fired when an error related to content protection occurs.
- *
- * @category Content Protection
- * @category Errors
- * @category Events
- * @public
- */
-export interface ContentProtectionErrorEvent extends Event<'contentprotectionerror'> {
-  /**
-   * The error that occurred.
-   *
-   * @deprecated use {@link ContentProtectionErrorEvent.errorObject | errorObject.message} instead
-   */
-  error: string;
-  /**
-   * An error object containing additional information about the error.
-   */
-  errorObject: ContentProtectionError;
-  /**
-   * @deprecated use {@link ContentProtectionError.url | errorObject.url} instead
-   */
-  readonly licenseAcquisitionURL?: string;
-  /**
-   * @deprecated use {@link ContentProtectionError.status | errorObject.status} instead
-   */
-  readonly status?: number;
-  /**
-   * @deprecated use {@link ContentProtectionError.statusText | errorObject.statusText} instead
-   */
-  readonly statusText?: string;
-  /**
-   * @deprecated use {@link ContentProtectionError.response | errorObject.response} instead
-   */
-  readonly licenseAcquisitionMessage?: string;
-  /**
-   * @deprecated use {@link ContentProtectionError.systemCode | errorObject.systemCode} instead
-   */
-  readonly systemCode?: number;
 }
 /**
  * Fired when `ChromelessPlayer.source` changes.
@@ -6262,6 +5616,1572 @@ export interface ContentSteeringErrorEvent extends Event<'contentsteeringerror'>
    * The reason for the content steering error.
    */
   readonly reason: string;
+}
+/**
+ * Represents one or more ranges of time, each specified by a start time and an end time.
+ *
+ * @remarks
+ * This is equivalent to the {@link https://developer.mozilla.org/en-US/docs/Web/API/TimeRanges | TimeRanges} interface used by an HTML video element.
+ *
+ * @public
+ */
+export interface TimeRanges {
+  /** Returns the number of ranges in the object. */
+  readonly length: number;
+  /**
+   * Returns the time for the start of the range with the given index.
+   *
+   * @throws Throws an Error if the index is out of bounds.
+   */
+  start(index: number): number;
+  /**
+   * Returns the time for the end of the range with the given index.
+   *
+   * @throws Throws an Error if the index is out of bounds.
+   */
+  end(index: number): number;
+}
+/**
+ * The events fired by {@link ReadonlyContentPlayer}.
+ *
+ * @category Player
+ * @category Events
+ */
+export interface ReadonlyContentPlayerEventMap {
+  /**
+   * Fired when {@link ReadonlyContentPlayer.paused} changes to `false`.
+   */
+  play: PlayEvent;
+  /**
+   * Fired when {@link ReadonlyContentPlayer.paused} changes to `true`.
+   */
+  pause: PauseEvent;
+  /**
+   * Fired when the content starts or resumes playing after having been paused or delayed.
+   */
+  playing: PlayingEvent;
+  /**
+   * Fired when {@link ReadonlyContentPlayer.seeking} changes to `true`.
+   */
+  seeking: SeekingEvent;
+  /**
+   * Fired when {@link ReadonlyContentPlayer.seeking} changes to `false`.
+   */
+  seeked: SeekedEvent;
+  /**
+   * Fired when {@link ReadonlyContentPlayer.currentTime} changes.
+   */
+  timeupdate: TimeUpdateEvent;
+  /**
+   * Fired when {@link ReadonlyContentPlayer.duration} changes.
+   */
+  durationchange: DurationChangeEvent;
+  /**
+   * Fired when {@link ReadonlyContentPlayer.readyState} changes.
+   */
+  readystatechange: ReadyStateChangeEvent;
+  /**
+   * Fired when the content player starts waiting for more data.
+   */
+  waiting: WaitingEvent;
+  /**
+   * Fired when the content metadata becomes available.
+   */
+  loadedmetadata: LoadedMetadataEvent;
+  /**
+   * Fired when the first frame of content becomes available.
+   */
+  loadeddata: LoadedDataEvent;
+  /**
+   * Fired when {@link ReadonlyContentPlayer.error} changes.
+   */
+  error: ErrorEvent;
+  /**
+   * Fired when {@link ReadonlyContentPlayer.volume} or {@link ReadonlyContentPlayer.muted} changes.
+   */
+  volumechange: VolumeChangeEvent;
+  /**
+   * Fired when {@link ReadonlyContentPlayer.playbackRate} changes.
+   */
+  ratechange: RateChangeEvent;
+  /**
+   * Fired when {@link ReadonlyContentPlayer.ended} changes to `true`.
+   */
+  ended: EndedEvent;
+  /**
+   * Fired when the content video dimensions change.
+   */
+  resize: Event<'resize'>;
+}
+/**
+ * The read-only playback state of a content player.
+ *
+ * For a server-side ad integration, this is the state of the stitched stream, which includes the ads.
+ * For a client-side ad integration, this is the state of the content only:
+ * it is not affected by linear ads from this or any other integration.
+ * While a linear ad plays, the content stays paused at the position where it was interrupted,
+ * even if the ad is played in the same video element as the content.
+ *
+ * @see {@link CustomAdIntegrationController.content}
+ *
+ * @category Player
+ */
+export interface ReadonlyContentPlayer extends EventDispatcher<ReadonlyContentPlayerEventMap> {
+  /**
+   * The current playback position of the content, in seconds.
+   */
+  readonly currentTime: number;
+  /**
+   * The current playback position of the content, as a timestamp,
+   * or `null` if the content does not have program date time information.
+   *
+   * @remarks
+   * - The relation between {@link currentProgramDateTime} and {@link currentTime} is determined by the manifest.
+   */
+  readonly currentProgramDateTime: Date | null;
+  /**
+   * The duration of the content, in seconds, or `NaN` if unknown.
+   */
+  readonly duration: number;
+  /**
+   * The ready state of the content player, using the same values as {@link ChromelessPlayer.readyState}.
+   */
+  readonly readyState: number;
+  /**
+   * The current error of the content player, or `undefined` if there is no error.
+   */
+  readonly error: THEOplayerError | undefined;
+  /**
+   * Whether the content is paused.
+   *
+   * @remarks
+   * - During linear ad playback of a client-side ad integration, the content is always paused.
+   */
+  readonly paused: boolean;
+  /**
+   * Whether the content is seeking.
+   */
+  readonly seeking: boolean;
+  /**
+   * Whether playback of the content has ended.
+   */
+  readonly ended: boolean;
+  /**
+   * The width of the content video, or `0` if unknown.
+   */
+  readonly videoWidth: number;
+  /**
+   * The height of the content video, or `0` if unknown.
+   */
+  readonly videoHeight: number;
+  /**
+   * The content volume, as a number between 0 and 1.
+   */
+  readonly volume: number;
+  /**
+   * Whether the content audio is muted.
+   */
+  readonly muted: boolean;
+  /**
+   * The playback rate of the content.
+   */
+  readonly playbackRate: number;
+  /**
+   * The ranges of the content that are seekable, in seconds.
+   *
+   * For a live stream, an integration can use this to choose a valid position.
+   */
+  readonly seekable: TimeRanges;
+  /**
+   * The text tracks of the content, including metadata tracks such as ID3, EMSG or date range tracks.
+   *
+   * @remarks
+   * - For a client-side ad integration, this list never contains text tracks of a linear ad,
+   *   even if the ad is played by the built-in player.
+   */
+  readonly textTracks: TextTracksList;
+}
+/**
+ * A synchronous or asynchronous return type
+ *
+ * @public
+ */
+export type MaybeAsync<T> = T | PromiseLike<T>;
+/**
+ * The common handler for a custom ad integration.
+ *
+ * You can implement one or more of these methods to hook into various parts
+ * of the player's lifecycle and perform your integration-specific ad handling.
+ *
+ * @see {@link ServerSideAdIntegrationHandler}
+ * @see {@link ClientSideAdIntegrationHandler}
+ *
+ * @category Ads
+ */
+export interface CustomAdIntegrationHandler {
+  /**
+   * Handler which will be called when an ad is requested to be skipped.
+   *
+   * To skip the ad, the handler should call {@link CustomAdIntegrationController.skipAd}.
+   *
+   * @remarks
+   * - This is only called for ads whose {@link Ad.integration}
+   *   matches {@link CustomAdIntegrationController.integration}.
+   * - If this handler is missing, the player will always skip the ad
+   *   by calling {@link CustomAdIntegrationController.skipAd}.
+   * - If this handler throws an error, the player fires a non-fatal {@link AdsEventMap.aderror | `aderror`} event
+   *   (as if by calling {@link CustomAdIntegrationController.error}).
+   *
+   * @param ad
+   */
+  skipAd?(ad: Ad): void;
+  /**
+   * Handler which will be called when a new source is loaded into the player.
+   *
+   * This allows the integration to transform the source description,
+   * e.g. by calling an external service to replace {@link TypedSource.src | the content URL},
+   * or by adding a fixed pre-roll linear ad to {@link SourceDescription.ads | the list of ads}.
+   *
+   * @remarks
+   * - If multiple integrations implement this handler, the player calls them in the order in which they were registered.
+   *   Each integration receives the source description returned by the previous one.
+   * - After all integrations have transformed the source description, the player schedules every ad
+   *   in the resulting {@link SourceDescription.ads | list of ads}, as if by calling {@link Ads.schedule}.
+   *   For a client-side ad integration, this calls {@link ClientSideAdIntegrationHandler.schedule}
+   *   for each of those ads whose {@link AdDescription.integration} matches,
+   *   including any ads that were added by this handler.
+   * - If this handler throws an error, the player fires a fatal {@link PlayerEventMap.error | `error`} event
+   *   (as if by calling {@link CustomAdIntegrationController.fatalError}).
+   *
+   * @param source
+   */
+  setSource?(source: SourceDescription): MaybeAsync<SourceDescription>;
+  /**
+   * Handler which will be called before a new source is loaded into the player,
+   * or before the player is destroyed.
+   *
+   * This allows the integration to clean up any source-specific resources,
+   * such as scheduled ads or pending HTTP requests.
+   *
+   * @remarks
+   * - If this handler is missing, the player will remove all remaining ads
+   *   by calling {@link CustomAdIntegrationController.removeAllAds}.
+   * - If this handler throws an error, the player fires a fatal {@link PlayerEventMap.error | `error`} event
+   *   (as if by calling {@link CustomAdIntegrationController.fatalError}).
+   */
+  resetSource?(): MaybeAsync<void>;
+  /**
+   * Handler which will be called when the player is {@link ChromelessPlayer.destroy | destroyed}.
+   *
+   * This allows the integration to clean up any resources, such as DOM elements or event listeners.
+   */
+  destroy?(): MaybeAsync<void>;
+}
+/**
+ * The common controller for a custom ad integration.
+ *
+ * Use it from your {@link CustomAdIntegrationHandler} to update the state of your integration:
+ * create ads and ad breaks, report their playback progress, and report errors.
+ *
+ * @see {@link ServerSideAdIntegrationController}
+ * @see {@link ClientSideAdIntegrationController}
+ *
+ * @category Ads
+ */
+export interface CustomAdIntegrationController {
+  /**
+   * The identifier for this integration, as it was passed to
+   * {@link Ads.registerServerSideIntegration} or {@link Ads.registerClientSideIntegration}.
+   */
+  readonly integration: CustomAdIntegrationKind;
+  /**
+   * The scheduled ads managed by this integration.
+   *
+   * @remarks
+   * Use {@link createAd} and {@link removeAd} to add or remove ads.
+   */
+  readonly ads: readonly Ad[];
+  /**
+   * The scheduled ad breaks managed by this integration.
+   *
+   * @remarks
+   * Use {@link createAdBreak} and {@link removeAdBreak} to add or remove ad breaks.
+   */
+  readonly adBreaks: readonly AdBreak[];
+  /**
+   * The playback state of the content.
+   *
+   * Use this instead of {@link ChromelessPlayer.currentTime} and friends to decide when to load or play ads,
+   * so your integration never observes the playback state of a linear ad from another integration.
+   */
+  readonly content: ReadonlyContentPlayer;
+  /**
+   * Create a new ad.
+   *
+   * @remarks
+   * - The ad will be added to {@link Ads.scheduledAds}.
+   *
+   * @param init
+   *   The initial properties to be set on the created ad.
+   * @param [adBreak]
+   *   If given, appends the ad to the given existing {@link AdBreak}.
+   *   Otherwise, appends the ad to a new or existing {@link AdBreak} with the configured {@link AdInit.timeOffset}.
+   */
+  createAd(init: AdInit, adBreak?: AdBreak): Ad;
+  /**
+   * Update the given ad.
+   *
+   * @param ad
+   *   The ad to be updated.
+   * @param init
+   *   The properties to be updated on the ad.
+   */
+  updateAd(ad: Ad, init: Partial<AdInit>): void;
+  /**
+   * Update the playback progression of the given ad.
+   *
+   * @remarks
+   * - The player will fire progression events such as {@link AdsEventMap.adfirstquartile},
+   *   {@link AdsEventMap.admidpoint} and {@link AdsEventMap.adthirdquartile}.
+   *
+   * @param ad
+   *   The ad to be updated.
+   * @param progress
+   *   The playback progress, as a number between 0 (at the start of the ad) and 1 (at the end of the ad).
+   * @throws Error
+   *   If the ad is not {@link beginAd | started}.
+   */
+  updateAdProgress(ad: Ad, progress: number): void;
+  /**
+   * Begin the given ad.
+   *
+   * @remarks
+   * - The ad will be added to {@link Ads.currentAds}.
+   * - An {@link AdsEventMap.adbegin} event will be fired.
+   *
+   * @param ad
+   */
+  beginAd(ad: Ad): void;
+  /**
+   * End the given ad.
+   *
+   * @remarks
+   * - The ad will be removed from {@link Ads.currentAds}.
+   * - If the ad was currently playing, an {@link AdsEventMap.adend} event will be fired.
+   *
+   * @param ad
+   */
+  endAd(ad: Ad): void;
+  /**
+   * Skip the given ad.
+   *
+   * @remarks
+   * - The ad will be removed from {@link Ads.currentAds}.
+   * - If the ad was currently playing, an {@link AdsEventMap.adskip} event will be fired.
+   *
+   * @param ad
+   */
+  skipAd(ad: Ad): void;
+  /**
+   * Remove the given ad.
+   *
+   * @remarks
+   * - The ad will be removed from {@link Ads.currentAds} and {@link Ads.scheduledAds}.
+   * - If the ad was currently playing, it will first be {@link endAd | ended}.
+   *
+   * @param ad
+   */
+  removeAd(ad: Ad): void;
+  /**
+   * Create a new ad break.
+   *
+   * This can be used to indicate where ad breaks can be expected in advance,
+   * before populating those ad breaks with ads.
+   *
+   * @remarks
+   * - The ad break will be added to {@link adBreaks} and {@link Ads.scheduledAdBreaks}.
+   *
+   * @param init
+   *   The initial properties to be set on the created ad break.
+   * @throws Error
+   *   If there is already an existing ad break with the given {@link AdBreakInit.timeOffset}.
+   */
+  createAdBreak(init: AdBreakInit): AdBreak;
+  /**
+   * Update the given ad break.
+   *
+   * @param adBreak
+   *   The ad break to be updated.
+   * @param init
+   *   The properties to be updated on the ad break.
+   */
+  updateAdBreak(adBreak: AdBreak, init: Partial<AdBreakInit>): void;
+  /**
+   * End the given ad break.
+   *
+   * An ad break begins implicitly when the first of its ads is {@link beginAd | begun}.
+   *
+   * @remarks
+   * - Any of its ads that are still playing will first be {@link endAd | ended}.
+   * - An {@link AdsEventMap.adbreakend} event and an {@link AdsEventMap.adbreakchange} event will be fired.
+   * - The ad break stays in {@link adBreaks}, but is removed from {@link Ads.scheduledAdBreaks}.
+   *   Its ads that were not begun stay in {@link Ads.scheduledAds}.
+   * - To remove the ad break, call {@link removeAdBreak} afterwards. This does not end the ad break again.
+   * - If one of its remaining ads is {@link beginAd | begun} later, the ad break begins again
+   *   and is added back to {@link Ads.scheduledAdBreaks}.
+   * - If the ad break is not currently playing, this does nothing.
+   *
+   * @param adBreak
+   *   The ad break to be ended.
+   */
+  endAdBreak(adBreak: AdBreak): void;
+  /**
+   * Remove the given ad break and all of its ads.
+   *
+   * @remarks
+   * - The ad break will be removed from {@link adBreaks} and {@link Ads.scheduledAdBreaks}.
+   * - Any remaining ads in the ad break will be {@link removeAd | removed}.
+   *
+   * @param adBreak
+   *   The ad break to be removed.
+   */
+  removeAdBreak(adBreak: AdBreak): void;
+  /**
+   * Remove all ads and ad breaks.
+   *
+   * @remarks
+   * - This is a shorthand for calling {@link removeAdBreak}
+   *   on all ad breaks in {@link adBreaks}.
+   */
+  removeAllAds(): void;
+  /**
+   * Fire an {@link AdsEventMap.aderror | `aderror`} event on the player.
+   *
+   * This does not stop playback.
+   *
+   * @param error - The error.
+   */
+  error(error: Error): void;
+  /**
+   * Fire a fatal {@link PlayerEventMap.error | `error`} event on the player.
+   *
+   * This stops playback immediately. Use {@link ChromelessPlayer.source} to load a new source.
+   *
+   * @param error
+   *   The error.
+   * @param [code]
+   *   The error code. By default, this is set to {@link ErrorCode.AD_ERROR}.
+   */
+  fatalError(error: Error, code?: ErrorCode): void;
+}
+/**
+ * An initializer for a custom {@link Ad}.
+ *
+ * @see {@link CustomAdIntegrationController.createAd}
+ * @see {@link CustomAdIntegrationController.updateAd}
+ *
+ * @category Ads
+ */
+export interface AdInit extends Omit<Partial<Ad>, 'integration' | 'adBreak'> {
+  /**
+   * The type of the ad.
+   */
+  type: AdType;
+  /**
+   * The time offset at which content will be paused to play the ad, in seconds.
+   */
+  timeOffset?: number;
+  /**
+   * Additional integration-specific data associated with this ad.
+   */
+  customData?: unknown;
+}
+/**
+ * An initializer for a custom {@link AdBreak}.
+ *
+ * @see {@link CustomAdIntegrationController.createAdBreak}
+ * @see {@link CustomAdIntegrationController.updateAdBreak}
+ *
+ * @category Ads
+ */
+export interface AdBreakInit {
+  /**
+   * The identifier of the ad break.
+   */
+  id?: string | undefined;
+  /**
+   * The time offset at which content will be paused to play the ad break, in seconds.
+   */
+  timeOffset: number;
+  /**
+   * The duration of the ad break, in seconds.
+   */
+  maxDuration?: number | undefined;
+  /**
+   * Additional integration-specific data associated with this ad break.
+   */
+  customData?: unknown;
+}
+/**
+ * A handler for a server-side ad integration.
+ *
+ * You can implement one or more of these methods to hook into various parts
+ * of the player's lifecycle and perform your integration-specific ad handling.
+ *
+ * Use the {@link ServerSideAdIntegrationController} provided by {@link ServerSideAdIntegrationFactory}
+ * to update the state of your integration.
+ *
+ * @see {@link Ads.registerServerSideIntegration}
+ *
+ * @category Ads
+ */
+export interface ServerSideAdIntegrationHandler extends CustomAdIntegrationHandler {}
+/**
+ * A controller to be used by your {@link ServerSideAdIntegrationHandler}
+ * to update the state of your custom server-side ad integration.
+ *
+ * @see {@link Ads.registerServerSideIntegration}
+ *
+ * @category Ads
+ */
+export interface ServerSideAdIntegrationController extends CustomAdIntegrationController {}
+/**
+ * Factory to create an {@link ServerSideAdIntegrationHandler}.
+ *
+ * @param controller
+ *   The controller to use.
+ * @return The new server-side ad integration handler.
+ *
+ * @see {@link Ads.registerServerSideIntegration}
+ *
+ * @category Ads
+ */
+export type ServerSideAdIntegrationFactory = (controller: ServerSideAdIntegrationController) => ServerSideAdIntegrationHandler;
+/**
+ * A handler for a custom client-side ad integration.
+ *
+ * In a client-side ad integration, ads are separate from the content: the integration loads its ads
+ * from an {@link AdDescription}, and pauses the content to play a linear ad.
+ *
+ * Use {@link Ads.registerClientSideIntegration} to register an integration with the player.
+ *
+ * @see {@link ClientSideAdIntegrationController}
+ *
+ * @category Ads
+ * @experimental
+ */
+export interface ClientSideAdIntegrationHandler extends CustomAdIntegrationHandler {
+  /**
+   * Handler which will be called when an ad is scheduled for this integration,
+   * either through {@link SourceDescription.ads} (after any {@link CustomAdIntegrationHandler.setSource} handlers have transformed it)
+   * or through {@link Ads.schedule}.
+   *
+   * The integration decides how and when to load ads from the given description,
+   * for example by watching {@link CustomAdIntegrationController.content} for the time offset of a mid-roll.
+   * Once loaded, it should report them using {@link CustomAdIntegrationController.createAdBreak}
+   * and {@link CustomAdIntegrationController.createAd}.
+   *
+   * @remarks
+   * - This is only called for ad descriptions whose {@link AdDescription.integration}
+   *   matches {@link CustomAdIntegrationController.integration}.
+   * - {@link AdDescription.timeOffset} is passed as-is. The integration is responsible for
+   *   interpreting it, e.g. `"start"`, `"end"`, a percentage or a number of seconds.
+   * - If this handler throws an error, the player fires a non-fatal {@link AdsEventMap.aderror | `aderror`} event
+   *   (as if by calling {@link CustomAdIntegrationController.error}).
+   *
+   * @param adDescription
+   *   The description of the scheduled ad(s).
+   */
+  schedule(adDescription: AdDescription): MaybeAsync<void>;
+  /**
+   * Handler which will be called when the player starts playing the current source for the first time,
+   * before any content is shown.
+   *
+   * This allows the integration to play pre-roll ads, or to initialize ad SDKs that require a user gesture.
+   * To play a pre-roll, call {@link ClientSideAdIntegrationController.startLinearAdBreak} before
+   * the returned promise resolves. The player waits for the returned promise, and then starts playing
+   * the content unless linear ad playback was started. If the promise does not settle within a timeout and no linear ad break
+   * was started, the player fires a non-blocking {@link AdsEventMap.aderror | `aderror`} event and starts playing the content.
+   *
+   * @remarks
+   * - This is only called if this integration has ads scheduled before the first play.
+   * - If this handler is missing, the player starts playing the content immediately.
+   * - If this handler throws or rejects with an error, the player fires a non-fatal {@link AdsEventMap.aderror | `aderror`} event
+   *   (as if by calling {@link CustomAdIntegrationController.error}) and starts playing the content.
+   */
+  play?(): MaybeAsync<void>;
+}
+/**
+ * Events fired by a linear ad player.
+ *
+ * @category Player
+ * @category Events
+ * @experimental
+ */
+export interface ReadonlyLinearAdPlayerEventMap {
+  /** Fired when playback of the linear ad starts. */
+  play: PlayEvent;
+  /** Fired when playback of the linear ad is paused. */
+  pause: PauseEvent;
+  /** Fired when the linear ad starts or resumes playing. */
+  playing: PlayingEvent;
+  /** Fired when playback of the linear ad waits for more data. */
+  waiting: WaitingEvent;
+  /** Fired when the linear ad's ready state changes. */
+  readystatechange: ReadyStateChangeEvent;
+  /** Fired when the linear ad's metadata becomes available. */
+  loadedmetadata: LoadedMetadataEvent;
+  /** Fired when the first frame of the linear ad becomes available. */
+  loadeddata: LoadedDataEvent;
+  /** Fired when an error occurs during linear ad playback. */
+  error: ErrorEvent;
+  /** Fired when the linear ad's volume or mute state changes. */
+  volumechange: VolumeChangeEvent;
+  /** Fired when the linear ad's playback rate changes. */
+  ratechange: RateChangeEvent;
+  /** Fired when seeking in the linear ad starts. */
+  seeking: SeekingEvent;
+  /** Fired when seeking in the linear ad completes. */
+  seeked: SeekedEvent;
+  /** Fired when the linear ad's playback position changes. */
+  timeupdate: TimeUpdateEvent;
+  /** Fired when the linear ad's duration changes. */
+  durationchange: DurationChangeEvent;
+  /** Fired when the linear ad or ad break ends. */
+  ended: EndedEvent;
+  /** Fired when the linear ad's video dimensions change. */
+  resize: ReadonlyContentPlayerEventMap['resize'];
+}
+/**
+ * Read-only playback state of a linear ad player.
+ *
+ * @see {@link ClientSideAdIntegrationController.linearAdPlayer}
+ *
+ * @category Player
+ * @experimental
+ */
+export interface ReadonlyLinearAdPlayer extends EventDispatcher<ReadonlyLinearAdPlayerEventMap> {
+  /** Whether the linear ad player is paused. */
+  readonly paused: boolean;
+  /** The current linear-ad playback position, in seconds. */
+  readonly currentTime: number;
+  /** The duration of the loaded linear-ad source, in seconds. */
+  readonly duration: number;
+  /** Whether the loaded linear-ad source has ended. */
+  readonly ended: boolean;
+  /** The ready state of the linear ad, using the same values as {@link ChromelessPlayer.readyState}. */
+  readonly readyState: number;
+  /** The current linear-ad playback error, or `undefined` if there is no error. */
+  readonly error: THEOplayerError | undefined;
+  /** The linear-ad volume, between `0` and `1`. */
+  volume: number;
+  /** Whether the linear ad is muted. */
+  muted: boolean;
+  /** The width of the linear-ad video, or `0` if unknown. */
+  readonly videoWidth: number;
+  /** The height of the linear-ad video, or `0` if unknown. */
+  readonly videoHeight: number;
+}
+/**
+ * The built-in linear ad player shared by client-side ad integrations for one player.
+ *
+ * It can be used during or outside a linear ad break. Its playback state is reported through the player's API
+ * only when it is used directly, or through a forwarding wrapper, as the break's
+ * {@link StartLinearAdBreakOptions.playback}.
+ *
+ * @category Ads
+ * @experimental
+ */
+export interface LinearAdPlayer extends ReadonlyLinearAdPlayer, LinearAdPlayback {
+  /**
+   * The shared DOM element used to play linear ads.
+   *
+   * This element is a sibling of {@link ClientSideAdIntegrationController.contentElement}. During a linear ad break
+   * that does not use {@link LinearAdPlayback.usesContentVideoElement}, it replaces the hidden content element in
+   * the normal flow, or is shown over the content when {@link StartLinearAdBreakOptions.keepContentPlaying} is set.
+   *
+   * The integration may style this element freely during a break, for example to show the ad next to the content.
+   *
+   * @remarks
+   * - The integration must not add, remove or replace child elements.
+   * - The player restores the element's styles when the break ends, when a new source is set during an active break,
+   *   or when the player is destroyed.
+   * - This element is not used by a playback that sets {@link LinearAdPlayback.usesContentVideoElement}.
+   */
+  readonly element: HTMLElement;
+  /**
+   * Load and play a linear ad source through the built-in player.
+   *
+   * The source may contain a single ad or a whole ad break with multiple ads.
+   * If `ad` is given, the source contains only that ad and the player reports its lifecycle through
+   * {@link CustomAdIntegrationController.beginAd}, {@link CustomAdIntegrationController.updateAdProgress}
+   * and {@link CustomAdIntegrationController.endAd}, and updates {@link Ad.duration} if not yet known.
+   * If `ad` is omitted, the integration must report the ads in the source itself, for example based on
+   * timed metadata and {@link CustomAdIntegrationController.content}.
+   *
+   * If a third-party playback delegate is active for the break, this method still loads and plays the source
+   * through the built-in player, but the player's API continues to report the active delegate's state.
+   *
+   * @remarks
+   * - This works during or outside a linear ad break. An `ad` can only be supplied during a break.
+   * - Sources can be played back-to-back by calling this method again after the returned promise resolves.
+   * - If the source was preloaded with {@link preload} using exactly the same source, the preloaded data is used.
+   *   Otherwise, the preload is discarded and the source is loaded normally.
+   * - Playback is stopped when {@link stop} or {@link ClientSideAdIntegrationController.endLinearAdBreak} is called.
+   *   If `ad` is given, playback is also stopped when {@link Ads.skip} is called (unless overridden by
+   *   {@link ClientSideAdIntegrationHandler.skipAd}) or when the integration calls
+   *   {@link CustomAdIntegrationController.skipAd}, {@link CustomAdIntegrationController.endAd}
+   *   or {@link CustomAdIntegrationController.removeAd} for that ad.
+   *
+   * @param source
+   *   The media to play, e.g. an MP4 or HLS file.
+   * @param ad
+   *   The single ad in the source, if any. It must be created through
+   *   {@link CustomAdIntegrationController.createAd} with type `'linear'`.
+   * @returns
+   *   A promise that resolves when the source has ended or playback was stopped,
+   *   or rejects if the source could not be played. In the latter case, the player also fires an
+   *   {@link AdsEventMap.aderror | `aderror`} event.
+   * @throws Error
+   *   If `ad` is given outside a linear ad break, or another built-in source is currently playing.
+   */
+  load(source: string | TypedSource, ad?: Ad): Promise<void>;
+  /**
+   * Preload a linear ad source through the built-in player.
+   *
+   * The built-in player starts loading the source in the background, while the content keeps playing.
+   * A later call to {@link load} with exactly the same source starts faster.
+   *
+   * @remarks
+   * - This works during or outside a linear ad break.
+   * - Only one source is preloaded at a time. Preloading a different source discards the previous preload.
+   * - The built-in player has a single video element, so preloading is not possible while it is playing a linear ad.
+   *   The returned promise then rejects.
+   * - The preload is discarded when a different source is played, when the preloaded source has been played,
+   *   or when a new source is set on the player.
+   * - Preloading is best effort. If it fails, {@link load} still loads the source normally.
+   *
+   * @param source
+   *   The media to preload, e.g. an MP4 or HLS file.
+   * @returns
+   *   A promise that resolves when enough of the source is loaded to start playback,
+   *   or rejects if the source could not be preloaded. In the latter case, no `aderror` event is fired.
+   */
+  preload(source: string | TypedSource): Promise<void>;
+  /**
+   * Stop the source currently playing through the built-in player.
+   *
+   * The built-in player stops and unloads the source started with {@link load}, and the promise returned by that
+   * call resolves. A linear ad break stays active, so the integration can load another source or end the break.
+   *
+   * Use this to skip an ad in {@link ClientSideAdIntegrationHandler.skipAd}, or to exit an ad early.
+   *
+   * @remarks
+   * - This works during or outside a linear ad break.
+   * - If `ad` was given to {@link load}, the player {@link CustomAdIntegrationController.endAd | ends} that ad.
+   *   Otherwise, the integration must end the ads it reported itself.
+   * - This has no effect if no source is currently playing through the built-in player.
+   */
+  stop(): void;
+}
+/**
+ * The controller for a custom client-side ad integration.
+ *
+ * Besides the common {@link CustomAdIntegrationController} operations, it allows the integration
+ * to pause the content and play linear ads, either on its own or through the built-in player.
+ *
+ * @see {@link ClientSideAdIntegrationHandler}
+ *
+ * @category Ads
+ * @experimental
+ */
+export interface ClientSideAdIntegrationController extends CustomAdIntegrationController {
+  /**
+   * The content playback state and controls, independent of the active ad player.
+   */
+  readonly content: ContentPlayer;
+  /**
+   * A DOM element for rendering ads, owned by this integration.
+   *
+   * The element is absolutely positioned over the player's video area (`position: absolute; inset: 0`),
+   * on top of the content video. It is initially empty and does not receive pointer events.
+   * The integration may add child elements to render non-linear ads, or to play linear ads
+   * with its own ad player (see {@link LinearAdPlayback}). It may style this element during
+   * a linear ad break; the player resets its styles when the break ends or when a new source is set during an active break.
+   *
+   * @remarks
+   * - The element is removed when the player is {@link ChromelessPlayer.destroy | destroyed}.
+   * - The size of the player's video area is dictated by {@link contentElement},
+   *   or by the {@link ClientSideAdIntegrationController.linearAdPlayer} element while the built-in player plays a linear ad.
+   *   This element always follows that size.
+   * - The player stacks its elements in this order, from back to front:
+   *   {@link contentElement},
+   *   the {@link ClientSideAdIntegrationController.linearAdPlayer} element,
+   *   {@link adContainer}.
+   */
+  readonly adContainer: HTMLElement;
+  /**
+   * The built-in linear ad player shared by all client-side ad integrations for this player.
+   */
+  readonly linearAdPlayer: LinearAdPlayer;
+  /**
+   * The DOM element in which the content is rendered, owned by the player.
+   *
+   * The element is positioned in the normal flow of the player's DOM (`position: relative`),
+   * so it dictates the size of the player's video area. It always contains
+   * {@link contentVideoElement}, if that is defined.
+   * During a linear ad break, the integration may style this element to create custom ad layouts,
+   * for example to scale the content down into a corner while an ad is shown in {@link adContainer}.
+   * The player resets its styles when the break ends.
+   *
+   * @remarks
+   * - The integration must not add, remove or replace child elements.
+   * - If a new source is set while a linear ad break is active, the player resets these styles before
+   *   {@link CustomAdIntegrationHandler.resetSource} is called.
+   * - Unless {@link StartLinearAdBreakOptions.keepContentPlaying} is set, the player hides this element with
+   *   `visibility: hidden` during a linear ad break, except when the playback sets
+   *   {@link LinearAdPlayback.usesContentVideoElement}. It remains in the normal flow and dictates the size
+   *   of the player's video area.
+   * - The shared linear ad player element replaces this element in the normal flow, or is shown over it when
+   *   {@link StartLinearAdBreakOptions.keepContentPlaying} is set.
+   */
+  readonly contentElement: HTMLElement;
+  /**
+   * The video element in which the content is played.
+   *
+   * On some platforms, a linear ad must be played in the same video element as the content,
+   * for example to keep native fullscreen playback on iOS. In that case, play the linear ad in this element
+   * (for example by passing it to a third-party ad SDK), and set {@link LinearAdPlayback.usesContentVideoElement}
+   * when starting linear ad playback.
+   *
+   * @remarks
+   * - This is `undefined` when the player can't let ad integrations reuse the content's video element
+   *   for linear ad playback, for example when the content is rendered into multiple media elements
+   *   or outside of the DOM.
+   *   Play linear ads in {@link adContainer} instead.
+   * - When defined, this is a descendant of {@link contentElement}.
+   * - The integration may only change the element's source or playback state during linear ad playback,
+   *   after {@link startLinearAdBreak} was called with {@link LinearAdPlayback.usesContentVideoElement} set.
+   * - The element may change when a new source is set. Read it when starting each linear ad break
+   *   rather than caching it.
+   */
+  readonly contentVideoElement: HTMLVideoElement | undefined;
+  /**
+   * Start a linear ad break.
+   *
+   * The player pauses the content and hides it (unless the ad is played in the content video element
+   * or {@link StartLinearAdBreakOptions.keepContentPlaying} is set,
+   * see {@link contentElement} for how it is hidden),
+   * and reports ad playback through its own API by default.
+   * {@link StartLinearAdBreakOptions.timeline} can route time-related state to the content, while
+   * {@link StartLinearAdBreakOptions.audio} can route volume and mute state to the content.
+   *
+   * @remarks
+   * - {@link CustomAdIntegrationController.content} keeps reflecting the state of the content:
+   *   paused at the interrupted position, or still playing if
+   *   {@link StartLinearAdBreakOptions.keepContentPlaying} is set.
+   * - If {@link LinearAdPlayback.usesContentVideoElement} is set, the content stays visible
+   *   and the player releases {@link contentVideoElement}
+   *   to the integration. It restores the content source and position when
+   *   {@link endLinearAdBreak} is called.
+   * - Use {@link CustomAdIntegrationController.beginAd}, {@link CustomAdIntegrationController.updateAdProgress}
+   *   and {@link CustomAdIntegrationController.endAd} to report the individual ads during linear ad playback.
+   *
+   * @param [options]
+   *   Options for the linear ad break. If {@link StartLinearAdBreakOptions.playback} is omitted,
+   *   the integration can load an ad with {@link ClientSideAdIntegrationController.linearAdPlayer | `linearAdPlayer`}.
+   * @throws Error
+   *   If a linear ad break was already started.
+   */
+  startLinearAdBreak(options?: StartLinearAdBreakOptions): void;
+  /**
+   * Notify the player that the state of the {@link StartLinearAdBreakOptions.playback | LinearAdPlayback} passed to
+   * {@link startLinearAdBreak} has changed.
+   *
+   * The player reads the new state and fires the corresponding events, such as
+   * {@link PlayerEventMap.timeupdate | `timeupdate`}, {@link PlayerEventMap.durationchange | `durationchange`},
+   * {@link PlayerEventMap.pause | `pause`}, {@link PlayerEventMap.playing | `playing`}
+   * or {@link PlayerEventMap.volumechange | `volumechange`}.
+   * {@link PlayerEventMap.loadedmetadata | `loadedmetadata`}, {@link PlayerEventMap.loadeddata | `loadeddata`},
+   * {@link PlayerEventMap.canplay | `canplay`}, {@link PlayerEventMap.canplaythrough | `canplaythrough`}
+   * and {@link PlayerEventMap.readystatechange | `readystatechange`} are derived from `readyState` changes;
+   * `waiting` and `playing` also depend on whether playback is paused.
+   *
+   * @remarks
+   * - This has no effect when linear ad playback is handled by the built-in player.
+   */
+  updateLinearAdBreak(): void;
+  /**
+   * End the linear ad break and resume the content.
+   *
+   * @remarks
+   * - Any remaining {@link Ads.currentAds} of this integration are {@link CustomAdIntegrationController.endAd | ended}.
+   * - This ends the current ads, but not the ad break itself unless its last ad was playing.
+   *   Call {@link CustomAdIntegrationController.endAdBreak} to end the ad break.
+   * - The linear ad break is also ended by the player when a new source is set,
+   *   before {@link CustomAdIntegrationHandler.resetSource} is called.
+   * - This has no effect if no linear ad break was started.
+   *
+   * @param [options]
+   *   Options for resuming the content.
+   */
+  endLinearAdBreak(options?: EndLinearAdBreakOptions): void;
+}
+/**
+ * Playback state and controls for the content, independent of linear ad playback.
+ *
+ * These controls always act directly on the content player and bypass the ad player.
+ *
+ * @remarks
+ * Mutating members throw while the content video element is used for linear ad playback, or after the integration is destroyed.
+ *
+ * @category Player
+ * @experimental
+ */
+export interface ContentPlayer extends ReadonlyContentPlayer {
+  /**
+   * The current content position, in seconds.
+   *
+   * Setting this seeks the content to the requested position, clamped to {@link ReadonlyContentPlayer.seekable}.
+   * The write is a no-op when the content has no seekable range.
+   *
+   * @throws Error
+   *   If the content video element is used for linear ad playback, or the integration has been destroyed.
+   */
+  currentTime: number;
+  /**
+   * The content volume, as a number between 0 and 1. This changes the content only.
+   *
+   * At break end, the viewer's volume is copied back to the content, unless
+   * {@link StartLinearAdBreakOptions.audio} is `'content'`, in which case the viewer's volume control already
+   * applies to the content.
+   *
+   * @throws Error
+   *   If the content video element is used for linear ad playback, or the integration has been destroyed.
+   */
+  volume: number;
+  /**
+   * Whether the content audio is muted. This changes the content only.
+   *
+   * At break end, the viewer's mute state is copied back to the content, unless
+   * {@link StartLinearAdBreakOptions.audio} is `'content'`, in which case the viewer's mute control already
+   * applies to the content.
+   *
+   * @throws Error
+   *   If the content video element is used for linear ad playback, or the integration has been destroyed.
+   */
+  muted: boolean;
+  /**
+   * Start or resume content playback directly, without affecting ad playback.
+   *
+   * @throws Error
+   *   If the content video element is used for linear ad playback, or the integration has been destroyed.
+   */
+  play(): void;
+  /**
+   * Pause content playback directly, without affecting ad playback.
+   *
+   * @throws Error
+   *   If the content video element is used for linear ad playback, or the integration has been destroyed.
+   */
+  pause(): void;
+}
+/**
+ * Options for {@link ClientSideAdIntegrationController.startLinearAdBreak}.
+ *
+ * @category Ads
+ * @experimental
+ */
+export interface StartLinearAdBreakOptions {
+  /**
+   * Delegate for a linear ad player owned by the integration, such as the ad player of a third-party ad SDK
+   * rendering into {@link ClientSideAdIntegrationController.adContainer}.
+   *
+   * The delegate's `readyState` must use the same values as {@link ChromelessPlayer.readyState}.
+   * A delegate backed by an `HTMLMediaElement` can forward its `readyState`.
+   *
+   * If omitted, the integration must play its ads through the built-in player using
+   * {@link ClientSideAdIntegrationController.linearAdPlayer | `linearAdPlayer`}.
+   */
+  playback?: LinearAdPlayback;
+  /**
+   * Whether the content keeps playing during the linear ad break, for example for a double-box layout
+   * where the ad is shown next to the content.
+   *
+   * When set, the player does not pause or hide the content. The content keeps its own volume and mute state.
+   * When omitted or `false`, the player pauses the content and hides
+   * {@link ClientSideAdIntegrationController.contentElement} with `visibility: hidden`, unless the playback sets
+   * {@link LinearAdPlayback.usesContentVideoElement}.
+   * By default, the player's `volume` and `muted` apply to the ad; set
+   * {@link StartLinearAdBreakOptions.audio} to `'content'` to apply them to the content and keep the ad muted.
+   * With the default `audio: 'ad'`, the viewer's volume and mute state is copied back to the content at break end.
+   * With `audio: 'content'`, the viewer's controls already apply to the content.
+   * {@link ChromelessPlayer.play} and {@link ChromelessPlayer.pause} apply to both the ad and the content.
+   * The integration is responsible for positioning {@link ClientSideAdIntegrationController.contentElement}
+   * and the ad (in {@link ClientSideAdIntegrationController.adContainer} or
+   * the {@link ClientSideAdIntegrationController.linearAdPlayer} element) so that both are visible.
+   *
+   * @remarks
+   * - Cannot be combined with {@link LinearAdPlayback.usesContentVideoElement}.
+   * - {@link EndLinearAdBreakOptions.resumeAt} is ignored; the content simply continues.
+   *
+   * @defaultValue `false`
+   */
+  keepContentPlaying?: boolean;
+  /**
+   * Whether the player's `volume` and `muted` controls apply to the ad or the content during the break.
+   *
+   * `'content'` requires `keepContentPlaying` to be `true`; the ad remains muted.
+   *
+   * @defaultValue `'ad'`
+   */
+  audio?: 'ad' | 'content';
+  /**
+   * Whether the player's time-related state follows the ad or the content during the break.
+   *
+   * `'content'` requires `keepContentPlaying` to be `true`; the player routes seeks to the content.
+   *
+   * @defaultValue `'ad'`
+   */
+  timeline?: 'ad' | 'content';
+}
+/**
+ * Options for {@link ClientSideAdIntegrationController.endLinearAdBreak}.
+ *
+ * @category Ads
+ * @experimental
+ */
+export interface EndLinearAdBreakOptions {
+  /**
+   * The position in the content at which to resume, in seconds.
+   *
+   * If not set, the player does not seek the content: it resumes from its current position,
+   * which is where it was paused when the linear ad break started. When
+   * {@link LinearAdPlayback.usesContentVideoElement} is set, the player reloads the content
+   * and restores the position at which playback was interrupted.
+   * When `resumeAt` is set with {@link LinearAdPlayback.usesContentVideoElement}, the player
+   * reloads the content and seeks to this position instead.
+   * Ignored if {@link StartLinearAdBreakOptions.keepContentPlaying} was set.
+   * For a live stream, an integration can use this to skip forward by the duration of the ad,
+   * so that the content resumes at the same distance from the live edge.
+   * The position is clamped to {@link ContentPlayer.seekable}.
+   */
+  resumeAt?: number;
+}
+/**
+ * Playback state and controls for a linear ad in a client-side ad integration.
+ *
+ * The player reads these properties to report the ad playback state through its own API,
+ * and calls the methods when playback is controlled through the player.
+ * The integration must call {@link ClientSideAdIntegrationController.updateLinearAdBreak}
+ * whenever any of these properties change.
+ * Report playback errors with {@link ClientSideAdIntegrationController.error} for non-fatal `aderror` events
+ * or {@link ClientSideAdIntegrationController.fatalError} for fatal errors.
+ *
+ * {@link ClientSideAdIntegrationController.linearAdPlayer} implements this interface. A forwarding wrapper around it
+ * behaves identically when it forwards the built-in player's events to
+ * {@link ClientSideAdIntegrationController.updateLinearAdBreak}.
+ *
+ * @see {@link StartLinearAdBreakOptions.playback}
+ *
+ * @category Ads
+ * @experimental
+ */
+export interface LinearAdPlayback {
+  /**
+   * The current playback position of the linear ad (or ad break), in seconds.
+   */
+  readonly currentTime: number;
+  /**
+   * The duration of the linear ad (or ad break), in seconds, or `NaN` if unknown.
+   */
+  readonly duration: number;
+  /**
+   * Whether the linear ad is paused.
+   */
+  readonly paused: boolean;
+  /**
+   * The ready state of the linear ad, using the same values and meaning as {@link ChromelessPlayer.readyState}.
+   *
+   * A delegate backed by an `HTMLMediaElement` can forward its `readyState`.
+   *
+   * @remarks
+   * The player reads this property when {@link ClientSideAdIntegrationController.updateLinearAdBreak} is called.
+   */
+  readonly readyState: number;
+  /**
+   * Whether the linear ad or ad break has ended.
+   *
+   * @remarks
+   * The player reads this property when {@link ClientSideAdIntegrationController.updateLinearAdBreak} is called.
+   */
+  readonly ended: boolean;
+  /**
+   * The width of the ad video, or `0` if unknown.
+   *
+   * @remarks
+   * The player reads this property when {@link ClientSideAdIntegrationController.updateLinearAdBreak} is called.
+   */
+  readonly videoWidth: number;
+  /**
+   * The height of the ad video, or `0` if unknown.
+   *
+   * @remarks
+   * The player reads this property when {@link ClientSideAdIntegrationController.updateLinearAdBreak} is called.
+   */
+  readonly videoHeight: number;
+  /**
+   * The volume of the linear ad, as a number between 0 and 1.
+   *
+   * Set when {@link ChromelessPlayer.volume} changes during linear ad playback.
+   */
+  volume: number;
+  /**
+   * Whether the linear ad is muted.
+   *
+   * Set when {@link ChromelessPlayer.muted} changes during linear ad playback.
+   */
+  muted: boolean;
+  /**
+   * Resume playback of the linear ad.
+   *
+   * Called by {@link ChromelessPlayer.play} during linear ad playback.
+   */
+  play(): void;
+  /**
+   * Pause playback of the linear ad.
+   *
+   * Called by {@link ChromelessPlayer.pause} during linear ad playback.
+   */
+  pause(): void;
+  /**
+   * Whether this playback really renders the linear ad in
+   * {@link ClientSideAdIntegrationController.contentVideoElement} instead of
+   * {@link ClientSideAdIntegrationController.adContainer}.
+   *
+   * Set this to `true` only when this playback plays the ad in the content video element,
+   * so the player can hand over the element before the ad starts and restore the content afterwards.
+   * The player reads this property once, when {@link ClientSideAdIntegrationController.startLinearAdBreak} is called.
+   *
+   * @remarks
+   * - Must be `false` or omitted when {@link ClientSideAdIntegrationController.contentVideoElement} is `undefined`.
+   * - {@link ClientSideAdIntegrationController.linearAdPlayer} returns `false`. A wrapper around it must also return `false`.
+   *
+   * @defaultValue `false`
+   */
+  readonly usesContentVideoElement?: boolean;
+}
+/**
+ * A factory to create a {@link ClientSideAdIntegrationHandler} for a given player.
+ *
+ * The factory is called once for every player that registers the integration with
+ * {@link Ads.registerClientSideIntegration}.
+ *
+ * @param controller
+ *   The controller which the created handler must use to report its ads and their playback.
+ *
+ * @category Ads
+ * @experimental
+ */
+export type ClientSideAdIntegrationFactory = (controller: ClientSideAdIntegrationController) => ClientSideAdIntegrationHandler;
+/**
+ * The events fired by the {@link Ads | ads API}.
+ *
+ * @category Ads
+ * @public
+ */
+export interface AdsEventMap {
+  /**
+   * Fired when an ad break is added.
+   *
+   * @remarks
+   * <br/> - Available since v2.60.0.
+   */
+  addadbreak: AdBreakEvent<'addadbreak'>;
+  /**
+   * Fired when an ad break is removed.
+   *
+   * @remarks
+   * <br/> - Available since v2.60.0.
+   */
+  removeadbreak: AdBreakEvent<'removeadbreak'>;
+  /**
+   * Fired when an ad break begins.
+   */
+  adbreakbegin: AdBreakEvent<'adbreakbegin'>;
+  /**
+   * Fired when an ad break ends.
+   */
+  adbreakend: AdBreakEvent<'adbreakend'>;
+  /**
+   * Fired when an ad break changes.
+   */
+  adbreakchange: AdBreakEvent<'adbreakchange'>;
+  /**
+   * Fired when an ad is added.
+   *
+   * @remarks
+   * <br/> - Available since v2.60.0.
+   */
+  addad: AdEvent<'addad'>;
+  /**
+   * Fired when an ad is updated.
+   *
+   * @remarks
+   * <br/> - Available since v2.60.0.
+   */
+  updatead: AdEvent<'updatead'>;
+  /**
+   * Fired when an AdBreak is updated.
+   *
+   * @remarks
+   * <br/> - Available since v2.66.0.
+   */
+  updateadbreak: AdBreakEvent<'updateadbreak'>;
+  /**
+   * Fired when an ad is loaded.
+   */
+  adloaded: Event<'adloaded'>;
+  /**
+   * Fired when an ad begins.
+   */
+  adbegin: AdEvent<'adbegin'>;
+  /**
+   * Fired when an ad ends.
+   */
+  adend: AdEvent<'adend'>;
+  /**
+   * Fired when an ad is skipped.
+   */
+  adskip: AdSkipEvent;
+  /**
+   * Fired when an ad errors.
+   */
+  aderror: AdErrorEvent;
+  /**
+   * Fired when an ad counts as an impression.
+   */
+  adimpression: AdEvent<'adimpression'>;
+  /**
+   * Fired when an ad reaches the first quartile.
+   */
+  adfirstquartile: AdEvent<'adfirstquartile'>;
+  /**
+   * Fired when an ad reaches the mid point.
+   */
+  admidpoint: AdEvent<'admidpoint'>;
+  /**
+   * Fired when an ad reaches the third quartile.
+   */
+  adthirdquartile: AdEvent<'adthirdquartile'>;
+  /**
+   * Fired when the ad has stalled playback to buffer.
+   *
+   * @remarks
+   * <br/> - only available in the Google IMA integration.
+   */
+  adbuffering: AdBufferingEvent;
+  /**
+   * Fired when an ads list is loaded.
+   *
+   * @remarks
+   * <br/> - only available in the Google IMA integration.
+   */
+  admetadata: AdMetadataEvent;
+  /**
+   * Fired when the {@link https://developers.google.com/interactive-media-ads/docs/sdks/html5/client-side/reference/js/google.ima.AdsManager | google.ima.AdsManager} is created.
+   *
+   * @remarks
+   * <br/> - only available in the Google IMA integration.
+   */
+  adsmanagerloaded: AdsManagerLoadedEvent;
+  /**
+   * Fired when the user clicks on an ad's clickthrough element.
+   *
+   * @remarks
+   * <br/> - Available since v11.9.0.
+   */
+  adclicked: AdEvent<'adclicked'>;
+}
+/**
+ * The API for advertisements.
+ *
+ * @remarks
+ * <br/> - Integrates with `'csai'`, `'google-ima'`, `'google-dai'`, `'freewheel'` or `'theoads'`.
+ *
+ * @category Ads
+ * @public
+ */
+export interface Ads extends EventDispatcher<AdsEventMap> {
+  /**
+   * Whether a linear ad is currently playing.
+   */
+  playing: boolean;
+  /**
+   * The currently playing ad break.
+   */
+  readonly currentAdBreak: AdBreak | null;
+  /**
+   * List of currently playing ads.
+   */
+  readonly currentAds: Ad[];
+  /**
+   * List of ad breaks which still need to be played.
+   */
+  readonly scheduledAdBreaks: AdBreak[];
+  /**
+   * List of ads which still need to be played.
+   */
+  readonly scheduledAds: Ad[];
+  /**
+   * The Google DAI API.
+   *
+   * @remarks
+   * <br/> - Only available with the feature `'google-dai'`.
+   */
+  readonly dai?: GoogleDAI;
+  /**
+   * Add an ad break request.
+   *
+   * @remarks
+   * <br/> - Available since v2.18.0.
+   * <br/> - Prefer scheduling ad breaks up front through {@link SourceConfiguration.ads}.
+   *
+   * @param adDescription - Describes the ad break to be scheduled.
+   */
+  schedule(adDescription: AdDescription): void;
+  /**
+   * Skip the current linear ad.
+   *
+   * @remarks
+   * <br/> - This will have no effect when the current linear ad is (not yet) skippable.
+   */
+  skip(): void;
+  /**
+   * Seek to a point in the main content timeline.
+   *
+   * @remarks
+   * <br/> - Available since v9.4.0.
+   * <br/> - Only supported for the `csai` integration.
+   * <br/> - This will have no effect when `allowSkipAdBreak` is not set to `true` in the `AdsConfiguration`.
+   */
+  skipAdBreak(target?: number): void;
+  /**
+   * Register a custom advertisement integration.
+   *
+   * This allows you to integrate with third-party advertisement providers,
+   * and have them report their ads and ad-related events through the THEOplayer {@link Ads} API.
+   *
+   * @param integrationId
+   *   An identifier of the integration.
+   * @param integrationFactory
+   *   Factory that will construct an {@link ServerSideAdIntegrationHandler} for this integration.
+   */
+  registerServerSideIntegration(integrationId: CustomAdIntegrationKind, integrationFactory: ServerSideAdIntegrationFactory): void;
+  /**
+   * Register a custom client-side advertisement integration.
+   *
+   * This allows you to integrate with third-party advertisement providers that play ads separately from the content,
+   * and have them report their ads and ad-related events through the THEOplayer {@link Ads} API.
+   *
+   * Ad descriptions whose {@link AdDescription.integration} matches the given `integrationId`,
+   * scheduled through {@link SourceDescription.ads} or {@link Ads.schedule}, are passed to
+   * {@link ClientSideAdIntegrationHandler.schedule}.
+   *
+   * @param integrationId
+   *   An identifier of the integration.
+   * @param integrationFactory
+   *   Factory that will construct a {@link ClientSideAdIntegrationHandler} for this integration.
+   *
+   * @remarks
+   * Register client-side integrations before the first call to {@link ChromelessPlayer.play},
+   * so the player's linear ad video element can be prepared with the user's action.
+   *
+   * @experimental
+   */
+  registerClientSideIntegration(integrationId: CustomAdIntegrationKind, integrationFactory: ClientSideAdIntegrationFactory): void;
+}
+/**
+ * List of media tracks.
+ *
+ * @category Media and Text Tracks
+ * @public
+ */
+export interface MediaTrackList extends TrackList<MediaTrack> {
+  /**
+   * The number of media tracks in the list.
+   */
+  readonly length: number;
+  /**
+   * Return the media track at the requested index in the list.
+   *
+   * @param index - A `number` representing the index of a media track in the list.
+   * @returns The media track with index `index` in the list.
+   */
+  item(index: number): MediaTrack;
+  /**
+   * Index signature to get the media track at the requested index in the list.
+   */
+  readonly [index: number]: MediaTrack;
+}
+/**
+ * Fires when the cast state changes.
+ *
+ * @category Casting
+ * @category Events
+ * @public
+ */
+export interface CastStateChangeEvent extends Event<'statechange'> {
+  /**
+   * The new cast state.
+   */
+  readonly state: CastState;
+}
+/**
+ * The state of a casting process, represented by a value from the following list:
+ * <br/> - `'unavailable'`: No available cast devices.
+ * <br/> - `'available'`: Cast device available, but the player is not connected.
+ * <br/> - `'connecting'`: Cast device available and the player is connecting.
+ * <br/> - `'connected'`: Cast device available and the player is connected.
+ *
+ * @category Casting
+ * @public
+ */
+export type CastState = 'unavailable' | 'available' | 'connecting' | 'connected';
+/**
+ * The events fired by the common vendor APIs.
+ *
+ * @category Casting
+ * @public
+ */
+export interface VendorCastEventMap {
+  /**
+   * Fired when the {@link VendorCast.state | state} changes.
+   */
+  statechange: CastStateChangeEvent;
+}
+/**
+ * Common API for all cast integrations.
+ *
+ * @category Casting
+ * @public
+ */
+export interface VendorCast extends EventDispatcher<VendorCastEventMap> {
+  /**
+   * Whether the player is casting.
+   */
+  casting: boolean;
+  /**
+   * The state of the casting process.
+   */
+  state: CastState;
+  /**
+   * Start a casting session with the player's source.
+   *
+   * @remarks
+   * <br/> - A native browser pop-up will prompt to choose a casting target device.
+   */
+  start(): void;
+  /**
+   * Stop the active casting session.
+   */
+  stop(): void;
+}
+/**
+ * An error code whose category is `ErrorCategory.CONTENT_PROTECTION`.
+ *
+ * @category Content Protection
+ * @category Errors
+ * @public
+ */
+export type ContentProtectionErrorCode = ErrorCode.CONTENT_PROTECTION_ERROR | ErrorCode.CONTENT_PROTECTION_NOT_SUPPORTED | ErrorCode.CONTENT_PROTECTION_CONFIGURATION_MISSING | ErrorCode.CONTENT_PROTECTION_CONFIGURATION_INVALID | ErrorCode.CONTENT_PROTECTION_INITIALIZATION_INVALID | ErrorCode.CONTENT_PROTECTION_CERTIFICATE_ERROR | ErrorCode.CONTENT_PROTECTION_CERTIFICATE_INVALID | ErrorCode.CONTENT_PROTECTION_LICENSE_ERROR | ErrorCode.CONTENT_PROTECTION_LICENSE_INVALID | ErrorCode.CONTENT_PROTECTION_KEY_EXPIRED | ErrorCode.CONTENT_PROTECTION_KEY_MISSING | ErrorCode.CONTENT_PROTECTION_OUTPUT_RESTRICTED | ErrorCode.CONTENT_PROTECTION_INTERNAL_ERROR | ErrorCode.CONTENT_PROTECTION_DEVICE_REVOKED;
+/**
+ * An error related to content protection.
+ *
+ * @category Content Protection
+ * @category Errors
+ * @public
+ */
+export interface ContentProtectionError extends THEOplayerError {
+  /**
+   * {@inheritDoc THEOplayerError.code}
+   */
+  readonly code: ContentProtectionErrorCode;
+  /**
+   * The URL that was used in the request.
+   *
+   * @remarks
+   * <br/> - Only available when {@link ContentProtectionError.code} is {@link ErrorCode.CONTENT_PROTECTION_CERTIFICATE_ERROR}, {@link ErrorCode.CONTENT_PROTECTION_LICENSE_ERROR} or {@link ErrorCode.CONTENT_PROTECTION_DEVICE_REVOKED}.
+   */
+  readonly url?: string;
+  /**
+   * The status code from the HTTP response.
+   *
+   * @remarks
+   * <br/> - Only available when {@link ContentProtectionError.code} is {@link ErrorCode.CONTENT_PROTECTION_CERTIFICATE_ERROR}, {@link ErrorCode.CONTENT_PROTECTION_LICENSE_ERROR} or {@link ErrorCode.CONTENT_PROTECTION_DEVICE_REVOKED}.
+   */
+  readonly status?: number;
+  /**
+   * The status text from the HTTP response.
+   *
+   * @remarks
+   * <br/> - Only available when {@link ContentProtectionError.code} is {@link ErrorCode.CONTENT_PROTECTION_CERTIFICATE_ERROR}, {@link ErrorCode.CONTENT_PROTECTION_LICENSE_ERROR} or {@link ErrorCode.CONTENT_PROTECTION_DEVICE_REVOKED}.
+   */
+  readonly statusText?: string;
+  /**
+   * The body contained in the HTTP response.
+   *
+   * @remarks
+   * <br/> - Only available when {@link ContentProtectionError.code} is {@link ErrorCode.CONTENT_PROTECTION_CERTIFICATE_ERROR}, {@link ErrorCode.CONTENT_PROTECTION_LICENSE_ERROR} or {@link ErrorCode.CONTENT_PROTECTION_DEVICE_REVOKED}.
+   */
+  readonly response?: string;
+  /**
+   * The internal error code from the CDM.
+   *
+   * @remarks
+   * <br/> - Only available when {@link ContentProtectionError.code} is {@link ErrorCode.CONTENT_PROTECTION_INTERNAL_ERROR}.
+   */
+  readonly systemCode?: number;
+}
+/**
+ * Fired when an error related to content protection occurs.
+ *
+ * @category Content Protection
+ * @category Errors
+ * @category Events
+ * @public
+ */
+export interface ContentProtectionErrorEvent extends Event<'contentprotectionerror'> {
+  /**
+   * The error that occurred.
+   *
+   * @deprecated use {@link ContentProtectionErrorEvent.errorObject | errorObject.message} instead
+   */
+  error: string;
+  /**
+   * An error object containing additional information about the error.
+   */
+  errorObject: ContentProtectionError;
+  /**
+   * @deprecated use {@link ContentProtectionError.url | errorObject.url} instead
+   */
+  readonly licenseAcquisitionURL?: string;
+  /**
+   * @deprecated use {@link ContentProtectionError.status | errorObject.status} instead
+   */
+  readonly status?: number;
+  /**
+   * @deprecated use {@link ContentProtectionError.statusText | errorObject.statusText} instead
+   */
+  readonly statusText?: string;
+  /**
+   * @deprecated use {@link ContentProtectionError.response | errorObject.response} instead
+   */
+  readonly licenseAcquisitionMessage?: string;
+  /**
+   * @deprecated use {@link ContentProtectionError.systemCode | errorObject.systemCode} instead
+   */
+  readonly systemCode?: number;
 }
 /**
  * Provides estimates on the current network state.
@@ -8954,30 +9874,6 @@ export interface MillicastMetadataCue extends TextTrackCue {
    *         Otherwise, it's the raw data as a {@link Uint8Array}.
    */
   readonly unregistered: object | Uint8Array | undefined;
-}
-/**
- * Represents one or more ranges of time, each specified by a start time and an end time.
- *
- * @remarks
- * This is equivalent to the {@link https://developer.mozilla.org/en-US/docs/Web/API/TimeRanges | TimeRanges} interface used by an HTML video element.
- *
- * @public
- */
-export interface TimeRanges {
-  /** Returns the number of ranges in the object. */
-  readonly length: number;
-  /**
-   * Returns the time for the start of the range with the given index.
-   *
-   * @throws Throws an Error if the index is out of bounds.
-   */
-  start(index: number): number;
-  /**
-   * Returns the time for the end of the range with the given index.
-   *
-   * @throws Throws an Error if the index is out of bounds.
-   */
-  end(index: number): number;
 }
 /**
  * The adaptive bitrate strategy of the first segment, represented by a value from the following list:

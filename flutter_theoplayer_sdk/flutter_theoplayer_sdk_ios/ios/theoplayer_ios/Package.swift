@@ -14,7 +14,7 @@ let package = Package(
     dependencies: [
         // Must match the native SDK versions in theoplayer_ios.podspec. Updated by scripts/update_theoplayer_native.sh
         // and verified by scripts/check_ios_dependency_versions.sh, so keep this declaration on a single line.
-        .package(url: "https://github.com/THEOplayer/theoplayer-sdk-apple", exact: "11.14.0"),
+        .package(url: "https://github.com/THEOplayer/theoplayer-sdk-apple", exact: "11.15.0"),
         .package(name: "FlutterFramework", path: "../FlutterFramework")
     ],
     targets: [
