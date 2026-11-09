@@ -1,4 +1,6 @@
-## Unreleased
+## 11.15.0
+
+* Updated THEOplayer to 11.15.0.
 
 * Added Swift Package Manager support for iOS.
 
