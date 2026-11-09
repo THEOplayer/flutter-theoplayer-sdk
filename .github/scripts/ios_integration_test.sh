@@ -43,17 +43,6 @@ diagnostics() {
   # Keep elapsed time and full commands in the diagnostic snapshot.
   # shellcheck disable=SC2009
   ps -axo pid,etime,command | grep -E 'simctl|log stream|Runner' | grep -v '[g]rep' || true
-  xcrun simctl listapps booted | grep -A3 theoplayerExample || echo 'example app not installed on the simulator (or listapps failed)'
-  xcrun simctl spawn booted launchctl list | grep -i runner || true
-  awk '
-    /simctl launch/ && !launch { launch=NR; print "First simctl launch: " NR ":" $0 }
-    /log stream/ && !stream { stream=NR; print "First log stream: " NR ":" $0 }
-    END {
-      if (!launch) print "No simctl launch line found"
-      if (!stream) print "No log stream line found"
-      if (launch && stream) print (launch < stream ? "simctl launch came first (#181771 signature)" : "log stream came first")
-    }
-  ' "$log_file" || true
   echo '::endgroup::'
 }
 
