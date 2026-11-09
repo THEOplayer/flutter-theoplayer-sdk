@@ -8,7 +8,6 @@ import 'package:theoplayer_platform_interface/theoplayer_event_manager.dart';
 import 'package:theoplayer_platform_interface/theoplayer_events.dart';
 import 'package:theoplayer_web/theoplayer_api_event_web.dart';
 import 'package:theoplayer_web/theoplayer_api_web.dart';
-import 'package:theoplayer_web/theoplayer_js_helpers_web.dart';
 
 class THEOliveControllerWeb extends THEOliveInternalInterface {
   final THEOplayerTheoLiveApi _theoLiveApi;
@@ -44,7 +43,7 @@ class THEOliveControllerWeb extends THEOliveInternalInterface {
 
     intentToFallbackEventListener = (IntentToFallbackEventJS event) {
       final jsReason = event.reason;
-      final reason = jsReason != null ? PlayerError(errorCode: jsReason.code ?? '', errorMessage: jsReason.message ?? '') : null;
+      final reason = jsReason != null ? PlayerError(errorCode: jsReason.code?.toString() ?? '', errorMessage: jsReason.message ?? '') : null;
       _eventManager.dispatchEvent(IntentToFallbackEvent(reason: reason));
     }.toJS;
 

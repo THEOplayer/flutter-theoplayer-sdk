@@ -9,26 +9,43 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  check_ios_dependency_versions:
+    name: Check iOS dependency versions
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v7
+
+    - name: Verify dependency versions
+      run: bash scripts/check_ios_dependency_versions.sh
+
   build_ios:
+    name: iOS ${{ matrix.flutter_version }} / ${{ matrix.dependency_manager.name }}
+    needs: check_ios_dependency_versions
     # A healthy run takes ~20 min. Without this cap a hung job runs until GitHub's 6 h limit.
-    timeout-minutes: 45
+    timeout-minutes: 60
 
     strategy:
       fail-fast: false
       matrix:
         xcode_version: ['26.3']
         flutter_version: ['stable', 'beta']
+        dependency_manager:
+          - name: SwiftPM
+            flag: --enable-swift-package-manager
+          - name: CocoaPods
+            flag: --no-enable-swift-package-manager
 
     runs-on: macos-26
     steps:
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v7
 
 
     - name: Select Xcode ${{ matrix.xcode_version }}
       uses: maxim-lobanov/setup-xcode@v1
       with:
-        xcode-version: ${{ matrix.xcode_version }} # Check versions: https://github.com/actions/runner-images/blob/main/images/macos/macos-14-Readme.md
+        xcode-version: ${{ matrix.xcode_version }} # Check versions: https://github.com/actions/runner-images/blob/main/images/macos/macos-26-arm64-Readme.md
 
     - name: Setup Flutter (${{ matrix.flutter_version }} channel)
       uses: subosito/flutter-action@v2
@@ -41,6 +58,9 @@ jobs:
 
     - name: Print flutter version
       run: flutter doctor
+
+    - name: Configure ${{ matrix.dependency_manager.name }}
+      run: flutter config ${{ matrix.dependency_manager.flag }}
 
     - name: Setup Melos
       uses: bluefireteam/melos-action@v3
@@ -60,12 +80,22 @@ jobs:
         os_version: '>=18.5'
 
     - name: Run integration tests
+      id: integration_tests
       # `flutter test` sometimes never gets past app launch on the simulator and produces no output.
-      timeout-minutes: 25
-      run: flutter test integration_test_single_entrypoint/entrypoint.dart
+      timeout-minutes: 35
+      run: "$GITHUB_WORKSPACE/.github/scripts/ios_integration_test.sh"
       working-directory: flutter_theoplayer_sdk/flutter_theoplayer_sdk/example
       env:
         TEST_LICENSE: ${{ secrets.TEST_LICENSE }}
+
+    # TODO: remove once https://github.com/flutter/flutter/pull/193142 reaches Flutter stable and beta.
+    - name: Upload iOS integration test logs after a VM Service stall
+      if: always() && steps.integration_tests.outputs.stalled == 'true'
+      uses: actions/upload-artifact@v4
+      with:
+        name: ios-integration-logs-${{ matrix.flutter_version }}-${{ matrix.dependency_manager.name }}
+        path: ${{ runner.temp }}/ios-integration-logs
+        if-no-files-found: ignore
 
     - name: Dump simulator state on failure
       if: failure()

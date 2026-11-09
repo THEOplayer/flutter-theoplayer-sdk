@@ -142,7 +142,6 @@ class PlayerState {
             source.type == "application/vnd.theo.live+channel" ||
             // web
             source.type == "theolive";
-    ;
   }
 
   void _playEventListener(Event event) {

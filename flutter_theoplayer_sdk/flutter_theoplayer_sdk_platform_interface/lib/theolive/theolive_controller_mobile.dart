@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:theoplayer_platform_interface/helpers/logger.dart';
 import 'package:theoplayer_platform_interface/pigeon/apis.g.dart' hide HespLatencies;
-import 'package:theoplayer_platform_interface/pigeon/apis.g.dart' as pigeon show HespLatencies;
 import 'package:theoplayer_platform_interface/pigeon_binary_messenger_wrapper.dart';
 import 'package:theoplayer_platform_interface/theolive/theolive_events.dart';
 import 'package:theoplayer_platform_interface/theolive/theolive_api.dart';

@@ -28,8 +28,8 @@ class _AspectRatioChromelessPlayerViewState extends State<AspectRatioChromelessP
   @override
   void initState() {
     super.initState();
-    var initialVideoWidth = widget.player.getVideoWidth();
-    var initialVideoHeight = widget.player.getVideoHeight();
+    var initialVideoWidth = widget.player.videoWidth;
+    var initialVideoHeight = widget.player.videoHeight;
     if (initialVideoWidth != 0 && initialVideoHeight != 0) {
       currentAspectRatio = initialVideoWidth / initialVideoHeight;
     }

@@ -27,11 +27,12 @@ class _DebugFlagsPanelState extends State<DebugFlagsPanel> {
 
   Future<void> _loadFlags() async {
     final flags = await widget.api.getAvailableFlags();
-    if (mounted)
+    if (mounted) {
       setState(() {
         _flags = flags;
         _loading = false;
       });
+    }
   }
 
   List<DebugFlag> get _filtered {
