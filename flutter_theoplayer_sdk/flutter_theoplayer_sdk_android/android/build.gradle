@@ -25,7 +25,7 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 
-def theoplayerVersion ='11.15.0'
+def theoplayerVersion ='11.15.1'
 
 android {
     if (project.android.hasProperty("namespace")) {
